@@ -1,0 +1,4 @@
+2007-03-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Setup.mdp, Makefile.am: Removed unused file.
+

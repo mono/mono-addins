@@ -25,7 +25,6 @@ FILES =  \
 	Mono.Addins.Setup/AddinSystemConfigurationSerializer.cs \
 	Mono.Addins.Setup/InstallException.cs \
 	Mono.Addins.Setup/IProgressMonitor.cs \
-	Mono.Addins.Setup/NativePackage.cs \
 	Mono.Addins.Setup/Package.cs \
 	Mono.Addins.Setup/PackageCollection.cs \
 	Mono.Addins.Setup/ReferenceRepositoryEntry.cs \
