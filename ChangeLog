@@ -1,4 +1,8 @@
 2007-03-23  Lluis Sanchez Gual <lluis@novell.com> 
 
+	Added missing makefiles.
+
+2007-03-23  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* configure.ac: Make compilation of tests and gui libs optional.
 

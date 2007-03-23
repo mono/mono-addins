@@ -1,0 +1,2 @@
+
+SUBDIRS =  UnitTests CommandExtension FileContentExtension HelloWorldExtension SystemInfoExtension FileExtender
