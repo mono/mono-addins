@@ -1,0 +1,41 @@
+<Type Name="AddinInfoDialog" FullName="Mono.Addins.Gui.AddinInfoDialog">
+  <TypeSignature Language="C#" Value="public class AddinInfoDialog : Gtk.Dialog" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins.Gui</AssemblyName>
+    <AssemblyVersion>1.0.2628.42143</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>Gtk.Dialog</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public AddinInfoDialog (Mono.Addins.Setup.IAddinInfo info);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="info" Type="Mono.Addins.Setup.IAddinInfo" />
+      </Parameters>
+      <Docs>
+        <param name="info">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Build">
+      <MemberSignature Language="C#" Value="protected virtual void Build ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>
