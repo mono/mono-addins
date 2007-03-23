@@ -1,0 +1,6 @@
+2007-03-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.mdp: Updated.
+	* Mono.Addins/AddinRegistry.cs: Create the add-ins folder for host
+	  references when it doesn't exist.
+

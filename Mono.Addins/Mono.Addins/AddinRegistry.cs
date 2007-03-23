@@ -200,6 +200,8 @@ namespace Mono.Addins
 		{
 			hostFile = Util.GetFullPath (hostFile);
 			string baseName = Path.GetFileNameWithoutExtension (hostFile);
+			if (!Directory.Exists (DefaultAddinsFolder))
+				Directory.CreateDirectory (DefaultAddinsFolder);
 			
 			foreach (string s in Directory.GetFiles (DefaultAddinsFolder, baseName + "*.host.addins")) {
 				try {
