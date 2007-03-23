@@ -19,7 +19,6 @@ FILES =  \
 	Mono.Addins.Setup/AddinInfoCollection.cs \
 	Mono.Addins.Setup/AddinPackage.cs \
 	Mono.Addins.Setup/AddinRepositoryEntry.cs \
-	Mono.Addins.Setup/AddinScanData.cs \
 	Mono.Addins.Setup/AddinStore.cs \
 	Mono.Addins.Setup/AddinSystemConfiguration.cs \
 	Mono.Addins.Setup/AddinSystemConfigurationReaderWriter.cs \
