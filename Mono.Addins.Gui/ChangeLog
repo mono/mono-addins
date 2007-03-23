@@ -1,0 +1,5 @@
+2007-03-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, Mono.Addins.Gui.mdp: Enabled conditional compilation of
+	  the gui lib.
+

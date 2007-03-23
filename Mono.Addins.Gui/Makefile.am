@@ -9,7 +9,9 @@ PROJECT_REFERENCES =  \
 BUILD_DIR = ../bin
 
 	
+if ENABLE_GUI
 all: $(ASSEMBLY)
+endif
 
 FILES =  \
 	AssemblyInfo.cs \
