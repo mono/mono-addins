@@ -294,7 +294,7 @@ namespace Mono.Addins.Database
 		
 		object ReadSharedObject (string directory, string sharedFileName, string extension, string objectId, BinaryXmlTypeMap typeMap, bool checkOnly, out string fileName)
 		{
-			string name = sharedFileName + "_" + objectId.GetHashCode ().ToString ("x");
+			string name = sharedFileName + "_" + Util.GetStringHashCode (objectId).ToString ("x");
 			string file = Path.Combine (directory, name + extension);
 
 			object result;
@@ -348,7 +348,7 @@ namespace Mono.Addins.Database
 			
 			if (file == null) {
 				int count = 1;
-				string name = sharedFileName + "_" + objectId.GetHashCode ().ToString ("x");
+				string name = sharedFileName + "_" + Util.GetStringHashCode (objectId).ToString ("x");
 				file = Path.Combine (directory, name + extension);
 				
 				while (Exists (file)) {

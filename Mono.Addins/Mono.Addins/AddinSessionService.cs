@@ -281,6 +281,7 @@ namespace Mono.Addins
 				if (nt.Id == name)
 					return nt;
 			}
+			
 			foreach (string ns in nset.NodeSets) {
 				ExtensionNodeSet regSet = (ExtensionNodeSet) nodeSets [ns];
 				if (regSet == null) {
@@ -324,7 +325,8 @@ namespace Mono.Addins
 		{
 			if (AddinDatabase.RunningSetupProcess || asm is System.Reflection.Emit.AssemblyBuilder)
 				return;
-			Addin ainfo = AddinManager.Registry.GetAddinForHostAssembly (asm.Location);
+			string asmFile = new Uri (asm.CodeBase).LocalPath;
+			Addin ainfo = AddinManager.Registry.GetAddinForHostAssembly (asmFile);
 			if (ainfo != null && !IsAddinLoaded (ainfo.Id))
 				InsertAddin (null, ainfo);
 		}

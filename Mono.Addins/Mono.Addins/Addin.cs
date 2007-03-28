@@ -147,6 +147,8 @@ namespace Mono.Addins
 				else
 					database.ReadAddinDescription (null, configFile, out m);
 				
+				if (m == null)
+					throw new InvalidOperationException ("Could not read add-in description");
 				if (addin == null) {
 					addin = AddinInfo.ReadFromDescription (m);
 					sourceFile = m.AddinFile;

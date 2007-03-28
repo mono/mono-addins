@@ -39,11 +39,14 @@ namespace Mono.Addins.Database
 	{
 		internal static void ExecuteCommand (IProgressStatus monitor, string registryPath, string startupDir, string name, params string[] args)
 		{
-			string asm = typeof(SetupProcess).Assembly.Location;
+			string asm = new Uri (typeof(SetupProcess).Assembly.CodeBase).LocalPath;
 			string verboseParam = monitor.VerboseLog ? "v " : "nv";
 			
 			Process process = new Process ();
-			process.StartInfo = new ProcessStartInfo ("mono", "--debug " + asm + " " + verboseParam + " " + name + " " + string.Join (" ", args));
+			if (Util.IsWindows)
+				process.StartInfo = new ProcessStartInfo (asm, verboseParam + " " + name + " " + string.Join (" ", args));
+			else
+				process.StartInfo = new ProcessStartInfo ("mono", "--debug " + asm + " " + verboseParam + " " + name + " " + string.Join (" ", args));
 			process.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
 			process.StartInfo.UseShellExecute = false;
 			process.StartInfo.RedirectStandardInput = true;

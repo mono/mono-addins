@@ -1,3 +1,19 @@
+2007-03-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.mdp: Generate a winexe, to avoid showing a console in
+	  windows.
+	* Mono.Addins/Addin.cs: Null check.
+	* Mono.Addins/AddinSessionService.cs, Mono.Addins/AddinManager.cs,
+	  Mono.Addins.Database/AddinScanner.cs: Use Assembly.CodeBase, since
+	  Assembly.Location will return the wrong value when the assembly is
+	  loaded using shadow copy.
+	* Mono.Addins/AddinRegistry.cs, Mono.Addins.Database/SetupProcess.cs:
+	  Windows portability fixes.
+	* Mono.Addins.Description/ExtensionNodeSet.cs: Workaround for mono bug.
+	* Mono.Addins.Database/Util.cs, Mono.Addins.Database/FileDatabase.cs:
+	  Use a custom method for getting a string hash, to make sure we get
+	  consistent results.
+
 2007-03-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.mdp: Updated.

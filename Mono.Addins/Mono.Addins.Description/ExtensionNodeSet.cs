@@ -220,8 +220,10 @@ namespace Mono.Addins.Description
 		
 		public IEnumerator GetEnumerator ()
 		{
+			ArrayList ll = new ArrayList (list.Count);
 			foreach (string[] ns in list)
-				yield return ns [0];
+				ll.Add (ns [0]);
+			return ll.GetEnumerator ();
 		}
 		
 		public void Add (string nodeSetId)
