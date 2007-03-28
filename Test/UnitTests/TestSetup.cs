@@ -13,7 +13,8 @@ namespace UnitTests
 		[Test]
 		public void TestInitialize ()
 		{
-			AddinManager.Initialize (Path.GetDirectoryName (GetType().Assembly.Location));
+			string dir = new Uri (GetType().Assembly.CodeBase).LocalPath;
+			AddinManager.Initialize (Path.GetDirectoryName (dir));
 			AddinManager.Registry.ResetConfiguration ();
 			AddinManager.Registry.Update (new ConsoleProgressStatus (true));
 		}

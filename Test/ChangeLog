@@ -1,3 +1,9 @@
+2007-03-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* UnitTests/TestSetup.cs, UnitTests/TestBase.cs: Use Assembly.CodeBase,
+	  since Assembly.Location will return the wrong value when the
+	  assembly is loaded using shadow copy.
+
 2007-03-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	Added build files.

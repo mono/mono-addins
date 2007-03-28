@@ -16,7 +16,8 @@ namespace UnitTests
 			AddinManager.AddinLoaded += OnLoad;
 			AddinManager.AddinUnloaded += OnUnload;
 			
-			AddinManager.Initialize (Path.GetDirectoryName (GetType().Assembly.Location));
+			string dir = new Uri (GetType().Assembly.CodeBase).LocalPath;
+			AddinManager.Initialize (Path.GetDirectoryName (dir));
 			AddinManager.Registry.ResetConfiguration ();
 			AddinManager.Registry.Update (new ConsoleProgressStatus (true));
 		}
