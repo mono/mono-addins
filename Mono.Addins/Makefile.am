@@ -88,7 +88,6 @@ RESOURCES =
 EXTRAS = 
 
 REFERENCES =  \
-	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
 

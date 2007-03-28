@@ -24,7 +24,7 @@
  */
 
 using System;
-using Mono.Unix;
+//using Mono.Unix;
 
 namespace Mono.Addins
 {
@@ -33,7 +33,7 @@ namespace Mono.Addins
 	{
 		static GettextCatalog ()
 		{
-//			Catalog.Init ("monodevelop", "/home/lluis/install//share/locale");
+//			Catalog.Init ("mono-addins", "/home/lluis/install//share/locale");
 		}
 	
 		private GettextCatalog ()
@@ -42,28 +42,13 @@ namespace Mono.Addins
 
 		public static string GetString (string str)
 		{
-			return str != null ? Catalog.GetString (str) : null;
+			return str;
+//			return str != null ? Catalog.GetString (str) : null;
 		}
 	
 		public static string GetString (string str, params object[] arguments)
 		{
 			return string.Format (GetString (str), arguments);
 		}
-	
-		public static string GetPluralString (string singular,
-			    	 	              string plural,
-					              int n)
-		{
-			return Catalog.GetPluralString (singular, plural, n);
-		}
-
-		public static string GetPluralString (string singular,
-			    	 	              string plural,
-					              int n,
-						      params object[] arguments)
-		{
-			return string.Format(GetPluralString (singular, plural, n), arguments);
-		}
-
 	}
 }

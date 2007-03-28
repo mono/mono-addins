@@ -63,8 +63,13 @@ namespace Mono.Addins
 		internal static AddinRegistry GetGlobalRegistry (string startupDirectory)
 		{
 			AddinRegistry reg = new AddinRegistry (GlobalRegistryPath, startupDirectory);
-			// TODO: What about windows?
-			reg.AddinDirectories.Add ("/etc/mono.addins");
+			string baseDir;
+			if (Util.IsWindows)
+				baseDir = Environment.GetFolderPath (Environment.SpecialFolder.CommonProgramFiles); 
+			else
+				baseDir = "/etc";
+			
+			reg.AddinDirectories.Add (Path.Combine (baseDir, "mono.addins"));
 			return reg;
 		}
 		

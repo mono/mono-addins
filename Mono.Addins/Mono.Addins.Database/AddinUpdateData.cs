@@ -70,6 +70,7 @@ namespace Mono.Addins.Database
 			RootExtensionPoint rep = new RootExtensionPoint ();
 			rep.Description = description;
 			rep.ExtensionPoint = ep;
+			ep.RootAddin = description.AddinId;
 			list.Add (rep);
 		}
 
@@ -173,8 +174,18 @@ namespace Mono.Addins.Database
 
 			foreach (object ob in extensionPointsFound) {
 				ExtensionPoint ep = ob as ExtensionPoint;
-				if (ep == null)
+				
+				if (ep == null) {
+					// It is a list of extension from a root add-in
+					ArrayList rootExtensionPoints = (ArrayList) ob;
+					foreach (RootExtensionPoint rep in rootExtensionPoints) {
+						foreach (ExtensionNodeType nt in rep.ExtensionPoint.NodeSet.NodeTypes) {
+							if (nt.ObjectTypeName.Length > 0)
+								CollectObjectTypeExtensions (rep.Description, rep.ExtensionPoint, nt.ObjectTypeName);
+						}
+					}
 					continue;
+				}
 				
 				if (ep.RootAddin == null) {
 					// Ignore class extensions
@@ -206,7 +217,7 @@ namespace Mono.Addins.Database
 			foreach (ArrayList list in objectTypeExtensions.Values) {
 				foreach (UnresolvedObjectTypeExtension data in list) {
 					if (!data.FoundExtensionPoint) {
-						monitor.ReportWarning ("The add-in '" + data.Description.AddinId + "' is trying to register the class '" + data.Extension + "', but there isn't any add-in defining a suitable extension point");
+						monitor.ReportWarning ("The add-in '" + data.Description.AddinId + "' is trying to register the class '" + data.Extension.Path + "', but there isn't any add-in defining a suitable extension point");
 						// The type extensions may be registered using different base classes.
 						// Make sure the warning is shown only once
 						data.FoundExtensionPoint = true;

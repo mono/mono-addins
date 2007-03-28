@@ -38,6 +38,10 @@ namespace Mono.Addins.Database
 {
 	internal class Util
 	{
+		public static bool IsWindows {
+			get { return Path.DirectorySeparatorChar == '\\'; }
+		}
+			
 		public static void CheckWrittableFloder (string path)
 		{
 			string testFile = null;
