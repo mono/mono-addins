@@ -32,6 +32,7 @@ namespace TextEditor
 		{
 			Console.WriteLine ("Add-in error: " + args.Message);
 			Console.WriteLine (args.AddinId);
+			Console.WriteLine (args.Exception);
 		}
 		
 		static void OnLoad (object s, AddinEventArgs args)
