@@ -33,10 +33,8 @@ namespace Mono.Addins.Gui {
             this.Name = "Mono.Addins.Gui.ManageSitesDialog";
             this.Title = Mono.Unix.Catalog.GetString("Add-in Repository Management");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.DefaultWidth = 600;
             this.DefaultHeight = 300;
-            this.HasSeparator = false;
             // Internal child Mono.Addins.Gui.ManageSitesDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox10";

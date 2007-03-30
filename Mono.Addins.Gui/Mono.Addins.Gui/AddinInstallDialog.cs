@@ -124,7 +124,7 @@ namespace Mono.Addins.Gui
 			
 			foreach (AddinRepositoryEntry arep in reps) {
 				Addin sinfo = AddinManager.Registry.GetAddin (arep.Addin.Id);
-				if (!Services.InApplicationNamespace (service, sinfo.Id))
+				if (!Services.InApplicationNamespace (service, arep.Addin.Id))
 					continue;
 				
 				if (sinfo == null) {
@@ -447,7 +447,6 @@ namespace Mono.Addins.Gui
 				imageError.Visible = false;
 				imageInfo.Visible = true;
 				txt = "<b>" + okmessage + "</b>\n\n";
-				txt += Catalog.GetString ("You need to restart MonoDevelop for the changes to take effect.");
 			} else {
 				imageError.Visible = true;
 				imageInfo.Visible = false;

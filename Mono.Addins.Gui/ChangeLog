@@ -1,3 +1,17 @@
+2007-03-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.ErrorDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInfoDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.NewSiteDialog.cs, gtk-gui/gui.stetic:
+	  Updated.
+	* Mono.Addins.Gui/NewSiteDialog.cs: Implement missing bits in the
+	  dialog.
+	* Mono.Addins.Gui/AddinInstallDialog.cs: Fixed nullref. Removed
+	  "restart" message.
+
 2007-03-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, Mono.Addins.Gui.mdp: Enabled conditional compilation of

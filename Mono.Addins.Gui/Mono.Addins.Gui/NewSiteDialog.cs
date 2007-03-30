@@ -37,6 +37,7 @@ namespace Mono.Addins.Gui
 		public NewSiteDialog ()
 		{
 			Build ();
+			pathEntry.Sensitive = false;
 			CheckValues ();
 		}
 		
@@ -68,11 +69,6 @@ namespace Mono.Addins.Gui
 			return ((ResponseType) base.Run ()) == ResponseType.Ok;
 		}
 		
-		protected void OnTextChanged (object sender, EventArgs args)
-		{
-			CheckValues ();
-		}
-		
 		protected void OnClose (object sender, EventArgs args)
 		{
 			Destroy ();
@@ -87,6 +83,24 @@ namespace Mono.Addins.Gui
 				urlText.Sensitive = false;
 				pathEntry.Sensitive = true;
 			}
+			CheckValues ();
+		}
+
+		protected virtual void OnButtonBrowseClicked(object sender, System.EventArgs e)
+		{
+			FileChooserDialog dlg = new FileChooserDialog ("Select Folder", this, FileChooserAction.SelectFolder);
+			dlg.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
+			dlg.AddButton (Gtk.Stock.Open, Gtk.ResponseType.Ok);
+			
+			dlg.SetFilename (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
+			if (dlg.Run () == (int) ResponseType.Ok) {
+				pathEntry.Text = dlg.Filename;
+			}
+			dlg.Destroy ();
+		}
+
+		protected virtual void OnPathEntryChanged(object sender, System.EventArgs e)
+		{
 			CheckValues ();
 		}
 	}

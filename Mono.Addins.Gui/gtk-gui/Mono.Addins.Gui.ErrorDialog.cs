@@ -40,7 +40,6 @@ namespace Mono.Addins.Gui {
             this.Title = Mono.Unix.Catalog.GetString("MonoDevelop");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.BorderWidth = ((uint)(6));
-            this.HasSeparator = false;
             // Internal child Mono.Addins.Gui.ErrorDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox5";

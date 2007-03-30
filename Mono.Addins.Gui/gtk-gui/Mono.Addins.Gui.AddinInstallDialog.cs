@@ -109,11 +109,9 @@ namespace Mono.Addins.Gui {
             this.Name = "Mono.Addins.Gui.AddinInstallDialog";
             this.Title = Mono.Unix.Catalog.GetString("Add-in Installation");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.Modal = true;
             this.DefaultWidth = 725;
             this.DefaultHeight = 550;
-            this.HasSeparator = false;
             // Internal child Mono.Addins.Gui.AddinInstallDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox9";
@@ -215,9 +213,9 @@ namespace Mono.Addins.Gui {
             this.hbox83.Spacing = 6;
             // Container child hbox83.Gtk.Box+BoxChild
             this.filterComboBox = Gtk.ComboBox.NewText();
-            this.filterComboBox.AppendText("Show all packages");
-            this.filterComboBox.AppendText("Show new versions only");
-            this.filterComboBox.AppendText("Show updates only");
+            this.filterComboBox.AppendText(Mono.Unix.Catalog.GetString("Show all packages"));
+            this.filterComboBox.AppendText(Mono.Unix.Catalog.GetString("Show new versions only"));
+            this.filterComboBox.AppendText(Mono.Unix.Catalog.GetString("Show updates only"));
             this.filterComboBox.Name = "filterComboBox";
             this.hbox83.Add(this.filterComboBox);
             Gtk.Box.BoxChild w10 = ((Gtk.Box.BoxChild)(this.hbox83[this.filterComboBox]));
@@ -441,7 +439,7 @@ namespace Mono.Addins.Gui {
             this.labelResult.Name = "labelResult";
             this.labelResult.Ypad = 9;
             this.labelResult.Yalign = 0F;
-            this.labelResult.LabelProp = "You need to restart MonoDevelop\nsdfsdf\nsdfsf";
+            this.labelResult.LabelProp = "Done";
             this.labelResult.UseMarkup = true;
             this.labelResult.Wrap = true;
             this.labelResult.Justify = ((Gtk.Justification)(2));
@@ -540,6 +538,7 @@ namespace Mono.Addins.Gui {
             w46.Fill = false;
             // Internal child Mono.Addins.Gui.AddinInstallDialog.ActionArea
             Gtk.HButtonBox w47 = this.ActionArea;
+            w47.Name = "hbuttonbox1";
             w47.Spacing = 10;
             w47.BorderWidth = ((uint)(5));
             w47.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));

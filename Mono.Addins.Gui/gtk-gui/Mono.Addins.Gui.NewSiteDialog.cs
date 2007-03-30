@@ -39,7 +39,7 @@ namespace Mono.Addins.Gui {
         
         private Gtk.Entry pathEntry;
         
-        private Gtk.Button button88;
+        private Gtk.Button buttonBrowse;
         
         private Gtk.Button cancelbutton1;
         
@@ -52,7 +52,6 @@ namespace Mono.Addins.Gui {
             this.Title = Mono.Unix.Catalog.GetString("Add New Repository");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.DefaultWidth = 550;
-            this.HasSeparator = false;
             // Internal child Mono.Addins.Gui.NewSiteDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox11";
@@ -171,13 +170,13 @@ namespace Mono.Addins.Gui {
             Gtk.Box.BoxChild w11 = ((Gtk.Box.BoxChild)(this.hbox1[this.pathEntry]));
             w11.Position = 0;
             // Container child hbox1.Gtk.Box+BoxChild
-            this.button88 = new Gtk.Button();
-            this.button88.CanFocus = true;
-            this.button88.Name = "button88";
-            this.button88.UseUnderline = true;
-            this.button88.Label = Mono.Unix.Catalog.GetString("Browse...");
-            this.hbox1.Add(this.button88);
-            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox1[this.button88]));
+            this.buttonBrowse = new Gtk.Button();
+            this.buttonBrowse.CanFocus = true;
+            this.buttonBrowse.Name = "buttonBrowse";
+            this.buttonBrowse.UseUnderline = true;
+            this.buttonBrowse.Label = Mono.Unix.Catalog.GetString("Browse...");
+            this.hbox1.Add(this.buttonBrowse);
+            Gtk.Box.BoxChild w12 = ((Gtk.Box.BoxChild)(this.hbox1[this.buttonBrowse]));
             w12.Position = 1;
             w12.Expand = false;
             w12.Fill = false;
@@ -224,8 +223,9 @@ namespace Mono.Addins.Gui {
             this.DefaultHeight = 235;
             this.Show();
             this.btnOnlineRep.Clicked += new System.EventHandler(this.OnOptionClicked);
-            this.urlText.Changed += new System.EventHandler(this.OnTextChanged);
             this.btnLocalRep.Clicked += new System.EventHandler(this.OnOptionClicked);
+            this.pathEntry.Changed += new System.EventHandler(this.OnPathEntryChanged);
+            this.buttonBrowse.Clicked += new System.EventHandler(this.OnButtonBrowseClicked);
         }
     }
 }

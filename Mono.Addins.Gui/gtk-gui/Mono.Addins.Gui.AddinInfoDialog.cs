@@ -31,10 +31,8 @@ namespace Mono.Addins.Gui {
             this.Name = "Mono.Addins.Gui.AddinInfoDialog";
             this.Title = Mono.Unix.Catalog.GetString("MonoDevelop Package");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
-            this.WindowPosition = ((Gtk.WindowPosition)(4));
             this.DefaultWidth = 550;
             this.DefaultHeight = 400;
-            this.HasSeparator = false;
             // Internal child Mono.Addins.Gui.AddinInfoDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox12";

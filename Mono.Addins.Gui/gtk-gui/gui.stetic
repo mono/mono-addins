@@ -5,7 +5,6 @@
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">MonoDevelop</property>
     <property name="TypeHint">Dialog</property>
-    <property name="WindowPosition">None</property>
     <property name="BorderWidth">6</property>
     <property name="Buttons">1</property>
     <property name="HelpButton">False</property>
@@ -966,9 +965,7 @@ asd
                                 <property name="GeneratePublic">True</property>
                                 <property name="Ypad">9</property>
                                 <property name="Yalign">0</property>
-                                <property name="LabelProp">You need to restart MonoDevelop
-sdfsdf
-sdfsf</property>
+                                <property name="LabelProp">Done</property>
                                 <property name="UseMarkup">True</property>
                                 <property name="Wrap">True</property>
                                 <property name="Justify">Center</property>
@@ -1262,7 +1259,6 @@ sdfsf</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Add New Repository</property>
     <property name="TypeHint">Dialog</property>
-    <property name="WindowPosition">None</property>
     <property name="DefaultWidth">550</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
@@ -1350,7 +1346,6 @@ sdfsf</property>
                     <property name="GeneratePublic">True</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
-                    <signal name="Changed" handler="OnTextChanged" />
                   </widget>
                   <packing>
                     <property name="Position">2</property>
@@ -1428,6 +1423,7 @@ sdfsf</property>
                         <property name="GeneratePublic">True</property>
                         <property name="IsEditable">True</property>
                         <property name="InvisibleChar">●</property>
+                        <signal name="Changed" handler="OnPathEntryChanged" />
                       </widget>
                       <packing>
                         <property name="Position">0</property>
@@ -1435,7 +1431,7 @@ sdfsf</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Button" id="button88">
+                      <widget class="Gtk.Button" id="buttonBrowse">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="GeneratePublic">True</property>
@@ -1443,6 +1439,7 @@ sdfsf</property>
                         <property name="Label" translatable="yes">Browse...</property>
                         <property name="UseUnderline">True</property>
                         <property name="IsDialogButton">False</property>
+                        <signal name="Clicked" handler="OnButtonBrowseClicked" />
                       </widget>
                       <packing>
                         <property name="Position">1</property>
