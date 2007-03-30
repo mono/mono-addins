@@ -229,7 +229,7 @@ namespace Mono.Addins.Setup
 			foreach (PackageRepositoryEntry addin in addins) {
 				if (!showAll && IsHidden (addin.Addin))
 					continue;
-				Console.WriteLine (" - " + addin.Addin.Id + " " + addin.Addin.Version + " (" + addin.Repository.Name + ")");
+				Console.WriteLine (" - " + addin.Addin.Id + " (" + addin.Repository.Name + ")");
 			}
 		}
 		
@@ -628,7 +628,6 @@ namespace Mono.Addins.Setup
 			cmd.Description = "Unregisters repositories.";
 			cmd.Usage = "<url> ...";
 			cmd.AppendDesc ("Unregisters an add-in repository. Several URLs can be provided.");
-			commands.Add (cmd);
 			commands.Add (cmd);
 
 			cmd = new SetupCommand (cat, "rep-update", "ru", UpdateAvailableAddins);

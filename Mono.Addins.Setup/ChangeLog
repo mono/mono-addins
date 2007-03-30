@@ -1,3 +1,9 @@
+2007-03-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Setup/SetupTool.cs: Cosmetic fixes.
+	* Mono.Addins.Setup/RepositoryRegistry.cs: Fix NRE (repoList may change
+	  as a result of initializing the configuration).
+
 2007-03-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Setup.mdp, Makefile.am: Removed unused file.

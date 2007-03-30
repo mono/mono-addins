@@ -143,9 +143,12 @@ namespace Mono.Addins.Setup
 		ArrayList RepositoryList {
 			get {
 				if (repoList == null) {
-					repoList = new ArrayList ();
-					foreach (RepositoryRecord rep in service.Configuration.Repositories)
-						if (!rep.IsReference) repoList.Add (rep);
+					ArrayList list = new ArrayList ();
+					foreach (RepositoryRecord rep in service.Configuration.Repositories) {
+						if (!rep.IsReference)
+							list.Add (rep);
+					}
+					repoList = list;
 				}
 				return repoList;
 			}
