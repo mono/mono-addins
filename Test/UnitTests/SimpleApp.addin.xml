@@ -38,4 +38,23 @@
 		<ExtensionNode type="UnitTests.ItemSetNode" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/SimpleApp/NodeWithChildren">
+		<ExtensionNode name="Node">
+			<ExtensionNode name="Child" />
+		</ExtensionNode>
+	</ExtensionPoint>
+	
+	<!-- Extensions -->
+	
+	<Extension path="/SimpleApp/NodeWithChildren">
+		<Node id="node1" type="test">
+			<Child id="child1" type="test" />
+			<Child id="child2" type="test" />
+		</Node>
+		
+		<!-- FileContentExtension add one Node
+		     SystemInfoExtension adds one child to node1
+		-->
+	</Extension>
+	
 </Addin>

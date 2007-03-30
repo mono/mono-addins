@@ -1,3 +1,10 @@
+2007-03-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* UnitTests/TestExtensions.cs, UnitTests/SimpleApp.addin.xml,
+	  FileContentExtension/FileContentExtension.addin.xml,
+	  SystemInfoExtension/SystemInfoExtension.addin.xml: Test extension
+	  of child nodes.
+
 2007-03-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* UnitTests/TestSetup.cs, UnitTests/TestBase.cs: Use Assembly.CodeBase,

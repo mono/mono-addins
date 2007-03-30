@@ -40,6 +40,13 @@
 		</FileContent>
 	</Extension>
 	
+	<Extension path="/SimpleApp/NodeWithChildren">
+		<Node id="node2" type="test" insertafter="node1">
+			<Child id="child2.1" type="test" />
+			<Child id="child2.2" type="test" />
+		</Node>
+	</Extension>
+	
 	<Module>
 		<Dependencies>
 			<Addin id="SystemInfoExtension" version="0.1.0" />

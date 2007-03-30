@@ -119,5 +119,21 @@ namespace UnitTests
 				Assert.AreEqual ("FileSampleExtender", objects[1].Text, "t2.1");
 			}
 		}
+		
+		[Test()]
+		public void TestExtensionWithChildren ()
+		{
+			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/SimpleApp/NodeWithChildren");
+			Assert.AreEqual (2, nodes.Count, "Node count");
+			ExtensionNode n1 = nodes [0];
+			ExtensionNode n2 = nodes [1];
+			Assert.AreEqual ("node1", n1.Id, "t1");
+			Assert.AreEqual (3, n1.ChildNodes.Count, "n1 node count");
+			Assert.AreEqual ("child1", n1.ChildNodes[0].Id, "t1.1");
+			Assert.AreEqual ("child1.1", n1.ChildNodes[1].Id, "t1.2");
+			Assert.AreEqual ("child2", n1.ChildNodes[2].Id, "t1.3");
+			
+			Assert.AreEqual ("node2", n2.Id, "t2");
+		}
 	}
 }

@@ -132,4 +132,8 @@
 		</Condition>
 	</Extension>
 
+	<Extension path="/SimpleApp/NodeWithChildren/node1">
+		<Child id="child1.1" type="test" insertafter="child1"/>
+	</Extension>
+	
 </Addin>
