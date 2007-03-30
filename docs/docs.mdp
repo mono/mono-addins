@@ -6,4 +6,8 @@
       <Execution runwithwarnings="True" consolepause="True" />
     </Configuration>
   </Configurations>
+  <Contents>
+    <File name="./Mono.Addins" subtype="Directory" buildaction="Compile" />
+    <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+  </Contents>
 </Project>

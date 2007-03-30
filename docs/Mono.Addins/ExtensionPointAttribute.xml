@@ -10,7 +10,7 @@
   <Interfaces />
   <Attributes>
     <Attribute>
-      <AttributeName>System.AttributeUsage(System.AttributeTargets.Assembly)</AttributeName>
+      <AttributeName>System.AttributeUsage(System.AttributeTargets.Assembly, AllowMultiple=true)</AttributeName>
     </Attribute>
   </Attributes>
   <Members>
@@ -104,6 +104,36 @@
       <Docs>
         <summary>To be added.</summary>
         <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ExtensionPointAttribute (string path, string nodeName, Type nodeType);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+        <Parameter Name="nodeName" Type="System.String" />
+        <Parameter Name="nodeType" Type="System.Type" />
+      </Parameters>
+      <Docs>
+        <param name="path">To be added.</param>
+        <param name="nodeName">To be added.</param>
+        <param name="nodeType">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ExtensionPointAttribute (string path, Type nodeType);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="path" Type="System.String" />
+        <Parameter Name="nodeType" Type="System.Type" />
+      </Parameters>
+      <Docs>
+        <param name="path">To be added.</param>
+        <param name="nodeType">To be added.</param>
+        <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

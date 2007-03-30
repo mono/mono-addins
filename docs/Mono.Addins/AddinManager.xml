@@ -265,21 +265,6 @@ foreach (ExtensionNode node in nodes)
       </Docs>
     </Member>
     <Member MemberName="Initialize">
-      <MemberSignature Language="C#" Value="public static void Initialize (Mono.Addins.ConfigurationInfo configuration);" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="configuration" Type="Mono.Addins.ConfigurationInfo" />
-      </Parameters>
-      <Docs>
-        <param name="configuration">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="Initialize">
       <MemberSignature Language="C#" Value="public static void Initialize (string configDir);" />
       <MemberType>Method</MemberType>
       <ReturnValue>
@@ -307,21 +292,6 @@ foreach (ExtensionNode node in nodes)
         <param name="id">To be added.</param>
         <summary>To be added.</summary>
         <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="RepairAddinDatabase">
-      <MemberSignature Language="C#" Value="public static void RepairAddinDatabase (Mono.Addins.IProgressStatus monitor);" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="monitor" Type="Mono.Addins.IProgressStatus" />
-      </Parameters>
-      <Docs>
-        <param name="monitor">To be added.</param>
-        <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -392,18 +362,6 @@ The handler will be called for all nodes existing in the path at the moment of r
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="Configuration">
-      <MemberSignature Language="C#" Value="public static Mono.Addins.ConfigurationInfo Configuration { get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>Mono.Addins.ConfigurationInfo</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="RemoveExtensionNodeHandler">
       <MemberSignature Language="C#" Value="public static void RemoveExtensionNodeHandler (string path, Mono.Addins.ExtensionNodeEventHandler handler);" />
       <MemberType>Method</MemberType>
@@ -463,6 +421,35 @@ The handler will be called for all nodes existing in the path at the moment of r
       <Docs>
         <summary>To be added.</summary>
         <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IsInitialized">
+      <MemberSignature Language="C#" Value="public static bool IsInitialized { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="LoadAddin">
+      <MemberSignature Language="C#" Value="public static void LoadAddin (Mono.Addins.IProgressStatus statusMonitor, string id);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="statusMonitor" Type="Mono.Addins.IProgressStatus" />
+        <Parameter Name="id" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="statusMonitor">To be added.</param>
+        <param name="id">To be added.</param>
+        <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

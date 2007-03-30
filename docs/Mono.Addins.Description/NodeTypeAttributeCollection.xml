@@ -1,5 +1,5 @@
-<Type Name="ConditionCollection" FullName="Mono.Addins.Description.ConditionCollection">
-  <TypeSignature Language="C#" Value="public class ConditionCollection : Mono.Addins.Description.ObjectDescriptionCollection" />
+<Type Name="NodeTypeAttributeCollection" FullName="Mono.Addins.Description.NodeTypeAttributeCollection">
+  <TypeSignature Language="C#" Value="public class NodeTypeAttributeCollection : Mono.Addins.Description.ObjectDescriptionCollection" />
   <AssemblyInfo>
     <AssemblyName>Mono.Addins</AssemblyName>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
@@ -15,7 +15,7 @@
   </Attributes>
   <Members>
     <Member MemberName=".ctor">
-      <MemberSignature Language="C#" Value="public ConditionCollection ();" />
+      <MemberSignature Language="C#" Value="public NodeTypeAttributeCollection ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
       <Docs>
@@ -24,10 +24,10 @@
       </Docs>
     </Member>
     <Member MemberName="Item">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.Condition this[int n] { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.NodeTypeAttribute this[int n] { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
-        <ReturnType>Mono.Addins.Description.Condition</ReturnType>
+        <ReturnType>Mono.Addins.Description.NodeTypeAttribute</ReturnType>
       </ReturnValue>
       <Parameters>
         <Parameter Name="n" Type="System.Int32" />
@@ -41,7 +41,7 @@
     </Member>
   </Members>
   <Docs>
-    <summary>A collection of condition definitions.</summary>
+    <summary>To be added.</summary>
     <remarks>To be added.</remarks>
   </Docs>
 </Type>

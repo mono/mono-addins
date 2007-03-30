@@ -1,16 +1,21 @@
-<Type Name="AddinScanData" FullName="Mono.Addins.Setup.AddinScanData">
-  <TypeSignature Language="C#" Value="public class AddinScanData" />
+<Type Name="NativeDependency" FullName="Mono.Addins.Description.NativeDependency">
+  <TypeSignature Language="C#" Value="public class NativeDependency : Mono.Addins.Description.Dependency" />
   <AssemblyInfo>
     <AssemblyName>Mono.Addins</AssemblyName>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
-    <BaseTypeName>System.Object</BaseTypeName>
+    <BaseTypeName>Mono.Addins.Description.Dependency</BaseTypeName>
   </Base>
   <Interfaces />
+  <Attributes>
+    <Attribute>
+      <AttributeName>System.Xml.Serialization.XmlType("NativeReference")</AttributeName>
+    </Attribute>
+  </Attributes>
   <Members>
     <Member MemberName=".ctor">
-      <MemberSignature Language="C#" Value="public AddinScanData ();" />
+      <MemberSignature Language="C#" Value="public NativeDependency ();" />
       <MemberType>Constructor</MemberType>
       <Parameters />
       <Docs>

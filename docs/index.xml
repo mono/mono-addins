@@ -26,7 +26,7 @@
       </Attributes>
     </Assembly>
     <Assembly Name="Mono.Addins.Setup" Version="0.0.0.0" />
-    <Assembly Name="Mono.Addins.Gui" Version="1.0.2631.4492">
+    <Assembly Name="Mono.Addins.Gui" Version="1.0.2645.32627">
       <Attributes>
         <Attribute>
           <AttributeName>System.Reflection.AssemblyTrademark("")</AttributeName>
@@ -69,7 +69,6 @@
       <Type Name="ExtensionAttribute" />
       <Type Name="AddinDependencyAttribute" />
       <Type Name="ExtensionPointAttribute" />
-      <Type Name="ConfigurationInfo" />
       <Type Name="AddinManager" />
       <Type Name="ExtensionEventHandler" />
       <Type Name="TypeExtensionPointAttribute" />
@@ -85,6 +84,9 @@
       <Type Name="AddinErrorEventHandler" />
       <Type Name="AddinEventHandler" />
       <Type Name="AddinRegistry" />
+      <Type Name="ExtensionNodeChildAttribute" />
+      <Type Name="ExtensionNodeAttribute" />
+      <Type Name="AddinRootAttribute" />
     </Namespace>
     <Namespace Name="Mono.Addins.Setup">
       <Type Name="InstallException" />
@@ -95,6 +97,8 @@
       <Type Name="AddinHeader" />
       <Type Name="RepositoryRegistry" />
       <Type Name="SetupService" />
+      <Type Name="SetupTool" />
+      <Type Name="SetupCommandHandler" />
     </Namespace>
     <Namespace Name="Mono.Addins.Description">
       <Type Name="AddinDescription" />
@@ -112,15 +116,15 @@
       <Type Name="ExtensionNodeDescriptionCollection" />
       <Type Name="ExtensionCollection" />
       <Type Name="ConditionTypeDescription" />
-      <Type Name="Condition" />
       <Type Name="ConditionTypeDescriptionCollection" />
-      <Type Name="ConditionCollection" />
       <Type Name="AddinDependency" />
       <Type Name="Dependency" />
       <Type Name="AssemblyDependency" />
       <Type Name="DependencyCollection" />
       <Type Name="ModuleCollection" />
       <Type Name="NativeDependency" />
+      <Type Name="NodeTypeAttribute" />
+      <Type Name="NodeTypeAttributeCollection" />
     </Namespace>
     <Namespace Name="Mono.Addins.Gui">
       <Type Name="AddinManagerWindow" />

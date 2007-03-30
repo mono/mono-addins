@@ -1,8 +1,8 @@
-<Type Name="IAddinInfo" FullName="Mono.Addins.Setup.IAddinInfo">
-  <TypeSignature Language="C#" Value="public interface IAddinInfo" />
+<Type Name="AddinHeader" FullName="Mono.Addins.Setup.AddinHeader">
+  <TypeSignature Language="C#" Value="public interface AddinHeader" />
   <AssemblyInfo>
-    <AssemblyName>Mono.Addins</AssemblyName>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AssemblyName>Mono.Addins.Setup</AssemblyName>
+    <AssemblyVersion>0.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Interfaces />
   <Members>
@@ -43,13 +43,13 @@
       </Docs>
     </Member>
     <Member MemberName="CompareVersionTo">
-      <MemberSignature Language="C#" Value="public int CompareVersionTo (Mono.Addins.Setup.IAddinInfo other);" />
+      <MemberSignature Language="C#" Value="public int CompareVersionTo (Mono.Addins.Setup.AddinHeader other);" />
       <MemberType>Method</MemberType>
       <ReturnValue>
         <ReturnType>System.Int32</ReturnType>
       </ReturnValue>
       <Parameters>
-        <Parameter Name="other" Type="Mono.Addins.Setup.IAddinInfo" />
+        <Parameter Name="other" Type="Mono.Addins.Setup.AddinHeader" />
       </Parameters>
       <Docs>
         <param name="other">To be added.</param>

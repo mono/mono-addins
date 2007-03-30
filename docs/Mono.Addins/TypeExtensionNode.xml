@@ -110,4 +110,9 @@ TypeExtensionNode is the default extension type used when no type is provided in
       </example>
     </remarks>
   </Docs>
+  <Attributes>
+    <Attribute>
+      <AttributeName>Mono.Addins.ExtensionNode("Type")</AttributeName>
+    </Attribute>
+  </Attributes>
 </Type>

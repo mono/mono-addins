@@ -37,10 +37,10 @@
       </Docs>
     </Member>
     <Member MemberName="Conditions">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ConditionCollection Conditions { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ConditionTypeDescriptionCollection Conditions { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
-        <ReturnType>Mono.Addins.Description.ConditionCollection</ReturnType>
+        <ReturnType>Mono.Addins.Description.ConditionTypeDescriptionCollection</ReturnType>
       </ReturnValue>
       <Docs>
         <summary>To be added.</summary>
