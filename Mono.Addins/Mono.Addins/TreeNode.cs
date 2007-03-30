@@ -176,21 +176,18 @@ namespace Mono.Addins
 			TreeNode curNode = this;
 
 			foreach (string part in parts) {
-				bool found = false;
 				int i = curNode.Children.IndexOfNode (part);
 				if (i != -1) {
 					curNode = curNode.Children [i];
-					found = true;
+					continue;
 				}
 				
-				if (!found) {
-					if (buildPath) {
-						TreeNode newNode = new TreeNode (part);
-						curNode.AddChildNode (newNode);
-						curNode = newNode;
-					} else
-						return null;
-				}
+				if (buildPath) {
+					TreeNode newNode = new TreeNode (part);
+					curNode.AddChildNode (newNode);
+					curNode = newNode;
+				} else
+					return null;
 			}
 			return curNode;
 		}
@@ -240,17 +237,25 @@ namespace Mono.Addins
 			}
 		}
 		
-		public void GetExtendedLoadedNodes (string id, ArrayList nodes)
+		public ExtensionPoint FindExtensionPoint (string path)
 		{
-			if (childrenLoaded) {
-				if (extensionPoint != null && extensionPoint.Addins != null) {
-					if (((IList)extensionPoint.Addins).Contains (id))
-						nodes.Add (this);
+			if (path.StartsWith ("/"))
+				path = path.Substring (1);
+
+			string[] parts = path.Split ('/');
+			TreeNode curNode = this;
+
+			foreach (string part in parts) {
+				int i = curNode.Children.IndexOfNode (part);
+				if (i != -1) {
+					curNode = curNode.Children [i];
+					if (curNode.ExtensionPoint != null)
+						return curNode.ExtensionPoint;
+					continue;
 				}
-				
-				foreach (TreeNode node in Children)
-					node.GetExtendedLoadedNodes (id, nodes);
+				return null;
 			}
+			return null;
 		}
 		
 		public void FindAddinNodes (string id, ArrayList nodes)

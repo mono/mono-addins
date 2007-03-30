@@ -130,8 +130,10 @@ namespace Mono.Addins.Database
 			
 			if (!Directory.Exists (folder)) {
 				// All deleted
-				foreach (AddinFileInfo info in files.Values)
-					missing.Add (info);
+				foreach (AddinFileInfo info in files.Values) {
+					if (info.AddinId != null && info.AddinId.Length > 0)
+						missing.Add (info);
+				}
 				files.Clear ();
 				return missing;
 			}

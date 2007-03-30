@@ -744,24 +744,33 @@ namespace Mono.Addins.Database
 				scanResult.RegenerateAllData = true;
 			}
 			
+			AddinScanner scanner = new AddinScanner (this);
+			
 			// Check if any of the previously scanned folders has been deleted
 			
 			foreach (string file in Directory.GetFiles (AddinFolderCachePath, "*.data")) {
 				AddinScanFolderInfo folderInfo;
-				ReadFolderInfo (monitor, file, out folderInfo);
-				if (folderInfo == null || !Directory.Exists (folderInfo.Folder)) {
-					// Folder info object corrupt, or folder has been deleted. Disacard it.
-					SafeDelete (monitor, file);
-					scanResult.RegenerateRelationData = true;
-					scanResult.ChangesFound = true;
-					if (scanResult.CheckOnly)
+				bool res = ReadFolderInfo (monitor, file, out folderInfo);
+				if (!res || !Directory.Exists (folderInfo.Folder)) {
+					if (res) {
+						// Folder has been deleted. Remove the add-ins it had.
+						scanner.UpdateDeletedAddins (monitor, folderInfo, scanResult);
+					}
+					else {
+						// Folder info file corrupt. Regenerate all.
+						scanResult.ChangesFound = true;
+						scanResult.RegenerateRelationData = true;
+					}
+					
+					if (!scanResult.CheckOnly)
+						SafeDelete (monitor, file);
+					else
 						return;
 				}
 			}
-				
+			
 			// Look for changes in the add-in folders
 			
-			AddinScanner scanner = new AddinScanner (this);
 			foreach (string dir in registry.AddinDirectories) {
 				if (dir == registry.DefaultAddinsFolder)
 					scanner.ScanFolderRec (monitor, dir, scanResult);

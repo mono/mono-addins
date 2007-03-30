@@ -75,6 +75,10 @@ namespace Mono.Addins
 		
 		internal static string GlobalRegistryPath {
 			get {
+				string customDir = Environment.GetEnvironmentVariable ("MONO_ADDINS_GLOBAL_REGISTRY");
+				if (customDir != null && customDir.Length > 0)
+					return Util.GetFullPath (customDir);
+				
 				string path = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData); 
 				path = Path.Combine (path, "mono.addins");
 				return Util.GetFullPath (path);

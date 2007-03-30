@@ -58,7 +58,7 @@ namespace Mono.Addins
 				AddinManager.ReportError ("Can't load extensions for path '" + extension.Path + "'. Extension point not defined.", addin, null, false);
 				return;
 			}
-				
+			
 			int curPos = tnode.ChildCount;
 			LoadExtensionElement (tnode, addin, extension.ExtensionNodes, ref curPos, tnode.Condition, false, addedNodes);
 		}
@@ -87,7 +87,7 @@ namespace Mono.Addins
 				string after = elem.GetAttribute ("insertafter");
 				if (after.Length > 0) {
 					int i = tnode.Children.IndexOfNode (after);
-					if (i != -1 && i+1 > curPos)
+					if (i != -1)
 						curPos = i+1;
 				}
 				string before = elem.GetAttribute ("insertbefore");

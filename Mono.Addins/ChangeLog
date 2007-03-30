@@ -1,3 +1,26 @@
+2007-03-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/Addin.cs: Added support for global add-in names.
+	* Mono.Addins/ExtensionContext.cs: Make sure extensions of recently
+	  installed add-ins are properly loaded. Don't call OnAddinLoaded on
+	  nodes until all nodes of the extension point have been loaded,
+	  since OnAddinLoaded implementations may try to access to children
+	  which have not yet been loaded.
+	* Mono.Addins/ExtensionNode.cs: Added some null checks.
+	* Mono.Addins/ExtensionTree.cs: Fixed order when the insertafer
+	  attribute is specified.
+	* Mono.Addins/TreeNode.cs: Added method for getting an extension point
+	  from a path.
+	* Mono.Addins/AddinRegistry.cs: Added new env var for specifying the
+	  global add-in registry.
+	* Mono.Addins.Database/AddinScanFolderInfo.cs: Only include add-in
+	  files in the list of missing files.
+	* Mono.Addins.Database/AddinDatabase.cs: Properly remove add-in
+	  manifests from add-in folders that have been deleted.
+	* Mono.Addins.Database/AddinScanner.cs: Moved code that removes
+	  manifests from deleted add-ins to a new method, which is called
+	  from AddinDatabase as well.
+
 2007-03-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.mdp: Generate a winexe, to avoid showing a console in

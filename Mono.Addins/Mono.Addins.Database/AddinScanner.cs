@@ -100,8 +100,9 @@ namespace Mono.Addins.Database
 				// The folder has been deleted. All add-ins defined in that folder should also be deleted.
 				scanResult.RegenerateRelationData = true;
 				scanResult.ChangesFound = true;
+				if (scanResult.CheckOnly)
+					return;
 				database.DeleteFolderInfo (monitor, folderInfo);
-				return;
 			}
 			
 			if (scanResult.LocateAssembliesOnly)
@@ -109,9 +110,15 @@ namespace Mono.Addins.Database
 			
 			// Look for deleted add-ins.
 			
+			UpdateDeletedAddins (monitor, folderInfo, scanResult);
+		}
+		
+		public void UpdateDeletedAddins (IProgressStatus monitor, AddinScanFolderInfo folderInfo, AddinScanResult scanResult)
+		{
 			ArrayList missing = folderInfo.GetMissingAddins ();
 			if (missing.Count > 0) {
-				scanResult.ModifiedFolderInfos.Add (folderInfo);
+				if (Directory.Exists (folderInfo.Folder))
+					scanResult.ModifiedFolderInfos.Add (folderInfo);
 				scanResult.ChangesFound = true;
 				if (scanResult.CheckOnly)
 					return;

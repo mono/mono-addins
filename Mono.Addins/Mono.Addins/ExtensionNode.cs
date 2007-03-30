@@ -78,13 +78,13 @@ namespace Mono.Addins
 		
 		public RuntimeAddin Addin {
 			get {
-				if (addinId == null)
-					return null;
-				if (addin == null) {
+				if (addin == null && addinId != null) {
 					if (!AddinManager.SessionService.IsAddinLoaded (addinId))
 						AddinManager.SessionService.LoadAddin (null, addinId, true);
 					addin = AddinManager.SessionService.GetAddin (addinId);
 				}
+				if (addin == null)
+					throw new InvalidOperationException ("Add-in '" + addinId + "' could not be loaded.");
 				return addin; 
 			}
 		}
