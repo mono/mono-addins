@@ -86,7 +86,7 @@ public partial class MainWindow: Gtk.Window
 	{
 		if (args.PathChanged ("/TextEditor/ToolbarButtons"))
 			BuildToolbar ();
-		else if (args.PathChanged ("/TextEditor/MainMenu"))
+		else if (args.PathChanged ("/TextEditor/MainMenu") || args.PathChanged ("/TextEditor/Templates"))
 			BuildMenu ();
 	}
 	
