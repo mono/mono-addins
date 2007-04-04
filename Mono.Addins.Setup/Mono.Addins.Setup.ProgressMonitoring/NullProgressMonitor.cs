@@ -37,7 +37,6 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 	internal class NullProgressMonitor: MarshalByRefObject, IProgressMonitor
 	{
 		bool done, canceled;
-		ManualResetEvent waitEvent;
 		ArrayList errors;
 		ArrayList warnings;
 		ArrayList messages;
@@ -136,8 +135,6 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 			lock (this) {
 				if (done) return;
 				done = true;
-				if (waitEvent != null)
-					waitEvent.Set ();
 			}
 			OnCompleted ();
 		}

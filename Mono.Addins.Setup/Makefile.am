@@ -1,5 +1,5 @@
 ASSEMBLY_COMPILER_COMMAND = mcs
-ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG
+ASSEMBLY_COMPILER_FLAGS =  -langversion:ISO-1 -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG
 ASSEMBLY = ../bin/Mono.Addins.Setup.dll
 COMPILE_TARGET = library
 PC_FILES_IN = mono-addins-setup.pc.in

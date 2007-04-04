@@ -1,5 +1,12 @@
 2007-04-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins.Setup.ProgressMonitoring/NullProgressMonitor.cs: Fix
+	  warning.
+	* Mono.Addins.Setup/SetupTool.cs, Makefile.am: Use ISO-1 compliant c#
+	  only.
+
+2007-04-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins.Setup.csproj: Added msbuild project files. Patch by
 	  Matthijs ter Woord.
 	* Mono.Addins.Setup/AddinPackage.cs, Mono.Addins.Setup/AddinStore.cs,

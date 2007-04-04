@@ -576,7 +576,7 @@ namespace Mono.Addins.Setup
 			SetupCommand cmd;
 			string cat = "Add-in commands";
 			
-			cmd = new SetupCommand (cat, "install", "i", Install);
+			cmd = new SetupCommand (cat, "install", "i", new SetupCommandHandler (Install));
 			cmd.Description = "Installs add-ins.";
 			cmd.Usage = "[package-name|package-file] ...";
 			cmd.AppendDesc ("Installs an add-in or set of addins. The command argument is a list");
@@ -587,79 +587,79 @@ namespace Mono.Addins.Setup
 			cmd.AppendDesc ("MonoDevelop.SourceEditor/0.9.1");
 			commands.Add (cmd);
 			
-			cmd = new SetupCommand (cat, "uninstall", "u", Uninstall);
+			cmd = new SetupCommand (cat, "uninstall", "u", new SetupCommandHandler (Uninstall));
 			cmd.Description = "Uninstalls add-ins.";
 			cmd.Usage = "<package-name>";
 			cmd.AppendDesc ("Uninstalls an add-in. The command argument is the name");
 			cmd.AppendDesc ("of the add-in to uninstall.");
 			commands.Add (cmd);
 			
-			cmd = new SetupCommand (cat, "update", "up", Update);
+			cmd = new SetupCommand (cat, "update", "up", new SetupCommandHandler (Update));
 			cmd.Description = "Updates installed add-ins.";
 			cmd.AppendDesc ("Downloads and installs available updates for installed add-ins.");
 			commands.Add (cmd);
 			
-			cmd = new SetupCommand (cat, "list", "l", ListInstalled);
+			cmd = new SetupCommand (cat, "list", "l", new SetupCommandHandler (ListInstalled));
 			cmd.Description = "Lists installed add-ins.";
 			cmd.AppendDesc ("Prints a list of all installed add-ins.");
 			commands.Add (cmd);
 					
-			cmd = new SetupCommand (cat, "list-av", "la", ListAvailable);
+			cmd = new SetupCommand (cat, "list-av", "la", new SetupCommandHandler (ListAvailable));
 			cmd.Description = "Lists add-ins available in registered repositories.";
 			cmd.AppendDesc ("Prints a list of add-ins available to install in the");
 			cmd.AppendDesc ("registered repositories.");
 			commands.Add (cmd);
 					
-			cmd = new SetupCommand (cat, "list-update", "lu", ListUpdates);
+			cmd = new SetupCommand (cat, "list-update", "lu", new SetupCommandHandler (ListUpdates));
 			cmd.Description = "Lists available add-in updates.";
 			cmd.AppendDesc ("Prints a list of available add-in updates in the registered repositories.");
 			commands.Add (cmd);
 			
 			cat = "Repository Commands";
 
-			cmd = new SetupCommand (cat, "rep-add", "ra", AddRepository);
+			cmd = new SetupCommand (cat, "rep-add", "ra", new SetupCommandHandler (AddRepository));
 			cmd.Description = "Registers repositories.";
 			cmd.Usage = "<url> ...";
 			cmd.AppendDesc ("Registers an add-in repository. Several URLs can be provided.");
 			commands.Add (cmd);
 
-			cmd = new SetupCommand (cat, "rep-remove", "rr", RemoveRepository);
+			cmd = new SetupCommand (cat, "rep-remove", "rr", new SetupCommandHandler (RemoveRepository));
 			cmd.Description = "Unregisters repositories.";
 			cmd.Usage = "<url> ...";
 			cmd.AppendDesc ("Unregisters an add-in repository. Several URLs can be provided.");
 			commands.Add (cmd);
 
-			cmd = new SetupCommand (cat, "rep-update", "ru", UpdateAvailableAddins);
+			cmd = new SetupCommand (cat, "rep-update", "ru", new SetupCommandHandler (UpdateAvailableAddins));
 			cmd.Description = "Updates the lists of available addins.";
 			cmd.AppendDesc ("Updates the lists of addins available in all registered repositories.");
 			commands.Add (cmd);
 
-			cmd = new SetupCommand (cat, "rep-list", "rl", ListRepositories);
+			cmd = new SetupCommand (cat, "rep-list", "rl", new SetupCommandHandler (ListRepositories));
 			cmd.Description = "Lists registered repositories.";
 			cmd.AppendDesc ("Shows a list of all registered repositories.");
 			commands.Add (cmd);
 
 			cat = "Add-in Registry Commands";
 
-			cmd = new SetupCommand (cat, "reg-update", "rgu", UpdateRegistry);
+			cmd = new SetupCommand (cat, "reg-update", "rgu", new SetupCommandHandler (UpdateRegistry));
 			cmd.Description = "Updates the add-in registry.";
 			cmd.AppendDesc ("Looks for changes in add-in directories and updates the registry.");
 			cmd.AppendDesc ("New add-ins will be added and deleted add-ins will be removed.");
 			commands.Add (cmd);
 
-			cmd = new SetupCommand (cat, "reg-build", "rgu", RepairRegistry);
+			cmd = new SetupCommand (cat, "reg-build", "rgu", new SetupCommandHandler (RepairRegistry));
 			cmd.Description = "Rebuilds the add-in registry.";
 			cmd.AppendDesc ("Regenerates the add-in registry");
 			commands.Add (cmd);
 
-			cmd = new SetupCommand (cat, "info", null, PrintAddinInfo);
+			cmd = new SetupCommand (cat, "info", null, new SetupCommandHandler (PrintAddinInfo));
 			cmd.Description = "Prints information about an add-in.";
 			cmd.AppendDesc ("Prints information about an add-in.");
 			commands.Add (cmd);
 
 			cat = "Packaging Commands";
 
-			cmd = new SetupCommand (cat, "rep-build", "rb", BuildRepository);
+			cmd = new SetupCommand (cat, "rep-build", "rb", new SetupCommandHandler (BuildRepository));
 			cmd.Description = "Creates a repository index file for a directory structure.";
 			cmd.Usage = "<path>";
 			cmd.AppendDesc ("Scans the provided directory and generates a set of index files with entries");
@@ -668,7 +668,7 @@ namespace Mono.Addins.Setup
 			cmd.AppendDesc ("shared directory.");
 			commands.Add (cmd);
 	
-			cmd = new SetupCommand (cat, "pack", "p", BuildPackage);
+			cmd = new SetupCommand (cat, "pack", "p", new SetupCommandHandler (BuildPackage));
 			cmd.Description = "Creates a package from an add-in configuration file.";
 			cmd.Usage = "<file-path>";
 			cmd.AppendDesc ("Creates an add-in package (.mpack file) which includes all files ");
@@ -676,14 +676,14 @@ namespace Mono.Addins.Setup
 			cmd.AppendDesc ("the add-in's configuration file.");
 			commands.Add (cmd);
 	
-			cmd = new SetupCommand (cat, "help", "h", PrintHelp);
+			cmd = new SetupCommand (cat, "help", "h", new SetupCommandHandler (PrintHelp));
 			cmd.Description = "Shows help about a command.";
 			cmd.Usage = "<command>";
 			commands.Add (cmd);
 
 			cat = "Debug Commands";
 
-			cmd = new SetupCommand (cat, "dump-file", null, DumpRegistryFile);
+			cmd = new SetupCommand (cat, "dump-file", null, new SetupCommandHandler (DumpRegistryFile));
 			cmd.Description = "Prints the contents of a registry file.";
 			cmd.Usage = "<file-path>";
 			cmd.AppendDesc ("Prints the contents of a registry file for debugging.");
