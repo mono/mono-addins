@@ -1,3 +1,8 @@
+2007-04-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Gui.csproj: Added msbuild project files. Patch by
+	  Matthijs ter Woord.
+
 2007-03-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs,
