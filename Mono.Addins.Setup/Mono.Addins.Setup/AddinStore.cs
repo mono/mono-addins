@@ -37,7 +37,6 @@ using System.Diagnostics;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using Mono.Unix;
 
 using ICSharpCode.SharpZipLib.Zip;
 using Mono.Addins;
@@ -99,7 +98,7 @@ namespace Mono.Addins.Setup
 			PackageCollection toUninstall;
 			DependencyCollection unresolved;
 			if (!ResolveDependencies (monitor, packs, out toUninstall, out unresolved)) {
-				monitor.ReportError (Catalog.GetString ("Not all dependencies could be resolved."), null);
+				monitor.ReportError ("Not all dependencies could be resolved.", null);
 				return false;
 			}
 			
@@ -107,11 +106,11 @@ namespace Mono.Addins.Setup
 			ArrayList uninstallPrepared = new ArrayList ();
 			bool rollback = false;
 			
-			monitor.BeginTask (Catalog.GetString ("Installing add-ins..."), 100);
+			monitor.BeginTask ("Installing add-ins...", 100);
 			
 			// Prepare install
 			
-			monitor.BeginStepTask (Catalog.GetString ("Initializing installation"), toUninstall.Count + packs.Count + 1, 75);
+			monitor.BeginStepTask ("Initializing installation", toUninstall.Count + packs.Count + 1, 75);
 			
 			foreach (Package mpack in toUninstall) {
 				try {
@@ -145,7 +144,7 @@ namespace Mono.Addins.Setup
 			
 			monitor.EndTask ();
 			
-			monitor.BeginStepTask (Catalog.GetString ("Installing"), toUninstall.Count + packs.Count + 1, 20);
+			monitor.BeginStepTask ("Installing", toUninstall.Count + packs.Count + 1, 20);
 			
 			// Commit install
 			
@@ -189,7 +188,7 @@ namespace Mono.Addins.Setup
 				monitor = new NullProgressMonitor ();
 			
 			if (rollback) {
-				monitor.BeginStepTask (Catalog.GetString ("Finishing installation"), (prepared.Count + uninstallPrepared.Count)*2 + 1, 5);
+				monitor.BeginStepTask ("Finishing installation", (prepared.Count + uninstallPrepared.Count)*2 + 1, 5);
 			
 				foreach (Package mpack in prepared) {
 					try {
@@ -209,7 +208,7 @@ namespace Mono.Addins.Setup
 					}
 				}
 			} else
-				monitor.BeginStepTask (Catalog.GetString ("Finishing installation"), prepared.Count + uninstallPrepared.Count + 1, 5);
+				monitor.BeginStepTask ("Finishing installation", prepared.Count + uninstallPrepared.Count + 1, 5);
 			
 			// Cleanup
 			
@@ -375,7 +374,7 @@ namespace Mono.Addins.Setup
 			
 			if (unresolved.Count != 0) {
 				foreach (Dependency dep in unresolved)
-					monitor.ReportError (string.Format (Catalog.GetString ("The package '{0}' could not be found in any repository"), dep.Name), null);
+					monitor.ReportError (string.Format ("The package '{0}' could not be found in any repository", dep.Name), null);
 				return false;
 			}
 			
@@ -429,14 +428,14 @@ namespace Mono.Addins.Setup
 					if (ap.Addin.Id == otherap.Addin.Id) {
 						if (ap.IsUpgradeOf (otherap)) {
 							if (requested.Contains (otherap)) {
-								monitor.ReportError (Catalog.GetString ("Can't install two versions of the same add-in: '") + ap.Addin.Name + "'.", null);
+								monitor.ReportError ("Can't install two versions of the same add-in: '" + ap.Addin.Name + "'.", null);
 								error = true;
 							} else {
 								packages.RemoveAt (k);
 							}
 						} else if (otherap.IsUpgradeOf (ap)) {
 							if (requested.Contains (ap)) {
-								monitor.ReportError (Catalog.GetString ("Can't install two versions of the same add-in: '") + ap.Addin.Name + "'.", null);
+								monitor.ReportError ("Can't install two versions of the same add-in: '" + ap.Addin.Name + "'.", null);
 								error = true;
 							} else {
 								packages.RemoveAt (n);
@@ -444,7 +443,7 @@ namespace Mono.Addins.Setup
 							}
 						} else {
 							error = true;
-							monitor.ReportError (Catalog.GetString ("Can't install two versions of the same add-in: '") + ap.Addin.Name + "'.", null);
+							monitor.ReportError ("Can't install two versions of the same add-in: '" + ap.Addin.Name + "'.", null);
 						}
 						break;
 					}
@@ -596,13 +595,13 @@ namespace Mono.Addins.Setup
 				return tmpfile;
 			}
 
-			monitor.BeginTask (Catalog.GetString ("Requesting ") + url, 2);
+			monitor.BeginTask ("Requesting " + url, 2);
 			HttpWebRequest req = (HttpWebRequest) WebRequest.Create (url);
 			req.Headers ["Pragma"] = "no-cache";
 			HttpWebResponse resp = (HttpWebResponse) req.GetResponse ();
 			monitor.Step (1);
 			
-			monitor.BeginTask (Catalog.GetString ("Downloading ") + url, (int) resp.ContentLength);
+			monitor.BeginTask ("Downloading " + url, (int) resp.ContentLength);
 			
 			string file = Path.GetTempFileName ();
 			FileStream fs = null;
@@ -662,7 +661,7 @@ namespace Mono.Addins.Setup
 		
 		internal static string GetUninstallErrorNoRoot (AddinHeader ainfo)
 		{
-			return string.Format (Catalog.GetString ("The add-in '{0} v{1}' can't be uninstalled with the current user permissions."), ainfo.Name, ainfo.Version);
+			return string.Format ("The add-in '{0} v{1}' can't be uninstalled with the current user permissions.", ainfo.Name, ainfo.Version);
 		}
 	}
 }

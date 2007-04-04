@@ -33,7 +33,6 @@ using Mono.Addins;
 using Mono.Addins.Setup.ProgressMonitoring;
 using Mono.Addins.Setup;
 using System.IO;
-using Mono.Unix;
 using Mono.Addins.Description;
 
 namespace Mono.Addins.Setup

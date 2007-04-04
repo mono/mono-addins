@@ -1,3 +1,12 @@
+2007-04-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Setup.csproj: Added msbuild project files. Patch by
+	  Matthijs ter Woord.
+	* Mono.Addins.Setup/AddinPackage.cs, Mono.Addins.Setup/AddinStore.cs,
+	  Mono.Addins.Setup/SetupTool.cs,
+	  Mono.Addins.Setup/RepositoryRegistry.cs: Removed Mono.Posix
+	  dependency. Patch by Matthijs ter Woord.
+
 2007-03-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Setup/SetupTool.cs: Cosmetic fixes.

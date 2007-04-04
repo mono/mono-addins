@@ -30,7 +30,6 @@
 using System;
 using System.IO;
 using System.Collections;
-using Mono.Unix;
 using Mono.Addins.Setup.ProgressMonitoring;
 
 namespace Mono.Addins.Setup
@@ -59,7 +58,7 @@ namespace Mono.Addins.Setup
 				service.SaveConfiguration ();
 				return rr;
 			} catch (Exception ex) {
-				monitor.ReportError (Catalog.GetString ("The repository could not be registered"), ex);
+				monitor.ReportError ("The repository could not be registered", ex);
 				if (ContainsRepository (url))
 					RemoveRepository (url);
 				return null;
@@ -194,7 +193,7 @@ namespace Mono.Addins.Setup
 			try {
 				newRep = (Repository) service.Store.DownloadObject (monitor, absUri.ToString (), typeof(Repository));
 			} catch (Exception ex) {
-				monitor.ReportError (Catalog.GetString ("Could not get information from repository") + ": " + absUri.ToString (), ex);
+				monitor.ReportError ("Could not get information from repository" + ": " + absUri.ToString (), ex);
 				return;
 			}
 			

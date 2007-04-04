@@ -35,7 +35,6 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Specialized;
 using System.Net;
-using Mono.Unix;
 
 using ICSharpCode.SharpZipLib.Zip;
 using Mono.Addins;
@@ -160,8 +159,6 @@ namespace Mono.Addins.Setup
 
 			if (configFile == null)
 				throw new InstallException ("Add-in information file not found in package.");
-			
-			AddinDescription.Check (configFile);
 		}
 		
 		internal override void CommitInstall (IProgressMonitor monitor, AddinStore service)
@@ -219,13 +216,13 @@ namespace Mono.Addins.Setup
 		{
 			iaddin = service.Registry.GetAddin (info.Id, true);
 			if (iaddin == null)
-				throw new InstallException (string.Format (Catalog.GetString ("The add-in '{0}' is not installed."), info.Name));
+				throw new InstallException (string.Format ("The add-in '{0}' is not installed.", info.Name));
 
 			AddinDescription conf = iaddin.Description;
 			string basePath = Path.GetDirectoryName (conf.AddinFile);
 			
 			if (!File.Exists (iaddin.AddinFile)) {
-				monitor.ReportWarning (string.Format (Catalog.GetString ("The add-in '{0}' is scheduled for uninstalling, but the add-in file could not be found."), info.Name));
+				monitor.ReportWarning (string.Format ("The add-in '{0}' is scheduled for uninstalling, but the add-in file could not be found.", info.Name));
 				return;
 			}
 			
