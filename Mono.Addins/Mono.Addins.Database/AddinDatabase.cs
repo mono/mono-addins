@@ -853,25 +853,10 @@ namespace Mono.Addins.Database
 				}
 				
 				
-				AddinScanResult scanResult = null;
 				AddinScanner scanner = new AddinScanner (this);
 				
-				ResolveEventHandler resolver = delegate (object s, ResolveEventArgs args) {
-
-					if (scanResult == null) {
-						scanResult = new AddinScanResult ();
-						scanResult.LocateAssembliesOnly = true;
-					
-						foreach (string dir in registry.AddinDirectories)
-							scanner.ScanFolder (progressStatus, dir, scanResult);
-					}
-				
-					string afile = scanResult.GetAssemblyLocation (args.Name);
-					if (afile != null)
-						return Util.LoadAssemblyForReflection (afile);
-					else
-						return null;
-				};
+				SingleFileAssemblyResolver res = new SingleFileAssemblyResolver (progressStatus, registry, scanner);
+				ResolveEventHandler resolver = new ResolveEventHandler (res.Resolve);
 
 				EventInfo einfo = typeof(AppDomain).GetEvent ("ReflectionOnlyAssemblyResolve");
 				
@@ -1134,6 +1119,38 @@ namespace Mono.Addins.Database
 					config.Write (ConfigFile);
 				}
 			}
+		}
+	}
+	
+	class SingleFileAssemblyResolver
+	{
+		AddinScanResult scanResult;
+		AddinScanner scanner;
+		AddinRegistry registry;
+		IProgressStatus progressStatus;
+		
+		public SingleFileAssemblyResolver (IProgressStatus progressStatus, AddinRegistry registry, AddinScanner scanner)
+		{
+			this.scanner = scanner;
+			this.registry = registry;
+			this.progressStatus = progressStatus;
+		}
+		
+		public Assembly Resolve (object s, ResolveEventArgs args)
+		{
+			if (scanResult == null) {
+				scanResult = new AddinScanResult ();
+				scanResult.LocateAssembliesOnly = true;
+			
+				foreach (string dir in registry.AddinDirectories)
+					scanner.ScanFolder (progressStatus, dir, scanResult);
+			}
+		
+			string afile = scanResult.GetAssemblyLocation (args.Name);
+			if (afile != null)
+				return Util.LoadAssemblyForReflection (afile);
+			else
+				return null;
 		}
 	}
 }

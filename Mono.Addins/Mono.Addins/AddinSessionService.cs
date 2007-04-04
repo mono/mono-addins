@@ -49,12 +49,12 @@ namespace Mono.Addins
 		{
 			defaultContext = new ExtensionContext ();
 			ActivateRoots ();
-			AppDomain.CurrentDomain.AssemblyLoad += OnAssemblyLoaded;
+			AppDomain.CurrentDomain.AssemblyLoad += new AssemblyLoadEventHandler (OnAssemblyLoaded);
 		}
 		
 		internal void Shutdown ()
 		{
-			AppDomain.CurrentDomain.AssemblyLoad -= OnAssemblyLoaded;
+			AppDomain.CurrentDomain.AssemblyLoad -= new AssemblyLoadEventHandler (OnAssemblyLoaded);
 			defaultContext = null;
 			loadedAddins.Clear ();
 			defaultContext = null;

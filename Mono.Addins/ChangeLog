@@ -1,5 +1,16 @@
 2007-04-04  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins/ExtensionContext.cs, Mono.Addins/AddinSessionService.cs,
+	  Makefile.am, Mono.Addins.Description/AddinDescription.cs,
+	  Mono.Addins.Description/ExtensionPoint.cs,
+	  Mono.Addins.Database/AddinUpdateData.cs,
+	  Mono.Addins.Database/AddinDatabase.cs: Use ISO-1 compliant c# only.
+	* Mono.Addins.Description/Condition.cs,
+	  Mono.Addins.Description/ConditionCollection.cs: Removed unused
+	  files.
+
+2007-04-04  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins.csproj: Added msbuild project files. Patch by Matthijs
 	  ter Woord.
 

@@ -86,7 +86,7 @@ namespace Mono.Addins.Database
 			rep.Description = description;
 			ExtensionPoint ep = new ExtensionPoint ();
 			ep.RootAddin = description.AddinId;
-			ep.NodeSet = nodeSet;
+			ep.SetNodeSet (nodeSet);
 			rep.ExtensionPoint = ep;
 			list.Add (rep);
 		}
@@ -154,16 +154,20 @@ namespace Mono.Addins.Database
 		
 		public IEnumerable GetUnresolvedExtensionPoints ()
 		{
+			ArrayList list = new ArrayList ();
 			foreach (object ob in pathHash.Values)
 				if (ob is ExtensionPoint)
-					yield return ob;
+					list.Add (ob);
+			return list;
 		}
 
 		public IEnumerable GetUnresolvedExtensionSets ()
 		{
+			ArrayList list = new ArrayList ();
 			foreach (object ob in nodeSetHash.Values)
 				if (ob is ExtensionPoint)
-					yield return ob;
+					list.Add (ob);
+			return list;
 		}
 		
 		public void ResolveExtensions (IProgressStatus monitor, Hashtable descriptions)
@@ -228,6 +232,8 @@ namespace Mono.Addins.Database
 		
 		IEnumerable GetExtensionInfo (Hashtable hash, string path, AddinDescription description, ModuleDescription module, bool lookInParents)
 		{
+			ArrayList list = new ArrayList ();
+			
 			object data = hash [path];
 			if (data == null && lookInParents) {
 				// Root add-in extension points are registered before any other kind of extension,
@@ -237,8 +243,7 @@ namespace Mono.Addins.Database
 			
 			if (data is ArrayList) {
 				// Extension point which belongs to a root assembly.
-				foreach (object ob in GetRootExtensionInfo (hash, path, description, module, (ArrayList) data))
-					yield return ob;
+				list.AddRange (GetRootExtensionInfo (hash, path, description, module, (ArrayList) data));
 			}
 			else {
 				ExtensionPoint info = (ExtensionPoint) data;
@@ -247,18 +252,21 @@ namespace Mono.Addins.Database
 					info.Path = path;
 					hash [path] = info;
 				}
-				yield return info;
+				list.Add (info);
 			}
+			return list;
 		}
 	
-		IEnumerable GetRootExtensionInfo (Hashtable hash, string path, AddinDescription description, ModuleDescription module, ArrayList rootExtensionPoints)
+		ArrayList GetRootExtensionInfo (Hashtable hash, string path, AddinDescription description, ModuleDescription module, ArrayList rootExtensionPoints)
 		{
+			ArrayList list = new ArrayList ();
 			foreach (RootExtensionPoint rep in rootExtensionPoints) {
 				
 				// Find an extension point defined in a root add-in which is compatible with the version of the extender dependency
 				if (IsAddinCompatible (rep.Description, description, module))
-					yield return rep.ExtensionPoint;
+					list.Add (rep.ExtensionPoint);
 			}
+			return list;
 		}
 		
 		ExtensionPoint GetParentExtensionPoint (string path)

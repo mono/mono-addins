@@ -1,6 +1,6 @@
 
 ASSEMBLY_COMPILER_COMMAND = mcs
-ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG "-main:Mono.Addins.Database.SetupProcess"
+ASSEMBLY_COMPILER_FLAGS =  -langversion:ISO-1 -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG "-main:Mono.Addins.Database.SetupProcess"
 ASSEMBLY = ../bin/Mono.Addins.dll
 COMPILE_TARGET = exe
 PC_FILES_IN = mono-addins.pc.in

@@ -86,9 +86,9 @@ namespace Mono.Addins
 			ConditionInfo info = CreateConditionInfo (id);
 			ConditionType ot = info.CondType as ConditionType;
 			if (ot != null)
-				ot.Changed -= OnConditionChanged;
+				ot.Changed -= new EventHandler (OnConditionChanged);
 			info.CondType = type;
-			type.Changed += OnConditionChanged;
+			type.Changed += new EventHandler (OnConditionChanged);
 		}
 		
 		public void RegisterCondition (string id, Type type)
@@ -97,7 +97,7 @@ namespace Mono.Addins
 			ConditionInfo info = CreateConditionInfo (id);
 			ConditionType ot = info.CondType as ConditionType;
 			if (ot != null)
-				ot.Changed -= OnConditionChanged;
+				ot.Changed -= new EventHandler (OnConditionChanged);
 			info.CondType = type;
 		}
 		
@@ -125,7 +125,7 @@ namespace Mono.Addins
 					// The condition was registered as a type, create an instance now
 					ct = (ConditionType) Activator.CreateInstance ((Type)info.CondType);
 					ct.Id = id;
-					ct.Changed += OnConditionChanged;
+					ct.Changed += new EventHandler (OnConditionChanged);
 					info.CondType = ct;
 				}
 				else

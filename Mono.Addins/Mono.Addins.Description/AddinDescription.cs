@@ -375,32 +375,18 @@ namespace Mono.Addins.Description
 				extensionPoints.SaveXml (elem);
 		}
 		
-		public static void Check (string fileName)
-		{
-			Read (fileName, true);
-		}
-		
-		public static AddinDescription Read (string fileName)
-		{
-			return Read (fileName, false);
-		}
-		
-		public static AddinDescription Read (Stream stream, string basePath)
-		{
-			return Read (stream, basePath, false);
-		}
-		
-		public static AddinDescription Read (string configFile, bool check)
+
+		public static AddinDescription Read (string configFile)
 		{
 			AddinDescription config;
 			using (Stream s = File.OpenRead (configFile)) {
-				config = Read (s, Path.GetDirectoryName (configFile), check);
+				config = Read (s, Path.GetDirectoryName (configFile));
 			}
 			config.configFile = configFile;
 			return config;
 		}
 		
-		public static AddinDescription Read (Stream stream, string basePath, bool check)
+		public static AddinDescription Read (Stream stream, string basePath)
 		{
 			AddinDescription config = new AddinDescription ();
 			
@@ -426,12 +412,6 @@ namespace Mono.Addins.Description
 			config.category = elem.GetAttribute ("category");
 			config.basePath = elem.GetAttribute ("basePath");
 			config.isroot = elem.GetAttribute ("isroot") == "true" || elem.GetAttribute ("isroot") == "yes";
-			
-			foreach (string file in config.AllFiles) {
-				string asmFile = Path.Combine (basePath, file);
-				if (check && !File.Exists (asmFile))
-					throw new InvalidOperationException ("The file '" + file + "' is referenced in the configuration file but it was not found in package.");
-			}
 			
 			return config;
 		}
@@ -501,6 +481,12 @@ namespace Mono.Addins.Description
 			foreach (ExtensionNodeSet nset in ExtensionNodeSets) {
 				if (nset.Id.Length == 0)
 					errors.Add ("Attribute 'id' can't be empty for global node sets.");
+			}
+			
+			foreach (string file in AllFiles) {
+				string asmFile = Path.Combine (BasePath, file);
+				if (!File.Exists (asmFile))
+					errors.Add ("The file '" + file + "' referenced in the manifest could not be found.");
 			}
 			
 			return errors;

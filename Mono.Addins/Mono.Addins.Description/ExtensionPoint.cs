@@ -174,10 +174,12 @@ namespace Mono.Addins.Description
 				}
 				return nodeSet;
 			}
-			internal set {
-				// Used only by the addin updater
-				nodeSet = value;
-			}
+		}
+		
+		internal void SetNodeSet (ExtensionNodeSet nset)
+		{
+			// Used only by the addin updater
+			nodeSet = nset;
 		}
 		
 		public ConditionTypeDescriptionCollection Conditions {
