@@ -45,6 +45,12 @@ namespace Mono.Addins.Description
 		{
 		}
 		
+		public AddinDependency (string fullId)
+		{
+			Addin.GetIdParts (fullId, out id, out version);
+			id = "::" + id;
+		}
+		
 		public AddinDependency (string id, string version)
 		{
 			this.id = id;
@@ -68,6 +74,16 @@ namespace Mono.Addins.Description
 			CreateElement (parent, "Addin"); 
 			Element.SetAttribute ("id", AddinId);
 			Element.SetAttribute ("version", Version);
+		}
+		
+		public string FullAddinId {
+			get {
+				AddinDescription desc = ParentAddinDescription;
+				if (desc == null)
+					return Addin.GetFullId (null, AddinId, Version);
+				else
+					return Addin.GetFullId (desc.Namespace, AddinId, Version);
+			}
 		}
 		
 		public string AddinId {

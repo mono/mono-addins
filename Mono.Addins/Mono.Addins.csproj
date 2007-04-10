@@ -45,10 +45,6 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.5.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -68,8 +64,6 @@
     <Compile Include="Mono.Addins.Description\AddinDependency.cs" />
     <Compile Include="Mono.Addins.Description\AddinDescription.cs" />
     <Compile Include="Mono.Addins.Description\AssemblyDependency.cs" />
-    <Compile Include="Mono.Addins.Description\Condition.cs" />
-    <Compile Include="Mono.Addins.Description\ConditionCollection.cs" />
     <Compile Include="Mono.Addins.Description\ConditionTypeDescription.cs" />
     <Compile Include="Mono.Addins.Description\ConditionTypeDescriptionCollection.cs" />
     <Compile Include="Mono.Addins.Description\Dependency.cs" />
@@ -81,6 +75,7 @@
     <Compile Include="Mono.Addins.Description\ExtensionNodeSet.cs" />
     <Compile Include="Mono.Addins.Description\ExtensionNodeSetCollection.cs" />
     <Compile Include="Mono.Addins.Description\ExtensionNodeType.cs" />
+    <Compile Include="Mono.Addins.Description\ExtensionNodeTypeCollection.cs" />
     <Compile Include="Mono.Addins.Description\ExtensionPoint.cs" />
     <Compile Include="Mono.Addins.Description\ExtensionPointCollection.cs" />
     <Compile Include="Mono.Addins.Description\ModuleDescription.cs" />

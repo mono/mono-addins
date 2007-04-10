@@ -37,6 +37,7 @@ namespace Mono.Addins.Description
 	public class ObjectDescription: IBinaryXmlElement
 	{
 		internal XmlElement Element;
+		object parent;
 		
 		internal ObjectDescription (XmlElement elem)
 		{
@@ -45,6 +46,26 @@ namespace Mono.Addins.Description
 		
 		internal ObjectDescription ()
 		{
+		}
+		
+		public object Parent {
+			get { return parent; }
+		}
+		
+		public AddinDescription ParentAddinDescription {
+			get {
+				if (parent is AddinDescription)
+					return (AddinDescription) parent;
+				else if (parent is ObjectDescription)
+					return ((ObjectDescription)parent).ParentAddinDescription;
+				else
+					return null;
+			}
+		}
+		
+		internal void SetParent (object ob)
+		{
+			parent = ob;
 		}
 		
 		void IBinaryXmlElement.Write (BinaryXmlWriter writer)

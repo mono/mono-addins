@@ -37,6 +37,7 @@ FILES =  \
 	Mono.Addins.Description/ExtensionNodeSet.cs \
 	Mono.Addins.Description/ExtensionNodeSetCollection.cs \
 	Mono.Addins.Description/ExtensionNodeType.cs \
+	Mono.Addins.Description/ExtensionNodeTypeCollection.cs \
 	Mono.Addins.Description/ExtensionPoint.cs \
 	Mono.Addins.Description/ExtensionPointCollection.cs \
 	Mono.Addins.Description/ModuleDescription.cs \

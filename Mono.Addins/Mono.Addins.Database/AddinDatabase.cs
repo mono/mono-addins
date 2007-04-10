@@ -94,13 +94,58 @@ namespace Mono.Addins.Database
 				Directory.Delete (AddinFolderCachePath, true);
 		}
 		
+		public ExtensionNodeSet FindNodeSet (string addinId, string id)
+		{
+			return FindNodeSet (addinId, id, new Hashtable ());
+		}
+		
+		ExtensionNodeSet FindNodeSet (string addinId, string id, Hashtable visited)
+		{
+			if (visited.Contains (addinId))
+				return null;
+			visited.Add (addinId, addinId);
+			Addin addin = GetInstalledAddin (addinId, true, false);
+			if (addin == null) {
+				foreach (Addin root in GetAddinRoots ()) {
+					if (root.Id == addinId) {
+						addin = root;
+						break;
+					}
+				}
+				if (addin == null)
+					return null;
+			}
+			AddinDescription desc = addin.Description;
+			if (desc == null)
+				return null;
+			foreach (ExtensionNodeSet nset in desc.ExtensionNodeSets)
+				if (nset.Id == id)
+					return nset;
+			
+			// Not found in the add-in. Look on add-ins on which it depends
+			
+			foreach (Dependency dep in desc.MainModule.Dependencies) {
+				AddinDependency adep = dep as AddinDependency;
+				if (adep == null) continue;
+				
+				string aid = Addin.GetFullId (desc.Namespace, adep.AddinId, adep.Version);
+				ExtensionNodeSet nset = FindNodeSet (aid, id, visited);
+				if (nset != null)
+					return nset;
+			}
+			return null;
+		}
+		
 		public AddinDescription GetDescription (string id)
 		{
 			InternalCheck ();
 			IDisposable dblock = fileDatabase.LockRead ();
 			try {
 				string path = GetDescriptionPath (id);
-				return AddinDescription.ReadBinary (fileDatabase, path);
+				AddinDescription desc = AddinDescription.ReadBinary (fileDatabase, path);
+				if (desc != null)
+					desc.OwnerDatabase = this;
+				return desc;
 			}
 			catch (FileNotFoundException) {
 				throw new InvalidOperationException ("Add-in not found: " + id);
@@ -932,6 +977,8 @@ namespace Mono.Addins.Database
 		{
 			try {
 				description = AddinDescription.ReadHostBinary (fileDatabase, AddinCachePath, addinId, fileName);
+				if (description != null)
+					description.OwnerDatabase = this;
 				return true;
 			}
 			catch (Exception ex) {
@@ -953,6 +1000,8 @@ namespace Mono.Addins.Database
 		{
 			try {
 				description = AddinDescription.ReadBinary (fileDatabase, file);
+				if (description != null)
+					description.OwnerDatabase = this;
 				return true;
 			}
 			catch (Exception ex) {
@@ -1081,7 +1130,7 @@ namespace Mono.Addins.Database
 			
 			// If the old Id is already an automatically generated one, reuse it
 			if (oldId != null && oldId.StartsWith (id))
-				return Addin.GetIdName (oldId);
+				return name;
 			
 			int n = 1;
 			while (fileDatabase.Exists (GetDescriptionPath (id))) {

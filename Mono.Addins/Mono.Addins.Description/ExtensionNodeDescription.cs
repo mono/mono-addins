@@ -55,6 +55,29 @@ namespace Mono.Addins.Description
 		{
 		}
 		
+		public ExtensionNodeType GetNodeType ()
+		{
+			if (Parent is Extension) {
+				Extension ext = (Extension) Parent;
+				object ob = ext.GetExtendedObject ();
+				if (ob is ExtensionPoint) {
+					ExtensionPoint ep = (ExtensionPoint) ob;
+					return ep.NodeSet.GetAllowedNodeTypes () [NodeName];
+				} else if (ob is ExtensionNodeDescription) {
+					ExtensionNodeDescription pn = (ExtensionNodeDescription) ob;
+					ExtensionNodeType pt = ((ExtensionNodeDescription) pn).GetNodeType ();
+					if (pt != null)
+						return pt.GetAllowedNodeTypes () [NodeName];
+				}
+			}
+			else if (Parent is ExtensionNodeDescription) {
+				ExtensionNodeType pt = ((ExtensionNodeDescription) Parent).GetNodeType ();
+				if (pt != null)
+					return pt.GetAllowedNodeTypes () [NodeName];
+			}
+			return null;
+		}
+		
 		internal override void Verify (string location, StringCollection errors)
 		{
 			if (nodeName == null || nodeName.Length == 0)
@@ -64,6 +87,14 @@ namespace Mono.Addins.Description
 		
 		public string NodeName {
 			get { return nodeName; }
+		}
+		
+		public string Id {
+			get { return GetAttribute ("id"); }
+		}
+		
+		public bool IsCondition {
+			get { return nodeName == "Condition" || nodeName == "ComplexCondition"; }
 		}
 		
 		internal override void SaveXml (XmlElement parent)
@@ -143,7 +174,7 @@ namespace Mono.Addins.Description
 		public ExtensionNodeDescriptionCollection ChildNodes {
 			get {
 				if (childNodes == null) {
-					childNodes = new ExtensionNodeDescriptionCollection ();
+					childNodes = new ExtensionNodeDescriptionCollection (this);
 					if (Element != null) {
 						foreach (XmlNode nod in Element.ChildNodes) {
 							if (nod is XmlElement)
@@ -179,7 +210,7 @@ namespace Mono.Addins.Description
 		{
 			nodeName = reader.ReadStringValue ("nodeName");
 			attributes = (string[]) reader.ReadValue ("attributes");
-			childNodes = (ExtensionNodeDescriptionCollection) reader.ReadValue ("ChildNodes", new ExtensionNodeDescriptionCollection ());
+			childNodes = (ExtensionNodeDescriptionCollection) reader.ReadValue ("ChildNodes", new ExtensionNodeDescriptionCollection (this));
 		}
 	}
 }

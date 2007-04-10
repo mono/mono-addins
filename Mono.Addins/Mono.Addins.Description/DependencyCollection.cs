@@ -33,6 +33,14 @@ namespace Mono.Addins.Description
 {
 	public class DependencyCollection: ObjectDescriptionCollection
 	{
+		public DependencyCollection ()
+		{
+		}
+		
+		internal DependencyCollection (object owner): base (owner)
+		{
+		}
+		
 		public Dependency this [int n] {
 			get { return (Dependency) List [n]; }
 		}

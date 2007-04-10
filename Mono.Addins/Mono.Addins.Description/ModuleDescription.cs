@@ -52,6 +52,21 @@ namespace Mono.Addins.Description
 		{
 		}
 
+		public bool DependsOnAddin (string addinId)
+		{
+			AddinDescription desc = Parent as AddinDescription;
+			if (desc == null)
+				throw new InvalidOperationException ();
+			
+			foreach (Dependency dep in Dependencies) {
+				AddinDependency adep = dep as AddinDependency;
+				if (adep == null) continue;
+				if (Addin.GetFullId (desc.Namespace, adep.AddinId, adep.Version) == addinId)
+					return true;
+			}
+			return false;
+		}
+		
 		public StringCollection AllFiles {
 			get {
 				StringCollection col = new StringCollection ();
@@ -92,7 +107,7 @@ namespace Mono.Addins.Description
 		public DependencyCollection Dependencies {
 			get {
 				if (dependencies == null) {
-					dependencies = new DependencyCollection ();
+					dependencies = new DependencyCollection (this);
 					if (Element != null) {
 						XmlNodeList elems = Element.SelectNodes ("Dependencies/*");
 
@@ -117,7 +132,7 @@ namespace Mono.Addins.Description
 		public ExtensionCollection Extensions {
 			get {
 				if (extensions == null) {
-					extensions = new ExtensionCollection ();
+					extensions = new ExtensionCollection (this);
 					if (Element != null) {
 						foreach (XmlElement elem in Element.SelectNodes ("Extension"))
 							extensions.Add (new Extension (elem));
@@ -251,8 +266,8 @@ namespace Mono.Addins.Description
 		{
 			assemblies = (StringCollection) reader.ReadValue ("Assemblies", new StringCollection ());
 			dataFiles = (StringCollection) reader.ReadValue ("DataFiles", new StringCollection ());
-			dependencies = (DependencyCollection) reader.ReadValue ("Dependencies", new DependencyCollection ());
-			extensions = (ExtensionCollection) reader.ReadValue ("Extensions", new ExtensionCollection ());
+			dependencies = (DependencyCollection) reader.ReadValue ("Dependencies", new DependencyCollection (this));
+			extensions = (ExtensionCollection) reader.ReadValue ("Extensions", new ExtensionCollection (this));
 		}
 	}
 }

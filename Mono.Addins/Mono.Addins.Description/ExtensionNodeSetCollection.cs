@@ -34,6 +34,14 @@ namespace Mono.Addins.Description
 {
 	public class ExtensionNodeSetCollection: ObjectDescriptionCollection
 	{
+		public ExtensionNodeSetCollection ()
+		{
+		}
+		
+		internal ExtensionNodeSetCollection (object owner): base (owner)
+		{
+		}
+		
 		public ExtensionNodeSet this [int n] {
 			get { return (ExtensionNodeSet) List [n]; }
 		}

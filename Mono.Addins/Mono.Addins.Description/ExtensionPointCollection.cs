@@ -34,6 +34,14 @@ namespace Mono.Addins.Description
 {
 	public class ExtensionPointCollection: ObjectDescriptionCollection
 	{
+		public ExtensionPointCollection ()
+		{
+		}
+		
+		internal ExtensionPointCollection (object owner): base (owner)
+		{
+		}
+		
 		public ExtensionPoint this [int n] {
 			get { return (ExtensionPoint) List [n]; }
 		}

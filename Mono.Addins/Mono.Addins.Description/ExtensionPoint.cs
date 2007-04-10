@@ -171,6 +171,7 @@ namespace Mono.Addins.Description
 						nodeSet = new ExtensionNodeSet (Element);
 					else
 						nodeSet = new ExtensionNodeSet ();
+					nodeSet.SetParent (this);
 				}
 				return nodeSet;
 			}
@@ -180,12 +181,13 @@ namespace Mono.Addins.Description
 		{
 			// Used only by the addin updater
 			nodeSet = nset;
+			nodeSet.SetParent (this);
 		}
 		
 		public ConditionTypeDescriptionCollection Conditions {
 			get {
 				if (conditions == null) {
-					conditions = new ConditionTypeDescriptionCollection ();
+					conditions = new ConditionTypeDescriptionCollection (this);
 					if (Element != null) {
 						foreach (XmlElement elem in Element.SelectNodes ("ConditionType"))
 							conditions.Add (new ConditionTypeDescription (elem));
@@ -223,7 +225,9 @@ namespace Mono.Addins.Description
 			rootAddin = reader.ReadStringValue ("rootAddin");
 			addins = (StringCollection) reader.ReadValue ("addins", new StringCollection ());
 			nodeSet = (ExtensionNodeSet) reader.ReadValue ("NodeSet");
-			conditions = (ConditionTypeDescriptionCollection) reader.ReadValue ("Conditions", new ConditionTypeDescriptionCollection ());
+			conditions = (ConditionTypeDescriptionCollection) reader.ReadValue ("Conditions", new ConditionTypeDescriptionCollection (this));
+			if (nodeSet != null)
+				nodeSet.SetParent (this);
 		}
 	}
 }

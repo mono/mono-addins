@@ -196,6 +196,7 @@ namespace Mono.Addins.Database
 					if (config.LocalId.Length == 0) {
 						// Generate an internal id for this add-in
 						config.LocalId = database.GetUniqueAddinId (file, (fi != null ? fi.AddinId : null), config.Namespace, config.Version);
+						config.HasUserId = false;
 					}
 					
 					// Check errors in the description
@@ -758,13 +759,31 @@ namespace Mono.Addins.Database
 		
 		Type FindAddinType (string typeName, ArrayList assemblies)
 		{
+			// Look in the current assembly
 			Type etype = Type.GetType (typeName, false);
 			if (etype != null)
 				return etype;
+			
+			// Look in referenced assemblies
 			foreach (Assembly asm in assemblies) {
 				etype = asm.GetType (typeName);
 				if (etype != null)
 					return etype;
+			}
+			
+			Hashtable visited = new Hashtable ();
+			
+			// Look in indirectly referenced assemblies
+			foreach (Assembly asm in assemblies) {
+				foreach (AssemblyName aref in asm.GetReferencedAssemblies ()) {
+					if (visited.Contains (aref))
+						continue;
+					visited.Add (aref, aref);
+					Assembly rasm = Assembly.Load (aref);
+					etype = rasm.GetType (typeName);
+					if (etype != null)
+						return etype;
+				}
 			}
 			return null;
 		}

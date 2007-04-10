@@ -48,6 +48,47 @@ namespace Mono.Addins.Description
 			this.path = path;
 		}
 		
+		// Returns the object extended by this Extension. It can be an ExtensionPoint or
+		// an ExtensionNodeDescription.
+		public ObjectDescription GetExtendedObject ()
+		{
+			AddinDescription desc = ParentAddinDescription;
+			if (desc == null)
+				return null;
+			ExtensionPoint ep = FindExtensionPoint (desc, path);
+			if (ep == null && desc.OwnerDatabase != null) {
+				foreach (Dependency dep in desc.MainModule.Dependencies) {
+					AddinDependency adep = dep as AddinDependency;
+					if (adep == null) continue;
+					Addin ad = desc.OwnerDatabase.GetInstalledAddin (adep.FullAddinId);
+					if (ad != null && ad.Description != null) {
+						ep = FindExtensionPoint (ad.Description, path);
+						if (ep != null)
+							break;
+					}
+				}
+			}
+			if (ep != null) {
+				string subp = path.Substring (ep.Path.Length).Trim ('/');
+				if (subp.Length == 0)
+					return ep; // The extension is directly extending the extension point
+				
+				// The extension is extending a node of the extension point
+
+				return desc.FindExtensionNode (path, true);
+			}
+			return null;
+		}
+	
+		ExtensionPoint FindExtensionPoint (AddinDescription desc, string path)
+		{
+			foreach (ExtensionPoint ep in desc.ExtensionPoints) {
+				if (ep.Path == path || path.StartsWith (ep.Path + "/"))
+					return ep;
+			}
+			return null;
+		}
+		
 		internal override void Verify (string location, StringCollection errors)
 		{
 			VerifyNotEmpty (location + "Extension", errors, path, "path");
@@ -114,7 +155,7 @@ namespace Mono.Addins.Description
 		public ExtensionNodeDescriptionCollection ExtensionNodes {
 			get {
 				if (nodes == null) {
-					nodes = new ExtensionNodeDescriptionCollection ();
+					nodes = new ExtensionNodeDescriptionCollection (this);
 					if (Element != null) {
 						foreach (XmlNode node in Element.ChildNodes) {
 							XmlElement e = node as XmlElement;
@@ -142,7 +183,7 @@ namespace Mono.Addins.Description
 		internal override void Read (BinaryXmlReader reader)
 		{
 			path = reader.ReadStringValue ("path");
-			nodes = (ExtensionNodeDescriptionCollection) reader.ReadValue ("Nodes", new ExtensionNodeDescriptionCollection ());
+			nodes = (ExtensionNodeDescriptionCollection) reader.ReadValue ("Nodes", new ExtensionNodeDescriptionCollection (this));
 		}
 	}
 }

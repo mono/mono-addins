@@ -38,9 +38,10 @@ namespace Mono.Addins.Description
 	public class ExtensionNodeSet: ObjectDescription
 	{
 		string id;
-		ExtensionNodeSetCollection nodeTypes;
+		ExtensionNodeTypeCollection nodeTypes;
 		NodeSetIdCollection nodeSets;
 		bool missingNodeSetId;
+		ExtensionNodeTypeCollection cachedAllowedTypes;
 		
 		internal ExtensionNodeSet (XmlElement element)
 		{
@@ -102,13 +103,13 @@ namespace Mono.Addins.Description
 			get { return "id"; }
 		}
 		
-		public ExtensionNodeSetCollection NodeTypes {
+		public ExtensionNodeTypeCollection NodeTypes {
 			get {
 				if (nodeTypes == null) {
 					if (Element != null)
 						InitCollections ();
 					else
-						nodeTypes = new ExtensionNodeSetCollection ();
+						nodeTypes = new ExtensionNodeTypeCollection (this);
 				}
 				return nodeTypes;
 			}
@@ -123,6 +124,46 @@ namespace Mono.Addins.Description
 						nodeSets = new NodeSetIdCollection ();
 				}
 				return nodeSets;
+			}
+		}
+		
+		public ExtensionNodeTypeCollection GetAllowedNodeTypes ()
+		{
+			// Gets all allowed node types, including those defined in node sets
+			// It only works for descriptions generated from a registry
+			
+			if (cachedAllowedTypes == null) {
+				cachedAllowedTypes = new ExtensionNodeTypeCollection ();
+				GetAllowedNodeTypes (new Hashtable (), cachedAllowedTypes);
+			}
+		    return cachedAllowedTypes;
+		}
+		
+		void GetAllowedNodeTypes (Hashtable visitedSets, ExtensionNodeTypeCollection col)
+		{
+			if (Id.Length > 0) {
+				if (visitedSets.Contains (Id))
+					return;
+				visitedSets [Id] = Id;
+			}
+			
+			// Gets all allowed node types, including those defined in node sets
+			// It only works for descriptions generated from a registry
+			
+			foreach (ExtensionNodeType nt in NodeTypes)
+				col.Add (nt);
+			
+			AddinDescription desc = ParentAddinDescription;
+			if (desc == null || desc.OwnerDatabase == null)
+			    return;
+			
+			foreach (string[] ns in NodeSets.InternalList) {
+				string startAddin = ns [1];
+				if (startAddin == null || startAddin.Length == 0)
+					startAddin = desc.AddinId;
+				ExtensionNodeSet nset = desc.OwnerDatabase.FindNodeSet (startAddin, ns[0]);
+				if (nset != null)
+					nset.GetAllowedNodeTypes (visitedSets, col);
 			}
 		}
 		
@@ -168,7 +209,7 @@ namespace Mono.Addins.Description
 		
 		void InitCollections ()
 		{
-			nodeTypes = new ExtensionNodeSetCollection ();
+			nodeTypes = new ExtensionNodeTypeCollection (this);
 			nodeSets = new NodeSetIdCollection ();
 			
 			foreach (XmlNode n in Element.ChildNodes) {
@@ -199,7 +240,7 @@ namespace Mono.Addins.Description
 		internal override void Read (BinaryXmlReader reader)
 		{
 			id = reader.ReadStringValue ("Id");
-			nodeTypes = (ExtensionNodeSetCollection) reader.ReadValue ("NodeTypes", new ExtensionNodeSetCollection ());
+			nodeTypes = (ExtensionNodeTypeCollection) reader.ReadValue ("NodeTypes", new ExtensionNodeTypeCollection (this));
 			reader.ReadValue ("NodeSets", NodeSets.InternalList);
 		}
 	}

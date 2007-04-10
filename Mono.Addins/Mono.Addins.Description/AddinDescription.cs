@@ -44,6 +44,7 @@ namespace Mono.Addins.Description
 		XmlDocument configDoc;
 		string configFile;
 		bool fromBinaryFile;
+		AddinDatabase ownerDatabase;
 		
 		string id;
 		string name;
@@ -85,6 +86,11 @@ namespace Mono.Addins.Description
 			typeMap.RegisterType (typeof(NodeTypeAttribute), "NodeTypeAttribute");
 		}
 		
+		internal AddinDatabase OwnerDatabase {
+			get { return ownerDatabase; }
+			set { ownerDatabase = value; }
+		}
+		
 		public string AddinFile {
 			get { return sourceAddinFile; }
 			set { sourceAddinFile = value; }
@@ -96,7 +102,7 @@ namespace Mono.Addins.Description
 		
 		public string LocalId {
 			get { return id != null ? id : string.Empty; }
-			set { id = value; }
+			set { id = value; hasUserId = true; }
 		}
 
 		public string Namespace {
@@ -189,6 +195,7 @@ namespace Mono.Addins.Description
 						mainModule = new ModuleDescription ();
 					else
 						mainModule = new ModuleDescription (RootElement);
+					mainModule.SetParent (this);
 				}
 				return mainModule;
 			}
@@ -197,7 +204,7 @@ namespace Mono.Addins.Description
 		public ModuleCollection OptionalModules {
 			get {
 				if (optionalModules == null) {
-					optionalModules = new ModuleCollection ();
+					optionalModules = new ModuleCollection (this);
 					if (RootElement != null) {
 						foreach (XmlElement mod in RootElement.SelectNodes ("Module"))
 							optionalModules.Add (new ModuleDescription (mod));
@@ -209,7 +216,7 @@ namespace Mono.Addins.Description
 		
 		public ModuleCollection AllModules {
 			get {
-				ModuleCollection col = new ModuleCollection ();
+				ModuleCollection col = new ModuleCollection (this);
 				col.Add (MainModule);
 				foreach (ModuleDescription mod in OptionalModules)
 					col.Add (mod);
@@ -220,7 +227,7 @@ namespace Mono.Addins.Description
 		public ExtensionNodeSetCollection ExtensionNodeSets {
 			get {
 				if (nodeSets == null) {
-					nodeSets = new ExtensionNodeSetCollection ();
+					nodeSets = new ExtensionNodeSetCollection (this);
 					if (RootElement != null) {
 						foreach (XmlElement elem in RootElement.SelectNodes ("ExtensionNodeSet"))
 							nodeSets.Add (new ExtensionNodeSet (elem));
@@ -233,7 +240,7 @@ namespace Mono.Addins.Description
 		public ExtensionPointCollection ExtensionPoints {
 			get {
 				if (extensionPoints == null) {
-					extensionPoints = new ExtensionPointCollection ();
+					extensionPoints = new ExtensionPointCollection (this);
 					if (RootElement != null) {
 						foreach (XmlElement elem in RootElement.SelectNodes ("ExtensionPoint"))
 							extensionPoints.Add (new ExtensionPoint (elem));
@@ -246,7 +253,7 @@ namespace Mono.Addins.Description
 		public ConditionTypeDescriptionCollection ConditionTypes {
 			get {
 				if (conditionTypes == null) {
-					conditionTypes = new ConditionTypeDescriptionCollection ();
+					conditionTypes = new ConditionTypeDescriptionCollection (this);
 					if (RootElement != null) {
 						foreach (XmlElement elem in RootElement.SelectNodes ("ConditionType"))
 							conditionTypes.Add (new ConditionTypeDescription (elem));
@@ -262,6 +269,45 @@ namespace Mono.Addins.Description
 			ep.Path = path;
 			ExtensionPoints.Add (ep);
 			return ep;
+		}
+		
+		internal ExtensionNodeDescription FindExtensionNode (string path, bool lookInDeps)
+		{
+			// Look in the extensions of this add-in
+			
+			foreach (Extension ext in MainModule.Extensions) {
+				if (path.StartsWith (ext.Path + "/")) {
+					string subp = path.Substring (ext.Path.Length).Trim ('/');
+					ExtensionNodeDescriptionCollection nodes = ext.ExtensionNodes;
+					ExtensionNodeDescription node = null;
+					foreach (string p in subp.Split ('/')) {
+						if (p.Length == 0) continue;
+						node = nodes [p];
+						if (node == null)
+							break;
+						nodes = node.ChildNodes;
+					}
+					if (node != null)
+						return node;
+				}
+			}
+			
+			if (!lookInDeps || OwnerDatabase == null)
+				return null;
+			
+			// Look in dependencies
+			
+			foreach (Dependency dep in MainModule.Dependencies) {
+				AddinDependency adep = dep as AddinDependency;
+				if (adep == null) continue;
+				Addin ad = OwnerDatabase.GetInstalledAddin (adep.FullAddinId);
+				if (ad != null && ad.Description != null) {
+					ExtensionNodeDescription node = ad.Description.FindExtensionNode (path, false);
+					if (node != null)
+						return node;
+				}
+			}
+			return null;
 		}
 		
 		XmlElement RootElement {
@@ -291,7 +337,11 @@ namespace Mono.Addins.Description
 			
 			SaveXml ();
 
-			configDoc.Save (configFile);
+			using (StreamWriter sw = new StreamWriter (configFile)) {
+				XmlTextWriter tw = new XmlTextWriter (sw);
+				tw.Formatting = Formatting.Indented;
+				configDoc.Save (tw);
+			}
 		}
 		
 		public XmlDocument SaveToXml ()
@@ -392,9 +442,7 @@ namespace Mono.Addins.Description
 			
 			try {
 				config.configDoc = new XmlDocument ();
-				config.configDoc.PreserveWhitespace = true;
 				config.configDoc.Load (stream);
-				config.configDoc.PreserveWhitespace = false;
 			} catch (Exception ex) {
 				throw new InvalidOperationException ("The add-in configuration file is invalid.", ex);
 			}
@@ -483,10 +531,20 @@ namespace Mono.Addins.Description
 					errors.Add ("Attribute 'id' can't be empty for global node sets.");
 			}
 			
-			foreach (string file in AllFiles) {
-				string asmFile = Path.Combine (BasePath, file);
-				if (!File.Exists (asmFile))
-					errors.Add ("The file '" + file + "' referenced in the manifest could not be found.");
+			string bp = null;
+			if (BasePath.Length > 0)
+				bp = BasePath;
+			else if (sourceAddinFile != null && sourceAddinFile.Length > 0)
+				bp = Path.GetDirectoryName (AddinFile);
+			else if (configFile != null && configFile.Length > 0)
+				bp = Path.GetDirectoryName (configFile);
+				
+			if (bp != null) {
+				foreach (string file in AllFiles) {
+					string asmFile = Path.Combine (BasePath, file);
+					if (!File.Exists (asmFile))
+						errors.Add ("The file '" + file + "' referenced in the manifest could not be found.");
+				}
 			}
 			
 			return errors;
@@ -567,10 +625,13 @@ namespace Mono.Addins.Description
 			basePath = reader.ReadStringValue ("basePath");
 			sourceAddinFile = reader.ReadStringValue ("sourceAddinFile");
 			mainModule = (ModuleDescription) reader.ReadValue ("MainModule");
-			optionalModules = (ModuleCollection) reader.ReadValue ("OptionalModules", new ModuleCollection ());
-			nodeSets = (ExtensionNodeSetCollection) reader.ReadValue ("NodeSets", new ExtensionNodeSetCollection ());
-			extensionPoints = (ExtensionPointCollection) reader.ReadValue ("ExtensionPoints", new ExtensionPointCollection ());
-			conditionTypes = (ConditionTypeDescriptionCollection) reader.ReadValue ("ConditionTypes", new ConditionTypeDescriptionCollection ());
+			optionalModules = (ModuleCollection) reader.ReadValue ("OptionalModules", new ModuleCollection (this));
+			nodeSets = (ExtensionNodeSetCollection) reader.ReadValue ("NodeSets", new ExtensionNodeSetCollection (this));
+			extensionPoints = (ExtensionPointCollection) reader.ReadValue ("ExtensionPoints", new ExtensionPointCollection (this));
+			conditionTypes = (ConditionTypeDescriptionCollection) reader.ReadValue ("ConditionTypes", new ConditionTypeDescriptionCollection (this));
+			
+			if (mainModule != null)
+				mainModule.SetParent (this);
 		}
 	}
 }

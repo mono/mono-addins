@@ -84,7 +84,7 @@ namespace Mono.Addins.Description
 		public NodeTypeAttributeCollection Attributes {
 			get {
 				if (attributes == null) {
-					attributes = new NodeTypeAttributeCollection ();
+					attributes = new NodeTypeAttributeCollection (this);
 					if (Element != null) {
 						XmlElement atts = Element ["Attributes"];
 						if (atts != null) {
@@ -102,7 +102,12 @@ namespace Mono.Addins.Description
 
 		internal ExtensionNodeType (XmlElement element): base (element)
 		{
-			typeName = element.GetAttribute ("type");
+			XmlAttribute at = element.Attributes ["type"];
+			if (at != null)
+				typeName = at.Value;
+			at = element.Attributes ["objectType"];
+			if (at != null)
+				objectTypeName = at.Value;
 			XmlElement de = element ["Description"];
 			if (de != null)
 				description = de.InnerText;
@@ -171,7 +176,7 @@ namespace Mono.Addins.Description
 			objectTypeName = reader.ReadStringValue ("objectTypeName");
 			description = reader.ReadStringValue ("description");
 			addinId = reader.ReadStringValue ("addinId");
-			attributes = (NodeTypeAttributeCollection) reader.ReadValue ("Attributes", new NodeTypeAttributeCollection ());
+			attributes = (NodeTypeAttributeCollection) reader.ReadValue ("Attributes", new NodeTypeAttributeCollection (this));
 		}
 	}
 }

@@ -1,5 +1,5 @@
 //
-// NodeTypeAttributeCollection.cs
+// ExtensionNodeTypeCollection.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,21 +28,31 @@
 
 
 using System;
+using System.Collections;
 
 namespace Mono.Addins.Description
 {
-	public class NodeTypeAttributeCollection: ObjectDescriptionCollection
+	public class ExtensionNodeTypeCollection: ObjectDescriptionCollection
 	{
-		public NodeTypeAttributeCollection ()
+		public ExtensionNodeTypeCollection ()
 		{
 		}
 		
-		internal NodeTypeAttributeCollection (object owner): base (owner)
+		internal ExtensionNodeTypeCollection (object owner): base (owner)
 		{
 		}
 		
-		public NodeTypeAttribute this [int n] {
-			get { return (NodeTypeAttribute) List [n]; }
+		public ExtensionNodeType this [int n] {
+			get { return (ExtensionNodeType) List [n]; }
+		}
+		
+		public ExtensionNodeType this [string id] {
+			get {
+				for (int n=0; n<List.Count; n++)
+					if (((ExtensionNodeType) List [n]).Id == id)
+						return (ExtensionNodeType) List [n];
+				return null;
+			}
 		}
 	}
 }

@@ -1,3 +1,54 @@
+2007-04-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.mdp, Makefile.am, Mono.Addins.csproj: Updated.
+	* Mono.Addins/Addin.cs: Properly resolve absolute add-in ids (starting
+	  with ::).
+	* Mono.Addins/AddinRegistry.cs: Added method for reading a manifest.
+	* Mono.Addins.Description/Extension.cs: Added GetExtendedObject()
+	  method. Initialize the owner of all collections.
+	* Mono.Addins.Description/AddinDependency.cs: Added method for getting
+	  the full ID of the referenced assembly.
+	* Mono.Addins.Description/AddinDescription.cs: Added OwnerDatabase
+	  property. Initialize the owner of all collections. Properly check
+	  for referenced assemblies in Validate(). 
+	* Mono.Addins.Description/ExtensionNodeType.cs: Properly read the
+	  objectType attribute from XML. Initialize the owner of all
+	  collections.
+	* Mono.Addins.Description/ObjectDescriptionCollection.cs: Added
+	  constructor which takes the collection owner as parameter. When an
+	  element is added, set the parent of the element.
+	* Mono.Addins.Description/ExtensionPoint.cs,
+	  Mono.Addins.Description/ModuleDescription.cs: Initialize the owner
+	  of all collections.
+	* Mono.Addins.Description/ExtensionNodeDescription.cs: Added
+	  GetNodeType() method and some helper properties. Initialize the
+	  owner of all collections.
+	* Mono.Addins.Description/NodeTypeAttributeCollection.cs,
+	  Mono.Addins.Description/ExtensionCollection.cs,
+	  Mono.Addins.Description/DependencyCollection.cs,
+	  Mono.Addins.Description/ExtensionNodeDescriptionCollection.cs,
+	  Mono.Addins.Description/ExtensionPointCollection.cs,
+	  Mono.Addins.Description/ModuleDescriptionCollection.cs,
+	  Mono.Addins.Description/ConditionTypeDescriptionCollection.cs,
+	  Mono.Addins.Description/ExtensionNodeSetCollection.cs: Added
+	  constructor which takes the collection owner as parameter.
+	* Mono.Addins.Description/ExtensionNodeSet.cs: Added
+	  GetAllowedNodeTypes() method, which returns all allowed nodes,
+	  recursivelly looking at referenced node sets. Initialize the owner
+	  of all collections.
+	* Mono.Addins.Description/ExtensionNodeTypeCollection.cs: New
+	  collection.
+	* Mono.Addins.Description/ObjectDescription.cs: Added properties for
+	  getting the parent of an object, and the add-in description where
+	  the object is declared.
+	* Mono.Addins.Database/AddinDatabase.cs: Properly reuse generated
+	  add-in ids when the add-in file is the same. Added method for
+	  finding a node set defined in the registry. Initialize the
+	  OwnerDatabase property of every loaded AddinDescription.
+	* Mono.Addins.Database/AddinScanner.cs: When looking for add-in types,
+	  look in the references too. Set HasUserId to false for add-ins with
+	  auto-generated ID.
+
 2007-04-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/ExtensionContext.cs, Mono.Addins/AddinSessionService.cs,

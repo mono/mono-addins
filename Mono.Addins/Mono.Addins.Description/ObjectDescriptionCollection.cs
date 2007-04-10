@@ -36,6 +36,17 @@ namespace Mono.Addins.Description
 {
 	public class ObjectDescriptionCollection: CollectionBase
 	{
+		object owner;
+		
+		internal ObjectDescriptionCollection (object owner)
+		{
+			this.owner = owner;
+		}
+		
+		public ObjectDescriptionCollection ()
+		{
+		}
+		
 		public void Add (ObjectDescription ep)
 		{
 			List.Add (ep);
@@ -58,7 +69,32 @@ namespace Mono.Addins.Description
 				ep.Element.ParentNode.RemoveChild (ep.Element);
 				ep.Element = null;
 			}
+			if (owner != null)
+				ep.SetParent (null);
 		}
+		
+		protected override void OnInsertComplete (int index, object value)
+		{
+			if (owner != null)
+				((ObjectDescription)value).SetParent (owner);
+		}
+
+		protected override void OnSetComplete (int index, object oldValue, object newValue)
+		{
+			if (owner != null) {
+				((ObjectDescription)newValue).SetParent (owner);
+				((ObjectDescription)oldValue).SetParent (null);
+			}
+		}
+
+		protected override void OnClear ()
+		{
+			if (owner != null) {
+				foreach (ObjectDescription ob in List)
+					ob.SetParent (null);
+			}
+		}
+
 		
 		internal void SaveXml (XmlElement parent)
 		{

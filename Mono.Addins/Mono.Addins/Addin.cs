@@ -187,12 +187,14 @@ namespace Mono.Addins
 		public static string GetFullId (string ns, string id, string version)
 		{
 			string res;
-			if (ns != null && ns.Length > 0 && !id.StartsWith ("::"))
+			if (id.StartsWith ("::"))
+				res = id.Substring (2);
+			else if (ns != null && ns.Length > 0)
 				res = ns + "." + id;
 			else
 				res = id;
 			
-			if (version != null)
+			if (version != null && version.Length > 0)
 				return res + "," + version;
 			else
 				return res;

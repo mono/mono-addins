@@ -129,8 +129,10 @@ namespace Mono.Addins
 			
 			try {
 				AddinDescription desc = AddinDescription.Read (outFile);
-				if (desc != null)
+				if (desc != null) {
 					desc.AddinFile = file;
+					desc.OwnerDatabase = database;
+				}
 				return desc;
 			}
 			catch {
@@ -140,6 +142,13 @@ namespace Mono.Addins
 			finally {
 				File.Delete (outFile);
 			}
+		}
+		
+		public AddinDescription ReadAddinManifestFile (string file)
+		{
+			AddinDescription desc = AddinDescription.Read (file);
+			desc.OwnerDatabase = database;
+			return desc;
 		}
 		
 		public bool IsAddinEnabled (string id)

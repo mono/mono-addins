@@ -34,8 +34,25 @@ namespace Mono.Addins.Description
 {
 	public class ExtensionNodeDescriptionCollection: ObjectDescriptionCollection
 	{
+		public ExtensionNodeDescriptionCollection ()
+		{
+		}
+		
+		internal ExtensionNodeDescriptionCollection (object owner): base (owner)
+		{
+		}
+		
 		public ExtensionNodeDescription this [int n] {
 			get { return (ExtensionNodeDescription) List [n]; }
+		}
+		
+		public ExtensionNodeDescription this [string id] {
+			get {
+				foreach (ExtensionNodeDescription node in List)
+					if (node.Id == id)
+						return node;
+				return null;
+			}
 		}
 	}
 }

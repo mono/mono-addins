@@ -33,6 +33,14 @@ namespace Mono.Addins.Description
 {
 	public class ConditionTypeDescriptionCollection: ObjectDescriptionCollection
 	{
+		public ConditionTypeDescriptionCollection ()
+		{
+		}
+		
+		internal ConditionTypeDescriptionCollection (object owner): base (owner)
+		{
+		}
+		
 		public ConditionTypeDescription this [int n] {
 			get { return (ConditionTypeDescription) List [n]; }
 		}
