@@ -13,9 +13,9 @@ if ENABLE_GUI
 all: $(ASSEMBLY)
 endif
 
-FILES = \
-	./CSharpCompiler.cs \
-	./AssemblyInfo.cs 
+FILES =  \
+	AssemblyInfo.cs \
+	CSharpCompiler.cs 
 
 DATA_FILES = 
 
@@ -23,8 +23,7 @@ RESOURCES =
 
 EXTRAS = 
 
-REFERENCES =  \
-	-r:System
+REFERENCES = -r:System
 
 DLL_REFERENCES = 
 

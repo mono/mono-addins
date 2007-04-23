@@ -73,7 +73,7 @@ public partial class MainWindow: Gtk.Window
 				FileTemplateNode t = (FileTemplateNode) tn;
 				item = new Gtk.MenuItem (t.Name);
 				item.Activated += delegate {
-					TextEditorApp.NewFile (t.GetContent ());
+					TextEditor.TextEditorApp.NewFile (t.GetContent ());
 				};
 			}
 			menu.Insert (item, -1);

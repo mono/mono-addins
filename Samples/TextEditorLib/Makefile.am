@@ -12,47 +12,48 @@ if ENABLE_GUI
 all: $(ASSEMBLY)
 endif
 
-FILES = \
-	./AssemblyInfo.cs \
-	./ICommand.cs \
-	./gtk-gui/generated.cs \
-	./MainWindow.cs \
-	./gtk-gui/MainWindow.cs \
-	./TextEditorApp.cs \
-	./Commands/CopyCommand.cs \
-	./Commands/CutCommand.cs \
-	./Commands/NewCommand.cs \
-	./Commands/OpenCommand.cs \
-	./Commands/PasteCommand.cs \
-	./Commands/SaveCommand.cs \
-	./ExtensionNodes/MenuItemNode.cs \
-	./ExtensionNodes/MenuSeparatorNode.cs \
-	./ExtensionNodes/SubmenuNode.cs \
-	./ExtensionNodes/ToolButtonNode.cs \
-	./ExtensionNodes/ToolSeparatorNode.cs \
-	./ExtensionNodes/MenuNode.cs \
-	./ExtensionNodes/ToolbarNode.cs \
-	./Commands/ExitCommand.cs \
-	./OpenFileCondition.cs \
-	./ExtensionNodes/TemplateCategoryNode.cs \
-	./ExtensionNodes/FileTemplateNode.cs \
-	./Commands/SetupCommand.cs 
+FILES =  \
+	AssemblyInfo.cs \
+	Commands/CopyCommand.cs \
+	Commands/CutCommand.cs \
+	Commands/ExitCommand.cs \
+	Commands/NewCommand.cs \
+	Commands/OpenCommand.cs \
+	Commands/PasteCommand.cs \
+	Commands/SaveCommand.cs \
+	Commands/SetupCommand.cs \
+	ExtensionNodes/FileTemplateNode.cs \
+	ExtensionNodes/MenuItemNode.cs \
+	ExtensionNodes/MenuNode.cs \
+	ExtensionNodes/MenuSeparatorNode.cs \
+	ExtensionNodes/SubmenuNode.cs \
+	ExtensionNodes/TemplateCategoryNode.cs \
+	ExtensionNodes/ToolbarNode.cs \
+	ExtensionNodes/ToolButtonNode.cs \
+	ExtensionNodes/ToolSeparatorNode.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MainWindow.cs \
+	ICommand.cs \
+	MainWindow.cs \
+	OpenFileCondition.cs \
+	TextEditorApp.cs 
 
 DATA_FILES = 
 
-RESOURCES = \
-	./gtk-gui/gui.stetic \
-	./Templates/ChangeLogTemplate.txt \
-	./Templates/DotConfigTemplate.txt \
-	./Templates/TextEditor.addin.xml \
-	./Templates/WorkReport.txt 
+RESOURCES =  \
+	gtk-gui/gui.stetic \
+	Templates/ChangeLogTemplate.txt \
+	Templates/DotConfigTemplate.txt \
+	Templates/TextEditor.addin.xml \
+	Templates/WorkReport.txt 
 
 EXTRAS = 
 
 REFERENCES =  \
-	-r:System \
 	$(GTK_SHARP_20_LIBS) \
-	-r:Mono.Posix
+	-pkg:gtk-sharp-2.0 \
+	-r:Mono.Posix \
+	-r:System
 
 DLL_REFERENCES = 
 

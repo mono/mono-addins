@@ -8,21 +8,19 @@ BUILD_DIR = ../bin
 	
 all: $(ASSEMBLY)
 
-FILES = \
-	./AssemblyInfo.cs \
-	./IWriter.cs \
-	./WriterManager.cs \
-	./FlagsCondition.cs 
+FILES =  \
+	AssemblyInfo.cs \
+	FlagsCondition.cs \
+	IWriter.cs \
+	WriterManager.cs 
 
 DATA_FILES = 
 
-RESOURCES = \
-	./WriterService.addin.xml 
+RESOURCES = WriterService.addin.xml 
 
 EXTRAS = 
 
-REFERENCES =  \
-	-r:System
+REFERENCES = -r:System
 
 DLL_REFERENCES = 
 

@@ -3,18 +3,14 @@
   <widget class="Gtk.Window" id="MainWindow" design-size="586 356">
     <action-group name="Default" />
     <property name="MemberName" />
-    <property name="GeneratePublic">True</property>
     <property name="Title" translatable="yes">Text Editor</property>
-    <property name="WindowPosition">CenterOnParent</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
-        <property name="GeneratePublic">True</property>
         <child>
           <widget class="Gtk.MenuBar" id="menubar">
             <property name="MemberName" />
-            <property name="GeneratePublic">True</property>
             <node name="menubar" type="Menubar" />
           </widget>
           <packing>
@@ -27,9 +23,7 @@
         <child>
           <widget class="Gtk.Toolbar" id="toolbar">
             <property name="MemberName" />
-            <property name="GeneratePublic">True</property>
             <property name="ShowArrow">False</property>
-            <property name="Tooltips">True</property>
             <property name="ButtonStyle">Icons</property>
             <property name="IconSize">LargeToolbar</property>
             <node name="toolbar" type="Toolbar" />
@@ -45,7 +39,6 @@
           <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="GeneratePublic">True</property>
             <property name="VscrollbarPolicy">Automatic</property>
             <property name="HscrollbarPolicy">Automatic</property>
             <property name="ShadowType">In</property>
@@ -53,7 +46,6 @@
               <widget class="Gtk.TextView" id="textview">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="GeneratePublic">True</property>
                 <property name="Text" translatable="yes" />
               </widget>
             </child>
@@ -66,17 +58,14 @@
         <child>
           <widget class="Gtk.VBox" id="console">
             <property name="MemberName" />
-            <property name="GeneratePublic">True</property>
             <property name="Spacing">6</property>
             <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.HBox" id="hbox1">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <child>
                   <widget class="Gtk.Label" id="label1">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Console</property>
                   </widget>
@@ -92,7 +81,6 @@
                     <property name="MemberName" />
                     <property name="WidthRequest">27</property>
                     <property name="HeightRequest">20</property>
-                    <property name="GeneratePublic">True</property>
                     <property name="Type">TextAndIcon</property>
                     <property name="Icon">stock:gtk-close Menu</property>
                     <property name="Label" />
@@ -121,7 +109,6 @@
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow2">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="GeneratePublic">True</property>
                 <property name="VscrollbarPolicy">Automatic</property>
                 <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
@@ -129,7 +116,6 @@
                   <widget class="Gtk.TextView" id="consoleView">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="GeneratePublic">True</property>
                     <property name="Text" translatable="yes" />
                   </widget>
                 </child>
@@ -150,7 +136,6 @@
         <child>
           <widget class="Gtk.Statusbar" id="statusbar1">
             <property name="MemberName" />
-            <property name="GeneratePublic">True</property>
             <property name="Spacing">2</property>
             <child>
               <placeholder />

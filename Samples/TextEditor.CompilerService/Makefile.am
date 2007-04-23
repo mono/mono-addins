@@ -13,23 +13,22 @@ if ENABLE_GUI
 all: $(ASSEMBLY)
 endif
 
-FILES = \
-	./MyClass.cs \
-	./AssemblyInfo.cs \
-	./RunCommand.cs \
-	./ICompiler.cs \
-	./CompilerManager.cs 
+FILES =  \
+	AssemblyInfo.cs \
+	CompilerManager.cs \
+	ICompiler.cs \
+	MyClass.cs \
+	RunCommand.cs 
 
 DATA_FILES = 
 
-RESOURCES = \
-	./TextEditor.CompilerService.addin.xml 
+RESOURCES = TextEditor.CompilerService.addin.xml 
 
 EXTRAS = 
 
 REFERENCES =  \
-	-r:System \
-	$(GTK_SHARP_20_LIBS)
+	$(GTK_SHARP_20_LIBS) \
+	-r:System
 
 DLL_REFERENCES = 
 

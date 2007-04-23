@@ -13,24 +13,23 @@ if ENABLE_GUI
 all: $(ASSEMBLY)
 endif
 
-FILES = \
-	./gtk-gui/generated.cs \
-	./Main.cs \
-	./AssemblyInfo.cs 
+FILES =  \
+	AssemblyInfo.cs \
+	gtk-gui/generated.cs \
+	Main.cs 
 
 DATA_FILES = 
 
-RESOURCES = \
-	./gtk-gui/gui.stetic 
+RESOURCES = gtk-gui/gui.stetic 
 
 EXTRAS = 
 
 REFERENCES =  \
-	-r:System \
-	$(GTK_SHARP_20_LIBS) \
-	$(GLIB_SHARP_20_LIBS) \
 	$(GLADE_SHARP_20_LIBS) \
-	-r:Mono.Posix
+	$(GLIB_SHARP_20_LIBS) \
+	$(GTK_SHARP_20_LIBS) \
+	-r:Mono.Posix \
+	-r:System
 
 DLL_REFERENCES = 
 
