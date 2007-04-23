@@ -12,18 +12,15 @@ if ENABLE_TESTS
 all: $(ASSEMBLY)
 endif
 
-FILES = \
-	./CommandExtensionNode.cs 
+FILES = CommandExtensionNode.cs 
 
-DATA_FILES = \
-	./CommandExtension.addin.xml 
+DATA_FILES = CommandExtension.addin.xml 
 
 RESOURCES = 
 
 EXTRAS = 
 
-REFERENCES =  \
-	-r:System
+REFERENCES = -r:System
 
 DLL_REFERENCES = 
 

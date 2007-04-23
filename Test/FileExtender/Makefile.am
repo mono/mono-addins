@@ -12,19 +12,15 @@ if ENABLE_TESTS
 all: $(ASSEMBLY)
 endif
 
-FILES = \
-	./FileExtender.cs 
+FILES = FileExtender.cs 
 
-DATA_FILES = \
-	./ExtraExtender.addin.xml 
+DATA_FILES = ExtraExtender.addin.xml 
 
-RESOURCES = \
-	./FileExtender.addin.xml 
+RESOURCES = FileExtender.addin.xml 
 
 EXTRAS = 
 
-REFERENCES =  \
-	-r:System
+REFERENCES = -r:System
 
 DLL_REFERENCES = 
 

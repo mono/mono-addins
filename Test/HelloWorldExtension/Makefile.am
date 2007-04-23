@@ -12,9 +12,9 @@ if ENABLE_TESTS
 all: $(ASSEMBLY)
 endif
 
-FILES = \
-	./HelloWorldWriter.cs \
-	./HelloSampleExtender.cs 
+FILES =  \
+	HelloSampleExtender.cs \
+	HelloWorldWriter.cs 
 
 DATA_FILES = 
 
@@ -22,8 +22,7 @@ RESOURCES =
 
 EXTRAS = 
 
-REFERENCES =  \
-	-r:System
+REFERENCES = -r:System
 
 DLL_REFERENCES = 
 

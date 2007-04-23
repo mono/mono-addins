@@ -2,8 +2,7 @@ ASSEMBLY_COMPILER_COMMAND = mcs
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG
 ASSEMBLY = ./bin/Debug/UnitTests.dll
 COMPILE_TARGET = library
-PROJECT_REFERENCES =  \
-	../../bin/Mono.Addins.dll
+PROJECT_REFERENCES = ../../bin/Mono.Addins.dll
 BUILD_DIR = ./bin/Debug
 NOINSTALL=yes
 
@@ -13,30 +12,30 @@ else
 all:
 endif
 
-FILES = \
-	./TestExtensions.cs \
-	./IWriter.cs \
-	./TestBase.cs \
-	./TestEvents.cs \
-	./TestLoadUnload.cs \
-	./GlobalInfoCondition.cs \
-	./ParameterInfoCondition.cs \
-	./TestConditions.cs \
-	./TestSetup.cs \
-	./ISampleExtender.cs \
-	./ComplexNode.cs 
+FILES =  \
+	ComplexNode.cs \
+	GlobalInfoCondition.cs \
+	ISampleExtender.cs \
+	IWriter.cs \
+	ParameterInfoCondition.cs \
+	TestBase.cs \
+	TestConditions.cs \
+	TestEvents.cs \
+	TestExtensions.cs \
+	TestLoadUnload.cs \
+	TestSetup.cs 
 
-DATA_FILES = \
-	./SimpleApp.addin.xml \
-	./test.addins 
+DATA_FILES =  \
+	SimpleApp.addin.xml \
+	test.addins 
 
 RESOURCES = 
 
 EXTRAS = 
 
 REFERENCES =  \
-	-r:System \
 	$(MONO_NUNIT_LIBS) \
+	-r:System \
 	-r:System.Xml
 
 DLL_REFERENCES = 

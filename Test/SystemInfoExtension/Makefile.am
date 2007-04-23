@@ -12,20 +12,18 @@ if ENABLE_TESTS
 all: $(ASSEMBLY)
 endif
 
-FILES = \
-	./MyClass.cs \
-	./SystemInfoWriter.cs \
-	./ModuleExtensionNode.cs 
+FILES =  \
+	ModuleExtensionNode.cs \
+	MyClass.cs \
+	SystemInfoWriter.cs 
 
-DATA_FILES = \
-	./SystemInfoExtension.addin.xml 
+DATA_FILES = SystemInfoExtension.addin.xml 
 
 RESOURCES = 
 
 EXTRAS = 
 
-REFERENCES =  \
-	-r:System
+REFERENCES = -r:System
 
 DLL_REFERENCES = 
 
