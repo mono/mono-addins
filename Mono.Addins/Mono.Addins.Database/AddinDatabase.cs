@@ -199,14 +199,20 @@ namespace Mono.Addins.Database
 		
 		public Addin GetInstalledAddin (string id, bool exactVersionMatch, bool enabledOnly)
 		{
-			Addin sinfo = (Addin) cachedAddinSetupInfos [id];
-			if (sinfo != null) {
-				if (!enabledOnly || sinfo.Enabled)
-					return sinfo;
-				if (exactVersionMatch)
+			Addin sinfo = null;
+			object ob = cachedAddinSetupInfos [id];
+			if (ob != null) {
+				sinfo = ob as Addin;
+				if (sinfo != null) {
+					if (!enabledOnly || sinfo.Enabled)
+						return sinfo;
+					if (exactVersionMatch)
+						return null;
+				}
+				else
 					return null;
 			}
-				
+		
 			InternalCheck ();
 			
 			using (fileDatabase.LockRead ())
@@ -217,8 +223,11 @@ namespace Mono.Addins.Database
 					cachedAddinSetupInfos [id] = sinfo;
 					if (!enabledOnly || sinfo.Enabled)
 						return sinfo;
-					if (exactVersionMatch)
+					if (exactVersionMatch) {
+						// Cache lookups with negative result
+						cachedAddinSetupInfos [id] = this;
 						return null;
+					}
 				}
 				
 				// Exact version not found. Look for a compatible version
@@ -244,6 +253,9 @@ namespace Mono.Addins.Database
 						return sinfo;
 					}
 				}
+				
+				// Cache lookups with negative result
+				cachedAddinSetupInfos [id] = this;
 				return null;
 			}
 		}
@@ -265,10 +277,16 @@ namespace Mono.Addins.Database
 		public Addin GetAddinForHostAssembly (string assemblyLocation)
 		{
 			InternalCheck ();
+			Addin ainfo = null;
 			
-			Addin ainfo = (Addin) cachedAddinSetupInfos [assemblyLocation];
-			if (ainfo != null)
-				return ainfo;
+			object ob = cachedAddinSetupInfos [assemblyLocation];
+			if (ob != null) {
+				ainfo = ob as Addin;
+				if (ainfo != null)
+					return ainfo;
+				else
+					return null;
+			}
 
 			AddinHostIndex index = GetAddinHostIndex ();
 			string addin, addinFile;
@@ -605,7 +623,7 @@ namespace Mono.Addins.Database
 		public void Update (IProgressStatus monitor)
 		{
 			if (monitor == null)
-				monitor = new ConsoleProgressStatus (true);
+				monitor = new ConsoleProgressStatus (false);
 
 			if (RunningSetupProcess)
 				return;

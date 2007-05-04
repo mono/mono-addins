@@ -173,7 +173,7 @@ namespace Mono.Addins
 				return node;
 			}
 			catch (Exception ex) {
-				AddinManager.ReportError ("Could not read extension node", addin, ex, false);
+				AddinManager.ReportError ("Could not read extension node of type '" + ntype.Type + "' from extension path '" + tnode.GetPath() + "'", addin, ex, false);
 				return null;
 			}
 		}
@@ -199,7 +199,7 @@ namespace Mono.Addins
 				return true;
 			}
 			
-			ntype.Type = p.GetType (ntype.TypeName);
+			ntype.Type = p.GetType (ntype.TypeName, false);
 			if (ntype.Type == null) {
 				AddinManager.ReportError ("Extension node type '" + ntype.TypeName + "' not found.", ntype.AddinId, null, false);
 				return false;
