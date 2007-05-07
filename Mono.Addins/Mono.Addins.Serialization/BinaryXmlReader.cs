@@ -52,6 +52,7 @@ namespace Mono.Addins.Serialization
 		ArrayList stringTable = new ArrayList ();
 		BinaryXmlTypeMap typeMap;
 		object contextData;
+		bool ignoreDesc;
 		
 		public BinaryXmlReader (Stream stream, BinaryXmlTypeMap typeMap)
 		{
@@ -68,6 +69,12 @@ namespace Mono.Addins.Serialization
 		public object ContextData {
 			get { return contextData; }
 			set { contextData = value; }
+		}
+		
+		// Returns 'true' if description data must be ignored when reading the contents of a file
+		public bool IgnoreDescriptionData {
+			get { return ignoreDesc; }
+			set { ignoreDesc = value; }
 		}
 		
 		void ReadNext ()

@@ -109,7 +109,8 @@ namespace Mono.Addins.Description
 			name = reader.ReadStringValue ("name");
 			type = reader.ReadStringValue ("type");
 			required = reader.ReadBooleanValue ("required");
-			description = reader.ReadStringValue ("description");
+			if (!reader.IgnoreDescriptionData)
+				description = reader.ReadStringValue ("description");
 		}
 	}
 }

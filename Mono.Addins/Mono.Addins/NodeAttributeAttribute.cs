@@ -44,26 +44,48 @@ namespace Mono.Addins
 		}
 		
 		public NodeAttributeAttribute (string name)
-			:this (name, false)
+			:this (name, false, null)
+		{
+		}
+		
+		public NodeAttributeAttribute (string name, string description)
+			:this (name, false, description)
 		{
 		}
 		
 		public NodeAttributeAttribute (string name, bool required)
+			: this (name, required, null)
+		{
+		}
+		
+		public NodeAttributeAttribute (string name, bool required, string description)
 		{
 			this.name = name;
 			this.required = required;
+			this.description = description;
 		}
 		
 		public NodeAttributeAttribute (string name, Type type)
-			: this (name, type, false)
+			: this (name, type, false, null)
+		{
+		}
+		
+		public NodeAttributeAttribute (string name, Type type, string description)
+			: this (name, type, false, description)
 		{
 		}
 		
 		public NodeAttributeAttribute (string name, Type type, bool required)
+			: this (name, type, false, null)
+		{
+		}
+		
+		public NodeAttributeAttribute (string name, Type type, bool required, string description)
 		{
 			this.name = name;
 			this.type = type;
 			this.required = required;
+			this.description = description;
 		}
 		
 		public string Name {

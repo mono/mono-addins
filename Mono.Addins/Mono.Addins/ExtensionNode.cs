@@ -161,9 +161,9 @@ namespace Mono.Addins
 			ArrayList list = new ArrayList (ChildNodes.Count);
 			
 			for (int n=0; n<ChildNodes.Count; n++) {
-				TypeExtensionNode node = ChildNodes [n] as TypeExtensionNode;
+				InstanceExtensionNode node = ChildNodes [n] as InstanceExtensionNode;
 				if (node == null) {
-					AddinManager.ReportError ("Error while getting object for node in path '" + Path + "'. Extension node is not a subclass of TypeExtensionNode.", null, null, false);
+					AddinManager.ReportError ("Error while getting object for node in path '" + Path + "'. Extension node is not a subclass of InstanceExtensionNode.", null, null, false);
 					continue;
 				}
 				

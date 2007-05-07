@@ -98,7 +98,8 @@ namespace Mono.Addins.Description
 		{
 			Id = reader.ReadStringValue ("Id");
 			TypeName = reader.ReadStringValue ("TypeName");
-			Description = reader.ReadStringValue ("Description");
+			if (!reader.IgnoreDescriptionData)
+				Description = reader.ReadStringValue ("Description");
 			AddinId = reader.ReadStringValue ("AddinId");
 		}
 	}

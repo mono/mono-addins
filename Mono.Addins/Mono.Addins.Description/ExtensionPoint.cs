@@ -221,7 +221,8 @@ namespace Mono.Addins.Description
 		{
 			path = reader.ReadStringValue ("path");
 			name = reader.ReadStringValue ("name");
-			description = reader.ReadStringValue ("description");
+			if (!reader.IgnoreDescriptionData)
+				description = reader.ReadStringValue ("description");
 			rootAddin = reader.ReadStringValue ("rootAddin");
 			addins = (StringCollection) reader.ReadValue ("addins", new StringCollection ());
 			nodeSet = (ExtensionNodeSet) reader.ReadValue ("NodeSet");

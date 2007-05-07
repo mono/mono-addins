@@ -1,3 +1,32 @@
+2007-05-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Serialization/BinaryXmlReader.cs,
+	  Mono.Addins.Description/NodeTypeAttribute.cs,
+	  Mono.Addins.Description/AddinDescription.cs,
+	  Mono.Addins.Description/ExtensionNodeType.cs,
+	  Mono.Addins.Description/ExtensionPoint.cs,
+	  Mono.Addins.Description/ConditionTypeDescription.cs,
+	  Mono.Addins.Database/FileDatabase.cs: Added boolean property to be
+	  set to avoid loading documentation information from add-in
+	  descriptions (not needed at run-time).
+	* Mono.Addins.mdp, Mono.Addins/TypeExtensionNode.cs,
+	  Mono.Addins/InstanceExtensionNode.cs,
+	  Mono.Addins/ExtensionContext.cs, Mono.Addins/ExtensionNode.cs,
+	  Makefile.am: Implemented new InstanceExtensionNode class. It is
+	  almost like TypeExtensionNode, but it does not implement the actual
+	  object creation, since CreateInstance is abstract.
+	  TypeExtensionNode is now a subclass of InstanceExtensionNode which
+	  creates an instance of the class specified in the 'class'
+	  attribute.
+	* Mono.Addins/NodeAttributeAttribute.cs: Allow specifying the
+	  description in the constructor.
+	* Mono.Addins.Description/ObjectDescriptionCollection.cs: New AddRange
+	  method.
+	* Mono.Addins.Description/ExtensionNodeDescription.cs: Added method for
+	  getting the path to a node. Added some helper properties.
+	* Mono.Addins.Database/AddinScanner.cs: Properly scan node types
+	  declared in node sets or declared as children of other nodes.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.mdp: Updated.

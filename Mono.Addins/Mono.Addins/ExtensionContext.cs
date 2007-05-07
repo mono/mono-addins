@@ -715,9 +715,9 @@ namespace Mono.Addins
 		
 		public object ExtensionObject {
 			get {
-				TypeExtensionNode tnode = node as TypeExtensionNode;
+				InstanceExtensionNode tnode = node as InstanceExtensionNode;
 				if (tnode == null)
-					throw new InvalidOperationException ("Node is not a TypeExtensionNode");
+					throw new InvalidOperationException ("Node is not an InstanceExtensionNode");
 				return tnode.GetInstance (); 
 			}
 		}

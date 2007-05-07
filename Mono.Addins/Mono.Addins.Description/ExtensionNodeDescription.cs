@@ -78,6 +78,18 @@ namespace Mono.Addins.Description
 			return null;
 		}
 		
+		public string GetParentPath ()
+		{
+			if (Parent is Extension)
+				return ((Extension)Parent).Path;
+			else if (Parent is ExtensionNodeDescription) {
+				ExtensionNodeDescription pn = (ExtensionNodeDescription) Parent;
+				return pn.GetParentPath () + "/" + pn.Id;
+			}
+			else
+				return string.Empty;
+		}
+		
 		internal override void Verify (string location, StringCollection errors)
 		{
 			if (nodeName == null || nodeName.Length == 0)
@@ -91,6 +103,17 @@ namespace Mono.Addins.Description
 		
 		public string Id {
 			get { return GetAttribute ("id"); }
+			set { SetAttribute ("id", value); }
+		}
+		
+		public string InsertAfter {
+			get { return GetAttribute ("insertafter"); }
+			set { SetAttribute ("insertafter", value); }
+		}
+		
+		public string InsertBefore {
+			get { return GetAttribute ("insertbefore"); }
+			set { SetAttribute ("insertbefore", value); }
 		}
 		
 		public bool IsCondition {

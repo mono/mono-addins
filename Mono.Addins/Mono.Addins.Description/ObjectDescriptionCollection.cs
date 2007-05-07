@@ -52,6 +52,12 @@ namespace Mono.Addins.Description
 			List.Add (ep);
 		}
 		
+		public void AddRange (ObjectDescriptionCollection collection)
+		{
+			foreach (ObjectDescription ob in collection)
+				Add (ob);
+		}
+		
 		public void Remove (ObjectDescription ep)
 		{
 			List.Remove (ep);

@@ -486,6 +486,10 @@ namespace Mono.Addins.Database
 			// Extension node types may have child nodes declared as attributes. Find them.
 			
 			Hashtable internalNodeSets = new Hashtable ();
+			
+			foreach (ExtensionNodeSet eset in config.ExtensionNodeSets)
+				ScanNodeSet (config, eset, assemblies, internalNodeSets);
+			
 			foreach (ExtensionPoint ep in config.ExtensionPoints) {
 				ScanNodeSet (config, ep.NodeSet, assemblies, internalNodeSets);
 			}
@@ -630,72 +634,68 @@ namespace Mono.Addins.Database
 		
 		void ScanNodeSet (AddinDescription config, ExtensionNodeSet nset, ArrayList assemblies, Hashtable internalNodeSets)
 		{
-			foreach (ExtensionNodeType nt in nset.NodeTypes) {
-				if (nt.TypeName.Length == 0)
-					nt.TypeName = "Mono.Addins.TypeExtensionNode";
-				
-				Type ntype = FindAddinType (nt.TypeName, assemblies);
-				if (ntype == null)
-					continue;
-
-				// Add type information declared with attributes in the code
-				ExtensionNodeAttribute nodeAtt = (ExtensionNodeAttribute) Attribute.GetCustomAttribute (ntype, typeof(ExtensionNodeAttribute), false);
-				if (nodeAtt != null) {
-					if (nt.Id.Length == 0 && nodeAtt.NodeName.Length > 0)
-						nt.Id = nodeAtt.NodeName;
-					if (nt.Description.Length == 0 && nodeAtt.Description.Length > 0)
-						nt.Description = nodeAtt.Description;
-				} else {
-					// Use the node type name as default name
-					if (nt.Id.Length == 0)
-						nt.Id = ntype.Name;
-				}
-				
-				// Add information about attributes
-				object[] fieldAtts = ntype.GetCustomAttributes (typeof(NodeAttributeAttribute), true);
-				foreach (NodeAttributeAttribute fatt in fieldAtts) {
+			foreach (ExtensionNodeType nt in nset.NodeTypes)
+				ScanNodeType (config, nt, assemblies, internalNodeSets);
+		}
+		
+		void ScanNodeType (AddinDescription config, ExtensionNodeType nt, ArrayList assemblies, Hashtable internalNodeSets)
+		{
+			if (nt.TypeName.Length == 0)
+				nt.TypeName = "Mono.Addins.TypeExtensionNode";
+			
+			Type ntype = FindAddinType (nt.TypeName, assemblies);
+			if (ntype == null)
+				return;
+			
+			// Add type information declared with attributes in the code
+			ExtensionNodeAttribute nodeAtt = (ExtensionNodeAttribute) Attribute.GetCustomAttribute (ntype, typeof(ExtensionNodeAttribute), true);
+			if (nodeAtt != null) {
+				if (nt.Id.Length == 0 && nodeAtt.NodeName.Length > 0)
+					nt.Id = nodeAtt.NodeName;
+				if (nt.Description.Length == 0 && nodeAtt.Description.Length > 0)
+					nt.Description = nodeAtt.Description;
+			} else {
+				// Use the node type name as default name
+				if (nt.Id.Length == 0)
+					nt.Id = ntype.Name;
+			}
+			
+			// Add information about attributes
+			object[] fieldAtts = ntype.GetCustomAttributes (typeof(NodeAttributeAttribute), true);
+			foreach (NodeAttributeAttribute fatt in fieldAtts) {
+				NodeTypeAttribute natt = new NodeTypeAttribute ();
+				natt.Name = fatt.Name;
+				natt.Required = fatt.Required;
+				if (fatt.Type != null)
+					natt.Type = fatt.Type.FullName;
+				if (fatt.Description.Length > 0)
+					natt.Description = fatt.Description;
+				nt.Attributes.Add (natt);
+			}
+			
+			// Check if the type has NodeAttribute attributes applied to fields.
+			foreach (FieldInfo field in ntype.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
+				NodeAttributeAttribute fatt = (NodeAttributeAttribute) Attribute.GetCustomAttribute (field, typeof(NodeAttributeAttribute));
+				if (fatt != null) {
 					NodeTypeAttribute natt = new NodeTypeAttribute ();
-					natt.Name = fatt.Name;
-					natt.Required = fatt.Required;
-					if (fatt.Type != null)
-						natt.Type = fatt.Type.FullName;
+					if (fatt.Name.Length > 0)
+						natt.Name = fatt.Name;
+					else
+						natt.Name = field.Name;
 					if (fatt.Description.Length > 0)
 						natt.Description = fatt.Description;
+					natt.Type = field.FieldType.FullName;
+					natt.Required = fatt.Required;
 					nt.Attributes.Add (natt);
 				}
-				
-				// Check if the type has NodeAttribute attributes applied to fields.
-				foreach (FieldInfo field in ntype.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
-					NodeAttributeAttribute fatt = (NodeAttributeAttribute) Attribute.GetCustomAttribute (field, typeof(NodeAttributeAttribute));
-					if (fatt != null) {
-						NodeTypeAttribute natt = new NodeTypeAttribute ();
-						if (fatt.Name.Length > 0)
-							natt.Name = fatt.Name;
-						else
-							natt.Name = field.Name;
-						if (fatt.Description.Length > 0)
-							natt.Description = fatt.Description;
-						natt.Type = field.FieldType.FullName;
-						natt.Required = fatt.Required;
-						nt.Attributes.Add (natt);
-					}
-				}
-				
-				// Check if the extension type allows children by looking for [ExtensionNodeChild] attributes.
-				// First of all, look in the internalNodeSets hashtable, which is being used as cache
-				
-				string childSet = (string) internalNodeSets [nt.TypeName];
-				if (childSet != null) {
-					if (childSet.Length == 0) {
-						// The extension type does not declare children.
-						continue;
-					}
-					// The extension type can have children. The allowed children are
-					// defined in this extension set.
-					nt.NodeSets.Add (childSet);
-					continue;
-				}
-				
+			}
+			
+			// Check if the extension type allows children by looking for [ExtensionNodeChild] attributes.
+			// First of all, look in the internalNodeSets hashtable, which is being used as cache
+			
+			string childSet = (string) internalNodeSets [nt.TypeName];
+			
+			if (childSet == null) {
 				object[] ats = ntype.GetCustomAttributes (typeof(ExtensionNodeChildAttribute), true);
 				if (ats.Length > 0) {
 					// Create a new node set for this type. It is necessary to create a new node set
@@ -719,6 +719,18 @@ namespace Mono.Addins.Database
 					ScanNodeSet (config, internalSet, assemblies, internalNodeSets);
 				}
 			}
+			else {
+				if (childSet.Length == 0) {
+					// The extension type does not declare children.
+					return;
+				}
+				// The extension type can have children. The allowed children are
+				// defined in this extension set.
+				nt.NodeSets.Add (childSet);
+				return;
+			}
+			
+			ScanNodeSet (config, nt, assemblies, internalNodeSets);
 		}
 		
 		string GetBaseTypeNameList (Type type)

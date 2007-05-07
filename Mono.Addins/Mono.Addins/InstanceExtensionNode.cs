@@ -1,5 +1,5 @@
 //
-// TypeExtensionNode.cs
+// InstanceExtensionNode.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,33 +28,36 @@
 
 
 using System;
-using System.Xml;
 
 namespace Mono.Addins
 {
-	[ExtensionNode ("Type", Description="Specifies a class that will be used to create an extension object. The name of the class can be provided in the 'class' attribute. If 'class' is not provided, the name will be taken from the 'id' attribute")]
-	[NodeAttribute ("class", typeof(Type), false, Description="Name of the class")]
-	public class TypeExtensionNode: InstanceExtensionNode
+	public abstract class InstanceExtensionNode: ExtensionNode
 	{
-		string typeName;
+		object cachedInstance;
 		
-		internal protected override void Read (NodeElement elem)
+		public object GetInstance (Type expectedType)
 		{
-			base.Read (elem);
-			typeName = elem.GetAttribute ("type");
-			if (typeName.Length == 0)
-				typeName = elem.GetAttribute ("class");
-			if (typeName.Length == 0)
-				typeName = elem.GetAttribute ("id");
+			object ob = GetInstance ();
+			if (!expectedType.IsInstanceOfType (ob))
+				throw new InvalidOperationException (string.Format ("Expected subclass of type '{0}'. Found '{1}'.", expectedType, ob.GetType ()));
+			return ob;
 		}
 		
-		public override object CreateInstance ()
+		public object GetInstance ()
 		{
-			if (typeName.Length == 0)
-				throw new InvalidOperationException ("Type name not specified.");
-
-			Type t = Addin.GetType (typeName, true);
-			return Activator.CreateInstance (t);
+			if (cachedInstance == null)
+				cachedInstance = CreateInstance ();
+			return cachedInstance;
 		}
+		
+		public object CreateInstance (Type expectedType)
+		{
+			object ob = CreateInstance ();
+			if (!expectedType.IsInstanceOfType (ob))
+				throw new InvalidOperationException (string.Format ("Expected subclass of type '{0}'. Found '{1}'.", expectedType, ob.GetType ()));
+			return ob;
+		}
+		
+		public abstract object CreateInstance ();
 	}
 }

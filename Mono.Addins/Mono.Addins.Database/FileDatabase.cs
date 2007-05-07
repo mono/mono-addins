@@ -43,6 +43,7 @@ namespace Mono.Addins.Database
 		Hashtable foldersToUpdate;
 		Hashtable deletedFiles;
 		IDisposable transactionLock;
+		bool ignoreDesc;
 		
 		public FileDatabase (string rootDirectory)
 		{
@@ -55,6 +56,12 @@ namespace Mono.Addins.Database
 		
 		string UpdateDatabaseLockFile {
 			get { return Path.Combine (rootDirectory, "fdb-update-lock"); }
+		}
+		
+		// Returns 'true' if description data must be ignored when reading the contents of a file
+		public bool IgnoreDescriptionData {
+			get { return ignoreDesc; }
+			set { ignoreDesc = value; }
 		}
 		
 		public bool BeginTransaction ()

@@ -174,9 +174,11 @@ namespace Mono.Addins.Description
 			base.Read (reader);
 			typeName = reader.ReadStringValue ("typeName");
 			objectTypeName = reader.ReadStringValue ("objectTypeName");
-			description = reader.ReadStringValue ("description");
+			if (!reader.IgnoreDescriptionData)
+				description = reader.ReadStringValue ("description");
 			addinId = reader.ReadStringValue ("addinId");
-			attributes = (NodeTypeAttributeCollection) reader.ReadValue ("Attributes", new NodeTypeAttributeCollection (this));
+			if (!reader.IgnoreDescriptionData)
+				attributes = (NodeTypeAttributeCollection) reader.ReadValue ("Attributes", new NodeTypeAttributeCollection (this));
 		}
 	}
 }

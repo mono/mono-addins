@@ -60,6 +60,7 @@ namespace Mono.Addins.Description
 		string sourceAddinFile;
 		bool isroot;
 		bool hasUserId;
+		bool canWrite = true;
 		
 		ModuleDescription mainModule;
 		ModuleCollection optionalModules;
@@ -164,7 +165,7 @@ namespace Mono.Addins.Description
 			set { basePath = value; }
 		}
 		
-		internal bool IsRoot {
+		public bool IsRoot {
 			get { return isroot; }
 			set { isroot = value; }
 		}
@@ -352,6 +353,9 @@ namespace Mono.Addins.Description
 		
 		void SaveXml ()
 		{
+			if (!canWrite)
+				throw new InvalidOperationException ("Can't write incomplete description.");
+			
 			XmlElement elem;
 			
 			if (configDoc == null) {
@@ -470,6 +474,7 @@ namespace Mono.Addins.Description
 			if (description != null) {
 				description.FileName = configFile;
 				description.fromBinaryFile = true;
+				description.canWrite = !fdb.IgnoreDescriptionData;
 			}
 			return description;
 		}
@@ -481,6 +486,7 @@ namespace Mono.Addins.Description
 			if (description != null) {
 				description.FileName = fileName;
 				description.fromBinaryFile = true;
+				description.canWrite = !fdb.IgnoreDescriptionData;
 			}
 			return description;
 		}
@@ -493,12 +499,16 @@ namespace Mono.Addins.Description
 		
 		internal void SaveBinary (FileDatabase fdb)
 		{
+			if (!canWrite)
+				throw new InvalidOperationException ("Can't write incomplete description.");
 			fdb.WriteSharedObject (AddinFile, FileName, typeMap, this);
 //			BinaryXmlReader.DumpFile (configFile);
 		}
 		
 		internal void SaveHostBinary (FileDatabase fdb, string basePath)
 		{
+			if (!canWrite)
+				throw new InvalidOperationException ("Can't write incomplete description.");
 			if (!fromBinaryFile)
 				FileName = null;
 			FileName = fdb.WriteSharedObject (basePath, AddinId, ".mroot", AddinFile, FileName, typeMap, this);
