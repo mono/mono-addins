@@ -46,19 +46,32 @@ namespace Mono.Addins.Setup
 		
 		public AddinRepository RegisterRepository (IProgressStatus monitor, string url)
 		{
+			return RegisterRepository (monitor, url, false);
+		}
+		
+		public AddinRepository RegisterRepository (IProgressStatus monitor, string url, bool updateNow)
+		{
 			if (!url.EndsWith (".mrep"))
 				url = url + "/main.mrep";
 			
+			RepositoryRecord rr = FindRepositoryRecord (url);
+			if (rr != null)
+				return rr;
+
 			RegisterRepository (url, false);
+			
 			try {
-				UpdateRepository (monitor, url);
-				RepositoryRecord rr = FindRepositoryRecord (url);
-				Repository rep = rr.GetCachedRepository ();
-				rr.Name = rep.Name;
+				if (updateNow) {
+					UpdateRepository (monitor, url);
+					rr = FindRepositoryRecord (url);
+					Repository rep = rr.GetCachedRepository ();
+					rr.Name = rep.Name;
+				}
 				service.SaveConfiguration ();
 				return rr;
 			} catch (Exception ex) {
-				monitor.ReportError ("The repository could not be registered", ex);
+				if (monitor != null)
+					monitor.ReportError ("The repository could not be registered", ex);
 				if (ContainsRepository (url))
 					RemoveRepository (url);
 				return null;
@@ -83,7 +96,10 @@ namespace Mono.Addins.Setup
 			string name = service.RepositoryCachePath;
 			if (!Directory.Exists (name))
 				Directory.CreateDirectory (name);
-			name = Path.Combine (name, new Uri (url).Host);
+			string host = new Uri (url).Host;
+			if (host.Length == 0)
+				host = "repo";
+			name = Path.Combine (name, host);
 			rr.File = name + "_" + service.Configuration.RepositoryIdCount + ".mrep";
 			
 			rr.Id = "rep" + service.Configuration.RepositoryIdCount;

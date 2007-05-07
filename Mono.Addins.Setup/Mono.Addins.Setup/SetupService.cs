@@ -154,8 +154,15 @@ namespace Mono.Addins.Setup
 			if (targetDirectory == null)
 				targetDirectory = basePath;
 
-			// Some ID cleanup
-			string name = conf.AddinId.Replace (',','_').Replace (".__", ".");
+			// Generate the file name
+			
+			string name;
+			if (conf.LocalId.Length == 0)
+				name = Path.GetFileNameWithoutExtension (filePath);
+			else
+				name = conf.LocalId;
+			name = Addin.GetFullId (conf.Namespace, name, conf.Version);
+			name = name.Replace (',','_').Replace (".__", ".");
 			
 			string outFilePath = Path.Combine (targetDirectory, name) + ".mpack";
 			
@@ -308,19 +315,16 @@ namespace Mono.Addins.Setup
 		void GenerateIndexPage (Repository rep, ArrayList addins, string basePath)
 		{
 			StreamWriter sw = new StreamWriter (Path.Combine (basePath, "index.html"));
-			sw.WriteLine ("<html><body><head>");
 			sw.WriteLine ("<html><body>");
-			sw.WriteLine ("<link type='text/css' rel='stylesheet' href='md.css' />");
-			sw.WriteLine ("</head>");
 			sw.WriteLine ("<h1>Add-in Repository</h1>");
 			if (rep.Name != null && rep.Name != "")
 				sw.WriteLine ("<h2>" + rep.Name + "</h2>");
-			sw.WriteLine ("<p>This is a list of add-ins available in this repository. ");
-			sw.WriteLine ("If you need information about how to install add-ins, please read <a href='http://www.monodevelop.com/Installing_Add-ins'>this</a>.</p>");
+			sw.WriteLine ("<p>This is a list of add-ins available in this repository.</p>");
 			sw.WriteLine ("<table border=1><thead><tr><th>Add-in</th><th>Version</th><th>Description</th></tr></thead>");
 			
 			foreach (PackageRepositoryEntry entry in addins) {
-				sw.WriteLine ("<tr><td>" + entry.Addin.Id + "</td><td>" + entry.Addin.Version + "</td><td>" + entry.Addin.Description + "</td></tr>");
+				Console.WriteLine ("entry.Addin.Name:" + entry.Addin.Name);
+				sw.WriteLine ("<tr><td>" + entry.Addin.Name + "</td><td>" + entry.Addin.Version + "</td><td>" + entry.Addin.Description + "</td></tr>");
 			}
 			
 			sw.WriteLine ("</table>");
@@ -332,10 +336,8 @@ namespace Mono.Addins.Setup
 			get {
 				if (config == null) {
 					config = (AddinSystemConfiguration) AddinStore.ReadObject (RootConfigFile, typeof(AddinSystemConfiguration));
-					if (config == null) {
+					if (config == null)
 						config = new AddinSystemConfiguration ();
-						Repositories.RegisterRepository ("http://go-mono.com/md/main.mrep", false);
-					}
 				}
 				return config;
 			}

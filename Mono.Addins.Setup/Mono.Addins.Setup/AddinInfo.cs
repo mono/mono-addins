@@ -75,8 +75,10 @@ namespace Mono.Addins.Setup
 			get {
 				if (name != null && name.Length > 0)
 					return name;
-				string nn = Addin.GetIdName (Id);
-				return nn.Replace (".__", ".");
+				string sid = id;
+				if (sid.StartsWith ("__"))
+					sid = sid.Substring (2);
+				return Addin.GetFullId (namspace, sid, null); 
 			}
 			set { name = value; }
 		}

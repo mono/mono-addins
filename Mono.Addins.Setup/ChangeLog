@@ -1,3 +1,14 @@
+2007-05-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Setup/SetupService.cs: When creating a package,
+	  generating a valid file name when the add-in doesn't have an ID.
+	  Fixed the generated html page. Don't add the go-mono repository by
+	  default.
+	* Mono.Addins.Setup/AddinInfo.cs: Generate a better default name when
+	  not provided.
+	* Mono.Addins.Setup/RepositoryRegistry.cs: Added method for registering
+	  a repository without updating it.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.mdp: Updated.
