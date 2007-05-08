@@ -1,3 +1,7 @@
+2007-05-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.csproj: Added missing file.
+
 2007-05-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Serialization/BinaryXmlReader.cs,
