@@ -184,7 +184,7 @@ namespace Mono.Addins.Database
 				else
 					scanSuccessful = ScanConfigAssemblies (monitor, file, scanResult, out config);
 
-				if (config != null && config.AddinId.Length > 0) {
+				if (config != null) {
 					
 					AddinFileInfo fi = folderInfo.GetAddinFileInfo (file);
 					

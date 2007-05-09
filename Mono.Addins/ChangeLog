@@ -1,3 +1,8 @@
+2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/ExtensionNode.cs: Added some null checks.
+	* Mono.Addins.Database/AddinScanner.cs: Add-in id is not mandatory.
+
 2007-05-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.csproj: Added missing file.

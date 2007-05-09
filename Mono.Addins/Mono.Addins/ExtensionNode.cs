@@ -46,11 +46,11 @@ namespace Mono.Addins
 		event ExtensionNodeEventHandler extensionNodeChanged;
 		
 		public string Id {
-			get { return treeNode.Id; }
+			get { return treeNode != null ? treeNode.Id : string.Empty; }
 		}
 		
 		public string Path {
-			get { return treeNode.GetPath (); }
+			get { return treeNode != null ? treeNode.GetPath () : string.Empty; }
 		}
 		
 		public bool HasId {
