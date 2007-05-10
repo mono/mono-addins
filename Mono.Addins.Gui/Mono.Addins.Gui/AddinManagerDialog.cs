@@ -63,9 +63,12 @@ namespace Mono.Addins.Gui
 		
 		internal void OnInstall (object sender, EventArgs e)
 		{
-			using (AddinInstallDialog dlg = new AddinInstallDialog (service)) {
+			AddinInstallDialog dlg = new AddinInstallDialog (service);
+			try {
 				dlg.Run ();
 				LoadAddins ();
+			} finally {
+				dlg.Destroy ();
 			}
 		}
 		
@@ -76,10 +79,13 @@ namespace Mono.Addins.Gui
 		internal void OnUninstall (object sender, EventArgs e)
 		{
 			AddinHeader info = (AddinHeader) tree.ActiveAddin;
-			using (AddinInstallDialog dlg = new AddinInstallDialog (service)) {
+			AddinInstallDialog dlg = new AddinInstallDialog (service);
+			try {
 				dlg.SetUninstallMode (info);
 				dlg.Run ();
 				LoadAddins ();
+			} finally {
+				dlg.Destroy ();
 			}
 		}
 		
@@ -107,15 +113,21 @@ namespace Mono.Addins.Gui
 			if (sinfo == null)
 				return;
 
-			using (AddinInfoDialog dlg = new AddinInfoDialog (SetupService.GetAddinHeader (sinfo))) {
+			AddinInfoDialog dlg = new AddinInfoDialog (SetupService.GetAddinHeader (sinfo));
+			try {
 				dlg.Run ();
+			} finally {
+				dlg.Destroy ();
 			}
 		}
 		
 		internal void OnManageRepos (object sender, EventArgs e)
 		{
-			using (ManageSitesDialog dlg = new ManageSitesDialog (service)) {
+			ManageSitesDialog dlg = new ManageSitesDialog (service);
+			try {
 				dlg.Run ();
+			} finally {
+				dlg.Destroy ();
 			}
 		}
 		

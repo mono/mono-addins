@@ -43,10 +43,12 @@ namespace Mono.Addins.Gui
 		
 		public static bool AskQuestion (string question)
 		{
-			using (MessageDialog md = new MessageDialog (null, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.YesNo, question)) {
+			MessageDialog md = new MessageDialog (null, DialogFlags.Modal | DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.YesNo, question);
+			try {
 				int response = md.Run ();
-				md.Hide ();
 				return ((ResponseType) response == ResponseType.Yes);
+			} finally {
+				md.Destroy ();
 			}
 		}
 		
@@ -71,7 +73,7 @@ namespace Mono.Addins.Gui
 
 			if (modal) {
 				dlg.Run ();
-				dlg.Dispose ();
+				dlg.Destroy ();
 			} else
 				dlg.Show ();
 		}

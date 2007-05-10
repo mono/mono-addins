@@ -68,7 +68,8 @@ namespace Mono.Addins.Gui
 		
 		protected void OnAdd (object sender, EventArgs e)
 		{
-			using (NewSiteDialog dlg = new NewSiteDialog ()) {
+			NewSiteDialog dlg = new NewSiteDialog ();
+			try {
 				if (dlg.Run ()) {
 					string url = dlg.Url;
 					if (!url.StartsWith ("http://") && !url.StartsWith ("https://") && !url.StartsWith ("file://")) {
@@ -91,6 +92,8 @@ namespace Mono.Addins.Gui
 						treeStore.AppendValues (rr.Url, rr.Title);
 					}
 				}
+			} finally {
+				dlg.Destroy ();
 			}
 		}
 		

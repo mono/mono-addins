@@ -55,12 +55,6 @@ namespace Mono.Addins.Gui
 			expander.Visible = false;
 		}
 		
-		public override void Dispose ()
-		{
-			base.Dispose ();
-			Destroy ();
-		}
-		
 		public string Message {
 			get { return descriptionLabel.Text; }
 			set {

@@ -89,14 +89,17 @@ namespace Mono.Addins.Gui
 		protected virtual void OnButtonBrowseClicked(object sender, System.EventArgs e)
 		{
 			FileChooserDialog dlg = new FileChooserDialog ("Select Folder", this, FileChooserAction.SelectFolder);
-			dlg.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
-			dlg.AddButton (Gtk.Stock.Open, Gtk.ResponseType.Ok);
-			
-			dlg.SetFilename (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
-			if (dlg.Run () == (int) ResponseType.Ok) {
-				pathEntry.Text = dlg.Filename;
+			try {
+				dlg.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
+				dlg.AddButton (Gtk.Stock.Open, Gtk.ResponseType.Ok);
+				
+				dlg.SetFilename (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
+				if (dlg.Run () == (int) ResponseType.Ok) {
+					pathEntry.Text = dlg.Filename;
+				}
+			} finally {
+				dlg.Destroy ();
 			}
-			dlg.Destroy ();
 		}
 
 		protected virtual void OnPathEntryChanged(object sender, System.EventArgs e)

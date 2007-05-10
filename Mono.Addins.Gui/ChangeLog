@@ -1,3 +1,15 @@
+2007-05-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs, gtk-gui/gui.stetic:
+	  Updated.
+	* Mono.Addins.Gui/NewSiteDialog.cs,
+	  Mono.Addins.Gui/ManageSitesDialog.cs,
+	  Mono.Addins.Gui/AddinManagerWindow.cs, Mono.Addins.Gui/Services.cs,
+	  Mono.Addins.Gui/AddinInstallDialog.cs,
+	  Mono.Addins.Gui/ErrorDialog.cs,
+	  Mono.Addins.Gui/AddinManagerDialog.cs: Properly destroy all
+	  dialogs.
+
 2007-05-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.mdp: Updated.

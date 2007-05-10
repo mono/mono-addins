@@ -46,8 +46,11 @@ namespace Mono.Addins.Gui
 		
 		public static void Run (Gtk.Window parent)
 		{
-			using (AddinManagerDialog dlg = new AddinManagerDialog (parent)) {
+			AddinManagerDialog dlg = new AddinManagerDialog (parent);
+			try {
 				dlg.Run ();
+			} finally {
+				dlg.Destroy ();
 			}
 		}
 	}

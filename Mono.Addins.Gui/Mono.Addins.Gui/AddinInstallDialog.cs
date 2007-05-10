@@ -190,9 +190,12 @@ namespace Mono.Addins.Gui
 		
 		protected void OnManageSites (object sender, EventArgs e)
 		{
-			using (ManageSitesDialog dlg = new ManageSitesDialog (service)) {
+			ManageSitesDialog dlg = new ManageSitesDialog (service);
+			try {
 				dlg.Run ();
 				FillRepos ();
+			} finally {
+				dlg.Destroy ();
 			}
 		}
 
@@ -264,8 +267,11 @@ namespace Mono.Addins.Gui
 			if (info == null)
 				return;
 
-			using (AddinInfoDialog dlg = new AddinInfoDialog (info)) {
+			AddinInfoDialog dlg = new AddinInfoDialog (info);
+			try {
 				dlg.Run ();
+			} finally {
+				dlg.Destroy ();
 			}
 		}
 

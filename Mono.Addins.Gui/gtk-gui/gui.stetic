@@ -11,22 +11,18 @@
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox5">
         <property name="MemberName" />
-        <property name="GeneratePublic">True</property>
         <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.HBox" id="hbox59">
             <property name="MemberName" />
-            <property name="GeneratePublic">True</property>
             <property name="Spacing">6</property>
             <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.VBox" id="vbox72">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <child>
                   <widget class="Gtk.Image" id="icon">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="Pixbuf">stock:gtk-dialog-error Dialog</property>
                   </widget>
                   <packing>
@@ -47,14 +43,12 @@
             <child>
               <widget class="Gtk.VBox" id="vbox73">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="Spacing">12</property>
                 <child>
                   <widget class="Gtk.Label" id="descriptionLabel">
                     <property name="MemberName" />
                     <property name="WidthRequest">540</property>
                     <property name="CanFocus">True</property>
-                    <property name="GeneratePublic">True</property>
                     <property name="Xalign">0</property>
                     <property name="LabelProp">An exception has been thrown 1 2 3 4 5 6 7 8 9 10 11 12 13 14</property>
                     <property name="Wrap">True</property>
@@ -71,12 +65,10 @@
                   <widget class="Gtk.Expander" id="expander">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="GeneratePublic">True</property>
                     <child>
                       <widget class="Gtk.ScrolledWindow" id="scrolledwindow10">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="GeneratePublic">True</property>
                         <property name="VscrollbarPolicy">Automatic</property>
                         <property name="HscrollbarPolicy">Automatic</property>
                         <property name="ShadowType">In</property>
@@ -85,7 +77,6 @@
                             <property name="MemberName" />
                             <property name="HeightRequest">250</property>
                             <property name="CanFocus">True</property>
-                            <property name="GeneratePublic">True</property>
                             <property name="Text" translatable="yes" />
                             <property name="PixelsAboveLines">2</property>
                             <property name="PixelsBelowLines">2</property>
@@ -98,7 +89,6 @@
                     <child>
                       <widget class="Gtk.Label" id="label102">
                         <property name="MemberName" />
-                        <property name="GeneratePublic">True</property>
                         <property name="LabelProp" translatable="yes">Details</property>
                       </widget>
                       <packing>
@@ -128,7 +118,6 @@
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="dialog-action_area5">
         <property name="MemberName" />
-        <property name="GeneratePublic">True</property>
         <property name="Spacing">10</property>
         <property name="BorderWidth">5</property>
         <property name="Size">1</property>
@@ -138,7 +127,6 @@
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
-            <property name="GeneratePublic">True</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
@@ -161,23 +149,19 @@
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox8">
         <property name="MemberName" />
-        <property name="GeneratePublic">True</property>
         <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox93">
             <property name="MemberName" />
-            <property name="GeneratePublic">True</property>
             <property name="Spacing">6</property>
             <property name="BorderWidth">12</property>
             <child>
               <widget class="Gtk.HBox" id="hbox85">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="Spacing">12</property>
                 <child>
                   <widget class="Gtk.Image" id="imageInstall">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="Yalign">0</property>
                     <property name="Pixbuf">stock:gtk-dialog-warning Dialog</property>
                   </widget>
@@ -191,7 +175,6 @@
                 <child>
                   <widget class="Gtk.Label" id="label144">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="LabelProp" translatable="yes">&lt;big&gt;&lt;b&gt;MonoDevelop Add-in Manager&lt;/b&gt;&lt;/big&gt;</property>
                     <property name="UseMarkup">True</property>
                   </widget>
@@ -213,12 +196,10 @@
             <child>
               <widget class="Gtk.HBox" id="hbox73">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="Spacing">12</property>
                 <child>
                   <widget class="Gtk.Label" id="label134">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">The following add-ins are currently installed:</property>
                   </widget>
@@ -240,18 +221,15 @@
             <child>
               <widget class="Gtk.HBox" id="hbox65">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="Spacing">12</property>
                 <child>
                   <widget class="Gtk.HBox" id="hbox72">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="Spacing">12</property>
                     <child>
                       <widget class="Gtk.ScrolledWindow" id="scrolledwindow13">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="GeneratePublic">True</property>
                         <property name="VscrollbarPolicy">Automatic</property>
                         <property name="HscrollbarPolicy">Automatic</property>
                         <property name="ShadowType">In</property>
@@ -259,7 +237,6 @@
                           <widget class="Gtk.TreeView" id="addinTree">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="GeneratePublic">True</property>
                             <signal name="CursorChanged" handler="OnSelectionChanged" />
                           </widget>
                         </child>
@@ -272,13 +249,11 @@
                     <child>
                       <widget class="Gtk.VBox" id="vbox933">
                         <property name="MemberName" />
-                        <property name="GeneratePublic">True</property>
                         <property name="Spacing">5</property>
                         <child>
                           <widget class="Gtk.Button" id="btnInstall">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="GeneratePublic">True</property>
                             <property name="Type">TextAndIcon</property>
                             <property name="Icon">stock:gtk-add Button</property>
                             <property name="Label" translatable="yes">_Install Add-ins...</property>
@@ -297,7 +272,6 @@
                           <widget class="Gtk.Button" id="button3">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="GeneratePublic">True</property>
                             <property name="Type">TextOnly</property>
                             <property name="Label" translatable="yes">_Repositories...</property>
                             <property name="UseUnderline">True</property>
@@ -314,7 +288,6 @@
                         <child>
                           <widget class="Gtk.HSeparator" id="hseparator4">
                             <property name="MemberName" />
-                            <property name="GeneratePublic">True</property>
                           </widget>
                           <packing>
                             <property name="Position">2</property>
@@ -327,7 +300,6 @@
                           <widget class="Gtk.Button" id="btnUninstall">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="GeneratePublic">True</property>
                             <property name="Type">TextAndIcon</property>
                             <property name="Icon">stock:gtk-remove Button</property>
                             <property name="Label" translatable="yes">_Uninstall...</property>
@@ -346,7 +318,6 @@
                           <widget class="Gtk.Button" id="btnEnable">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="GeneratePublic">True</property>
                             <property name="Type">TextAndIcon</property>
                             <property name="Icon">stock:gtk-yes Button</property>
                             <property name="Label" translatable="yes">Enable</property>
@@ -365,7 +336,6 @@
                           <widget class="Gtk.Button" id="btnDisable">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="GeneratePublic">True</property>
                             <property name="Type">TextAndIcon</property>
                             <property name="Icon">stock:gtk-no Button</property>
                             <property name="Label" translatable="yes">Disable</property>
@@ -384,7 +354,6 @@
                           <widget class="Gtk.Button" id="btnInfo">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="GeneratePublic">True</property>
                             <property name="UseStock">True</property>
                             <property name="Type">StockItem</property>
                             <property name="StockId">gtk-dialog-info</property>
@@ -430,7 +399,6 @@
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="dialog-action_area8">
         <property name="MemberName" />
-        <property name="GeneratePublic">True</property>
         <property name="Spacing">10</property>
         <property name="BorderWidth">5</property>
         <property name="Size">1</property>
@@ -440,7 +408,6 @@
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
-            <property name="GeneratePublic">True</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-close</property>
@@ -464,24 +431,20 @@
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox9">
         <property name="MemberName" />
-        <property name="GeneratePublic">True</property>
         <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.Notebook" id="wizardNotebook">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="GeneratePublic">True</property>
             <property name="ShowBorder">False</property>
             <property name="BorderWidth">12</property>
             <child>
               <widget class="Gtk.VBox" id="vbox82">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="Spacing">12</property>
                 <child>
                   <widget class="Gtk.Label" id="label113">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">&lt;b&gt;Select the add-ins to install and click on Next&lt;/b&gt;</property>
                     <property name="UseMarkup">True</property>
@@ -496,12 +459,10 @@
                 <child>
                   <widget class="Gtk.HBox" id="hbox66">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="Spacing">6</property>
                     <child>
                       <widget class="Gtk.Label" id="label112">
                         <property name="MemberName" />
-                        <property name="GeneratePublic">True</property>
                         <property name="LabelProp" translatable="yes">Install from:</property>
                       </widget>
                       <packing>
@@ -514,7 +475,6 @@
                     <child>
                       <widget class="Gtk.ComboBox" id="repoCombo">
                         <property name="MemberName" />
-                        <property name="GeneratePublic">True</property>
                         <property name="IsTextCombo">False</property>
                         <property name="Items" translatable="yes" />
                         <signal name="Changed" handler="OnRepoChanged" />
@@ -528,7 +488,6 @@
                       <widget class="Gtk.Button" id="button1">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="GeneratePublic">True</property>
                         <property name="UseStock">True</property>
                         <property name="Type">StockItem</property>
                         <property name="StockId">gtk-refresh</property>
@@ -547,7 +506,6 @@
                       <widget class="Gtk.Button" id="btnManageSites">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="GeneratePublic">True</property>
                         <property name="Type">TextOnly</property>
                         <property name="Label" translatable="yes">_Repositories...</property>
                         <property name="UseUnderline">True</property>
@@ -572,18 +530,15 @@
                 <child>
                   <widget class="Gtk.HBox" id="hbox70">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="Spacing">12</property>
                     <child>
                       <widget class="Gtk.VBox" id="vbox92">
                         <property name="MemberName" />
-                        <property name="GeneratePublic">True</property>
                         <property name="Spacing">6</property>
                         <child>
                           <widget class="Gtk.ScrolledWindow" id="scrolledwindow18">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="GeneratePublic">True</property>
                             <property name="VscrollbarPolicy">Automatic</property>
                             <property name="HscrollbarPolicy">Automatic</property>
                             <property name="ShadowType">In</property>
@@ -591,7 +546,6 @@
                               <widget class="Gtk.TreeView" id="addinTree">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
-                                <property name="GeneratePublic">True</property>
                                 <signal name="CursorChanged" handler="OnActiveAddinChanged" />
                               </widget>
                             </child>
@@ -604,12 +558,10 @@
                         <child>
                           <widget class="Gtk.HBox" id="hbox83">
                             <property name="MemberName" />
-                            <property name="GeneratePublic">True</property>
                             <property name="Spacing">6</property>
                             <child>
                               <widget class="Gtk.ComboBox" id="filterComboBox">
                                 <property name="MemberName" />
-                                <property name="GeneratePublic">True</property>
                                 <property name="IsTextCombo">True</property>
                                 <property name="Items" translatable="yes">Show all packages
 Show new versions only
@@ -627,7 +579,6 @@ Show updates only</property>
                               <widget class="Gtk.Button" id="btnInfo">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
-                                <property name="GeneratePublic">True</property>
                                 <property name="UseStock">True</property>
                                 <property name="Type">StockItem</property>
                                 <property name="StockId">gtk-dialog-info</property>
@@ -647,7 +598,6 @@ Show updates only</property>
                               <widget class="Gtk.Button" id="btnUnselectAll">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
-                                <property name="GeneratePublic">True</property>
                                 <property name="Type">TextOnly</property>
                                 <property name="Label" translatable="yes">_Unselect All</property>
                                 <property name="UseUnderline">True</property>
@@ -666,7 +616,6 @@ Show updates only</property>
                               <widget class="Gtk.Button" id="btnSelectAll">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
-                                <property name="GeneratePublic">True</property>
                                 <property name="Type">TextOnly</property>
                                 <property name="Label" translatable="yes">Select _All</property>
                                 <property name="UseUnderline">True</property>
@@ -709,7 +658,6 @@ Show updates only</property>
             <child>
               <widget class="Gtk.Label" id="label108">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="LabelProp">label108</property>
               </widget>
               <packing>
@@ -720,23 +668,19 @@ Show updates only</property>
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow19">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="GeneratePublic">True</property>
                 <property name="VscrollbarPolicy">Automatic</property>
                 <property name="HscrollbarPolicy">Automatic</property>
                 <child>
                   <widget class="Gtk.Viewport" id="viewport1">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <child>
                       <widget class="Gtk.HBox" id="hbox82">
                         <property name="MemberName" />
-                        <property name="GeneratePublic">True</property>
                         <property name="Spacing">12</property>
                         <property name="BorderWidth">12</property>
                         <child>
                           <widget class="Gtk.Image" id="imageInstall">
                             <property name="MemberName" />
-                            <property name="GeneratePublic">True</property>
                             <property name="Xalign">0</property>
                             <property name="Yalign">0</property>
                             <property name="Pixbuf">stock:gtk-dialog-warning Dialog</property>
@@ -751,7 +695,6 @@ Show updates only</property>
                         <child>
                           <widget class="Gtk.Label" id="labelSummary">
                             <property name="MemberName" />
-                            <property name="GeneratePublic">True</property>
                             <property name="Xpad">6</property>
                             <property name="Ypad">6</property>
                             <property name="Xalign">0</property>
@@ -803,7 +746,6 @@ asd
             <child>
               <widget class="Gtk.Label" id="label124">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="LabelProp" translatable="yes">label124</property>
               </widget>
               <packing>
@@ -813,13 +755,11 @@ asd
             <child>
               <widget class="Gtk.VBox" id="vbox86">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="Spacing">6</property>
                 <property name="BorderWidth">116</property>
                 <child>
                   <widget class="Gtk.Label" id="label126">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Overall Progress:</property>
                   </widget>
@@ -833,7 +773,6 @@ asd
                 <child>
                   <widget class="Gtk.ProgressBar" id="mainProgressBar">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="PulseStep">0,10000000149</property>
                   </widget>
                   <packing>
@@ -846,7 +785,6 @@ asd
                 <child>
                   <widget class="Gtk.Label" id="label129">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
@@ -859,7 +797,6 @@ asd
                 <child>
                   <widget class="Gtk.Label" id="progressLabel">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Downloading add-ins...</property>
                   </widget>
@@ -873,7 +810,6 @@ asd
                 <child>
                   <widget class="Gtk.ProgressBar" id="progressBar">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="PulseStep">0,10000000149</property>
                   </widget>
                   <packing>
@@ -892,7 +828,6 @@ asd
             <child>
               <widget class="Gtk.Label" id="label110">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="LabelProp">label110</property>
               </widget>
               <packing>
@@ -903,21 +838,17 @@ asd
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow20">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="GeneratePublic">True</property>
                 <property name="VscrollbarPolicy">Automatic</property>
                 <property name="HscrollbarPolicy">Automatic</property>
                 <child>
                   <widget class="Gtk.Viewport" id="viewport3">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <child>
                       <widget class="Gtk.VBox" id="vbox91">
                         <property name="MemberName" />
-                        <property name="GeneratePublic">True</property>
                         <child>
                           <widget class="Gtk.Label" id="label130">
                             <property name="MemberName" />
-                            <property name="GeneratePublic">True</property>
                             <property name="LabelProp" translatable="yes" />
                           </widget>
                           <packing>
@@ -928,7 +859,6 @@ asd
                         <child>
                           <widget class="Gtk.Image" id="imageError">
                             <property name="MemberName" />
-                            <property name="GeneratePublic">True</property>
                             <property name="Yalign">1</property>
                             <property name="Pixbuf">stock:gtk-dialog-error Dialog</property>
                           </widget>
@@ -943,7 +873,6 @@ asd
                         <child>
                           <widget class="Gtk.Image" id="imageInfo">
                             <property name="MemberName" />
-                            <property name="GeneratePublic">True</property>
                             <property name="Yalign">1</property>
                             <property name="Pixbuf">stock:gtk-dialog-info Dialog</property>
                           </widget>
@@ -957,12 +886,10 @@ asd
                         <child>
                           <widget class="Gtk.HBox" id="hbox71">
                             <property name="MemberName" />
-                            <property name="GeneratePublic">True</property>
                             <child>
                               <widget class="Gtk.Label" id="labelResult">
                                 <property name="MemberName" />
                                 <property name="WidthRequest">450</property>
-                                <property name="GeneratePublic">True</property>
                                 <property name="Ypad">9</property>
                                 <property name="Yalign">0</property>
                                 <property name="LabelProp">Done</property>
@@ -987,7 +914,6 @@ asd
                         <child>
                           <widget class="Gtk.Label" id="label131">
                             <property name="MemberName" />
-                            <property name="GeneratePublic">True</property>
                             <property name="LabelProp" translatable="yes" />
                           </widget>
                           <packing>
@@ -1008,7 +934,6 @@ asd
             <child>
               <widget class="Gtk.Label" id="label111">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="LabelProp">label111</property>
               </widget>
               <packing>
@@ -1024,7 +949,6 @@ asd
         <child>
           <widget class="Gtk.HButtonBox" id="dialog_action_area9">
             <property name="MemberName" />
-            <property name="GeneratePublic">True</property>
             <property name="Spacing">9</property>
             <property name="BorderWidth">6</property>
             <property name="Size">4</property>
@@ -1034,7 +958,6 @@ asd
                 <property name="MemberName" />
                 <property name="CanDefault">True</property>
                 <property name="CanFocus">True</property>
-                <property name="GeneratePublic">True</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-cancel</property>
@@ -1048,7 +971,6 @@ asd
                 <property name="MemberName" />
                 <property name="CanDefault">True</property>
                 <property name="CanFocus">True</property>
-                <property name="GeneratePublic">True</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-go-back</property>
@@ -1065,7 +987,6 @@ asd
                 <property name="MemberName" />
                 <property name="CanDefault">True</property>
                 <property name="CanFocus">True</property>
-                <property name="GeneratePublic">True</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-go-forward</property>
@@ -1082,7 +1003,6 @@ asd
                 <property name="MemberName" />
                 <property name="CanDefault">True</property>
                 <property name="CanFocus">True</property>
-                <property name="GeneratePublic">True</property>
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-ok</property>
@@ -1106,7 +1026,6 @@ asd
         <child>
           <widget class="Gtk.HSeparator" id="hseparator3">
             <property name="MemberName" />
-            <property name="GeneratePublic">True</property>
           </widget>
           <packing>
             <property name="PackType">End</property>
@@ -1121,7 +1040,6 @@ asd
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="hbuttonbox1">
         <property name="MemberName" />
-        <property name="GeneratePublic">True</property>
         <property name="Spacing">10</property>
         <property name="BorderWidth">5</property>
         <property name="Size">0</property>
@@ -1141,19 +1059,16 @@ asd
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox10">
         <property name="MemberName" />
-        <property name="GeneratePublic">True</property>
         <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.HBox" id="hbox67">
             <property name="MemberName" />
-            <property name="GeneratePublic">True</property>
             <property name="Spacing">12</property>
             <property name="BorderWidth">12</property>
             <child>
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow17">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="GeneratePublic">True</property>
                 <property name="VscrollbarPolicy">Automatic</property>
                 <property name="HscrollbarPolicy">Automatic</property>
                 <property name="ShadowType">In</property>
@@ -1161,7 +1076,6 @@ asd
                   <widget class="Gtk.TreeView" id="repoTree">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="GeneratePublic">True</property>
                     <property name="HeadersVisible">False</property>
                   </widget>
                 </child>
@@ -1174,13 +1088,11 @@ asd
             <child>
               <widget class="Gtk.VBox" id="vbox88">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="Spacing">6</property>
                 <child>
                   <widget class="Gtk.Button" id="btnAdd">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="GeneratePublic">True</property>
                     <property name="UseStock">True</property>
                     <property name="Type">StockItem</property>
                     <property name="StockId">gtk-add</property>
@@ -1199,7 +1111,6 @@ asd
                   <widget class="Gtk.Button" id="btnRemove">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="GeneratePublic">True</property>
                     <property name="UseStock">True</property>
                     <property name="Type">StockItem</property>
                     <property name="StockId">gtk-delete</property>
@@ -1233,7 +1144,6 @@ asd
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="dialog-action_area10">
         <property name="MemberName" />
-        <property name="GeneratePublic">True</property>
         <property name="Spacing">10</property>
         <property name="BorderWidth">5</property>
         <property name="Size">1</property>
@@ -1243,7 +1153,6 @@ asd
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
-            <property name="GeneratePublic">True</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-close</property>
@@ -1265,18 +1174,15 @@ asd
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox11">
         <property name="MemberName" />
-        <property name="GeneratePublic">True</property>
         <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox89">
             <property name="MemberName" />
-            <property name="GeneratePublic">True</property>
             <property name="Spacing">6</property>
             <property name="BorderWidth">12</property>
             <child>
               <widget class="Gtk.Label" id="label121">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="Xalign">0</property>
                 <property name="LabelProp" translatable="yes">Select the location of the repository you want to register:</property>
               </widget>
@@ -1291,7 +1197,6 @@ asd
               <widget class="Gtk.RadioButton" id="btnOnlineRep">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="GeneratePublic">True</property>
                 <property name="Label" translatable="yes">Register an on-line repository</property>
                 <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
@@ -1310,13 +1215,11 @@ asd
             <child>
               <widget class="Gtk.HBox" id="hbox68">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="Spacing">6</property>
                 <child>
                   <widget class="Gtk.Label" id="label122">
                     <property name="MemberName" />
                     <property name="WidthRequest">32</property>
-                    <property name="GeneratePublic">True</property>
                     <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
@@ -1329,7 +1232,6 @@ asd
                 <child>
                   <widget class="Gtk.Label" id="label119">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="LabelProp" translatable="yes">Url:</property>
                   </widget>
                   <packing>
@@ -1343,7 +1245,6 @@ asd
                   <widget class="Gtk.Entry" id="urlText">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="GeneratePublic">True</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                   </widget>
@@ -1364,7 +1265,6 @@ asd
               <widget class="Gtk.RadioButton" id="btnLocalRep">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="GeneratePublic">True</property>
                 <property name="Label" translatable="yes">Register a local repository</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
@@ -1382,13 +1282,11 @@ asd
             <child>
               <widget class="Gtk.HBox" id="hbox69">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <property name="Spacing">6</property>
                 <child>
                   <widget class="Gtk.Label" id="label123">
                     <property name="MemberName" />
                     <property name="WidthRequest">32</property>
-                    <property name="GeneratePublic">True</property>
                     <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
@@ -1401,7 +1299,6 @@ asd
                 <child>
                   <widget class="Gtk.Label" id="label120">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="LabelProp" translatable="yes">Path:</property>
                   </widget>
                   <packing>
@@ -1414,13 +1311,11 @@ asd
                 <child>
                   <widget class="Gtk.HBox" id="hbox1">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="Spacing">6</property>
                     <child>
                       <widget class="Gtk.Entry" id="pathEntry">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="GeneratePublic">True</property>
                         <property name="IsEditable">True</property>
                         <property name="InvisibleChar">●</property>
                         <signal name="Changed" handler="OnPathEntryChanged" />
@@ -1434,7 +1329,6 @@ asd
                       <widget class="Gtk.Button" id="buttonBrowse">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="GeneratePublic">True</property>
                         <property name="Type">TextOnly</property>
                         <property name="Label" translatable="yes">Browse...</property>
                         <property name="UseUnderline">True</property>
@@ -1473,7 +1367,6 @@ asd
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="dialog-action_area11">
         <property name="MemberName" />
-        <property name="GeneratePublic">True</property>
         <property name="Spacing">10</property>
         <property name="BorderWidth">5</property>
         <property name="Size">2</property>
@@ -1483,7 +1376,6 @@ asd
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
-            <property name="GeneratePublic">True</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-cancel</property>
@@ -1496,7 +1388,6 @@ asd
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
-            <property name="GeneratePublic">True</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
@@ -1522,22 +1413,18 @@ asd
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox12">
         <property name="MemberName" />
-        <property name="GeneratePublic">True</property>
         <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.HBox" id="hbox81">
             <property name="MemberName" />
-            <property name="GeneratePublic">True</property>
             <property name="Spacing">12</property>
             <property name="BorderWidth">12</property>
             <child>
               <widget class="Gtk.VBox" id="vbox94">
                 <property name="MemberName" />
-                <property name="GeneratePublic">True</property>
                 <child>
                   <widget class="Gtk.Image" id="packageImage">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -1561,19 +1448,16 @@ asd
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow22">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="GeneratePublic">True</property>
                 <property name="VscrollbarPolicy">Automatic</property>
                 <property name="HscrollbarPolicy">Automatic</property>
                 <child>
                   <widget class="Gtk.Viewport" id="viewport4">
                     <property name="MemberName" />
-                    <property name="GeneratePublic">True</property>
                     <property name="ShadowType">None</property>
                     <child>
                       <widget class="Gtk.Label" id="infoLabel">
                         <property name="MemberName" />
                         <property name="WidthRequest">420</property>
-                        <property name="GeneratePublic">True</property>
                         <property name="Xpad">6</property>
                         <property name="Ypad">6</property>
                         <property name="Xalign">0</property>
@@ -1601,7 +1485,6 @@ asd
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="dialog-action_area12">
         <property name="MemberName" />
-        <property name="GeneratePublic">True</property>
         <property name="Spacing">10</property>
         <property name="BorderWidth">5</property>
         <property name="Size">1</property>
@@ -1611,7 +1494,6 @@ asd
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
-            <property name="GeneratePublic">True</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-close</property>

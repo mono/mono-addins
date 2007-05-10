@@ -157,7 +157,7 @@ namespace Mono.Addins.Gui {
             w10.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w11 = new Gtk.Image();
-            w11.Name = "image14";
+            w11.Name = "image25";
             w11.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-add", 20, 0);
             w10.Add(w11);
             // Container child GtkHBox.Gtk.Container+ContainerChild
@@ -206,7 +206,7 @@ namespace Mono.Addins.Gui {
             w21.Spacing = 2;
             // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Image w22 = new Gtk.Image();
-            w22.Name = "image15";
+            w22.Name = "image26";
             w22.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-remove", 20, 0);
             w21.Add(w22);
             // Container child GtkHBox1.Gtk.Container+ContainerChild
@@ -236,7 +236,7 @@ namespace Mono.Addins.Gui {
             w30.Spacing = 2;
             // Container child GtkHBox2.Gtk.Container+ContainerChild
             Gtk.Image w31 = new Gtk.Image();
-            w31.Name = "image16";
+            w31.Name = "image27";
             w31.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-yes", 20, 0);
             w30.Add(w31);
             // Container child GtkHBox2.Gtk.Container+ContainerChild
@@ -266,7 +266,7 @@ namespace Mono.Addins.Gui {
             w39.Spacing = 2;
             // Container child GtkHBox3.Gtk.Container+ContainerChild
             Gtk.Image w40 = new Gtk.Image();
-            w40.Name = "image17";
+            w40.Name = "image28";
             w40.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-no", 20, 0);
             w39.Add(w40);
             // Container child GtkHBox3.Gtk.Container+ContainerChild
