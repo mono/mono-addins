@@ -1,3 +1,10 @@
+2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/RuntimeAddin.cs: Use the full add-in id when checking for
+	  optional add-in dependencies.
+	* Mono.Addins.Description/Extension.cs: Added method for getting a list
+	  of node types allowed in an extension.
+
 2007-05-09  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/ExtensionNode.cs: Added some null checks.

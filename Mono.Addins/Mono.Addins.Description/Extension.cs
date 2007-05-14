@@ -79,7 +79,23 @@ namespace Mono.Addins.Description
 			}
 			return null;
 		}
-	
+		
+		public ExtensionNodeTypeCollection GetAllowedNodeTypes ()
+		{
+			ObjectDescription ob = GetExtendedObject ();
+			ExtensionPoint ep = ob as ExtensionPoint;
+			if (ep != null)
+				return ep.NodeSet.GetAllowedNodeTypes ();
+			
+			ExtensionNodeDescription node = ob as ExtensionNodeDescription;
+			if (node != null) {
+				ExtensionNodeType nt = node.GetNodeType ();
+				if (nt != null)
+					return nt.GetAllowedNodeTypes ();
+			}
+			return new ExtensionNodeTypeCollection ();
+		}
+		
 		ExtensionPoint FindExtensionPoint (AddinDescription desc, string path)
 		{
 			foreach (ExtensionPoint ep in desc.ExtensionPoints) {

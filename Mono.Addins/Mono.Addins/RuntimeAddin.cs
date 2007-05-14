@@ -189,7 +189,7 @@ namespace Mono.Addins
 		{
 			foreach (Dependency dep in module.Dependencies) {
 				AddinDependency pdep = dep as AddinDependency;
-				if (pdep != null && !AddinManager.SessionService.IsAddinLoaded (pdep.AddinId))
+				if (pdep != null && !AddinManager.SessionService.IsAddinLoaded (pdep.FullAddinId))
 					return false;
 			}
 			return true;
