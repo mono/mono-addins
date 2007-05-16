@@ -41,11 +41,13 @@ namespace Mono.Addins.Database
 		
 		public void RegisterAssembly (string assemblyLocation, string addinId, string addinLocation)
 		{
+			assemblyLocation = NormalizeFileName (assemblyLocation);
 			index [Util.GetFullPath (assemblyLocation)] = addinId + " " + addinLocation;
 		}
 		
 		public bool GetAddinForAssembly (string assemblyLocation, out string addinId, out string addinLocation)
 		{
+			assemblyLocation = NormalizeFileName (assemblyLocation);
 			string s = index [Util.GetFullPath (assemblyLocation)] as string;
 			if (s == null) {
 				addinId = null;
@@ -90,6 +92,14 @@ namespace Mono.Addins.Database
 		void IBinaryXmlElement.Read (BinaryXmlReader reader)
 		{
 			reader.ReadValue ("index", index);
+		}
+		
+		string NormalizeFileName (string name)
+		{
+			if (Util.IsWindows)
+				return name.ToLower ();
+			else
+				return name;
 		}
 	}
 }

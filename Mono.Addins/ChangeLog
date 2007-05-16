@@ -1,3 +1,8 @@
+2007-05-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Database/AddinHostIndex.cs: Windows may sometimes change
+	  the case of assemblies.
+
 2007-05-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/RuntimeAddin.cs: Use the full add-in id when checking for
