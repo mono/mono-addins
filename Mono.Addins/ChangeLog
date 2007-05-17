@@ -1,3 +1,8 @@
+2007-05-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/RuntimeAddin.cs: Added support for getting resource
+	  string and resource objects. Patch by Georg Wächter.
+
 2007-05-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Database/AddinHostIndex.cs: Windows may sometimes change

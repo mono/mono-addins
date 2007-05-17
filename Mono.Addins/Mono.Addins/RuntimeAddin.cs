@@ -2,7 +2,8 @@
 // RuntimeAddin.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Lluis Sanchez Gual,
+//   Georg Wächter
 //
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
@@ -33,6 +34,8 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 using Mono.Addins.Description;
+using System.Resources;
+using System.Globalization;
 
 namespace Mono.Addins
 {
@@ -44,6 +47,7 @@ namespace Mono.Addins
 		
 		Assembly[] assemblies;
 		RuntimeAddin[] depAddins;
+		ResourceManager[] resourceManagers;
 		
 		internal RuntimeAddin()
 		{
@@ -64,6 +68,75 @@ namespace Mono.Addins
 		internal Addin Addin {
 			get { return ainfo; }
 		}
+
+		void CreateResourceManagers ()
+		{
+			ArrayList managersList = new ArrayList ();
+
+			// Search for embedded resource files
+			foreach (Assembly asm in assemblies)
+			{
+				foreach (string res in asm.GetManifestResourceNames ()) {
+					if (res.EndsWith (".resources"))
+						managersList.Add (new ResourceManager (res.Substring (0, res.Length - ".resources".Length), asm));
+				}
+			}
+
+			resourceManagers = (ResourceManager[]) managersList.ToArray (typeof(ResourceManager));
+		}
+
+		public string GetResourceString (string name)
+		{
+			return (string) GetResourceObject (name, true, null);
+		}
+
+		public string GetResourceString (string name, bool throwIfNotFound)
+		{
+			return (string) GetResourceObject (name, throwIfNotFound, null);
+		}
+
+		public string GetResourceString (string name, bool throwIfNotFound, CultureInfo culture)
+		{
+			return (string) GetResourceObject (name, throwIfNotFound, culture);
+		}
+
+		public object GetResourceObject (string name)
+		{
+			return GetResourceObject (name, true, null);
+		}
+
+		public object GetResourceObject (string name, bool throwIfNotFound)
+		{
+			return GetResourceObject (name, throwIfNotFound, null);
+		}
+
+		public object GetResourceObject (string name, bool throwIfNotFound, CultureInfo culture)
+		{
+			if (resourceManagers == null)
+				CreateResourceManagers ();
+
+			// Look in resources of this add-in
+			foreach (ResourceManager manager in resourceManagers)
+			{
+				object t = manager.GetObject (name, culture);
+				if (t != null)
+					return t;
+			}
+
+			// Look in resources of dependent add-ins
+			foreach (RuntimeAddin addin in depAddins)
+			{
+				object t = addin.GetResourceObject (name, false, culture);
+				if (t != null)
+					return t;
+			}
+
+			if (throwIfNotFound)
+				throw new InvalidOperationException ("Resource object '" + name + "' not found in add-in '" + id + "'");
+
+			return null;
+		}
+
 
 		public Type GetType (string typeName)
 		{
