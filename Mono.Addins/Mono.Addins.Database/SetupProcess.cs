@@ -68,9 +68,12 @@ namespace Mono.Addins.Database
 //			Console.WriteLine (rr);
 			
 			ProcessProgressStatus.MonitorProcessStatus (monitor, process.StandardOutput);
+			process.WaitForExit ();
+			if (process.ExitCode != 0)
+				throw new ProcessFailedException ();
 		}
 		
-		public static void Main (string[] args)
+		public static int Main (string[] args)
 		{
 			ProcessProgressStatus monitor = new ProcessProgressStatus (args[0] == "v");
 			
@@ -91,7 +94,13 @@ namespace Mono.Addins.Database
 				}
 			} catch (Exception ex) {
 				monitor.ReportError ("Unexpected error in setup process", ex);
+				return 1;
 			}
+			return 0;
 		}
+	}
+	
+	class ProcessFailedException: Exception
+	{
 	}
 }

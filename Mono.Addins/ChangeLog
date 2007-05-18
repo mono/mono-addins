@@ -1,3 +1,10 @@
+2007-05-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Database/SetupProcess.cs,
+	  Mono.Addins.Database/AddinDatabase.cs: If the scanner process
+	  crashes for some reason, show a better error message and retry the
+	  scan again.
+
 2007-05-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/RuntimeAddin.cs: Added support for getting resource

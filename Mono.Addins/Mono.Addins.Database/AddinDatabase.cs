@@ -651,17 +651,38 @@ namespace Mono.Addins.Database
 					}
 				}
 				
-				try {
-					if (monitor.VerboseLog)
-						monitor.Log ("Looking for addins");
-					SetupProcess.ExecuteCommand (monitor, registry.RegistryPath, AddinManager.StartupDirectory, "scan");
+				IProgressStatus scanMonitor = monitor;
+				bool retry = false;
+				do {
+					try {
+						if (monitor.VerboseLog)
+							monitor.Log ("Looking for addins");
+						SetupProcess.ExecuteCommand (scanMonitor, registry.RegistryPath, AddinManager.StartupDirectory, "scan");
+						retry = false;
+					}
+					catch (Exception ex) {
+						fatalDatabseError = true;
+						// If the process has crashed, try to do a new scan, this time using verbose log,
+						// to give the user more information about the origin of the crash.
+						if (ex is ProcessFailedException && !retry) {
+							monitor.ReportError ("Add-in scan operation failed. The Mono runtime may have encountered an error while trying to load an assembly.", null);
+							if (!monitor.VerboseLog) {
+								// Re-scan again using verbose log, to make it easy to find the origin of the error.
+								retry = true;
+								scanMonitor = new ConsoleProgressStatus (true);
+							}
+						} else
+							retry = false;
+						
+						if (!retry) {
+							monitor.ReportError ("Add-in scan operation failed", (ex is ProcessFailedException ? null : ex));
+							monitor.Cancel ();
+							return;
+						}
+					}
 				}
-				catch (Exception ex) {
-					fatalDatabseError = true;
-					monitor.ReportError ("Add-in scan operation failed", ex);
-					monitor.Cancel ();
-					return;
-				}
+				while (retry);
+			
 				ResetCachedData ();
 			}
 			
