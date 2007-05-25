@@ -76,7 +76,7 @@ namespace Mono.Addins.Gui {
             this.imageInstall = new Gtk.Image();
             this.imageInstall.Name = "imageInstall";
             this.imageInstall.Yalign = 0F;
-            this.imageInstall.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-dialog-warning", 48, 0);
+            this.imageInstall.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-warning", 48);
             this.hbox85.Add(this.imageInstall);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox85[this.imageInstall]));
             w2.Position = 0;
@@ -157,8 +157,8 @@ namespace Mono.Addins.Gui {
             w10.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w11 = new Gtk.Image();
-            w11.Name = "image25";
-            w11.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-add", 20, 0);
+            w11.Name = "image17";
+            w11.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-add", 20);
             w10.Add(w11);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w13 = new Gtk.Label();
@@ -206,8 +206,8 @@ namespace Mono.Addins.Gui {
             w21.Spacing = 2;
             // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Image w22 = new Gtk.Image();
-            w22.Name = "image26";
-            w22.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-remove", 20, 0);
+            w22.Name = "image18";
+            w22.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-remove", 20);
             w21.Add(w22);
             // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Label w24 = new Gtk.Label();
@@ -236,8 +236,8 @@ namespace Mono.Addins.Gui {
             w30.Spacing = 2;
             // Container child GtkHBox2.Gtk.Container+ContainerChild
             Gtk.Image w31 = new Gtk.Image();
-            w31.Name = "image27";
-            w31.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-yes", 20, 0);
+            w31.Name = "image19";
+            w31.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-yes", 20);
             w30.Add(w31);
             // Container child GtkHBox2.Gtk.Container+ContainerChild
             Gtk.Label w33 = new Gtk.Label();
@@ -266,8 +266,8 @@ namespace Mono.Addins.Gui {
             w39.Spacing = 2;
             // Container child GtkHBox3.Gtk.Container+ContainerChild
             Gtk.Image w40 = new Gtk.Image();
-            w40.Name = "image28";
-            w40.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-no", 20, 0);
+            w40.Name = "image20";
+            w40.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-no", 20);
             w39.Add(w40);
             // Container child GtkHBox3.Gtk.Container+ContainerChild
             Gtk.Label w42 = new Gtk.Label();

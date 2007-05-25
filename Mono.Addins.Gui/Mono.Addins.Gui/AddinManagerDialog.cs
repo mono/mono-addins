@@ -91,20 +91,30 @@ namespace Mono.Addins.Gui
 		
 		internal void OnEnable (object sender, EventArgs e)
 		{
-			Addin sinfo = (Addin) tree.ActiveAddinData;
-			if (sinfo == null)
-				return;
-			sinfo.Enabled = true;
-			LoadAddins ();
+			try {
+				Addin sinfo = (Addin) tree.ActiveAddinData;
+				if (sinfo == null)
+					return;
+				sinfo.Enabled = true;
+				LoadAddins ();
+			}
+			catch (Exception ex) {
+				Services.ShowError (ex, null, this, true);
+			}
 		}
 		
 		internal void OnDisable (object sender, EventArgs e)
 		{
-			Addin sinfo = (Addin) tree.ActiveAddinData;
-			if (sinfo == null)
-				return;
-			sinfo.Enabled = false;
-			LoadAddins ();
+			try {
+				Addin sinfo = (Addin) tree.ActiveAddinData;
+				if (sinfo == null)
+					return;
+				sinfo.Enabled = false;
+				LoadAddins ();
+			}
+			catch (Exception ex) {
+				Services.ShowError (ex, null, this, true);
+			}
 		}
 		
 		internal void OnShowInfo (object sender, EventArgs e)

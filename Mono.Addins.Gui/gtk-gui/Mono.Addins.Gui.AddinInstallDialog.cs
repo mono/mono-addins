@@ -120,6 +120,7 @@ namespace Mono.Addins.Gui {
             this.wizardNotebook = new Gtk.Notebook();
             this.wizardNotebook.CanFocus = true;
             this.wizardNotebook.Name = "wizardNotebook";
+            this.wizardNotebook.CurrentPage = 0;
             this.wizardNotebook.ShowBorder = false;
             this.wizardNotebook.BorderWidth = ((uint)(12));
             // Container child wizardNotebook.Gtk.Notebook+NotebookChild
@@ -297,7 +298,7 @@ namespace Mono.Addins.Gui {
             this.imageInstall.Name = "imageInstall";
             this.imageInstall.Xalign = 0F;
             this.imageInstall.Yalign = 0F;
-            this.imageInstall.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-dialog-warning", 48, 0);
+            this.imageInstall.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-warning", 48);
             this.hbox82.Add(this.imageInstall);
             Gtk.Box.BoxChild w19 = ((Gtk.Box.BoxChild)(this.hbox82[this.imageInstall]));
             w19.Position = 0;
@@ -413,7 +414,7 @@ namespace Mono.Addins.Gui {
             this.imageError = new Gtk.Image();
             this.imageError.Name = "imageError";
             this.imageError.Yalign = 1F;
-            this.imageError.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-dialog-error", 48, 0);
+            this.imageError.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-error", 48);
             this.vbox91.Add(this.imageError);
             Gtk.Box.BoxChild w32 = ((Gtk.Box.BoxChild)(this.vbox91[this.imageError]));
             w32.Position = 1;
@@ -424,7 +425,7 @@ namespace Mono.Addins.Gui {
             this.imageInfo = new Gtk.Image();
             this.imageInfo.Name = "imageInfo";
             this.imageInfo.Yalign = 1F;
-            this.imageInfo.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-dialog-info", 48, 0);
+            this.imageInfo.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-info", 48);
             this.vbox91.Add(this.imageInfo);
             Gtk.Box.BoxChild w33 = ((Gtk.Box.BoxChild)(this.vbox91[this.imageInfo]));
             w33.Position = 2;

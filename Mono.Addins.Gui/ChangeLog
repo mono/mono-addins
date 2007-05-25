@@ -1,3 +1,12 @@
+2007-05-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/generated.cs, gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.ErrorDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs, gtk-gui/gui.stetic:
+	  Updated.
+	* Mono.Addins.Gui/AddinManagerDialog.cs: Handle exceptions thrown when
+	  enabling/disabling add-ins.
+
 2007-05-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs, gtk-gui/gui.stetic:

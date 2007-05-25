@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
+  <configuration>
+    <images-root-path>../</images-root-path>
+  </configuration>
   <widget class="Gtk.Dialog" id="Mono.Addins.Gui.ErrorDialog" design-size="628 145">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
@@ -436,6 +439,7 @@
           <widget class="Gtk.Notebook" id="wizardNotebook">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
+            <property name="CurrentPage">0</property>
             <property name="ShowBorder">False</property>
             <property name="BorderWidth">12</property>
             <child>

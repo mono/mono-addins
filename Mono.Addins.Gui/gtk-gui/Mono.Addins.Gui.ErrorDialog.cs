@@ -55,7 +55,7 @@ namespace Mono.Addins.Gui {
             // Container child vbox72.Gtk.Box+BoxChild
             this.icon = new Gtk.Image();
             this.icon.Name = "icon";
-            this.icon.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-dialog-error", 48, 0);
+            this.icon.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-error", 48);
             this.vbox72.Add(this.icon);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox72[this.icon]));
             w2.Position = 0;
