@@ -1,3 +1,8 @@
+2007-05-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Database/AddinDatabase.cs: Fixed several issues when
+	  Enabling/Disabling add-ins.
+
 2007-05-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Database/SetupProcess.cs,

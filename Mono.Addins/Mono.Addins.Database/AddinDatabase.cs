@@ -209,7 +209,8 @@ namespace Mono.Addins.Database
 					if (exactVersionMatch)
 						return null;
 				}
-				else
+				else if (enabledOnly)
+					// Ignore the 'not installed' flag when disabled add-ins are allowed
 					return null;
 			}
 		
@@ -255,7 +256,9 @@ namespace Mono.Addins.Database
 				}
 				
 				// Cache lookups with negative result
-				cachedAddinSetupInfos [id] = this;
+				// Ignore the 'not installed' flag when disabled add-ins are allowed
+				if (enabledOnly)
+					cachedAddinSetupInfos [id] = this;
 				return null;
 			}
 		}
@@ -302,7 +305,10 @@ namespace Mono.Addins.Database
 		public bool IsAddinEnabled (string id)
 		{
 			Addin ainfo = GetInstalledAddin (id);
-			return ainfo.Enabled;
+			if (ainfo != null)
+				return ainfo.Enabled;
+			else
+				return false;
 		}
 		
 		internal bool IsAddinEnabled (string id, bool exactVersionMatch)
@@ -319,7 +325,7 @@ namespace Mono.Addins.Database
 		
 		internal void EnableAddin (string id, bool exactVersionMatch)
 		{
-			Addin ainfo = GetInstalledAddin (id, exactVersionMatch);
+			Addin ainfo = GetInstalledAddin (id, exactVersionMatch, false);
 			if (ainfo == null)
 				// It may be an add-in root
 				return;
@@ -327,9 +333,6 @@ namespace Mono.Addins.Database
 			if (IsAddinEnabled (id))
 				return;
 			
-			Configuration.DisabledAddins.Remove (id);
-			SaveConfiguration ();
-
 			// Enable required add-ins
 			
 			foreach (Dependency dep in ainfo.AddinInfo.Dependencies) {
@@ -339,6 +342,10 @@ namespace Mono.Addins.Database
 					EnableAddin (adepid, false);
 				}
 			}
+
+			Configuration.DisabledAddins.Remove (id);
+			SaveConfiguration ();
+
 			if (AddinManager.IsInitialized && AddinManager.Registry.RegistryPath == registry.RegistryPath)
 				AddinManager.SessionService.ActivateAddin (id);
 		}
@@ -351,36 +358,45 @@ namespace Mono.Addins.Database
 
 			if (!IsAddinEnabled (id))
 				return;
-
+			
 			Configuration.DisabledAddins.Add (id);
 			SaveConfiguration ();
 			
 			// Disable all add-ins which depend on it
 			
-			string idName = Addin.GetIdName (id);
-			
-			foreach (Addin ainfo in GetInstalledAddins ()) {
-				foreach (Dependency dep in ainfo.AddinInfo.Dependencies) {
-					AddinDependency adep = dep as AddinDependency;
-					if (adep == null)
-						continue;
-					
-					string adepid = Addin.GetFullId (ainfo.AddinInfo.Namespace, adep.AddinId, null);
-					if (adepid != idName)
-						continue;
-					
-					// The add-in that has been disabled, might be a requeriment of this one, or maybe not
-					// if there is an older version available. Check it now.
-					
-					adepid = Addin.GetFullId (ainfo.AddinInfo.Namespace, adep.AddinId, adep.Version);
-					Addin adepinfo = GetInstalledAddin (adepid, false, true);
-					
-					if (adepinfo == null) {
-						DisableAddin (ainfo.Id);
-						break;
+			try {
+				string idName = Addin.GetIdName (id);
+				
+				foreach (Addin ainfo in GetInstalledAddins ()) {
+					foreach (Dependency dep in ainfo.AddinInfo.Dependencies) {
+						AddinDependency adep = dep as AddinDependency;
+						if (adep == null)
+							continue;
+						
+						string adepid = Addin.GetFullId (ainfo.AddinInfo.Namespace, adep.AddinId, null);
+						if (adepid != idName)
+							continue;
+						
+						// The add-in that has been disabled, might be a requeriment of this one, or maybe not
+						// if there is an older version available. Check it now.
+						
+						adepid = Addin.GetFullId (ainfo.AddinInfo.Namespace, adep.AddinId, adep.Version);
+						Addin adepinfo = GetInstalledAddin (adepid, false, true);
+						
+						if (adepinfo == null) {
+							DisableAddin (ainfo.Id);
+							break;
+						}
 					}
 				}
 			}
+			catch {
+				// If something goes wrong, enable the add-in again
+				Configuration.DisabledAddins.Remove (id);
+				SaveConfiguration ();
+				throw;
+			}
+
 			if (AddinManager.IsInitialized && AddinManager.Registry.RegistryPath == registry.RegistryPath)
 				AddinManager.SessionService.UnloadAddin (id);
 		}		
