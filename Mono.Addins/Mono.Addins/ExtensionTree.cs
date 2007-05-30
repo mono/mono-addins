@@ -93,7 +93,7 @@ namespace Mono.Addins
 				string before = elem.GetAttribute ("insertbefore");
 				if (before.Length > 0) {
 					int i = tnode.Children.IndexOfNode (before);
-					if (i != -1 && i > curPos)
+					if (i != -1)
 						curPos = i;
 				}
 				
@@ -210,7 +210,7 @@ namespace Mono.Addins
 			
 			// Check if the type has NodeAttribute attributes applied to fields.
 			foreach (FieldInfo field in ntype.Type.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
-				NodeAttributeAttribute at = (NodeAttributeAttribute) Attribute.GetCustomAttribute (field, typeof(NodeAttributeAttribute));
+				NodeAttributeAttribute at = (NodeAttributeAttribute) Attribute.GetCustomAttribute (field, typeof(NodeAttributeAttribute), true);
 				if (at != null) {
 					string name;
 					if (at.Name != null && at.Name.Length > 0)

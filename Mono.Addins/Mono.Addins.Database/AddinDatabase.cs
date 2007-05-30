@@ -625,9 +625,12 @@ namespace Mono.Addins.Database
 		{
 			using (fileDatabase.LockWrite ()) {
 				try {
-					Directory.Delete (AddinCachePath, true);
-					Directory.Delete (AddinFolderCachePath, true);
-					File.Delete (HostIndexFile);
+					if (Directory.Exists (AddinCachePath))
+						Directory.Delete (AddinCachePath, true);
+					if (Directory.Exists (AddinFolderCachePath))
+						Directory.Delete (AddinFolderCachePath, true);
+					if (File.Exists (HostIndexFile))
+						File.Delete (HostIndexFile);
 				}
 				catch (Exception ex) {
 					monitor.ReportError ("The add-in registry could not be rebuilt. It may be due to lack of write permissions to the directory: " + AddinDbDir, ex);

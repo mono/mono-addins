@@ -57,11 +57,7 @@ namespace Mono.Addins.Database
 		
 		public bool ChangesFound {
 			get { return changesFound; }
-			set {
-				changesFound = value;
-//				if (changesFound)
-//					Console.WriteLine ("CF: " + Environment.StackTrace);
-			}
+			set { changesFound = value; }
 		}
 		
 		public bool VisitFolder (string folder)

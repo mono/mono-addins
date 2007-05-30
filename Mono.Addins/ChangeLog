@@ -1,3 +1,11 @@
+2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/ExtensionTree.cs: Fix problem with insertbefore, which
+	  was basically broken. Inherit NodeAttribute attributes.
+	* Mono.Addins.Database/AddinScanResult.cs: Removed debug code.
+	* Mono.Addins.Database/AddinDatabase.cs: When rebuilding the database,
+	  don't try to delete folders when don't exist.
+
 2007-05-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Database/AddinDatabase.cs: Fixed several issues when
