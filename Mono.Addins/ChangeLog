@@ -1,3 +1,13 @@
+2007-06-26  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/RuntimeAddin.cs: Assembly loading fix by Brad Taylor.
+	  Fixes endless loop in Initialize.
+	* Mono.Addins.Description/AddinDescription.cs: Set the hasUserId flag
+	  when loading from xml.
+	* Mono.Addins.Database/AddinUpdateData.cs,
+	  Mono.Addins.Database/AddinDatabase.cs: Moved add-in update counters
+	  to the AddinUpdateData class, since they need to be updated there.
+
 2007-05-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/ExtensionTree.cs: Fix problem with insertbefore, which

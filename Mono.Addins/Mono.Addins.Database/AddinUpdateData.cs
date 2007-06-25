@@ -46,6 +46,11 @@ namespace Mono.Addins.Database
 		
 		Hashtable objectTypeExtensions = new Hashtable ();
 		
+		internal int RelExtensionPoints;
+		internal int RelExtensions;
+		internal int RelNodeSetTypes;
+		internal int RelExtensionNodes;
+		
 		class RootExtensionPoint
 		{
 			public AddinDescription Description;
@@ -61,6 +66,7 @@ namespace Mono.Addins.Database
 		
 		public void RegisterAddinRootExtensionPoint (AddinDescription description, ExtensionPoint ep)
 		{
+			RelExtensionPoints++;
 			ArrayList list = (ArrayList) pathHash [ep.Path];
 			if (list == null) {
 				list = new ArrayList ();

@@ -433,11 +433,6 @@ namespace Mono.Addins.Database
 			
 			Hashtable addinHash = new Hashtable ();
 			
-			relExtensionPoints = 0;
-			relExtensions = 0;
-			relNodeSetTypes = 0;
-			relExtensionNodes = 0;
-		
 			if (monitor.VerboseLog)
 				monitor.Log ("Generating add-in extension maps");
 			
@@ -530,18 +525,12 @@ namespace Mono.Addins.Database
 			if (monitor.VerboseLog) {
 				monitor.Log ("Addin relation map generated.");
 				monitor.Log ("  Addins Updated: " + descriptionsToSave.Count);
-				monitor.Log ("  Extension points: " + relExtensionPoints);
-				monitor.Log ("  Extensions: " + relExtensions);
-				monitor.Log ("  Extension nodes: " + relExtensionNodes);
-				monitor.Log ("  Node sets: " + relNodeSetTypes);
+				monitor.Log ("  Extension points: " + updateData.RelExtensionPoints);
+				monitor.Log ("  Extensions: " + updateData.RelExtensions);
+				monitor.Log ("  Extension nodes: " + updateData.RelExtensionNodes);
+				monitor.Log ("  Node sets: " + updateData.RelNodeSetTypes);
 			}
 		}
-		
-		int relExtensionPoints;
-		int relExtensions;
-		int relNodeSetTypes;
-		int relExtensionNodes;
-		
 		
 		// Collects extension data in a hash table. The key is the path, the value is a list
 		// of add-ins ids that extend that path
@@ -551,7 +540,7 @@ namespace Mono.Addins.Database
 			foreach (ExtensionNodeSet nset in conf.ExtensionNodeSets) {
 				try {
 					updateData.RegisterNodeSet (conf, nset);
-					relNodeSetTypes++;
+					updateData.RelNodeSetTypes++;
 				} catch (Exception ex) {
 					throw new InvalidOperationException ("Error reading node set: " + nset.Id, ex);
 				}
@@ -560,7 +549,7 @@ namespace Mono.Addins.Database
 			foreach (ExtensionPoint ep in conf.ExtensionPoints) {
 				try {
 					updateData.RegisterExtensionPoint (conf, ep);
-					relExtensionPoints++;
+					updateData.RelExtensionPoints++;
 				} catch (Exception ex) {
 					throw new InvalidOperationException ("Error reading extension point: " + ep.Path, ex);
 				}
@@ -568,7 +557,7 @@ namespace Mono.Addins.Database
 			
 			foreach (ModuleDescription module in conf.AllModules) {
 				foreach (Extension ext in module.Extensions) {
-					relExtensions++;
+					updateData.RelExtensions++;
 					updateData.RegisterExtension (conf, module, ext);
 					AddChildExtensions (conf, module, updateData, ext.Path, ext.ExtensionNodes, false);
 				}
@@ -584,7 +573,7 @@ namespace Mono.Addins.Database
 			foreach (ExtensionNodeDescription node in nodes) {
 				if (node.NodeName == "ComplexCondition")
 					continue;
-				relExtensionNodes++;
+				updateData.RelExtensionNodes++;
 				string id = node.GetAttribute ("id");
 				if (id.Length != 0)
 					AddChildExtensions (conf, module, updateData, path + "/" + id, node.ChildNodes, node.NodeName == "Condition");

@@ -464,6 +464,8 @@ namespace Mono.Addins.Description
 			config.category = elem.GetAttribute ("category");
 			config.basePath = elem.GetAttribute ("basePath");
 			config.isroot = elem.GetAttribute ("isroot") == "true" || elem.GetAttribute ("isroot") == "yes";
+			if (config.id.Length > 0)
+				config.hasUserId = true;
 			
 			return config;
 		}

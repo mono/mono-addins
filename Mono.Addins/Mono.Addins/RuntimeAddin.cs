@@ -237,8 +237,31 @@ namespace Mono.Addins
 		void LoadModule (ModuleDescription module, string ns, ArrayList plugList, ArrayList asmList)
 		{
 			// Load the assemblies
-			foreach (string s in module.Assemblies)
-				asmList.Add (Assembly.LoadFrom (Path.Combine (baseDirectory, s)));
+			foreach (string s in module.Assemblies) {
+				Assembly asm = null;
+
+				// don't load the assembly if it's already loaded
+				string asmPath = Path.Combine (baseDirectory, s);
+				foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies ()) {
+					// Sorry, you can't load addins from
+					// dynamic assemblies as get_Location
+					// throws a NotSupportedException
+					if (a is System.Reflection.Emit.AssemblyBuilder) {
+						continue;
+					}
+
+					if (a.Location == asmPath) {
+						asm = a;
+						break;
+					}
+				}
+
+				if (asm == null) {
+					asm = Assembly.LoadFrom (asmPath);
+				}
+
+				asmList.Add (asm);
+			}
 				
 			// Collect dependent ids
 			foreach (Dependency dep in module.Dependencies) {
