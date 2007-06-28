@@ -126,5 +126,31 @@ namespace Mono.Addins.Database
 				h = (h << 5) - h + s[n];
 			return h;
 		}
+		
+		public static string GetGacPath (string fullName)
+		{
+			string gacDir = typeof(Uri).Assembly.Location;
+			gacDir = Path.GetDirectoryName (gacDir);
+			gacDir = Path.GetDirectoryName (gacDir);
+			gacDir = Path.GetDirectoryName (gacDir);
+			
+			string[] parts = fullName.Split (',');
+			if (parts.Length != 4) return null;
+			string name = parts[0].Trim ();
+			
+			int i = parts[1].IndexOf ('=');
+			string version = i != -1 ? parts[1].Substring (i+1).Trim () : parts[1].Trim ();
+			
+			i = parts[2].IndexOf ('=');
+			string culture = i != -1 ? parts[2].Substring (i+1).Trim () : parts[2].Trim ();
+			if (culture == "neutral") culture = "";
+			
+			i = parts[3].IndexOf ('=');
+			string token = i != -1 ? parts[3].Substring (i+1).Trim () : parts[3].Trim ();
+			
+			string file = Path.Combine (gacDir, name);
+			file = Path.Combine (file, version + "_" + culture + "_" + token);
+			return file;
+		}
 	}
 }

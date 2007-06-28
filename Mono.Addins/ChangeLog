@@ -1,3 +1,13 @@
+2007-06-28  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Database/Util.cs: Added helper method for getting the
+	  path of an assembly in the gac.
+	* Mono.Addins.Database/AddinScanner.cs: Added support for GacAssembly
+	  in .addins files (scans assemblies installed in the gac). Also,
+	  when registering assemblies included in an add-in, make sure to use
+	  the a path relative to the add-in location (the assembly may have
+	  been loaded from a different location).
+
 2007-06-26  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/RuntimeAddin.cs: Assembly loading fix by Brad Taylor.

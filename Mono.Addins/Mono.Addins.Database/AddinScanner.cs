@@ -333,6 +333,14 @@ namespace Mono.Addins.Database
 								directories.Add (path);
 						}
 					}
+					else if (r.NodeType == XmlNodeType.Element && r.LocalName == "GacAssembly") {
+						string aname = r.ReadElementString ().Trim ();
+						if (aname.Length > 0) {
+							aname = Util.GetGacPath (aname);
+							if (aname != null)
+								directories.Add (aname);
+						}
+					}
 					else
 						r.Skip ();
 					r.MoveToContent ();
@@ -443,11 +451,13 @@ namespace Mono.Addins.Database
 			// First of all scan the main module
 			
 			ArrayList assemblies = new ArrayList ();
+			ArrayList asmFiles = new ArrayList ();
 			ArrayList hostExtensionClasses = new ArrayList ();
 			
 			try {
 				foreach (string s in config.MainModule.Assemblies) {
 					string asmFile = Path.Combine (config.BasePath, s);
+					asmFiles.Add (asmFile);
 					Assembly asm = Util.LoadAssemblyForReflection (asmFile);
 					assemblies.Add (asm);
 				}
@@ -466,10 +476,8 @@ namespace Mono.Addins.Database
 				
 				if (config.IsRoot && scanResult.HostIndex != null) {
 					// If the add-in is a root, register its assemblies
-					foreach (Assembly asm in assemblies) {
-						string asmFile = new Uri (asm.CodeBase).LocalPath;
+					foreach (string asmFile in asmFiles)
 						scanResult.HostIndex.RegisterAssembly (asmFile, config.AddinId, config.AddinFile);
-					}
 				}
 				
 			} catch (Exception ex) {
@@ -500,8 +508,10 @@ namespace Mono.Addins.Database
 				foreach (ModuleDescription mod in config.OptionalModules) {
 					try {
 						assemblies.Clear ();
+						asmFiles.Clear ();
 						foreach (string s in mod.Assemblies) {
 							string asmFile = Path.Combine (config.BasePath, s);
+							asmFiles.Add (asmFile);
 							Assembly asm = Util.LoadAssemblyForReflection (asmFile);
 							assemblies.Add (asm);
 						}
@@ -510,10 +520,8 @@ namespace Mono.Addins.Database
 				
 						if (config.IsRoot && scanResult.HostIndex != null) {
 							// If the add-in is a root, register its assemblies
-							foreach (Assembly asm in assemblies) {
-								string asmFile = new Uri (asm.CodeBase).LocalPath;
+							foreach (string asmFile in asmFiles)
 								scanResult.HostIndex.RegisterAssembly (asmFile, config.AddinId, config.AddinFile);
-							}
 						}
 						
 					} catch (Exception ex) {
