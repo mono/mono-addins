@@ -34,11 +34,19 @@ namespace Mono.Addins
 	public class ConsoleProgressStatus: MarshalByRefObject, IProgressStatus
 	{
 		bool canceled;
-		bool verbose;
+		int logLevel;
 		
 		public ConsoleProgressStatus (bool verboseLog)
 		{
-			verbose = verboseLog;
+			if (verboseLog)
+				logLevel = 2;
+			else
+				logLevel = 1;
+		}
+		
+		public ConsoleProgressStatus (int logLevel)
+		{
+			this.logLevel = logLevel;
 		}
 		
 		public void SetMessage (string msg)
@@ -56,13 +64,16 @@ namespace Mono.Addins
 		
 		public void ReportWarning (string message)
 		{
-			Console.WriteLine ("WARNING: " + message);
+			if (logLevel > 0)
+				Console.WriteLine ("WARNING: " + message);
 		}
 		
 		public void ReportError (string message, Exception exception)
 		{
+			if (logLevel == 0)
+				return;
 			Console.Write ("ERROR: ");
-			if (verbose) {
+			if (logLevel > 1) {
 				if (message != null)
 					Console.WriteLine (message);
 				if (exception != null)
@@ -83,8 +94,8 @@ namespace Mono.Addins
 			get { return canceled; }
 		}
 		
-		public bool VerboseLog {
-			get { return verbose; }
+		public int LogLevel {
+			get { return logLevel; }
 		}
 		
 		public void Cancel ()

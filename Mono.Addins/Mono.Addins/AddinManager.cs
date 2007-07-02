@@ -42,6 +42,7 @@ namespace Mono.Addins
 		
 		static string startupDirectory;
 		static bool initialized;
+		static IAddinInstaller installer;
 		
 		public static event AddinErrorEventHandler AddinLoadError;
 		public static event AddinEventHandler AddinLoaded;
@@ -73,7 +74,7 @@ namespace Mono.Addins
 			else
 				registry = new AddinRegistry (configDir, startupDirectory);
 
-			string asmFile = new Uri (Assembly.GetCallingAssembly ().CodeBase).LocalPath;
+			string asmFile = new Uri (Assembly.GetEntryAssembly ().CodeBase).LocalPath;
 			if (registry.CreateHostAddinsFile (asmFile))
 				registry.Update (new ConsoleProgressStatus (false));
 			
@@ -99,6 +100,11 @@ namespace Mono.Addins
 			get { return initialized; }
 		}
 		
+		public static IAddinInstaller DefaultInstaller {
+			get { return installer; }
+			set { installer = value; }
+		}
+		
 		internal static AddinSessionService SessionService {
 			get {
 				if (sessionService == null)
@@ -113,6 +119,34 @@ namespace Mono.Addins
 				CheckInitialized ();
 				return registry;
 			}
+		}
+		
+		// This method checks if the specified add-ins are installed.
+		// If some of the add-ins are not installed, it will use
+		// the installer assigned to the DefaultAddinInstaller property
+		// to install them. If the installation fails, or if DefaultAddinInstaller
+		// is not set, an exception will be thrown.
+		public static void CheckInstalled (string message, params string[] addinIds)
+		{
+			ArrayList notInstalled = new ArrayList ();
+			foreach (string id in addinIds) {
+				Addin addin = Registry.GetAddin (id, false);
+				if (addin != null) {
+					// The add-in is already installed
+					// If the add-in is disabled, enable it now
+					if (!addin.Enabled)
+						addin.Enabled = true;
+				} else {
+					notInstalled.Add (id);
+				}
+			}
+			if (notInstalled.Count == 0)
+				return;
+			if (installer == null)
+				throw new InvalidOperationException ("Add-in installer not set");
+			
+			// Install the add-ins
+			installer.InstallAddins (Registry, message, (string[]) notInstalled.ToArray (typeof(string)));
 		}
 	
 		public static bool IsAddinLoaded (string id)

@@ -37,7 +37,7 @@ namespace Mono.Addins
 		void SetProgress (double progress);
 		
 		void Log (string msg);
-		bool VerboseLog { get; }
+		int LogLevel { get; } // 0: no log, 1: normal log, >1 verbose log
 		
 		void ReportWarning (string message);
 		void ReportError (string message, Exception exception);

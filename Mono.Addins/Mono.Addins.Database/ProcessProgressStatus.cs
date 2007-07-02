@@ -35,11 +35,11 @@ namespace Mono.Addins.Database
 	internal class ProcessProgressStatus: MarshalByRefObject, IProgressStatus
 	{
 		bool canceled;
-		bool verbose;
+		int logLevel;
 		
-		public ProcessProgressStatus (bool verboseLog)
+		public ProcessProgressStatus (int logLevel)
 		{
-			verbose = verboseLog;
+			this.logLevel = logLevel;
 		}
 		
 		public void SetMessage (string msg)
@@ -66,7 +66,7 @@ namespace Mono.Addins.Database
 		{
 			if (message == null) message = string.Empty;
 			string et;
-			if (verbose)
+			if (logLevel > 1)
 				et = exception != null ? exception.ToString () : string.Empty;
 			else
 				et = exception != null ? exception.Message : string.Empty;
@@ -79,8 +79,8 @@ namespace Mono.Addins.Database
 			get { return canceled; }
 		}
 		
-		public bool VerboseLog {
-			get { return verbose; }
+		public int LogLevel {
+			get { return logLevel; }
 		}
 		
 		public void Cancel ()

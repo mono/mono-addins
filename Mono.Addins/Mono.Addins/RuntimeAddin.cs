@@ -43,6 +43,7 @@ namespace Mono.Addins
 	{
 		string id;
 		string baseDirectory;
+		string privatePath;
 		Addin ainfo;
 		
 		Assembly[] assemblies;
@@ -186,6 +187,17 @@ namespace Mono.Addins
 		public string GetFilePath (string fileName)
 		{
 			return Path.Combine (baseDirectory, fileName);
+		}
+		
+		public string PrivateDataPath {
+			get {
+				if (privatePath == null) {
+					privatePath = ainfo.PrivateDataPath;
+					if (!Directory.Exists (privatePath))
+						Directory.CreateDirectory (privatePath);
+				}
+				return privatePath;
+			}
 		}
 		
 		public Stream GetResource (string resourceName)

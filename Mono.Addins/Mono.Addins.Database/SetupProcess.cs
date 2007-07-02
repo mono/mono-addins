@@ -40,7 +40,7 @@ namespace Mono.Addins.Database
 		internal static void ExecuteCommand (IProgressStatus monitor, string registryPath, string startupDir, string name, params string[] args)
 		{
 			string asm = new Uri (typeof(SetupProcess).Assembly.CodeBase).LocalPath;
-			string verboseParam = monitor.VerboseLog ? "v " : "nv";
+			string verboseParam = monitor.LogLevel.ToString ();
 			
 			Process process = new Process ();
 			if (Util.IsWindows)
@@ -75,7 +75,7 @@ namespace Mono.Addins.Database
 		
 		public static int Main (string[] args)
 		{
-			ProcessProgressStatus monitor = new ProcessProgressStatus (args[0] == "v");
+			ProcessProgressStatus monitor = new ProcessProgressStatus (int.Parse (args[0]));
 			
 			try {
 				string registryPath = Console.In.ReadLine ();

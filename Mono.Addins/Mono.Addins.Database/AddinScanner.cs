@@ -57,7 +57,7 @@ namespace Mono.Addins.Database
 			if (!scanResult.VisitFolder (path))
 				return;
 			
-			if (monitor.VerboseLog && !scanResult.LocateAssembliesOnly)
+			if (monitor.LogLevel > 1 && !scanResult.LocateAssembliesOnly)
 				monitor.Log ("Checking: " + path);
 			
 			AddinScanFolderInfo folderInfo;
@@ -168,7 +168,7 @@ namespace Mono.Addins.Database
 		
 		public void ScanFile (IProgressStatus monitor, string file, AddinScanFolderInfo folderInfo, AddinScanResult scanResult)
 		{
-			if (monitor.VerboseLog)
+			if (monitor.LogLevel > 1)
 				monitor.Log ("Scanning file: " + file);
 				
 			string scannedAddinId = null;
@@ -281,7 +281,7 @@ namespace Mono.Addins.Database
 		{
 			AddinDescription config = null;
 			
-			if (monitor.VerboseLog)
+			if (monitor.LogLevel > 1)
 				monitor.Log ("Scanning file: " + file);
 				
 			try {
@@ -481,7 +481,7 @@ namespace Mono.Addins.Database
 				}
 				
 			} catch (Exception ex) {
-				if (monitor.VerboseLog)
+				if (monitor.LogLevel > 1)
 					monitor.Log ("Could not load some add-in assemblies: " + ex.Message);
 				scanResult.AddFileToWithFailure (config.AddinFile);
 				return false;
@@ -525,7 +525,7 @@ namespace Mono.Addins.Database
 						}
 						
 					} catch (Exception ex) {
-						if (monitor.VerboseLog)
+						if (monitor.LogLevel > 1)
 							monitor.Log ("Could not load some add-in assemblies: " + ex.Message);
 						scanResult.AddFileToWithFailure (config.AddinFile);
 					}

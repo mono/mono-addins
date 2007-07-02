@@ -1,3 +1,23 @@
+2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.mdp, Makefile.am: Added new file.
+	* Mono.Addins/RuntimeAddin.cs, Mono.Addins/Addin.cs,
+	  Mono.Addins/IProgressStatus.cs,
+	  Mono.Addins/ConsoleProgressStatus.cs,
+	  Mono.Addins.Database/SetupProcess.cs,
+	  Mono.Addins.Database/AddinDatabase.cs,
+	  Mono.Addins.Database/FileDatabase.cs,
+	  Mono.Addins.Database/ProcessProgressStatus.cs,
+	  Mono.Addins.Database/AddinScanner.cs: Added support for add-in
+	  private data: a directory where every add-in can store its own
+	  private data. IProgressStatus now has a LogLevel property instead
+	  of VerboseLog.
+	* Mono.Addins/IAddinInstaller.cs, Mono.Addins/AddinManager.cs:
+	  Implemented CheckInstalled. This method checks if the specified
+	  add-ins are installed. If some of the add-ins are not installed, it
+	  will use the installer assigned to the DefaultAddinInstaller
+	  property to install them.
+
 2007-06-28  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Database/Util.cs: Added helper method for getting the

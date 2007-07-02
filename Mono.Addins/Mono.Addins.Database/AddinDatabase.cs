@@ -72,6 +72,10 @@ namespace Mono.Addins.Database
 			get { return Path.Combine (AddinDbDir, "addin-dir-data"); }
 		}
 		
+		public string AddinPrivateDataPath {
+			get { return Path.Combine (AddinDbDir, "addin-priv-data"); }
+		}
+		
 		string HostIndexFile {
 			get { return Path.Combine (AddinDbDir, "host-index"); }
 		}
@@ -433,7 +437,7 @@ namespace Mono.Addins.Database
 			
 			Hashtable addinHash = new Hashtable ();
 			
-			if (monitor.VerboseLog)
+			if (monitor.LogLevel > 1)
 				monitor.Log ("Generating add-in extension maps");
 			
 			Hashtable changedAddins = null;
@@ -522,7 +526,7 @@ namespace Mono.Addins.Database
 			foreach (AddinDescription conf in descriptionsToSave)
 				conf.SaveBinary (fileDatabase);
 			
-			if (monitor.VerboseLog) {
+			if (monitor.LogLevel > 1) {
 				monitor.Log ("Addin relation map generated.");
 				monitor.Log ("  Addins Updated: " + descriptionsToSave.Count);
 				monitor.Log ("  Extension points: " + updateData.RelExtensionPoints);
@@ -646,7 +650,7 @@ namespace Mono.Addins.Database
 			if (monitor.IsCanceled)
 				return;
 			
-			if (monitor.VerboseLog)
+			if (monitor.LogLevel > 1)
 				monitor.Log ("Folders checked (" + (int) (DateTime.Now - tim).TotalMilliseconds + " ms)");
 			
 			if (changesFound) {
@@ -663,7 +667,7 @@ namespace Mono.Addins.Database
 				bool retry = false;
 				do {
 					try {
-						if (monitor.VerboseLog)
+						if (monitor.LogLevel > 1)
 							monitor.Log ("Looking for addins");
 						SetupProcess.ExecuteCommand (scanMonitor, registry.RegistryPath, AddinManager.StartupDirectory, "scan");
 						retry = false;
@@ -674,7 +678,7 @@ namespace Mono.Addins.Database
 						// to give the user more information about the origin of the crash.
 						if (ex is ProcessFailedException && !retry) {
 							monitor.ReportError ("Add-in scan operation failed. The Mono runtime may have encountered an error while trying to load an assembly.", null);
-							if (!monitor.VerboseLog) {
+							if (monitor.LogLevel <= 1) {
 								// Re-scan again using verbose log, to make it easy to find the origin of the error.
 								retry = true;
 								scanMonitor = new ConsoleProgressStatus (true);
@@ -889,14 +893,14 @@ namespace Mono.Addins.Database
 			foreach (AddinScanFolderInfo finfo in scanResult.ModifiedFolderInfos)
 				SaveFolderInfo (monitor, finfo);
 
-			if (monitor.VerboseLog)
+			if (monitor.LogLevel > 1)
 				monitor.Log ("Folders scan completed (" + (int) (DateTime.Now - tim).TotalMilliseconds + " ms)");
 
 			SaveAddinHostIndex ();
 			ResetCachedData ();
 			
 			if (!scanResult.ChangesFound) {
-				if (monitor.VerboseLog)
+				if (monitor.LogLevel > 1)
 					monitor.Log ("No changes found");
 				return;
 			}
@@ -913,7 +917,7 @@ namespace Mono.Addins.Database
 				monitor.ReportError ("The add-in database could not be updated. It may be due to file corruption. Try running the setup repair utility", ex);
 			}
 			
-			if (monitor.VerboseLog)
+			if (monitor.LogLevel > 1)
 				monitor.Log ("Add-in relations analyzed (" + (int) (DateTime.Now - tim).TotalMilliseconds + " ms)");
 			
 			SaveAddinHostIndex ();
@@ -1007,7 +1011,7 @@ namespace Mono.Addins.Database
 				return;
 			
 			// Add-in already existed. The dependencies of the old add-in need to be re-analized
-						
+
 			AddinDescription desc;
 			if (ReadAddinDescription (monitor, file, out desc)) {
 				Util.AddDependencies (desc, scanResult);
@@ -1018,6 +1022,7 @@ namespace Mono.Addins.Database
 				scanResult.RegenerateRelationData = true;
 
 			SafeDelete (monitor, file);
+			SafeDeleteDir (monitor, Path.Combine (AddinPrivateDataPath, Path.GetFileNameWithoutExtension (file)));
 		}
 		
 		public bool GetHostDescription (IProgressStatus monitor, string addinId, string fileName, out AddinDescription description)
@@ -1137,8 +1142,23 @@ namespace Mono.Addins.Database
 				return true;
 			}
 			catch (Exception ex) {
-				if (monitor.VerboseLog) {
+				if (monitor.LogLevel > 1) {
 					monitor.Log ("Could not delete file: " + file);
+					monitor.Log (ex.ToString ());
+				}
+				return false;
+			}
+		}
+		
+		public bool SafeDeleteDir (IProgressStatus monitor, string dir)
+		{
+			try {
+				fileDatabase.DeleteDir (dir);
+				return true;
+			}
+			catch (Exception ex) {
+				if (monitor.LogLevel > 1) {
+					monitor.Log ("Could not delete directory: " + dir);
 					monitor.Log (ex.ToString ());
 				}
 				return false;

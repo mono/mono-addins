@@ -72,6 +72,7 @@ FILES =  \
 	Mono.Addins/ExtensionPointAttribute.cs \
 	Mono.Addins/ExtensionTree.cs \
 	Mono.Addins/GettextCatalog.cs \
+	Mono.Addins/IAddinInstaller.cs \
 	Mono.Addins/InstanceExtensionNode.cs \
 	Mono.Addins/IProgressStatus.cs \
 	Mono.Addins/MissingDependencyException.cs \
