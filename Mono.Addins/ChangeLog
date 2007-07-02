@@ -1,5 +1,10 @@
 2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins/GettextCatalog.cs: Removed old copyright notice, since
+	  the file doesn't contain any code from the original class.
+
+2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins.Database/AddinScanResult.cs,
 	  Mono.Addins.Database/AddinScanner.cs: Don't scan assemblies which
 	  are included by .addin files, since they will be already scanned
