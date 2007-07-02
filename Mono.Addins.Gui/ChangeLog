@@ -1,3 +1,15 @@
+2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/generated.cs, gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:
+	  Updated.
+	* gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs, gtk-gui/gui.stetic,
+	  Mono.Addins.Gui/AddinInstaller.cs,
+	  Mono.Addins.Gui/AddinInstallerDialog.cs: Added an implementation of
+	  IAddinInstaller.
+	* Makefile.am, Mono.Addins.Gui.mdp: Added new files.
+	* Mono.Addins.Gui/AddinInstallDialog.cs: Don't include markup in
+	  translatable strings.
+
 2007-05-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/generated.cs, gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,

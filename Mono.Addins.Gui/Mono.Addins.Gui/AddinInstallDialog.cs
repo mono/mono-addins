@@ -300,12 +300,12 @@ namespace Mono.Addins.Gui
 			wizardNotebook.CurrentPage = 1;
 			
 			StringBuilder sb = new StringBuilder ();
-			sb.Append (Catalog.GetString ("<b>The following packages will be uninstalled:</b>\n\n"));
+			sb.Append ("<b>").Append (Catalog.GetString ("The following packages will be uninstalled:")).Append ("</b>\n\n");
 			sb.Append (info.Name + "\n\n");
 			
 			Addin[] sinfos = service.GetDependentAddins (info.Id, true);
 			if (sinfos.Length > 0) {
-				sb.Append (Catalog.GetString ("<b>There are other add-ins that depend on the previous ones which will also be uninstalled:</b>\n\n"));
+				sb.Append ("<b>").Append (Catalog.GetString ("There are other add-ins that depend on the previous ones which will also be uninstalled:")).Append ("</b>\n\n");
 				foreach (Addin si in sinfos)
 					sb.Append (si.Description.Name + "\n");
 			}
@@ -376,21 +376,21 @@ namespace Mono.Addins.Gui
 			
 			StringBuilder sb = new StringBuilder ();
 			if (!res) {
-				sb.Append (Catalog.GetString ("<b><span foreground=\"red\">The selected add-ins can't be installed because there are dependency conflicts.</span></b>\n"));
+				sb.Append ("<b><span foreground=\"red\">").Append (Catalog.GetString ("The selected add-ins can't be installed because there are dependency conflicts.")).Append ("</span></b>\n");
 				foreach (string s in m.Errors) {
-					sb.Append (Catalog.GetString ("<b><span foreground=\"red\">" + s + "</span></b>\n"));
+					sb.Append ("<b><span foreground=\"red\">" + s + "</span></b>\n");
 				}
 				sb.Append ("\n");
 			}
 			
 			if (m.Warnings.Count != 0) {
 				foreach (string w in m.Warnings) {
-					sb.Append (Catalog.GetString ("<b><span foreground=\"red\">" + w + "</span></b>\n"));
+					sb.Append ("<b><span foreground=\"red\">" + w + "</span></b>\n");
 				}
 				sb.Append ("\n");
 			}
 			
-			sb.Append (Catalog.GetString ("<b>The following packages will be installed:</b>\n\n"));
+			sb.Append ("<b>").Append (Catalog.GetString ("The following packages will be installed:")).Append ("</b>\n\n");
 			foreach (Package p in packs) {
 				sb.Append (p.Name);
 				if (!p.SharedInstall)
@@ -400,7 +400,7 @@ namespace Mono.Addins.Gui
 			sb.Append ("\n");
 			
 			if (toUninstall.Count > 0) {
-				sb.Append (Catalog.GetString ("<b>The following packages need to be uninstalled:</b>\n\n"));
+				sb.Append ("<b>").Append (Catalog.GetString ("The following packages need to be uninstalled:")).Append ("</b>\n\n");
 				foreach (Package p in toUninstall) {
 					sb.Append (p.Name + "\n");
 				}
@@ -408,7 +408,7 @@ namespace Mono.Addins.Gui
 			}
 			
 			if (unresolved.Count > 0) {
-				sb.Append (Catalog.GetString ("<b>The following dependencies could not be resolved:</b>\n\n"));
+				sb.Append ("<b>").Append (Catalog.GetString ("The following dependencies could not be resolved:")).Append ("</b>\n\n");
 				foreach (Dependency p in unresolved) {
 					sb.Append (p.Name + "\n");
 				}
@@ -555,8 +555,8 @@ namespace Mono.Addins.Gui
 			canceled = true;
 		}
 		
-		public bool VerboseLog {
-			get { return false; }
+		public int LogLevel {
+			get { return 1; }
 		}
 		
 		public void Dispose ()
