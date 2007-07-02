@@ -76,19 +76,23 @@ namespace Mono.Addins.Database
 			
 			if (Directory.Exists (path))
 			{
-				foreach (string file in Directory.GetFiles (path)) {
-					if (file.EndsWith (".addin.xml")) {
+				string[] files = Directory.GetFiles (path);
+				
+				// First of all, look for .addin files. Addin files must be processed before
+				// assemblies, because they may add files to the ignore list (i.e., assemblies
+				// included in .addin files won't be scanned twice).
+				foreach (string file in files) {
+					if (file.EndsWith (".addin.xml") || file.EndsWith (".addin")) {
 						RegisterFileToScan (monitor, file, scanResult, folderInfo);
-						continue;
 					}
+				}
+				
+				foreach (string file in files) {
 					switch (Path.GetExtension (file)) {
 					case ".dll":
 					case ".exe":
 						RegisterFileToScan (monitor, file, scanResult, folderInfo);
 						scanResult.AddAssemblyLocation (file);
-						break;
-					case ".addin":
-						RegisterFileToScan (monitor, file, scanResult, folderInfo);
 						break;
 					case ".addins":
 						ScanAddinsFile (monitor, file, scanResult);
@@ -169,7 +173,9 @@ namespace Mono.Addins.Database
 		public void ScanFile (IProgressStatus monitor, string file, AddinScanFolderInfo folderInfo, AddinScanResult scanResult)
 		{
 			if (scanResult.IgnoreFile (file)) {
-				// The file must be ignored. Maybe it caused a crash in a previous scan.
+				// The file must be ignored. Maybe it caused a crash in a previous scan, or it
+				// might be included by a .addin file (in which case it will be scanned when processing
+				// the .addin file).
 				folderInfo.SetLastScanTime (file, null, false, File.GetLastWriteTime (file), true);
 				return;
 			}
@@ -470,11 +476,19 @@ namespace Mono.Addins.Database
 			ArrayList hostExtensionClasses = new ArrayList ();
 			
 			try {
+				// Add all data files to the ignore file list. It avoids scanning assemblies
+				// which are included as 'data' in an add-in.
+				foreach (string df in config.AllFiles) {
+					string file = Path.Combine (config.BasePath, df);
+					scanResult.AddFileToIgnore (Util.GetFullPath (file));
+				}
+				
 				foreach (string s in config.MainModule.Assemblies) {
 					string asmFile = Path.Combine (config.BasePath, s);
 					asmFiles.Add (asmFile);
 					Assembly asm = Util.LoadAssemblyForReflection (asmFile);
 					assemblies.Add (asm);
+					scanResult.AddFileToIgnore (Util.GetFullPath (asm.Location));
 				}
 				
 				foreach (Assembly asm in assemblies)
@@ -529,6 +543,7 @@ namespace Mono.Addins.Database
 							asmFiles.Add (asmFile);
 							Assembly asm = Util.LoadAssemblyForReflection (asmFile);
 							assemblies.Add (asm);
+							scanResult.AddFileToIgnore (Util.GetFullPath (asm.Location));
 						}
 						foreach (Assembly asm in assemblies)
 							ScanAssemblyContents (config, asm, null, scanResult);

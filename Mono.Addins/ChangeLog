@@ -1,5 +1,12 @@
 2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins.Database/AddinScanResult.cs,
+	  Mono.Addins.Database/AddinScanner.cs: Don't scan assemblies which
+	  are included by .addin files, since they will be already scanned
+	  when processing the .addin file.
+
+2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins/AddinRegistry.cs, Mono.Addins.Database/SetupProcess.cs,
 	  Mono.Addins.Database/AddinScanResult.cs,
 	  Mono.Addins.Database/AddinDatabase.cs,

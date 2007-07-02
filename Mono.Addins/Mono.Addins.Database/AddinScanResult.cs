@@ -77,6 +77,13 @@ namespace Mono.Addins.Database
 			return FilesToIgnore != null && FilesToIgnore.Contains (file);
 		}
 		
+		public void AddFileToIgnore (string fileName)
+		{
+			if (FilesToIgnore == null)
+				FilesToIgnore = new StringCollection ();
+			FilesToIgnore.Add (fileName);
+		}
+		
 		public void AddAddinToScan (string addinId)
 		{
 			if (!AddinsToScan.Contains (addinId))
