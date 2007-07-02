@@ -168,9 +168,19 @@ namespace Mono.Addins.Database
 		
 		public void ScanFile (IProgressStatus monitor, string file, AddinScanFolderInfo folderInfo, AddinScanResult scanResult)
 		{
+			if (scanResult.IgnoreFile (file)) {
+				// The file must be ignored. Maybe it caused a crash in a previous scan.
+				folderInfo.SetLastScanTime (file, null, false, File.GetLastWriteTime (file), true);
+				return;
+			}
+			
 			if (monitor.LogLevel > 1)
 				monitor.Log ("Scanning file: " + file);
-				
+			
+			// Log the file to be scanned, so in case of a process crash the main process
+			// will know what crashed
+			monitor.Log ("plog:scan:" + file);
+			
 			string scannedAddinId = null;
 			bool scannedIsRoot = false;
 			bool scanSuccessful = false;
@@ -274,6 +284,7 @@ namespace Mono.Addins.Database
 			}
 			finally {
 				folderInfo.SetLastScanTime (file, scannedAddinId, scannedIsRoot, File.GetLastWriteTime (file), !scanSuccessful);
+				monitor.Log ("plog:endscan");
 			}
 		}
 		
@@ -284,6 +295,8 @@ namespace Mono.Addins.Database
 			if (monitor.LogLevel > 1)
 				monitor.Log ("Scanning file: " + file);
 				
+			monitor.Log ("plog:scan:" + file);
+			
 			try {
 				string ext = Path.GetExtension (file);
 				bool scanSuccessful;
@@ -306,6 +319,8 @@ namespace Mono.Addins.Database
 			}
 			catch (Exception ex) {
 				monitor.ReportError ("Unexpected error while scanning file: " + file, ex);
+			} finally {
+				monitor.Log ("plog:endscan");
 			}
 			return config;
 		}

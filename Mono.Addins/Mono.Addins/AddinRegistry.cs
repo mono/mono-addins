@@ -196,9 +196,9 @@ namespace Mono.Addins
 			return database.AddinDependsOn (id1, id2);
 		}
 		
-		internal void ScanFolders (IProgressStatus monitor, string folderToScan)
+		internal void ScanFolders (IProgressStatus monitor, string folderToScan, StringCollection filesToIgnore)
 		{
-			database.ScanFolders (monitor, folderToScan);
+			database.ScanFolders (monitor, folderToScan, filesToIgnore);
 		}
 		
 		internal void ParseAddin (IProgressStatus progressStatus, string file, string outFile)

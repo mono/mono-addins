@@ -663,37 +663,7 @@ namespace Mono.Addins.Database
 					}
 				}
 				
-				IProgressStatus scanMonitor = monitor;
-				bool retry = false;
-				do {
-					try {
-						if (monitor.LogLevel > 1)
-							monitor.Log ("Looking for addins");
-						SetupProcess.ExecuteCommand (scanMonitor, registry.RegistryPath, AddinManager.StartupDirectory, "scan");
-						retry = false;
-					}
-					catch (Exception ex) {
-						fatalDatabseError = true;
-						// If the process has crashed, try to do a new scan, this time using verbose log,
-						// to give the user more information about the origin of the crash.
-						if (ex is ProcessFailedException && !retry) {
-							monitor.ReportError ("Add-in scan operation failed. The Mono runtime may have encountered an error while trying to load an assembly.", null);
-							if (monitor.LogLevel <= 1) {
-								// Re-scan again using verbose log, to make it easy to find the origin of the error.
-								retry = true;
-								scanMonitor = new ConsoleProgressStatus (true);
-							}
-						} else
-							retry = false;
-						
-						if (!retry) {
-							monitor.ReportError ("Add-in scan operation failed", (ex is ProcessFailedException ? null : ex));
-							monitor.Cancel ();
-							return;
-						}
-					}
-				}
-				while (retry);
+				RunScannerProcess (monitor);
 			
 				ResetCachedData ();
 			}
@@ -719,6 +689,56 @@ namespace Mono.Addins.Database
 					}
 				}
 			}
+		}
+		
+		void RunScannerProcess (IProgressStatus monitor)
+		{
+			IProgressStatus scanMonitor = monitor;
+			ArrayList pparams = new ArrayList ();
+			pparams.Add (null); // scan folder
+			
+			bool retry = false;
+			do {
+				try {
+					if (monitor.LogLevel > 1)
+						monitor.Log ("Looking for addins");
+					SetupProcess.ExecuteCommand (scanMonitor, registry.RegistryPath, AddinManager.StartupDirectory, "scan", (string[]) pparams.ToArray (typeof(string)));
+					retry = false;
+				}
+				catch (Exception ex) {
+					ProcessFailedException pex = ex as ProcessFailedException;
+					if (pex != null) {
+						// Get the last logged operation.
+						if (pex.LastLog.StartsWith ("scan:")) {
+							// It crashed while scanning a file. Add the file to the ignore list and try again.
+							string file = pex.LastLog.Substring (5);
+							pparams.Add (file);
+							monitor.ReportWarning ("Could not scan file: " + file);
+							retry = true;
+							continue;
+						}
+					}
+					fatalDatabseError = true;
+					// If the process has crashed, try to do a new scan, this time using verbose log,
+					// to give the user more information about the origin of the crash.
+					if (pex != null && !retry) {
+						monitor.ReportError ("Add-in scan operation failed. The Mono runtime may have encountered an error while trying to load an assembly.", null);
+						if (monitor.LogLevel <= 1) {
+							// Re-scan again using verbose log, to make it easy to find the origin of the error.
+							retry = true;
+							scanMonitor = new ConsoleProgressStatus (true);
+						}
+					} else
+						retry = false;
+					
+					if (!retry) {
+						monitor.ReportError ("Add-in scan operation failed", (ex is ProcessFailedException ? null : ex));
+						monitor.Cancel ();
+						return;
+					}
+				}
+			}
+			while (retry);
 		}
 		
 		bool DatabaseInfrastructureCheck (IProgressStatus monitor)
@@ -765,9 +785,11 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		internal void ScanFolders (IProgressStatus monitor, string folderToScan)
+		internal void ScanFolders (IProgressStatus monitor, string folderToScan, StringCollection filesToIgnore)
 		{
-			ScanFolders (monitor, new AddinScanResult ());
+			AddinScanResult res = new AddinScanResult ();
+			res.FilesToIgnore = filesToIgnore;
+			ScanFolders (monitor, res);
 		}
 		
 		internal void ScanFolders (IProgressStatus monitor, AddinScanResult scanResult)

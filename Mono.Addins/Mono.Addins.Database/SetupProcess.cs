@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 using System.Diagnostics;
@@ -42,11 +43,17 @@ namespace Mono.Addins.Database
 			string asm = new Uri (typeof(SetupProcess).Assembly.CodeBase).LocalPath;
 			string verboseParam = monitor.LogLevel.ToString ();
 			
+			// Arguments string
+			StringBuilder sb = new StringBuilder ();
+			sb.Append (verboseParam).Append (' ').Append (name);
+			foreach (string arg in args)
+				sb.Append (" \"").Append (arg).Append ("\"");
+			
 			Process process = new Process ();
 			if (Util.IsWindows)
-				process.StartInfo = new ProcessStartInfo (asm, verboseParam + " " + name + " " + string.Join (" ", args));
+				process.StartInfo = new ProcessStartInfo (asm, sb.ToString ());
 			else
-				process.StartInfo = new ProcessStartInfo ("mono", "--debug " + asm + " " + verboseParam + " " + name + " " + string.Join (" ", args));
+				process.StartInfo = new ProcessStartInfo ("mono", "--debug " + asm + " " + sb.ToString ());
 			process.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
 			process.StartInfo.UseShellExecute = false;
 			process.StartInfo.RedirectStandardInput = true;
@@ -67,10 +74,11 @@ namespace Mono.Addins.Database
 //			string rr = process.StandardOutput.ReadToEnd ();
 //			Console.WriteLine (rr);
 			
-			ProcessProgressStatus.MonitorProcessStatus (monitor, process.StandardOutput);
+			StringCollection progessLog = new StringCollection ();
+			ProcessProgressStatus.MonitorProcessStatus (monitor, process.StandardOutput, progessLog);
 			process.WaitForExit ();
 			if (process.ExitCode != 0)
-				throw new ProcessFailedException ();
+				throw new ProcessFailedException (progessLog);
 		}
 		
 		public static int Main (string[] args)
@@ -86,7 +94,12 @@ namespace Mono.Addins.Database
 			
 				switch (args [1]) {
 				case "scan":
-					reg.ScanFolders (monitor, args.Length > 2 ? args [2] : null);
+					string folder = args.Length > 2 ? args [2] : null;
+					if (folder.Length == 0) folder = null;
+					StringCollection filesToIgnore = new StringCollection ();
+					for (int n=3; n<args.Length; n++)
+						filesToIgnore.Add (args[n]);
+					reg.ScanFolders (monitor, folder, filesToIgnore);
 					break;
 				case "get-desc":
 					reg.ParseAddin (monitor, args[2], args[3]);
@@ -102,5 +115,19 @@ namespace Mono.Addins.Database
 	
 	class ProcessFailedException: Exception
 	{
+		StringCollection progessLog;
+		
+		public ProcessFailedException (StringCollection progessLog)
+		{
+			this.progessLog = progessLog;
+		}
+		
+		public StringCollection ProgessLog {
+			get { return progessLog; }
+		}
+		
+		public string LastLog {
+			get { return progessLog.Count > 0 ? progessLog [progessLog.Count - 1] : ""; }
+		}
 	}
 }

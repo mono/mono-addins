@@ -31,6 +31,7 @@ using System;
 using System.Reflection;
 using System.IO;
 using System.Collections;
+using System.Collections.Specialized;
 using Mono.Addins.Description;
 
 namespace Mono.Addins.Database
@@ -54,6 +55,7 @@ namespace Mono.Addins.Database
 		public bool changesFound;
 		public bool CheckOnly;
 		public bool LocateAssembliesOnly;
+		public StringCollection FilesToIgnore;
 		
 		public bool ChangesFound {
 			get { return changesFound; }
@@ -68,6 +70,11 @@ namespace Mono.Addins.Database
 				visitedFolders.Add (folder, folder);
 				return true;
 			}
+		}
+		
+		public bool IgnoreFile (string file)
+		{
+			return FilesToIgnore != null && FilesToIgnore.Contains (file);
 		}
 		
 		public void AddAddinToScan (string addinId)

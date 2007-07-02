@@ -1,5 +1,16 @@
 2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins/AddinRegistry.cs, Mono.Addins.Database/SetupProcess.cs,
+	  Mono.Addins.Database/AddinScanResult.cs,
+	  Mono.Addins.Database/AddinDatabase.cs,
+	  Mono.Addins.Database/ProcessProgressStatus.cs,
+	  Mono.Addins.Database/AddinScanner.cs: Before scanning a file, log
+	  the file name. If for some reason the scanner process crashes, the
+	  main process will know the name of the file that made it crash and
+	  will restart the scan adding it to the ignore file list.
+
+2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins.mdp, Makefile.am: Added new file.
 	* Mono.Addins/RuntimeAddin.cs, Mono.Addins/Addin.cs,
 	  Mono.Addins/IProgressStatus.cs,

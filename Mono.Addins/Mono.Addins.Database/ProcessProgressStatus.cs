@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Collections.Specialized;
 using System.IO;
 
 namespace Mono.Addins.Database
@@ -54,7 +55,12 @@ namespace Mono.Addins.Database
 		
 		public void Log (string msg)
 		{
-			Console.WriteLine ("process-ps-log:" + Encode (msg));
+			if (msg.StartsWith ("plog:"))
+				// This is an special type of log that will be provided to the
+				// main process in case of a crash in the setup process
+				Console.WriteLine ("process-ps-plog:" + Encode (msg.Substring (5)));
+			else
+				Console.WriteLine ("process-ps-log:" + Encode (msg));
 		}
 		
 		public void ReportWarning (string message)
@@ -101,7 +107,7 @@ namespace Mono.Addins.Database
 			return msg.Replace ("&a", "&");
 		}
 		
-		public static void MonitorProcessStatus (IProgressStatus monitor, TextReader reader)
+		public static void MonitorProcessStatus (IProgressStatus monitor, TextReader reader, StringCollection progessLog)
 		{
 			string line;
 			string exceptionText = null;
@@ -137,6 +143,9 @@ namespace Mono.Addins.Database
 							break;
 						case "process-ps-cancel":
 							monitor.Cancel ();
+							break;
+						case "process-ps-plog":
+							progessLog.Add (Decode (txt));
 							break;
 						default:
 							wasTag = false;
