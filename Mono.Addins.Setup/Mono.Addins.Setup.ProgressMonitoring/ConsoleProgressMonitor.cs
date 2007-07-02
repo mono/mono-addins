@@ -39,16 +39,16 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 		int ilevel = 0;
 		int isize = 3;
 		int col = -1;
-		bool verbose;
+		int logLevel;
 		LogTextWriter logger;
 		
-		public ConsoleProgressMonitor (): this (false)
+		public ConsoleProgressMonitor (): this (1)
 		{
 		}
 		
-		public ConsoleProgressMonitor (bool verbose)
+		public ConsoleProgressMonitor (int logLevel)
 		{
-			this.verbose = verbose;
+			this.logLevel = logLevel;
 			logger = new LogTextWriter ();
 			logger.TextWritten += new LogTextEventHandler (WriteLog);
 		}
@@ -68,8 +68,8 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 			set { indent = value; }
 		}
 		
-		public override bool VerboseLog {
-			get { return verbose; }
+		public override int LogLevel {
+			get { return logLevel; }
 		}
 		
 		public override void BeginTask (string name, int totalWork)
@@ -104,20 +104,24 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 		
 		public override void ReportWarning (string message)
 		{
-			WriteText ("WARNING: " + message + "\n");
+			if (logLevel != 0)
+				WriteText ("WARNING: " + message + "\n");
 		}
 		
 		public override void ReportError (string message, Exception ex)
 		{
+			if (logLevel == 0)
+				return;
+			
 			if (message != null && ex != null) {
 				WriteText ("ERROR: " + message + "\n");
-				if (verbose)
+				if (logLevel > 1)
 					WriteText (ex + "\n");
 			}
 			if (message != null)
 				WriteText ("ERROR: " + message + "\n");
 			else if (ex != null) {
-				if (verbose)
+				if (logLevel > 1)
 					WriteText ("ERROR: " + ex + "\n");
 				else
 					WriteText ("ERROR: " + ex.Message + "\n");

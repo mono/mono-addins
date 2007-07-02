@@ -61,6 +61,11 @@ namespace Mono.Addins.Setup
 			set { applicationName = value; }
 		}
 		
+		public string ApplicationNamespace {
+			get { return service.ApplicationNamespace; }
+			set { service.ApplicationNamespace = value; }
+		}
+		
 		public bool VerboseOutput {
 			get { return verbose; }
 			set { verbose = value; }
@@ -118,27 +123,44 @@ namespace Mono.Addins.Setup
 				if (File.Exists (args [n])) { 
 					packs.Add (AddinPackage.FromFile (args [n]));
 				} else {
-					string[] aname = args[n].Split ('/');
-					AddinRepositoryEntry[] ads = service.Repositories.GetAvailableAddin (aname[0], null);
+					string aname = Addin.GetIdName (GetFullId (args[n]));
+					string aversion = Addin.GetIdVersion (args[n]);
+					if (aversion.Length == 0) aversion = null;
+					
+					AddinRepositoryEntry[] ads = service.Repositories.GetAvailableAddin (aname, aversion);
 					if (ads.Length == 0)
 						throw new InstallException ("The addin '" + args[n] + "' is not available for install.");
-					if (ads.Length > 1) {
-						if (aname.Length < 2) {
-							Console.WriteLine (args[n] + ": the addin version is required because there are several versions of the same addin available.");
-							return;
-						}
-						ads = service.Repositories.GetAvailableAddin (aname[0], aname[1]);
-						if (ads.Length == 0)
-							throw new InstallException ("The addin " + aname[0] + " v" + aname[1] + " is not available.");
-					}
-				
-					packs.Add (AddinPackage.FromRepository (ads[0]));
+					packs.Add (AddinPackage.FromRepository (ads[ads.Length-1]));
 				}
 			}
-			Install (packs);
+			Install (packs, true);
 		}
 		
-		void Install (PackageCollection packs)
+		void CheckInstall (string[] args)
+		{
+			if (args.Length < 1) {
+				PrintHelp ("check-install");
+				return;
+			}
+			
+			PackageCollection packs = new PackageCollection ();
+			for (int n=0; n<args.Length; n++) {
+				Addin addin = registry.GetAddin (GetFullId (args[n]));
+				if (addin != null)
+					continue;
+				string aname = Addin.GetIdName (GetFullId (args[n]));
+				string aversion = Addin.GetIdVersion (args[n]);
+				if (aversion.Length == 0) aversion = null;
+				
+				AddinRepositoryEntry[] ads = service.Repositories.GetAvailableAddin (aname, aversion);
+				if (ads.Length == 0)
+					throw new InstallException ("The addin '" + args[n] + "' is not available for install.");
+				packs.Add (AddinPackage.FromRepository (ads[ads.Length-1]));
+			}
+			Install (packs, false);
+		}
+		
+		void Install (PackageCollection packs, bool prompt)
 		{
 			PackageCollection toUninstall;
 			DependencyCollection unresolved;
@@ -149,13 +171,13 @@ namespace Mono.Addins.Setup
 				throw new InstallException ("Not all dependencies could be resolved.");
 
 			bool ask = false;
-			if (packs.Count != n || toUninstall.Count != 0) {
+			if (prompt && (packs.Count != n || toUninstall.Count != 0)) {
 				Console.WriteLine ("The following packages will be installed:");
 				foreach (Package p in packs)
 					Console.WriteLine (" - " + p.Name);
 				ask = true;
 			}
-			if (toUninstall.Count != 0) {
+			if (prompt && (toUninstall.Count != 0)) {
 				Console.WriteLine ("The following packages need to be uninstalled:");
 				foreach (Package p in toUninstall)
 					Console.WriteLine (" - " + p.Name);
@@ -179,7 +201,7 @@ namespace Mono.Addins.Setup
 			if (args.Length < 1)
 				throw new InstallException ("The add-in id is required.");
 			
-			Addin ads = registry.GetAddin (args[0]);
+			Addin ads = registry.GetAddin (GetFullId (args[0]));
 			if (ads == null)
 				throw new InstallException ("The add-in '" + args[0] + "' is not installed.");
 			
@@ -205,12 +227,32 @@ namespace Mono.Addins.Setup
 			return service.ApplicationNamespace != null && !(ainfo.Namespace + ".").StartsWith (service.ApplicationNamespace + ".");
 		}
 		
+		string GetId (AddinHeader ainfo)
+		{
+			if (service.ApplicationNamespace != null && (ainfo.Namespace + ".").StartsWith (service.ApplicationNamespace + "."))
+				return ainfo.Id.Substring (service.ApplicationNamespace.Length + 1);
+			else
+				return ainfo.Id;
+		}
+		
+		string GetFullId (string id)
+		{
+			if (service.ApplicationNamespace != null)
+				return service.ApplicationNamespace + "." + id;
+			else
+				return id;
+		}
+		
 		void ListInstalled (string[] args)
 		{
-			bool showAll = args.Length > 0 && args [0] == "-a";
+			IList alist = args;
+			bool showAll = alist.Contains ("-a");
 			Console.WriteLine ("Installed add-ins:");
-			Addin[] addins = registry.GetAddins ();
-			foreach (Addin addin in addins) {
+			ArrayList list = new ArrayList ();
+			list.AddRange (registry.GetAddins ());
+			if (alist.Contains ("-r"))
+				list.AddRange (registry.GetAddinRoots ());
+			foreach (Addin addin in list) {
 				if (!showAll && IsHidden (addin))
 					continue;
 				Console.Write (" - " + addin.Name + " " + addin.Version);
@@ -228,7 +270,7 @@ namespace Mono.Addins.Setup
 			foreach (PackageRepositoryEntry addin in addins) {
 				if (!showAll && IsHidden (addin.Addin))
 					continue;
-				Console.WriteLine (" - " + addin.Addin.Id + " (" + addin.Repository.Name + ")");
+				Console.WriteLine (" - " + GetId (addin.Addin) + " (" + addin.Repository.Name + ")");
 			}
 		}
 		
@@ -271,7 +313,7 @@ namespace Mono.Addins.Setup
 					packs.Add (AddinPackage.FromRepository (addin));
 			}
 			if (packs.Count > 0)
-				Install (packs);
+				Install (packs, true);
 			else
 				Console.WriteLine ("No updates found.");
 		}
@@ -513,18 +555,16 @@ namespace Mono.Addins.Setup
 			cmd.Description = description;
 			cmd.LongDescription = longDescription;
 			
-			bool foundCat = false;
+			int lastCatPos = -1;
 			for (int n=0; n<commands.Count; n++) {
 				SetupCommand ec = (SetupCommand) commands [n];
 				if (ec.Category == category)
-					foundCat = true;
-				else if (foundCat) {
-					commands.Insert (n, cmd);
-					break;
-				}
+					lastCatPos = n;
 			}
-			if (!foundCat)
+			if (lastCatPos == -1)
 				commands.Add (cmd);
+			else
+				commands.Insert (lastCatPos+1, cmd);
 		}
 		
 		SetupCommand FindCommand (string id)
@@ -535,7 +575,7 @@ namespace Mono.Addins.Setup
 			return null;
 		}
 
-		void PrintHelp (params string[] parms)
+		public void PrintHelp (params string[] parms)
 		{
 			if (parms.Length == 0) {
 				string lastCat = null;
@@ -593,6 +633,16 @@ namespace Mono.Addins.Setup
 			cmd.AppendDesc ("Uninstalls an add-in. The command argument is the name");
 			cmd.AppendDesc ("of the add-in to uninstall.");
 			commands.Add (cmd);
+			
+			cmd = new SetupCommand (cat, "check-install", "ci", new SetupCommandHandler (CheckInstall));
+			cmd.Description = "Checks installed add-ins.";
+			cmd.Usage = "[package-name|package-file] ...";
+			cmd.AppendDesc ("Checks if a package is installed. If it is not, it looks for");
+			cmd.AppendDesc ("the package in the registered repositories, and if found");
+			cmd.AppendDesc ("the package is downloaded and installed, including all");
+			cmd.AppendDesc ("needed dependencies.");
+			commands.Add (cmd);
+			
 			
 			cmd = new SetupCommand (cat, "update", "up", new SetupCommandHandler (Update));
 			cmd.Description = "Updates installed add-ins.";

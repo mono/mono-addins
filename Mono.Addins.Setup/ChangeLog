@@ -1,3 +1,18 @@
+2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Setup.ProgressMonitoring/ConsoleProgressMonitor.cs,
+	  Mono.Addins.Setup.ProgressMonitoring/ProgressStatusMonitor.cs,
+	  Mono.Addins.Setup.ProgressMonitoring/NullProgressMonitor.cs,
+	  Mono.Addins.Setup/IProgressMonitor.cs: Track api changes.
+	* Mono.Addins.Setup/SetupService.cs, Mono.Addins.Setup/AddinStore.cs:
+	  Added new overload for ResolveDependencies.
+	* Mono.Addins.Setup/SetupTool.cs: Added new CheckInstall command. Fixed
+	  some issues with add-in id comparison.
+	* Mono.Addins.Setup/AddinRepositoryEntry.cs,
+	  Mono.Addins.Setup/RepositoryRegistry.cs: When looking for
+	  installable add-ins, sort the result by version number. Some fix in
+	  the code that compares ids.
+
 2007-05-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Setup/SetupService.cs: When creating a package,

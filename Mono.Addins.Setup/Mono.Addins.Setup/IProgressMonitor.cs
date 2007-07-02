@@ -40,7 +40,7 @@ namespace Mono.Addins
 		void Step (int work);
 		
 		TextWriter Log { get; }
-		bool VerboseLog { get; }
+		int LogLevel { get; }
 		
 		void ReportWarning (string message);
 		void ReportError (string message, Exception exception);

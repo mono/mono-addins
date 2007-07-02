@@ -285,7 +285,7 @@ namespace Mono.Addins.Setup
 				Repository rep = rr.GetCachedRepository();
 				if (rep == null) continue;
 				foreach (PackageRepositoryEntry addin in rep.Addins) {
-					if ((id == null || addin.Addin.Id == id) && (version == null || addin.Addin.Version == version)) {
+					if ((id == null || Addin.GetIdName (addin.Addin.Id) == id) && (version == null || addin.Addin.Version == version)) {
 						if (updates) {
 							Addin ainfo = service.Registry.GetAddin (addin.Addin.Id);
 							if (ainfo == null || Addin.CompareVersions (ainfo.Version, addin.Addin.Version) <= 0)
@@ -295,6 +295,8 @@ namespace Mono.Addins.Setup
 					}
 				}
 			}
+			// Old versions are returned first
+			list.Sort ();
 			return (PackageRepositoryEntry[]) list.ToArray (typeof(PackageRepositoryEntry));
 		}
 		

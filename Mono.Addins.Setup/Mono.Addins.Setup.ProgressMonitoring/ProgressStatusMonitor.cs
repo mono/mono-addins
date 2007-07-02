@@ -108,8 +108,8 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 			status.Cancel ();
 		}
 		
-		public bool VerboseLog {
-			get { return status.VerboseLog; }
+		public int LogLevel {
+			get { return status.LogLevel; }
 		}
 		
 		public void Dispose ()

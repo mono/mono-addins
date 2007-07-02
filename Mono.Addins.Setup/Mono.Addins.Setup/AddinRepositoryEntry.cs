@@ -30,7 +30,7 @@ using System;
 
 namespace Mono.Addins.Setup
 {
-	internal class PackageRepositoryEntry: RepositoryEntry, AddinRepositoryEntry
+	internal class PackageRepositoryEntry: RepositoryEntry, AddinRepositoryEntry, IComparable
 	{
 		AddinInfo addin;
 		
@@ -49,6 +49,17 @@ namespace Mono.Addins.Setup
 		
 		public string RepositoryName {
 			get { return Repository.Name; }
+		}
+		
+		public int CompareTo (object other)
+		{
+			PackageRepositoryEntry rep = (PackageRepositoryEntry) other;
+			string n1 = Mono.Addins.Addin.GetIdName (Addin.Id);
+			string n2 = Mono.Addins.Addin.GetIdName (rep.Addin.Id);
+			if (n1 != n2)
+				return n1.CompareTo (n2);
+			else
+				return Mono.Addins.Addin.CompareVersions (rep.Addin.Version, Addin.Version);
 		}
 	}
 	

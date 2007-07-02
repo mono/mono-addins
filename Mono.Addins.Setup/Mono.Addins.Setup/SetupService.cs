@@ -100,6 +100,11 @@ namespace Mono.Addins.Setup
 			get { return store; }
 		}
 		
+		public bool ResolveDependencies (IProgressStatus statusMonitor, AddinRepositoryEntry[] addins, out PackageCollection resolved, out PackageCollection toUninstall, out DependencyCollection unresolved)
+		{
+			return store.ResolveDependencies (statusMonitor, addins, out resolved, out toUninstall, out unresolved);
+		}
+		
 		public bool ResolveDependencies (IProgressStatus statusMonitor, PackageCollection packages, out PackageCollection toUninstall, out DependencyCollection unresolved)
 		{
 			return store.ResolveDependencies (statusMonitor, packages, out toUninstall, out unresolved);
@@ -323,7 +328,6 @@ namespace Mono.Addins.Setup
 			sw.WriteLine ("<table border=1><thead><tr><th>Add-in</th><th>Version</th><th>Description</th></tr></thead>");
 			
 			foreach (PackageRepositoryEntry entry in addins) {
-				Console.WriteLine ("entry.Addin.Name:" + entry.Addin.Name);
 				sw.WriteLine ("<tr><td>" + entry.Addin.Name + "</td><td>" + entry.Addin.Version + "</td><td>" + entry.Addin.Description + "</td></tr>");
 			}
 			

@@ -352,6 +352,14 @@ namespace Mono.Addins.Setup
 			}
 		}
 		
+		public bool ResolveDependencies (IProgressStatus statusMonitor, AddinRepositoryEntry[] addins, out PackageCollection resolved, out PackageCollection toUninstall, out DependencyCollection unresolved)
+		{
+			resolved = new PackageCollection ();
+			for (int n=0; n<addins.Length; n++)
+				resolved.Add (AddinPackage.FromRepository (addins [n]));
+			return ResolveDependencies (statusMonitor, resolved, out toUninstall, out unresolved);
+		}
+		
 		public bool ResolveDependencies (IProgressStatus statusMonitor, PackageCollection packages, out PackageCollection toUninstall, out DependencyCollection unresolved)
 		{
 			IProgressMonitor monitor = ProgressStatusMonitor.GetProgressMonitor (statusMonitor);

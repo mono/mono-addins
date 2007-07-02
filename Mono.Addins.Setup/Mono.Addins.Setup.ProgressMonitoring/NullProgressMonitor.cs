@@ -126,8 +126,8 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 			canceled = true;
 		}
 		
-		public virtual bool VerboseLog {
-			get { return false; }
+		public virtual int LogLevel {
+			get { return 1; }
 		}
 		
 		public virtual void Dispose ()
