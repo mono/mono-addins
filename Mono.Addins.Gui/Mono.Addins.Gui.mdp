@@ -1,7 +1,7 @@
 <Project name="Mono.Addins.Gui" fileversion="2.0" language="C#" clr-version="Net_1_1" ctype="DotNetProject">
   <Configurations active="Default">
     <Configuration name="Default" ctype="DotNetProjectConfiguration">
-      <Output directory="../bin" assembly="Mono.Addins.Gui" />
+      <Output directory="../bin" signAssembly="True" assemblyKeyFile="../mono-addins.snk" assembly="Mono.Addins.Gui" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_1_1" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
