@@ -47,6 +47,8 @@ namespace Mono.Addins
 		string url = "";
 		string description = "";
 		string category = "";
+		bool defaultEnabled = true;
+		bool isroot;
 		DependencyCollection dependencies;
 		DependencyCollection optionalDependencies;
 		
@@ -69,6 +71,11 @@ namespace Mono.Addins
 		public string Namespace {
 			get { return namspace; }
 			set { namspace = value; }
+		}
+		
+		public bool IsRoot {
+			get { return isroot; }
+			set { isroot = value; }
 		}
 		
 		public string Name {
@@ -118,6 +125,11 @@ namespace Mono.Addins
 			set { category = value; }
 		}
 		
+		public bool EnabledByDefault {
+			get { return defaultEnabled; }
+			set { defaultEnabled = value; }
+		}
+		
 		[XmlArrayItem ("AddinDependency", typeof(AddinDependency))]
 		[XmlArrayItem ("AssemblyDependency", typeof(AssemblyDependency))]
 		public DependencyCollection Dependencies {
@@ -148,7 +160,14 @@ namespace Mono.Addins
 			info.description = doc.DocumentElement.GetAttribute ("description");
 			info.category = doc.DocumentElement.GetAttribute ("category");
 			info.baseVersion = doc.DocumentElement.GetAttribute ("compatVersion");
+			
+			string s = doc.DocumentElement.GetAttribute ("defaultEnabled");
+			info.defaultEnabled = s.Length == 0 || s == "true" || s == "yes";
 
+			s = doc.DocumentElement.GetAttribute ("isRoot");
+			if (s.Length == 0) s = doc.DocumentElement.GetAttribute ("isroot");
+			info.isroot = s == "true" || s == "yes";
+			
 			ReadDependencies (info.Dependencies, info.OptionalDependencies, doc.DocumentElement);
 		
 			return info;
@@ -189,6 +208,8 @@ namespace Mono.Addins
 			info.description = description.Description;
 			info.category = description.Category;
 			info.baseVersion = description.CompatVersion;
+			info.isroot = description.IsRoot;
+			info.defaultEnabled = description.EnabledByDefault;
 			
 			foreach (Dependency dep in description.MainModule.Dependencies)
 				info.Dependencies.Add (dep);

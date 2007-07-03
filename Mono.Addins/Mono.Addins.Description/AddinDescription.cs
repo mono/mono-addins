@@ -61,6 +61,7 @@ namespace Mono.Addins.Description
 		bool isroot;
 		bool hasUserId;
 		bool canWrite = true;
+		bool defaultEnabled = true;
 		
 		ModuleDescription mainModule;
 		ModuleCollection optionalModules;
@@ -168,6 +169,11 @@ namespace Mono.Addins.Description
 		public bool IsRoot {
 			get { return isroot; }
 			set { isroot = value; }
+		}
+		
+		public bool EnabledByDefault {
+			get { return defaultEnabled; }
+			set { defaultEnabled = value; }
 		}
 		
 		internal bool HasUserId {
@@ -388,6 +394,11 @@ namespace Mono.Addins.Description
 				elem.SetAttribute ("compatVersion", compatVersion);
 			else
 				elem.RemoveAttribute ("compatVersion");
+			
+			if (defaultEnabled)
+				elem.RemoveAttribute ("defaultEnabled");
+			else
+				elem.SetAttribute ("defaultEnabled", "false");
 				
 			if (author != null && author.Length > 0)
 				elem.SetAttribute ("author", author);
@@ -463,7 +474,14 @@ namespace Mono.Addins.Description
 			config.description = elem.GetAttribute ("description");
 			config.category = elem.GetAttribute ("category");
 			config.basePath = elem.GetAttribute ("basePath");
-			config.isroot = elem.GetAttribute ("isroot") == "true" || elem.GetAttribute ("isroot") == "yes";
+			
+			string s = elem.GetAttribute ("isRoot");
+			if (s.Length == 0) s = elem.GetAttribute ("isroot");
+			config.isroot = s == "true" || s == "yes";
+			
+			s = elem.GetAttribute ("defaultEnabled");
+			config.defaultEnabled = s.Length == 0 || s == "true" || s == "yes";
+			
 			if (config.id.Length > 0)
 				config.hasUserId = true;
 			
@@ -613,6 +631,7 @@ namespace Mono.Addins.Description
 			writer.WriteValue ("category", category);
 			writer.WriteValue ("basePath", basePath);
 			writer.WriteValue ("sourceAddinFile", sourceAddinFile);
+			writer.WriteValue ("defaultEnabled", defaultEnabled);
 			writer.WriteValue ("MainModule", MainModule);
 			writer.WriteValue ("OptionalModules", OptionalModules);
 			writer.WriteValue ("NodeSets", ExtensionNodeSets);
@@ -636,6 +655,7 @@ namespace Mono.Addins.Description
 			category = reader.ReadStringValue ("category");
 			basePath = reader.ReadStringValue ("basePath");
 			sourceAddinFile = reader.ReadStringValue ("sourceAddinFile");
+			defaultEnabled = reader.ReadBooleanValue ("defaultEnabled");
 			mainModule = (ModuleDescription) reader.ReadValue ("MainModule");
 			optionalModules = (ModuleCollection) reader.ReadValue ("OptionalModules", new ModuleCollection (this));
 			nodeSets = (ExtensionNodeSetCollection) reader.ReadValue ("NodeSets", new ExtensionNodeSetCollection (this));

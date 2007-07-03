@@ -1,3 +1,12 @@
+2007-07-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/AddinInfo.cs, Mono.Addins/Addin.cs,
+	  Mono.Addins.Description/AddinDescription.cs,
+	  Mono.Addins.Database/DatabaseConfiguration.cs,
+	  Mono.Addins.Database/AddinDatabase.cs: Added support for add-ins
+	  which are disabled by default.
+	* Mono.Addins.Database/AddinScanner.cs: Minor fix.
+
 2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/GettextCatalog.cs: Removed old copyright notice, since

@@ -29,14 +29,32 @@
 
 using System;
 using System.IO;
-using System.Collections.Specialized;
+using System.Collections;
 using System.Xml;
 
 namespace Mono.Addins.Database
 {
 	internal class DatabaseConfiguration
 	{
-		public StringCollection DisabledAddins = new StringCollection ();
+		Hashtable addinStatus = new Hashtable ();
+		
+		public bool IsEnabled (string addinId, bool defaultValue)
+		{
+			if (addinStatus.Contains (addinId))
+				return addinStatus [addinId] != null;
+			else
+				return defaultValue;
+		}
+		
+		public void SetStatus (string addinId, bool enabled, bool defaultValue)
+		{
+			if (enabled == defaultValue)
+				addinStatus.Remove (addinId);
+			else if (enabled)
+				addinStatus [addinId] = this;
+			else
+				addinStatus [addinId] = null;
+		}
 		
 		public static DatabaseConfiguration Read (string file)
 		{
@@ -46,20 +64,48 @@ namespace Mono.Addins.Database
 			using (s) {
 				XmlTextReader tr = new XmlTextReader (s);
 				tr.MoveToContent ();
+				if (tr.IsEmptyElement)
+					return config;
+				
 				tr.ReadStartElement ("Configuration");
 				tr.MoveToContent ();
-				tr.ReadStartElement ("DisabledAddins");
-				tr.MoveToContent ();
-				if (!tr.IsEmptyElement) {
-					while (tr.NodeType != XmlNodeType.EndElement) {
-						if (tr.NodeType == XmlNodeType.Element) {
-							if (tr.LocalName == "Addin")
-								config.DisabledAddins.Add (tr.ReadElementString ());
-						}
-						else
-							tr.Skip ();
-						tr.MoveToContent ();
+				
+				while (tr.NodeType != XmlNodeType.EndElement) {
+					
+					if (tr.NodeType != XmlNodeType.Element || tr.IsEmptyElement) {
+						tr.Skip ();
 					}
+					else if (tr.LocalName == "DisabledAddins") {
+						// For back compatibility
+						tr.ReadStartElement ();
+						tr.MoveToContent ();
+						while (tr.NodeType != XmlNodeType.EndElement) {
+							if (tr.NodeType == XmlNodeType.Element && tr.LocalName == "Addin")
+								config.addinStatus [tr.ReadElementString ()] = null;
+							else
+								tr.Skip ();
+							tr.MoveToContent ();
+						}
+						tr.ReadEndElement ();
+					}
+					else if (tr.LocalName == "AddinStatus") {
+						tr.ReadStartElement ();
+						tr.MoveToContent ();
+						while (tr.NodeType != XmlNodeType.EndElement) {
+							if (tr.NodeType == XmlNodeType.Element && tr.LocalName == "Addin") {
+								string aid = tr.GetAttribute ("id");
+								string senabled = tr.GetAttribute ("enabled");
+								if (senabled.Length == 0 || senabled == "True")
+									config.addinStatus [aid] = config;
+								else
+									config.addinStatus [aid] = null;
+							}
+							tr.Skip ();
+							tr.MoveToContent ();
+						}
+						tr.ReadEndElement ();
+					}
+					tr.MoveToContent ();
 				}
 			}
 			return config;
@@ -72,9 +118,13 @@ namespace Mono.Addins.Database
 				XmlTextWriter tw = new XmlTextWriter (s);
 				tw.Formatting = Formatting.Indented;
 				tw.WriteStartElement ("Configuration");
-				tw.WriteStartElement ("DisabledAddins");
-				foreach (string ad in DisabledAddins)
-					tw.WriteElementString ("Addin", ad);
+				tw.WriteStartElement ("AddinStatus");
+				foreach (DictionaryEntry e in addinStatus) {
+					tw.WriteStartElement ("Addin");
+					tw.WriteAttributeString ("id", (string)e.Key);
+					tw.WriteAttributeString ("enabled", (e.Value != null).ToString ());
+					tw.WriteEndElement ();
+				}
 				tw.WriteEndElement ();
 				tw.WriteEndElement ();
 			}

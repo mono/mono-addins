@@ -319,7 +319,10 @@ namespace Mono.Addins.Database
 		{
 			if (!exactVersionMatch)
 				return IsAddinEnabled (id);
-			return !Configuration.DisabledAddins.Contains (id);
+			Addin ainfo = GetInstalledAddin (id, exactVersionMatch, false);
+			if (ainfo == null)
+				return false;
+			return Configuration.IsEnabled (id, ainfo.AddinInfo.EnabledByDefault);
 		}
 		
 		public void EnableAddin (string id)
@@ -347,7 +350,7 @@ namespace Mono.Addins.Database
 				}
 			}
 
-			Configuration.DisabledAddins.Remove (id);
+			Configuration.SetStatus (id, true, ainfo.AddinInfo.EnabledByDefault);
 			SaveConfiguration ();
 
 			if (AddinManager.IsInitialized && AddinManager.Registry.RegistryPath == registry.RegistryPath)
@@ -363,7 +366,7 @@ namespace Mono.Addins.Database
 			if (!IsAddinEnabled (id))
 				return;
 			
-			Configuration.DisabledAddins.Add (id);
+			Configuration.SetStatus (id, false, ai.AddinInfo.EnabledByDefault);
 			SaveConfiguration ();
 			
 			// Disable all add-ins which depend on it
@@ -396,7 +399,7 @@ namespace Mono.Addins.Database
 			}
 			catch {
 				// If something goes wrong, enable the add-in again
-				Configuration.DisabledAddins.Remove (id);
+				Configuration.SetStatus (id, true, ai.AddinInfo.EnabledByDefault);
 				SaveConfiguration ();
 				throw;
 			}

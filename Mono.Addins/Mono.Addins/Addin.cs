@@ -102,7 +102,7 @@ namespace Mono.Addins
 		}
 		
 		public bool Enabled {
-			get { return database.IsAddinEnabled (AddinInfo.Id, true); }
+			get { return AddinInfo.IsRoot ? true : database.IsAddinEnabled (AddinInfo.Id, true); }
 			set {
 				if (value)
 					database.EnableAddin (AddinInfo.Id, true);

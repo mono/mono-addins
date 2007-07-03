@@ -488,7 +488,7 @@ namespace Mono.Addins.Database
 					asmFiles.Add (asmFile);
 					Assembly asm = Util.LoadAssemblyForReflection (asmFile);
 					assemblies.Add (asm);
-					scanResult.AddFileToIgnore (Util.GetFullPath (asm.Location));
+					scanResult.AddFileToIgnore (Util.GetFullPath (asmFile));
 				}
 				
 				foreach (Assembly asm in assemblies)
@@ -543,7 +543,7 @@ namespace Mono.Addins.Database
 							asmFiles.Add (asmFile);
 							Assembly asm = Util.LoadAssemblyForReflection (asmFile);
 							assemblies.Add (asm);
-							scanResult.AddFileToIgnore (Util.GetFullPath (asm.Location));
+							scanResult.AddFileToIgnore (Util.GetFullPath (asmFile));
 						}
 						foreach (Assembly asm in assemblies)
 							ScanAssemblyContents (config, asm, null, scanResult);
