@@ -1,5 +1,9 @@
 2007-07-03  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* AssemblyInfo.cs, Mono.Addins.mdp, Makefile.am: Sign the assembly.
+
+2007-07-03  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins/AddinInfo.cs, Mono.Addins/Addin.cs,
 	  Mono.Addins.Description/AddinDescription.cs,
 	  Mono.Addins.Database/DatabaseConfiguration.cs,

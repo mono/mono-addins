@@ -1,7 +1,9 @@
 
+KEY_FILE=$(top_srcdir)/mono-addins.snk
 ASSEMBLY_COMPILER_COMMAND = mcs
-ASSEMBLY_COMPILER_FLAGS =  -langversion:ISO-1 -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG "-main:Mono.Addins.Database.SetupProcess"
+ASSEMBLY_COMPILER_FLAGS =  -keyfile:$(KEY_FILE) -langversion:ISO-1 -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG "-main:Mono.Addins.Database.SetupProcess"
 ASSEMBLY = ../bin/Mono.Addins.dll
+ASSEMBLY_NAME=Mono.Addins
 COMPILE_TARGET = exe
 PC_FILES_IN = mono-addins.pc.in
 PROJECT_REFERENCES = 
@@ -98,7 +100,15 @@ DLL_REFERENCES =
 
 $(ASSEMBLY) $(ASSEMBLY).mdb: $(build_sources) $(build_resources) $(build_datafiles) 
 	mkdir -p $(dir $(ASSEMBLY))		
-
 	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$@ -target:$(COMPILE_TARGET) $(build_sources) $(build_resources_embed) $(build_references_ref)
+
+install-data-local:
+	echo "$(GACUTIL) /i $(ASSEMBLY) /f $(GACUTIL_FLAGS)";  \
+	$(GACUTIL) /i $(ASSEMBLY) /f $(GACUTIL_FLAGS) || exit 1;
+
+uninstall-local:
+	echo "$(GACUTIL) /u $(ASSEMBLY_NAME) $(GACUTIL_FLAGS)"; \
+	$(GACUTIL) /u $(ASSEMBLY_NAME) $(GACUTIL_FLAGS) || exit 1;
+
 
 include $(top_srcdir)/Makefile.include
