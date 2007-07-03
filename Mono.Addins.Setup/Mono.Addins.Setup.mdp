@@ -1,13 +1,13 @@
 <Project name="Mono.Addins.Setup" fileversion="2.0" language="C#" clr-version="Net_1_1" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="../bin" assembly="Mono.Addins.Setup" />
+      <Output directory="../bin" signAssembly="True" assemblyKeyFile="../mono-addins.snk" assembly="Mono.Addins.Setup" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_1_1" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" win32Icon="./" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
-      <Output directory="./bin/Release" assembly="Mono.Addins.Setup" />
+      <Output directory="./bin/Release" signAssembly="False" assembly="Mono.Addins.Setup" />
       <Build debugmode="False" target="Library" />
       <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_1_1" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
@@ -42,6 +42,8 @@
     <File name="./Mono.Addins.Setup/RepositoryRegistry.cs" subtype="Code" buildaction="Compile" />
     <File name="./Mono.Addins.Setup/SetupService.cs" subtype="Code" buildaction="Compile" />
     <File name="./ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Mono.Addins.Setup/ConsoleAddinInstaller.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

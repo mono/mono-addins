@@ -1,3 +1,10 @@
+2007-07-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AssemblyInfo.cs, Mono.Addins.Setup.mdp, Makefile.am: Sign the
+	  assembly.
+	* Mono.Addins.Setup/ConsoleAddinInstaller.cs: New IAddinInstaller
+	  implementation.
+
 2007-07-02  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Setup.ProgressMonitoring/ConsoleProgressMonitor.cs,
