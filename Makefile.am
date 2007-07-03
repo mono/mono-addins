@@ -10,3 +10,4 @@ apidocs:
 	mkdir -p docs
 	monodocer --delete --pretty $(DOCFILES:%=--assembly:%) --path docs
 
+EXTRA_DIST = mono-addins.snk

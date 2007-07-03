@@ -17,6 +17,16 @@ if test "x$MCS" = "xno"; then
         AC_MSG_ERROR([mcs Not found])
 fi
 
+AC_PATH_PROG(GACUTIL, gacutil, no)
+if test "x$GACUTIL" = "xno" ; then
+	AC_MSG_ERROR([No gacutil tool found])
+fi
+
+GACUTIL_FLAGS='/package mono-addins /root $(DESTDIR)$(prefix)/lib'
+
+AC_SUBST(GACUTIL)
+AC_SUBST(GACUTIL_FLAGS)
+
 AC_ARG_ENABLE(gui,
 	AC_HELP_STRING([--enable-gui],
 		[enable support for GTK dependent libraries [default=yes]]),
