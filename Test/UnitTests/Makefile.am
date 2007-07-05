@@ -34,7 +34,7 @@ RESOURCES =
 EXTRAS = 
 
 REFERENCES =  \
-	$(MONO_NUNIT_LIBS) \
+	-pkg:mono-nunit \
 	-r:System \
 	-r:System.Xml
 
