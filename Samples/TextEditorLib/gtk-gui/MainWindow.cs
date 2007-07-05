@@ -45,7 +45,6 @@ public partial class MainWindow {
         this.AddAccelGroup(w1.AccelGroup);
         this.Name = "MainWindow";
         this.Title = Mono.Unix.Catalog.GetString("Text Editor");
-        this.WindowPosition = ((Gtk.WindowPosition)(0));
         // Container child MainWindow.Gtk.Container+ContainerChild
         this.vbox2 = new Gtk.VBox();
         this.vbox2.Name = "vbox2";
@@ -63,7 +62,6 @@ public partial class MainWindow {
         this.toolbar = ((Gtk.Toolbar)(w1.GetWidget("/toolbar")));
         this.toolbar.Name = "toolbar";
         this.toolbar.ShowArrow = false;
-        this.toolbar.Tooltips = true;
         this.toolbar.ToolbarStyle = ((Gtk.ToolbarStyle)(0));
         this.toolbar.IconSize = ((Gtk.IconSize)(3));
         this.vbox2.Add(this.toolbar);
@@ -120,12 +118,12 @@ public partial class MainWindow {
         w9.Spacing = 2;
         // Container child GtkHBox.Gtk.Container+ContainerChild
         Gtk.Image w10 = new Gtk.Image();
-        w10.Name = "image24";
+        w10.Name = "image1";
         w10.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-close", 16, 0);
         w9.Add(w10);
         // Container child GtkHBox.Gtk.Container+ContainerChild
         Gtk.Label w12 = new Gtk.Label();
-        w12.Name = "GtkLabel1";
+        w12.Name = "GtkLabel";
         w12.LabelProp = "";
         w9.Add(w12);
         w8.Add(w9);

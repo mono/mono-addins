@@ -10,9 +10,9 @@ BUILD_DIR = ../bin
 	
 all: $(ASSEMBLY)
 
-FILES = \
-	./Main.cs \
-	./AssemblyInfo.cs 
+FILES =  \
+	AssemblyInfo.cs \
+	Main.cs 
 
 DATA_FILES = 
 
@@ -20,8 +20,7 @@ RESOURCES =
 
 EXTRAS = 
 
-REFERENCES =  \
-	-r:System
+REFERENCES = -r:System
 
 DLL_REFERENCES = 
 

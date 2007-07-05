@@ -1,3 +1,16 @@
+2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* TextEditorLib/TextEditorLib.mdp,
+	  TextEditor.CompilerService/TextEditor.CompilerService.mdp,
+	  TextEditor.CompilerService/Makefile.am,
+	  TextEditor.Xml/TextEditor.Xml.mdp, TextEditor.Xml/Makefile.am,
+	  TextEditor/Makefile.am, TextEditor/TextEditor.mdp,
+	  WriterServiceHost/Makefile.am,
+	  WriterServiceHost/WriterServiceHost.mdp,
+	  WriterService.SampleExtender/WriterService.SampleExtender.mdp,
+	  WriterService/WriterService.mdp: Makefile and project file fixes.
+	* TextEditorLib/gtk-gui/MainWindow.cs: Updated.
+
 2007-04-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* TextEditorLib/MainWindow.cs, TextEditorLib/gtk-gui/MainWindow.cs,

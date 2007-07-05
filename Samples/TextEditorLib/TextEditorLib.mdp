@@ -52,6 +52,8 @@
     <ProjectReference type="Project" localcopy="True" refto="Mono.Addins" />
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
     <BuildFilesVar Sync="True" Name="FILES" />
@@ -63,4 +65,5 @@
     <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
   </MonoDevelop.Autotools.MakefileInfo>
   <GtkDesignInfo partialTypes="True" />
+  <Deployment.LinuxDeployData scriptName="texteditorlib" generatePcFile="False" />
 </Project>

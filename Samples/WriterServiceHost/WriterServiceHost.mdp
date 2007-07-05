@@ -32,4 +32,5 @@
     <AsmRefVar Sync="True" Name="DLL_REFERENCES" />
     <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <Deployment.LinuxDeployData generateScript="False" scriptName="writerservicehost" />
 </Project>

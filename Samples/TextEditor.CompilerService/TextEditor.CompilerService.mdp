@@ -26,6 +26,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Project" localcopy="True" refto="TextEditorLib" />
     <ProjectReference type="Project" localcopy="True" refto="Mono.Addins" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
     <BuildFilesVar Sync="True" Name="FILES" />
@@ -36,4 +37,5 @@
     <AsmRefVar Sync="True" Name="DLL_REFERENCES" />
     <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <Deployment.LinuxDeployData scriptName="texteditor.compilerservice" generatePcFile="False" />
 </Project>
