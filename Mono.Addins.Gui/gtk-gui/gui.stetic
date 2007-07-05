@@ -1007,6 +1007,7 @@ asd
             <child>
               <widget class="Gtk.Button" id="btnOk">
                 <property name="MemberName" />
+                <property name="Visible">False</property>
                 <property name="CanDefault">True</property>
                 <property name="CanFocus">True</property>
                 <property name="UseStock">True</property>

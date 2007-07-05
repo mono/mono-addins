@@ -546,6 +546,7 @@ namespace Mono.Addins.Gui {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
+            this.btnOk.Hide();
             this.Show();
             this.repoCombo.Changed += new System.EventHandler(this.OnRepoChanged);
             this.button1.Clicked += new System.EventHandler(this.OnUpdateRepo);

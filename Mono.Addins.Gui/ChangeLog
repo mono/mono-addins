@@ -1,3 +1,9 @@
+2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs, gtk-gui/gui.stetic:
+	  The OK button must be hidden by default.
+
 2007-07-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AssemblyInfo.cs, Makefile.am, Mono.Addins.Gui.mdp: Sign the assembly.
