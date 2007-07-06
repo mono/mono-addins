@@ -390,8 +390,10 @@ namespace Mono.Addins
 					if (data != null) {
 						foreach (Extension ext in data.Extensions) {
 							TreeNode node = GetNode (ext.Path);
-							if (node != null && node.ExtensionNodeSet != null)
-								LoadModuleExtensionNodes (ext, data.AddinId, node.ExtensionNodeSet, loadedNodes);
+							if (node != null && node.ExtensionNodeSet != null) {
+								if (node.ChildrenLoaded)
+									LoadModuleExtensionNodes (ext, data.AddinId, node.ExtensionNodeSet, loadedNodes);
+							}
 							else
 								AddinManager.ReportError ("Extension node not found or not extensible: " + ext.Path, id, null, false);
 						}

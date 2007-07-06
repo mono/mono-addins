@@ -1,3 +1,13 @@
+2007-07-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/ExtensionTree.cs: If a node has no children, there is no
+	  need to recursively call LoadExtensionElement.
+	* Mono.Addins/TreeNode.cs, Mono.Addins/ExtensionContext.cs: When
+	  activating an add-in, don't add nodes in extensions that have not
+	  yet been loaded.
+	* Mono.Addins/AddinManager.cs: GetEntryAssembly returns null when
+	  running in NUnit.
+
 2007-07-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AssemblyInfo.cs, Mono.Addins.mdp, Makefile.am: Sign the assembly.

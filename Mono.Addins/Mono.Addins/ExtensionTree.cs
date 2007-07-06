@@ -124,8 +124,10 @@ namespace Mono.Addins
 					Context.RegisterNodeCondition (cnode, cnode.Condition);
 
 				// Load children
-				int cp = 0;
-				LoadExtensionElement (cnode, addin, elem.ChildNodes, ref cp, parentCondition, false, addedNodes);
+				if (elem.ChildNodes.Count > 0) {
+					int cp = 0;
+					LoadExtensionElement (cnode, addin, elem.ChildNodes, ref cp, parentCondition, false, addedNodes);
+				}
 				
 				curPos++;
 			}

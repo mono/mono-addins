@@ -74,7 +74,9 @@ namespace Mono.Addins
 			else
 				registry = new AddinRegistry (configDir, startupDirectory);
 
-			string asmFile = new Uri (Assembly.GetEntryAssembly ().CodeBase).LocalPath;
+			Assembly asm = Assembly.GetEntryAssembly ();
+			if (asm == null) asm = Assembly.GetCallingAssembly ();
+			string asmFile = new Uri (asm.CodeBase).LocalPath;
 			if (registry.CreateHostAddinsFile (asmFile))
 				registry.Update (new ConsoleProgressStatus (false));
 			

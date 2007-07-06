@@ -119,6 +119,10 @@ namespace Mono.Addins
 			}
 		}
 		
+		public bool ChildrenLoaded {
+			get { return childrenLoaded; }
+		}
+		
 		public void AddChildNode (TreeNode node)
 		{
 			node.parent = this;
