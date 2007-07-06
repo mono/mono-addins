@@ -88,7 +88,7 @@ namespace UnitTests
 			Assert.AreEqual (1, notifyCount, "notifyCount 2");
 			Assert.AreEqual (1, addCount, "addCount 1");
 			Assert.AreEqual (0, removeCount, "removeCount 1");
-			Assert.AreEqual (1, eventCount, "eventCount 2");
+			Assert.AreEqual (2, eventCount, "eventCount 2");
 			
 			// Now unregister
 			

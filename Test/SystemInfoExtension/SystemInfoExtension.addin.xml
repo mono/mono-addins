@@ -124,11 +124,11 @@
 	</Extension>
 
 	<Extension path = "/SimpleApp/Writers2">
-		<Command title="Command" command="w1" />
-		<Command title="Command" command="w2" />
+		<Command id="c1" title="Command" command="w1" />
+		<Command id="c2" title="Command" command="w2" />
 		<Condition id="GlobalInfo" value="yes2">
-			<Command title="Command" command="cw1" />
-			<Command title="Command" command="cw2" />
+			<Command id="c3" title="Command" command="cw1" />
+			<Command id="c4" title="Command" command="cw2" />
 		</Condition>
 	</Extension>
 
