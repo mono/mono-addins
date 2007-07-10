@@ -11,9 +11,11 @@ PROJECT_REFERENCES =  \
 	../bin/Mono.Addins.Setup.dll
 BUILD_DIR = ../bin
 
-	
+
 if ENABLE_GUI
 all: $(ASSEMBLY)
+else
+all:
 endif
 
 FILES =  \
@@ -70,4 +72,6 @@ uninstall-local:
 	echo "$(GACUTIL) /u $(ASSEMBLY_NAME) $(GACUTIL_FLAGS)"; \
 	$(GACUTIL) /u $(ASSEMBLY_NAME) $(GACUTIL_FLAGS) || exit 1;
 
+if ENABLE_GUI
 include $(top_srcdir)/Makefile.include
+endif

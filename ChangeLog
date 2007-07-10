@@ -1,3 +1,8 @@
+2007-07-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Gui/Makefile.am: Make sure this dll is not build if gui
+	  is disabled.
+
 2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.mds, Packages.mdse: Added packaging project.
