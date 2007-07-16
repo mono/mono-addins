@@ -1,3 +1,7 @@
+2007-07-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am: Don't try to install the assembly if gui is disabled.
+
 2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
