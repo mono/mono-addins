@@ -38,9 +38,10 @@ namespace mautil
 					path = args [ppos + 1];
 					ppos += 2;
 				}
-				else if (args [ppos] == "-v")
+				else if (args [ppos] == "-v") {
 					verbose = true;
-				else
+					ppos++;
+				} else
 					toolParam = false;
 			}
 			
