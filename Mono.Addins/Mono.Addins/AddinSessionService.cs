@@ -327,8 +327,18 @@ namespace Mono.Addins
 				return;
 			string asmFile = new Uri (asm.CodeBase).LocalPath;
 			Addin ainfo = AddinManager.Registry.GetAddinForHostAssembly (asmFile);
-			if (ainfo != null && !IsAddinLoaded (ainfo.Id))
+			if (ainfo != null && !IsAddinLoaded (ainfo.Id)) {
+				if (ainfo.Description.FilesChanged ()) {
+					// If the add-in has changed, update the add-in database.
+					// We do it here because once loaded, add-in roots can't be
+					// reloaded like regular add-ins.
+					AddinManager.Registry.Update (null);
+					ainfo = AddinManager.Registry.GetAddinForHostAssembly (asmFile);
+					if (ainfo == null)
+						return;
+				}
 				InsertAddin (null, ainfo);
+			}
 		}
 	}
 		

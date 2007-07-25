@@ -1,5 +1,13 @@
 2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins/AddinSessionService.cs,
+	  Mono.Addins.Description/AddinDescription.cs,
+	  Mono.Addins.Database/AddinScanner.cs: When loading an add-in root
+	  check if the add-in has changed. If it changed, update the add-in
+	  database to make sure the correct info is loaded.
+
+2007-07-25  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins/RuntimeAddin.cs: New GetResoruce overload.
 	* Mono.Addins/ExtensionNode.cs: Added property for getting the parent
 	  of a node. Some more protection against exceptions.

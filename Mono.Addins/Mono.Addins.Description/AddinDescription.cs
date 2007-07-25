@@ -68,6 +68,7 @@ namespace Mono.Addins.Description
 		ExtensionNodeSetCollection nodeSets;
 		ConditionTypeDescriptionCollection conditionTypes;
 		ExtensionPointCollection extensionPoints;
+		object[] fileInfo;
 		
 		internal static BinaryXmlTypeMap typeMap;
 		
@@ -86,6 +87,7 @@ namespace Mono.Addins.Description
 			typeMap.RegisterType (typeof(AddinDependency), "AddinDependency");
 			typeMap.RegisterType (typeof(AssemblyDependency), "AssemblyDependency");
 			typeMap.RegisterType (typeof(NodeTypeAttribute), "NodeTypeAttribute");
+			typeMap.RegisterType (typeof(AddinFileInfo), "FileInfo");
 		}
 		
 		internal AddinDatabase OwnerDatabase {
@@ -329,6 +331,36 @@ namespace Mono.Addins.Description
 		public string FileName {
 			get { return configFile; }
 			set { configFile = value; }
+		}
+		
+		internal void StoreFileInfo ()
+		{
+			ArrayList list = new ArrayList ();
+			foreach (string f in AllFiles) {
+				string file = Path.Combine (this.BasePath, f);
+				AddinFileInfo fi = new AddinFileInfo ();
+				fi.FileName = f;
+				fi.Timestamp = File.GetLastWriteTime (file);
+				list.Add (fi);
+			}
+			fileInfo = list.ToArray ();
+		}
+		
+		internal bool FilesChanged ()
+		{
+			// Checks if the files of the add-in have changed.
+			if (fileInfo == null)
+				return true;
+			
+			foreach (AddinFileInfo f in fileInfo) {
+				string file = Path.Combine (this.BasePath, f.FileName);
+				if (!File.Exists (file))
+					return true;
+				if (f.Timestamp != File.GetLastWriteTime (file))
+					return true;
+			}
+			
+			return false;
 		}
 		
 		public void Save (string fileName)
@@ -637,6 +669,7 @@ namespace Mono.Addins.Description
 			writer.WriteValue ("NodeSets", ExtensionNodeSets);
 			writer.WriteValue ("ExtensionPoints", ExtensionPoints);
 			writer.WriteValue ("ConditionTypes", ConditionTypes);
+			writer.WriteValue ("FilesInfo", fileInfo);
 		}
 		
 		void IBinaryXmlElement.Read (BinaryXmlReader reader)
@@ -661,9 +694,47 @@ namespace Mono.Addins.Description
 			nodeSets = (ExtensionNodeSetCollection) reader.ReadValue ("NodeSets", new ExtensionNodeSetCollection (this));
 			extensionPoints = (ExtensionPointCollection) reader.ReadValue ("ExtensionPoints", new ExtensionPointCollection (this));
 			conditionTypes = (ConditionTypeDescriptionCollection) reader.ReadValue ("ConditionTypes", new ConditionTypeDescriptionCollection (this));
+			fileInfo = (object[]) reader.ReadValue ("FilesInfo", null);
 			
 			if (mainModule != null)
 				mainModule.SetParent (this);
 		}
+	}
+	
+	class AddinFileInfo: IBinaryXmlElement
+	{
+		string fileName;
+		DateTime timestamp;
+		
+		public string FileName {
+			get {
+				return fileName;
+			}
+			set {
+				fileName = value;
+			}
+		}
+
+		public System.DateTime Timestamp {
+			get {
+				return timestamp;
+			}
+			set {
+				timestamp = value;
+			}
+		}
+		
+		public void Read (BinaryXmlReader reader)
+		{
+			fileName = reader.ReadStringValue ("fileName");
+			timestamp = reader.ReadDateTimeValue ("timestamp");
+		}
+
+		public void Write (BinaryXmlWriter writer)
+		{
+			writer.WriteValue ("fileName", fileName);
+			writer.WriteValue ("timestamp", timestamp);
+		}
+
 	}
 }

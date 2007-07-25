@@ -562,6 +562,7 @@ namespace Mono.Addins.Database
 				}
 			}
 			
+			config.StoreFileInfo ();
 			return true;
 		}
 		
