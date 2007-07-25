@@ -53,6 +53,15 @@ namespace Mono.Addins
 			get { return treeNode != null ? treeNode.GetPath () : string.Empty; }
 		}
 		
+		public ExtensionNode Parent {
+			get {
+				if (treeNode != null && treeNode.Parent != null)
+					return treeNode.Parent.ExtensionNode;
+				else
+					return null;
+			}
+		}
+		
 		public bool HasId {
 			get { return !Id.StartsWith (ExtensionTree.AutoIdPrefix); }
 		}
@@ -92,8 +101,13 @@ namespace Mono.Addins
 		public event ExtensionNodeEventHandler ExtensionNodeChanged {
 			add {
 				extensionNodeChanged += value;
-				foreach (ExtensionNode node in ChildNodes)
-					extensionNodeChanged (this, new ExtensionNodeEventArgs (ExtensionChange.Add, node));
+				foreach (ExtensionNode node in ChildNodes) {
+					try {
+						extensionNodeChanged (this, new ExtensionNodeEventArgs (ExtensionChange.Add, node));
+					} catch (Exception ex) {
+						AddinManager.ReportError (null, null, ex, false);
+					}
+				}
 			}
 			remove {
 				extensionNodeChanged -= value;

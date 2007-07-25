@@ -202,6 +202,11 @@ namespace Mono.Addins
 		
 		public Stream GetResource (string resourceName)
 		{
+			return GetResource (resourceName, false);
+		}
+		
+		public Stream GetResource (string resourceName, bool throwIfNotFound)
+		{
 			// Look in the addin assemblies
 			
 			foreach (Assembly asm in assemblies) {
@@ -217,6 +222,9 @@ namespace Mono.Addins
 					return res;
 			}
 			
+			if (throwIfNotFound)
+				throw new InvalidOperationException ("Resource '" + resourceName + "' not found in add-in '" + id + "'");
+				
 			return null;
 		}
 		
