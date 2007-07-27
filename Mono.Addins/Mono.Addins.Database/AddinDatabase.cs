@@ -1001,8 +1001,10 @@ namespace Mono.Addins.Database
 			string file = currentScanResult.GetAssemblyLocation (args.Name);
 			if (file != null)
 				return Util.LoadAssemblyForReflection (file);
-			else
+			else {
+				Console.WriteLine ("Assembly not found: " + args.Name);
 				return null;
+			}
 		}
 		
 		public string GetFolderConfigFile (string path)

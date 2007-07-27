@@ -510,9 +510,7 @@ namespace Mono.Addins.Database
 				}
 				
 			} catch (Exception ex) {
-				if (monitor.LogLevel > 1)
-					monitor.Log ("Could not load some add-in assemblies: " + ex.Message);
-				scanResult.AddFileToWithFailure (config.AddinFile);
+				ReportReflectionException (monitor, ex, config, scanResult);
 				return false;
 			}
 			
@@ -555,15 +553,29 @@ namespace Mono.Addins.Database
 						}
 						
 					} catch (Exception ex) {
-						if (monitor.LogLevel > 1)
-							monitor.Log ("Could not load some add-in assemblies: " + ex.Message);
-						scanResult.AddFileToWithFailure (config.AddinFile);
+						ReportReflectionException (monitor, ex, config, scanResult);
 					}
 				}
 			}
 			
 			config.StoreFileInfo ();
 			return true;
+		}
+
+		void ReportReflectionException (IProgressStatus monitor, Exception ex, AddinDescription config, AddinScanResult scanResult)
+		{
+			scanResult.AddFileToWithFailure (config.AddinFile);
+			if (monitor.LogLevel <= 1)
+			    return;
+			
+			monitor.Log ("Could not load some add-in assemblies: " + ex.Message);
+			
+			ReflectionTypeLoadException rex = ex as ReflectionTypeLoadException;
+			if (rex != null) {
+				Console.WriteLine ("pp e: " + ex.InnerException);
+				foreach (Exception e in rex.LoaderExceptions)
+					monitor.Log ("Load exception: " + e);
+			}
 		}
 		
 		void ScanAssemblyAddinHeaders (AddinDescription config, Assembly asm, AddinScanResult scanResult)
