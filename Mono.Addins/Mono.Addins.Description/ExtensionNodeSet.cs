@@ -161,7 +161,7 @@ namespace Mono.Addins.Description
 				string startAddin = ns [1];
 				if (startAddin == null || startAddin.Length == 0)
 					startAddin = desc.AddinId;
-				ExtensionNodeSet nset = desc.OwnerDatabase.FindNodeSet (startAddin, ns[0]);
+				ExtensionNodeSet nset = desc.OwnerDatabase.FindNodeSet (ParentAddinDescription.Domain, startAddin, ns[0]);
 				if (nset != null)
 					nset.GetAllowedNodeTypes (visitedSets, col);
 			}

@@ -60,7 +60,7 @@ namespace Mono.Addins.Description
 				foreach (Dependency dep in desc.MainModule.Dependencies) {
 					AddinDependency adep = dep as AddinDependency;
 					if (adep == null) continue;
-					Addin ad = desc.OwnerDatabase.GetInstalledAddin (adep.FullAddinId);
+					Addin ad = desc.OwnerDatabase.GetInstalledAddin (ParentAddinDescription.Domain, adep.FullAddinId);
 					if (ad != null && ad.Description != null) {
 						ep = FindExtensionPoint (ad.Description, path);
 						if (ep != null)

@@ -205,6 +205,30 @@ namespace Mono.Addins.Database
 			return File.Exists (fileName);
 		}
 		
+		public bool DirExists (string dir)
+		{
+			return Directory.Exists (dir);
+		}
+		
+		public void CreateDir (string dir)
+		{
+			Directory.CreateDirectory (dir);
+		}
+		
+		public string[] GetDirectories (string dir)
+		{
+			return Directory.GetDirectories (dir);
+		}
+		
+		public bool DirectoryIsEmpty (string dir)
+		{
+			foreach (string f in Directory.GetFiles (dir)) {
+				if (!inTransaction || !deletedFiles.Contains (f))
+					return false;
+			}
+			return true;
+		}
+		
 		public string[] GetDirectoryFiles (string dir, string pattern)
 		{
 			if (pattern == null || pattern.Length == 0 || pattern.EndsWith ("*"))

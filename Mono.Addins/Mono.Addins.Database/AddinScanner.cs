@@ -49,7 +49,7 @@ namespace Mono.Addins.Database
 			this.database = database;
 		}
 		
-		public void ScanFolder (IProgressStatus monitor, string path, AddinScanResult scanResult)
+		public void ScanFolder (IProgressStatus monitor, string path, string domain, AddinScanResult scanResult)
 		{
 			path = Util.GetFullPath (path);
 			
@@ -71,8 +71,31 @@ namespace Mono.Addins.Database
 					return;
 			}
 			
+			// if domain is null it means that a new domain has to be created.
+			
+			bool sharedFolder = domain == AddinDatabase.GlobalDomain;
+			
 			if (folderInfo == null)
 				folderInfo = new AddinScanFolderInfo (path);
+			
+			if (!sharedFolder && (folderInfo.SharedFolder || folderInfo.Domain != domain)) {
+				// If the folder already has a domain, reuse it
+				if (domain == null && folderInfo.RootsDomain != null && folderInfo.RootsDomain != AddinDatabase.GlobalDomain)
+					domain = folderInfo.RootsDomain;
+				else if (domain == null) {
+					folderInfo.Domain = domain = database.GetUniqueDomainId ();
+					scanResult.RegenerateRelationData = true;
+				}
+				else {
+					folderInfo.Domain = domain;
+					scanResult.RegenerateRelationData = true;
+				}
+			}
+			else if (!folderInfo.SharedFolder && sharedFolder) {
+				scanResult.RegenerateRelationData = true;
+			}
+			
+			folderInfo.SharedFolder = sharedFolder;
 			
 			if (Directory.Exists (path))
 			{
@@ -95,7 +118,7 @@ namespace Mono.Addins.Database
 						scanResult.AddAssemblyLocation (file);
 						break;
 					case ".addins":
-						ScanAddinsFile (monitor, file, scanResult);
+						ScanAddinsFile (monitor, file, domain, scanResult);
 						break;
 					}
 				}
@@ -128,10 +151,7 @@ namespace Mono.Addins.Database
 					return;
 					
 				foreach (AddinFileInfo info in missing) {
-					if (info.IsRoot)
-						database.UninstallRootAddin (monitor, info.AddinId, info.File, scanResult);
-					else
-						database.UninstallAddin (monitor, info.AddinId, scanResult);
+					database.UninstallAddin (monitor, info.Domain, info.AddinId, scanResult);
 				}
 			}
 		}
@@ -144,7 +164,7 @@ namespace Mono.Addins.Database
 			AddinFileInfo finfo = folderInfo.GetAddinFileInfo (file);
 			bool added = false;
 			   
-			if (finfo != null && File.GetLastWriteTime (file) == finfo.LastScan && !scanResult.RegenerateAllData) {
+			if (finfo != null && (!finfo.IsAddin || finfo.Domain == folderInfo.GetDomain (finfo.IsRoot)) && File.GetLastWriteTime (file) == finfo.LastScan && !scanResult.RegenerateAllData) {
 				if (finfo.ScanError) {
 					// Always schedule the file for scan if there was an error in a previous scan.
 					// However, don't set ChangesFound=true, in this way if there isn't any other
@@ -153,15 +173,10 @@ namespace Mono.Addins.Database
 					added = true;
 				}
 			
-				if (finfo.AddinId == null || finfo.AddinId.Length == 0)
+				if (!finfo.IsAddin)
 					return;
-				if (!finfo.IsRoot) {
-					if (database.AddinDescriptionExists (finfo.AddinId))
-						return;
-				} else {
-					if (database.HostDescriptionExists (finfo.AddinId, file))
-						return;
-				}
+				if (database.AddinDescriptionExists (finfo.Domain, finfo.AddinId))
+					return;
 			}
 			
 			scanResult.ChangesFound = true;
@@ -239,12 +254,7 @@ namespace Mono.Addins.Database
 					// Also, the dependencies of the old add-in need to be re-analized
 					
 					AddinDescription existingDescription = null;
-					bool res;
-					
-					if (config.IsRoot)
-						res = database.GetHostDescription (monitor, config.AddinId, config.AddinFile, out existingDescription);
-					else
-						res = database.GetAddinDescription (monitor, config.AddinId, out existingDescription);
+					bool res = database.GetAddinDescription (monitor, folderInfo.Domain, config.AddinId, out existingDescription);
 					
 					// If we can't get information about the old assembly, just regenerate all relation data
 					if (!res)
@@ -261,11 +271,8 @@ namespace Mono.Addins.Database
 					
 					// If the scanned file results in an add-in version different from the one obtained from
 					// previous scans, the old add-in needs to be uninstalled.
-					if (fi != null && fi.AddinId != null && fi.AddinId != config.AddinId) {
-						if (fi.IsRoot)
-							database.UninstallRootAddin (monitor, fi.AddinId, file, scanResult);
-						else
-							database.UninstallAddin (monitor, fi.AddinId, scanResult);
+					if (fi != null && fi.IsAddin && fi.AddinId != config.AddinId) {
+						database.UninstallAddin (monitor, folderInfo.Domain, fi.AddinId, scanResult);
 						
 						// If the add-in version has changed, regenerate everything again since old data can't be reused
 						if (Addin.GetIdName (fi.AddinId) == Addin.GetIdName (config.AddinId))
@@ -274,6 +281,23 @@ namespace Mono.Addins.Database
 					
 					// If a description could be generated, save it now (if the scan was successful)
 					if (scanSuccessful) {
+						
+						// Assign the domain
+						if (config.IsRoot) {
+							if (folderInfo.RootsDomain == null)
+								folderInfo.RootsDomain = database.GetUniqueDomainId ();
+							config.Domain = folderInfo.RootsDomain;
+						} else
+							config.Domain = folderInfo.Domain;
+						
+						if (config.IsRoot && scanResult.HostIndex != null) {
+							// If the add-in is a root, register its assemblies
+							foreach (string f in config.MainModule.Assemblies) {
+								string asmFile = Path.Combine (config.BasePath, f);
+								scanResult.HostIndex.RegisterAssembly (asmFile, config.AddinId, config.AddinFile, config.Domain);
+							}
+						}
+						
 						if (database.SaveDescription (monitor, config, replaceFileName)) {
 							// The new dependencies also have to be updated
 							Util.AddDependencies (config, scanResult);
@@ -331,11 +355,11 @@ namespace Mono.Addins.Database
 			return config;
 		}
 		
-		public void ScanAddinsFile (IProgressStatus monitor, string file, AddinScanResult scanResult)
+		public void ScanAddinsFile (IProgressStatus monitor, string file, string domain, AddinScanResult scanResult)
 		{
 			XmlTextReader r = null;
-			StringCollection directories = new StringCollection ();
-			StringCollection directoriesWithSubdirs = new StringCollection ();
+			ArrayList directories = new ArrayList ();
+			ArrayList directoriesWithSubdirs = new ArrayList ();
 			try {
 				r = new XmlTextReader (new StreamReader (file));
 				r.MoveToContent ();
@@ -346,20 +370,31 @@ namespace Mono.Addins.Database
 				while (r.NodeType != XmlNodeType.EndElement) {
 					if (r.NodeType == XmlNodeType.Element && r.LocalName == "Directory") {
 						string subs = r.GetAttribute ("include-subdirs");
+						string sdom;
+						string share = r.GetAttribute ("shared");
+						if (share == "true")
+							sdom = AddinDatabase.GlobalDomain;
+						else if (share == "false")
+							sdom = null;
+						else
+							sdom = domain; // Inherit the domain
+						
 						string path = r.ReadElementString ().Trim ();
 						if (path.Length > 0) {
 							if (subs == "true")
-								directoriesWithSubdirs.Add (path);
+								directoriesWithSubdirs.Add (new string[] {path, sdom});
 							else
-								directories.Add (path);
+								directories.Add (new string[] {path, sdom});
 						}
 					}
 					else if (r.NodeType == XmlNodeType.Element && r.LocalName == "GacAssembly") {
 						string aname = r.ReadElementString ().Trim ();
 						if (aname.Length > 0) {
 							aname = Util.GetGacPath (aname);
-							if (aname != null)
-								directories.Add (aname);
+							if (aname != null) {
+								// Gac assemblies always use the global domain
+								directories.Add (new string[] {aname, AddinDatabase.GlobalDomain});
+							}
 						}
 					}
 					else
@@ -373,29 +408,29 @@ namespace Mono.Addins.Database
 				if (r != null)
 					r.Close ();
 			}
-			foreach (string d in directories) {
-				string dir = d;
+			foreach (string[] d in directories) {
+				string dir = d[0];
 				if (!Path.IsPathRooted (dir))
 					dir = Path.Combine (Path.GetDirectoryName (file), dir);
-				ScanFolder (monitor, dir, scanResult);
+				ScanFolder (monitor, dir, d[1], scanResult);
 			}
-			foreach (string d in directoriesWithSubdirs) {
-				string dir = d;
+			foreach (string[] d in directoriesWithSubdirs) {
+				string dir = d[0];
 				if (!Path.IsPathRooted (dir))
 					dir = Path.Combine (Path.GetDirectoryName (file), dir);
-				ScanFolderRec (monitor, dir, scanResult);
+				ScanFolderRec (monitor, dir, d[1], scanResult);
 			}
 		}
 		
-		public void ScanFolderRec (IProgressStatus monitor, string dir, AddinScanResult scanResult)
+		public void ScanFolderRec (IProgressStatus monitor, string dir, string domain, AddinScanResult scanResult)
 		{
-			ScanFolder (monitor, dir, scanResult);
+			ScanFolder (monitor, dir, domain, scanResult);
 			
 			if (!Directory.Exists (dir))
 				return;
 				
 			foreach (string sd in Directory.GetDirectories (dir))
-				ScanFolderRec (monitor, sd, scanResult);
+				ScanFolderRec (monitor, sd, domain, scanResult);
 		}
 		
 		bool ScanConfigAssemblies (IProgressStatus monitor, string filePath, AddinScanResult scanResult, out AddinDescription config)
@@ -503,12 +538,6 @@ namespace Mono.Addins.Database
 				foreach (Assembly asm in assemblies)
 					ScanAssemblyContents (config, asm, hostExtensionClasses, scanResult);
 				
-				if (config.IsRoot && scanResult.HostIndex != null) {
-					// If the add-in is a root, register its assemblies
-					foreach (string asmFile in asmFiles)
-						scanResult.HostIndex.RegisterAssembly (asmFile, config.AddinId, config.AddinFile);
-				}
-				
 			} catch (Exception ex) {
 				ReportReflectionException (monitor, ex, config, scanResult);
 				return false;
@@ -545,12 +574,6 @@ namespace Mono.Addins.Database
 						}
 						foreach (Assembly asm in assemblies)
 							ScanAssemblyContents (config, asm, null, scanResult);
-				
-						if (config.IsRoot && scanResult.HostIndex != null) {
-							// If the add-in is a root, register its assemblies
-							foreach (string asmFile in asmFiles)
-								scanResult.HostIndex.RegisterAssembly (asmFile, config.AddinId, config.AddinFile);
-						}
 						
 					} catch (Exception ex) {
 						ReportReflectionException (monitor, ex, config, scanResult);
@@ -572,7 +595,6 @@ namespace Mono.Addins.Database
 			
 			ReflectionTypeLoadException rex = ex as ReflectionTypeLoadException;
 			if (rex != null) {
-				Console.WriteLine ("pp e: " + ex.InnerException);
 				foreach (Exception e in rex.LoaderExceptions)
 					monitor.Log ("Load exception: " + e);
 			}

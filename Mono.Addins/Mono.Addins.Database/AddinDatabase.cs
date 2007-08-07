@@ -40,9 +40,13 @@ namespace Mono.Addins.Database
 {
 	class AddinDatabase
 	{
+		public const string GlobalDomain = "global";
+		
 		const string VersionTag = "000";
 
+		ArrayList allSetupInfos;
 		ArrayList addinSetupInfos;
+		ArrayList rootSetupInfos;
 		internal static bool RunningSetupProcess;
 		bool fatalDatabseError;
 		Hashtable cachedAddinSetupInfos = new Hashtable ();
@@ -52,6 +56,7 @@ namespace Mono.Addins.Database
 		string addinDbDir;
 		DatabaseConfiguration config = null;
 		AddinRegistry registry;
+		int lastDomainId;
 		
 		public AddinDatabase (AddinRegistry registry)
 		{
@@ -98,27 +103,19 @@ namespace Mono.Addins.Database
 				Directory.Delete (AddinFolderCachePath, true);
 		}
 		
-		public ExtensionNodeSet FindNodeSet (string addinId, string id)
+		public ExtensionNodeSet FindNodeSet (string domain, string addinId, string id)
 		{
-			return FindNodeSet (addinId, id, new Hashtable ());
+			return FindNodeSet (domain, addinId, id, new Hashtable ());
 		}
 		
-		ExtensionNodeSet FindNodeSet (string addinId, string id, Hashtable visited)
+		ExtensionNodeSet FindNodeSet (string domain, string addinId, string id, Hashtable visited)
 		{
 			if (visited.Contains (addinId))
 				return null;
 			visited.Add (addinId, addinId);
-			Addin addin = GetInstalledAddin (addinId, true, false);
-			if (addin == null) {
-				foreach (Addin root in GetAddinRoots ()) {
-					if (root.Id == addinId) {
-						addin = root;
-						break;
-					}
-				}
-				if (addin == null)
-					return null;
-			}
+			Addin addin = GetInstalledAddin (domain, addinId, true, false);
+			if (addin == null)
+				return null;
 			AddinDescription desc = addin.Description;
 			if (desc == null)
 				return null;
@@ -133,78 +130,128 @@ namespace Mono.Addins.Database
 				if (adep == null) continue;
 				
 				string aid = Addin.GetFullId (desc.Namespace, adep.AddinId, adep.Version);
-				ExtensionNodeSet nset = FindNodeSet (aid, id, visited);
+				ExtensionNodeSet nset = FindNodeSet (domain, aid, id, visited);
 				if (nset != null)
 					return nset;
 			}
 			return null;
 		}
 		
-		public AddinDescription GetDescription (string id)
+		public ArrayList GetInstalledAddins (string domain, AddinType type)
 		{
-			InternalCheck ();
-			IDisposable dblock = fileDatabase.LockRead ();
-			try {
-				string path = GetDescriptionPath (id);
-				AddinDescription desc = AddinDescription.ReadBinary (fileDatabase, path);
-				if (desc != null)
-					desc.OwnerDatabase = this;
-				return desc;
+			if (type == AddinType.All) {
+				if (allSetupInfos != null)
+					return allSetupInfos;
 			}
-			catch (FileNotFoundException) {
-				throw new InvalidOperationException ("Add-in not found: " + id);
-			} finally {
-				dblock.Dispose ();
+			else if (type == AddinType.Addin) {
+				if (addinSetupInfos != null)
+					return addinSetupInfos;
 			}
-		}
+			else {
+				if (rootSetupInfos != null)
+					return rootSetupInfos;
+			}
 		
-		public ArrayList GetInstalledAddins ()
-		{
-			if (addinSetupInfos != null)
-				return addinSetupInfos;
+			InternalCheck (domain);
 			
-			InternalCheck ();
 			using (fileDatabase.LockRead ()) {
-				return InternalGetInstalledAddins ();
+				return InternalGetInstalledAddins (domain, null, type);
 			}
 		}
 		
-		public ArrayList GetAddinRoots ()
+		ArrayList InternalGetInstalledAddins (string domain, AddinType type)
 		{
+			return InternalGetInstalledAddins (domain, null, type);
+		}
+		
+		ArrayList InternalGetInstalledAddins (string domain, string idFilter, AddinType type)
+		{
+			if (allSetupInfos == null) {
+				ArrayList alist = new ArrayList ();
+
+				// Global add-ins are valid for any private domain
+				if (domain != AddinDatabase.GlobalDomain)
+					FindInstalledAddins (alist, AddinDatabase.GlobalDomain, idFilter);
+
+				FindInstalledAddins (alist, domain, idFilter);
+				if (idFilter != null)
+					return alist;
+				allSetupInfos = alist;
+			}
+			if (type == AddinType.All)
+				return FilterById (allSetupInfos, idFilter);
+			
+			if (type == AddinType.Addin) {
+				if (addinSetupInfos == null) {
+					addinSetupInfos = new ArrayList ();
+					foreach (Addin adn in allSetupInfos)
+						if (!adn.Description.IsRoot)
+							addinSetupInfos.Add (adn);
+				}
+				return FilterById (addinSetupInfos, idFilter);
+			}
+			else {
+				if (rootSetupInfos == null) {
+					rootSetupInfos = new ArrayList ();
+					foreach (Addin adn in allSetupInfos)
+						if (!adn.Description.IsRoot)
+							rootSetupInfos.Add (adn);
+				}
+				return FilterById (rootSetupInfos, idFilter);
+			}
+		}
+		
+		ArrayList FilterById (ArrayList addins, string id)
+		{
+			if (id == null)
+				return addins;
 			ArrayList list = new ArrayList ();
-			foreach (string file in fileDatabase.GetDirectoryFiles (AddinCachePath, "*.mroot")) {
-				list.Add (new Addin (this, file));
+			foreach (Addin adn in addins) {
+				if (Addin.GetIdName (adn.Id) == id)
+					list.Add (adn);
 			}
 			return list;
 		}
-		
-		ArrayList InternalGetInstalledAddins ()
-		{
-			if (addinSetupInfos != null)
-				return addinSetupInfos;
 
-			addinSetupInfos = new ArrayList ();
-			
-			foreach (string file in fileDatabase.GetDirectoryFiles (AddinCachePath, "*.maddin")) {
-				addinSetupInfos.Add (new Addin (this, file));
+		void FindInstalledAddins (ArrayList result, string domain, string idFilter)
+		{
+			if (idFilter == null) idFilter = "*";
+			string dir = Path.Combine (AddinCachePath, domain);
+			if (Directory.Exists (dir)) {
+				foreach (string file in fileDatabase.GetDirectoryFiles (dir, idFilter + ".maddin")) {
+					string id = Path.GetFileNameWithoutExtension (file);
+					result.Add (GetInstalledDomainAddin (domain, id, true, false, false));
+				}
 			}
-			return addinSetupInfos;
 		}
-		
-		public Addin GetInstalledAddin (string id)
+
+		public Addin GetInstalledAddin (string domain, string id)
 		{
-			return GetInstalledAddin (id, false, false);
+			return GetInstalledAddin (domain, id, false, false);
 		}
 		
-		public Addin GetInstalledAddin (string id, bool exactVersionMatch)
+		public Addin GetInstalledAddin (string domain, string id, bool exactVersionMatch)
 		{
-			return GetInstalledAddin (id, exactVersionMatch, false);
+			return GetInstalledAddin (domain, id, exactVersionMatch, false);
 		}
 		
-		public Addin GetInstalledAddin (string id, bool exactVersionMatch, bool enabledOnly)
+		public Addin GetInstalledAddin (string domain, string id, bool exactVersionMatch, bool enabledOnly)
+		{
+			// Try the given domain, and if not found, try the shared domain
+			Addin ad = GetInstalledDomainAddin (domain, id, exactVersionMatch, enabledOnly, true);
+			if (ad != null)
+				return ad;
+			if (domain != AddinDatabase.GlobalDomain)
+				return GetInstalledDomainAddin (AddinDatabase.GlobalDomain, id, exactVersionMatch, enabledOnly, true);
+			else
+				return null;
+		}
+		
+		Addin GetInstalledDomainAddin (string domain, string id, bool exactVersionMatch, bool enabledOnly, bool dbLockCheck)
 		{
 			Addin sinfo = null;
-			object ob = cachedAddinSetupInfos [id];
+			string idd = id + " " + domain;
+			object ob = cachedAddinSetupInfos [idd];
 			if (ob != null) {
 				sinfo = ob as Addin;
 				if (sinfo != null) {
@@ -218,19 +265,20 @@ namespace Mono.Addins.Database
 					return null;
 			}
 		
-			InternalCheck ();
+			if (dbLockCheck)
+				InternalCheck (domain);
 			
-			using (fileDatabase.LockRead ())
+			using (dbLockCheck ? fileDatabase.LockRead () : null)
 			{
-				string path = GetDescriptionPath (id);
+				string path = GetDescriptionPath (domain, id);
 				if (sinfo == null && fileDatabase.Exists (path)) {
 					sinfo = new Addin (this, path);
-					cachedAddinSetupInfos [id] = sinfo;
+					cachedAddinSetupInfos [idd] = sinfo;
 					if (!enabledOnly || sinfo.Enabled)
 						return sinfo;
 					if (exactVersionMatch) {
 						// Cache lookups with negative result
-						cachedAddinSetupInfos [id] = this;
+						cachedAddinSetupInfos [idd] = this;
 						return null;
 					}
 				}
@@ -241,11 +289,9 @@ namespace Mono.Addins.Database
 					string version, name, bestVersion = null;
 					Addin.GetIdParts (id, out name, out version);
 					
-					// FIXME: Not very efficient, will load all descriptions
-					foreach (Addin ia in InternalGetInstalledAddins ()) 
+					foreach (Addin ia in InternalGetInstalledAddins (domain, name, AddinType.All)) 
 					{
-						if (Addin.GetIdName (ia.Id) == name && 
-						    (!enabledOnly || ia.Enabled) &&
+						if ((!enabledOnly || ia.Enabled) &&
 						    (version.Length == 0 || ia.SupportsVersion (version)) && 
 						    (bestVersion == null || Addin.CompareVersions (bestVersion, ia.Version) > 0)) 
 						{
@@ -254,7 +300,7 @@ namespace Mono.Addins.Database
 						}
 					}
 					if (sinfo != null) {
-						cachedAddinSetupInfos [id] = sinfo;
+						cachedAddinSetupInfos [idd] = sinfo;
 						return sinfo;
 					}
 				}
@@ -262,82 +308,81 @@ namespace Mono.Addins.Database
 				// Cache lookups with negative result
 				// Ignore the 'not installed' flag when disabled add-ins are allowed
 				if (enabledOnly)
-					cachedAddinSetupInfos [id] = this;
+					cachedAddinSetupInfos [idd] = this;
 				return null;
 			}
 		}
 		
-		public Addin GetInstalledAddin (string id, string version)
+/*		public Addin GetInstalledAddin (string domain, string id, string version)
 		{
-			foreach (Addin ia in GetInstalledAddins ()) {
+			foreach (Addin ia in GetInstalledAddins (domain)) {
 				if ((id == null || ia.Id == id) && (version == null || ia.Version == version))
 					return ia;
 			}
 			return null;
 		}
-		
+*/		
 		public void Shutdown ()
 		{
-			addinSetupInfos = null;
+			ResetCachedData ();
 		}
 		
-		public Addin GetAddinForHostAssembly (string assemblyLocation)
+		public Addin GetAddinForHostAssembly (string domain, string assemblyLocation)
 		{
-			InternalCheck ();
+			InternalCheck (domain);
 			Addin ainfo = null;
 			
 			object ob = cachedAddinSetupInfos [assemblyLocation];
-			if (ob != null) {
-				ainfo = ob as Addin;
-				if (ainfo != null)
-					return ainfo;
-				else
-					return null;
-			}
+			if (ob != null)
+				return ob as Addin; // Don't use a cast here is ob may not be an Addin.
 
 			AddinHostIndex index = GetAddinHostIndex ();
-			string addin, addinFile;
-			if (index.GetAddinForAssembly (assemblyLocation, out addin, out addinFile)) {
-				ainfo = new Addin (this, addin, addinFile);
+			string addin, addinFile, rdomain;
+			if (index.GetAddinForAssembly (assemblyLocation, out addin, out addinFile, out rdomain)) {
+				string sid = addin + " " + rdomain;
+				ainfo = cachedAddinSetupInfos [sid] as Addin;
+				if (ainfo == null)
+					ainfo = new Addin (this, GetDescriptionPath (rdomain, addin));
 				cachedAddinSetupInfos [assemblyLocation] = ainfo;
+				cachedAddinSetupInfos [addin + " " + rdomain] = ainfo;
 			}
 			
 			return ainfo;
 		}
 		
 		
-		public bool IsAddinEnabled (string id)
+		public bool IsAddinEnabled (string domain, string id)
 		{
-			Addin ainfo = GetInstalledAddin (id);
+			Addin ainfo = GetInstalledAddin (domain, id);
 			if (ainfo != null)
 				return ainfo.Enabled;
 			else
 				return false;
 		}
 		
-		internal bool IsAddinEnabled (string id, bool exactVersionMatch)
+		internal bool IsAddinEnabled (string domain, string id, bool exactVersionMatch)
 		{
 			if (!exactVersionMatch)
-				return IsAddinEnabled (id);
-			Addin ainfo = GetInstalledAddin (id, exactVersionMatch, false);
+				return IsAddinEnabled (domain, id);
+			Addin ainfo = GetInstalledAddin (domain, id, exactVersionMatch, false);
 			if (ainfo == null)
 				return false;
 			return Configuration.IsEnabled (id, ainfo.AddinInfo.EnabledByDefault);
 		}
 		
-		public void EnableAddin (string id)
+		public void EnableAddin (string domain, string id)
 		{
-			EnableAddin (id, true);
+			EnableAddin (domain, id, true);
 		}
 		
-		internal void EnableAddin (string id, bool exactVersionMatch)
+		internal void EnableAddin (string domain, string id, bool exactVersionMatch)
 		{
-			Addin ainfo = GetInstalledAddin (id, exactVersionMatch, false);
+			Addin ainfo = GetInstalledAddin (domain, id, exactVersionMatch, false);
 			if (ainfo == null)
 				// It may be an add-in root
 				return;
 
-			if (IsAddinEnabled (id))
+			if (IsAddinEnabled (domain, id))
 				return;
 			
 			// Enable required add-ins
@@ -346,7 +391,7 @@ namespace Mono.Addins.Database
 				if (dep is AddinDependency) {
 					AddinDependency adep = dep as AddinDependency;
 					string adepid = Addin.GetFullId (ainfo.AddinInfo.Namespace, adep.AddinId, adep.Version);
-					EnableAddin (adepid, false);
+					EnableAddin (domain, adepid, false);
 				}
 			}
 
@@ -357,13 +402,13 @@ namespace Mono.Addins.Database
 				AddinManager.SessionService.ActivateAddin (id);
 		}
 		
-		public void DisableAddin (string id)
+		public void DisableAddin (string domain, string id)
 		{
-			Addin ai = GetInstalledAddin (id, true);
+			Addin ai = GetInstalledAddin (domain, id, true);
 			if (ai == null)
 				throw new InvalidOperationException ("Add-in '" + id + "' not installed.");
 
-			if (!IsAddinEnabled (id))
+			if (!IsAddinEnabled (domain, id))
 				return;
 			
 			Configuration.SetStatus (id, false, ai.AddinInfo.EnabledByDefault);
@@ -374,7 +419,7 @@ namespace Mono.Addins.Database
 			try {
 				string idName = Addin.GetIdName (id);
 				
-				foreach (Addin ainfo in GetInstalledAddins ()) {
+				foreach (Addin ainfo in GetInstalledAddins (domain, AddinType.Addin)) {
 					foreach (Dependency dep in ainfo.AddinInfo.Dependencies) {
 						AddinDependency adep = dep as AddinDependency;
 						if (adep == null)
@@ -388,10 +433,10 @@ namespace Mono.Addins.Database
 						// if there is an older version available. Check it now.
 						
 						adepid = Addin.GetFullId (ainfo.AddinInfo.Namespace, adep.AddinId, adep.Version);
-						Addin adepinfo = GetInstalledAddin (adepid, false, true);
+						Addin adepinfo = GetInstalledAddin (domain, adepid, false, true);
 						
 						if (adepinfo == null) {
-							DisableAddin (ainfo.Id);
+							DisableAddin (domain, ainfo.Id);
 							break;
 						}
 					}
@@ -408,12 +453,12 @@ namespace Mono.Addins.Database
 				AddinManager.SessionService.UnloadAddin (id);
 		}		
 
-		internal string GetDescriptionPath (string id)
+		internal string GetDescriptionPath (string domain, string id)
 		{
-			return Path.Combine (AddinCachePath, id + ".maddin");
+			return Path.Combine (Path.Combine (AddinCachePath, domain), id + ".maddin");
 		}
 		
-		void InternalCheck ()
+		void InternalCheck (string domain)
 		{
 			// If the database is broken, don't try to regenerate it at every check.
 			if (fatalDatabseError)
@@ -426,19 +471,19 @@ namespace Mono.Addins.Database
 				}
 			}
 			if (update)
-				Update (null);
+				Update (null, domain);
 		}
 		
 		void GenerateAddinExtensionMapsInternal (IProgressStatus monitor, ArrayList addinsToUpdate, ArrayList removedAddins)
 		{
-			AddinUpdateData updateData = new AddinUpdateData (this);
+			AddinUpdateData updateData = new AddinUpdateData (this, monitor);
 			
 			// Clear cached data
 			cachedAddinSetupInfos.Clear ();
 			
 			// Collect all information
 			
-			Hashtable addinHash = new Hashtable ();
+			AddinIndex addinHash = new AddinIndex ();
 			
 			if (monitor.LogLevel > 1)
 				monitor.Log ("Generating add-in extension maps");
@@ -448,6 +493,7 @@ namespace Mono.Addins.Database
 			ArrayList files = new ArrayList ();
 			
 			bool partialGeneration = addinsToUpdate != null;
+			string[] domains = GetDomains ();
 			
 			// Get the files to be updated
 			
@@ -455,18 +501,21 @@ namespace Mono.Addins.Database
 				changedAddins = new Hashtable ();
 				foreach (string s in addinsToUpdate) {
 					changedAddins [s] = s;
-					string mp = GetDescriptionPath (s);
-					if (fileDatabase.Exists (mp))
-						files.Add (mp);
-					else
-						files.AddRange (fileDatabase.GetObjectSharedFiles (this.AddinCachePath, s, ".mroot"));
+					
+					// Look for the add-in in any of the existing folders
+					foreach (string domain in domains) {
+						string mp = GetDescriptionPath (domain, s);
+						if (fileDatabase.Exists (mp)) {
+							files.Add (mp);
+						}
+					}
 				}
 				foreach (string s in removedAddins)
 					changedAddins [s] = s;
 			}
 			else {
-				files.AddRange (fileDatabase.GetDirectoryFiles (AddinCachePath, "*.maddin"));
-				files.AddRange (fileDatabase.GetDirectoryFiles (AddinCachePath, "*.mroot"));
+				foreach (string dom in domains)
+					files.AddRange (fileDatabase.GetDirectoryFiles (Path.Combine (AddinCachePath, dom), "*.maddin"));
 			}
 			
 			// Load the descriptions.
@@ -490,40 +539,20 @@ namespace Mono.Addins.Database
 				conf.UnmergeExternalData (changedAddins);
 				descriptionsToSave.Add (conf);
 				
-				// Register extension points and node sets from root add-ins
-				if (conf.IsRoot) {
-					foreach (ExtensionPoint ep in conf.ExtensionPoints)
-						updateData.RegisterAddinRootExtensionPoint (conf, ep);
-					foreach (ExtensionNodeSet ns in conf.ExtensionNodeSets)
-						updateData.RegisterAddinRootNodeSet (conf, ns);
-				}
-				else
-					addinHash [conf.AddinId] = conf;
-			}
-			
-			foreach (AddinDescription conf in addinHash.Values) {
-				CollectExtensionData (conf, updateData);
-			}
-			
-			updateData.ResolveExtensions (monitor, addinHash);
-			
-			// Update the extension points defined by this add-in			
-			foreach (ExtensionPoint ep in updateData.GetUnresolvedExtensionPoints ()) {
-				AddinDescription am = (AddinDescription) addinHash [ep.RootAddin];
-				ExtensionPoint amep = am.ExtensionPoints [ep.Path];
-				if (amep != null) {
-					amep.MergeWith (am.AddinId, ep);
-					amep.RootAddin = ep.RootAddin;
-				}
+				addinHash.Add (conf);
 			}
 
-			// Now update the node sets
-			foreach (ExtensionPoint ep in updateData.GetUnresolvedExtensionSets ()) {
-				AddinDescription am = (AddinDescription) addinHash [ep.RootAddin];
-				ExtensionNodeSet nset = am.ExtensionNodeSets [ep.Path];
-				if (nset != null)
-					nset.MergeWith (am.AddinId, ep.NodeSet);
-			}
+			// Sort the add-ins, to make sure add-ins are processed before
+			// all their dependencies
+			ArrayList sorted = addinHash.GetSortedAddins ();
+
+			// Register extension points and node sets
+			foreach (AddinDescription conf in sorted)
+				CollectExtensionPointData (conf, updateData);
+			
+			// Register extensions
+			foreach (AddinDescription conf in sorted)
+				CollectExtensionData (conf, updateData);
 			
 			// Save the maps
 			foreach (AddinDescription conf in descriptionsToSave)
@@ -542,7 +571,7 @@ namespace Mono.Addins.Database
 		// Collects extension data in a hash table. The key is the path, the value is a list
 		// of add-ins ids that extend that path
 		
-		void CollectExtensionData (AddinDescription conf, AddinUpdateData updateData)
+		void CollectExtensionPointData (AddinDescription conf, AddinUpdateData updateData)
 		{
 			foreach (ExtensionNodeSet nset in conf.ExtensionNodeSets) {
 				try {
@@ -561,7 +590,10 @@ namespace Mono.Addins.Database
 					throw new InvalidOperationException ("Error reading extension point: " + ep.Path, ex);
 				}
 			}
-			
+		}
+		
+		void CollectExtensionData (AddinDescription conf, AddinUpdateData updateData)
+		{
 			foreach (ModuleDescription module in conf.AllModules) {
 				foreach (Extension ext in module.Extensions) {
 					updateData.RelExtensions++;
@@ -586,18 +618,50 @@ namespace Mono.Addins.Database
 					AddChildExtensions (conf, module, updateData, path + "/" + id, node.ChildNodes, node.NodeName == "Condition");
 			}
 		}
+		
+		string[] GetDomains ()
+		{
+			string[] dirs = fileDatabase.GetDirectories (AddinCachePath);
+			string[] ids = new string [dirs.Length];
+			for (int n=0; n<dirs.Length; n++)
+				ids [n] = Path.GetFileName (dirs [n]);
+			return ids;
+		}
 
+		public string GetUniqueDomainId ()
+		{
+			if (lastDomainId != 0) {
+				lastDomainId++;
+				return lastDomainId.ToString ();
+			}
+			lastDomainId = 1;
+			foreach (string s in fileDatabase.GetDirectories (AddinCachePath)) {
+				string dn = Path.GetFileName (s);
+				if (dn == GlobalDomain)
+					continue;
+				try {
+					int n = int.Parse (dn);
+					if (n >= lastDomainId)
+						lastDomainId = n + 1;
+				} catch {
+				}
+			}
+			return lastDomainId.ToString ();
+		}
+		
 		internal void ResetCachedData ()
 		{
+			allSetupInfos = null;
 			addinSetupInfos = null;
+			rootSetupInfos = null;
 			hostIndex = null;
 			cachedAddinSetupInfos.Clear ();
 		}
 		
 		
-		public bool AddinDependsOn (string id1, string id2)
+		public bool AddinDependsOn (string domain, string id1, string id2)
 		{
-			Addin addin1 = GetInstalledAddin (id1, false);
+			Addin addin1 = GetInstalledAddin (domain, id1, false);
 			
 			// We can assumbe that if the add-in is not returned here, it may be a root addin.
 			if (addin1 == null)
@@ -611,13 +675,13 @@ namespace Mono.Addins.Database
 				string depid = Addin.GetFullId (addin1.AddinInfo.Namespace, adep.AddinId, null);
 				if (depid == id2)
 					return true;
-				else if (AddinDependsOn (depid, id2))
+				else if (AddinDependsOn (domain, depid, id2))
 					return true;
 			}
 			return false;
 		}
 		
-		public void Repair (IProgressStatus monitor)
+		public void Repair (IProgressStatus monitor, string domain)
 		{
 			using (fileDatabase.LockWrite ()) {
 				try {
@@ -632,10 +696,10 @@ namespace Mono.Addins.Database
 					monitor.ReportError ("The add-in registry could not be rebuilt. It may be due to lack of write permissions to the directory: " + AddinDbDir, ex);
 				}
 			}
-			Update (monitor);
+			Update (monitor, domain);
 		}
 		
-		public void Update (IProgressStatus monitor)
+		public void Update (IProgressStatus monitor, string domain)
 		{
 			if (monitor == null)
 				monitor = new ConsoleProgressStatus (false);
@@ -660,9 +724,11 @@ namespace Mono.Addins.Database
 				// Something has changed, the add-ins need to be re-scanned, but it has
 				// to be done in an external process
 				
-				using (fileDatabase.LockRead ()) {
-					foreach (Addin ainfo in InternalGetInstalledAddins ()) {
-						installed [ainfo.Id] = ainfo.Id;
+				if (domain != null) {
+					using (fileDatabase.LockRead ()) {
+						foreach (Addin ainfo in InternalGetInstalledAddins (domain, AddinType.Addin)) {
+							installed [ainfo.Id] = ainfo.Id;
+						}
 					}
 				}
 				
@@ -675,9 +741,9 @@ namespace Mono.Addins.Database
 				monitor.ReportError ("The add-in database could not be updated. It may be due to file corruption. Try running the setup repair utility", null);
 			
 			// Update the currently loaded add-ins
-			if (changesFound && AddinManager.IsInitialized && AddinManager.Registry.RegistryPath == registry.RegistryPath) {
+			if (changesFound && domain != null && AddinManager.IsInitialized && AddinManager.Registry.RegistryPath == registry.RegistryPath) {
 				Hashtable newInstalled = new Hashtable ();
-				foreach (Addin ainfo in GetInstalledAddins ()) {
+				foreach (Addin ainfo in GetInstalledAddins (domain, AddinType.Addin)) {
 					newInstalled [ainfo.Id] = ainfo.Id;
 				}
 				
@@ -894,9 +960,9 @@ namespace Mono.Addins.Database
 			
 			foreach (string dir in registry.AddinDirectories) {
 				if (dir == registry.DefaultAddinsFolder)
-					scanner.ScanFolderRec (monitor, dir, scanResult);
+					scanner.ScanFolderRec (monitor, dir, GlobalDomain, scanResult);
 				else
-					scanner.ScanFolder (monitor, dir, scanResult);
+					scanner.ScanFolder (monitor, dir, GlobalDomain, scanResult);
 				if (scanResult.CheckOnly) {
 					if (scanResult.ChangesFound || monitor.IsCanceled)
 						return;
@@ -961,12 +1027,9 @@ namespace Mono.Addins.Database
 				AddinScanFolderInfo finfo;
 				if (GetFolderInfoForPath (progressStatus, Path.GetDirectoryName (file), out finfo) && finfo != null) {
 					AddinFileInfo afi = finfo.GetAddinFileInfo (file);
-					if (afi != null && afi.AddinId != null) {
+					if (afi != null && afi.IsAddin) {
 						AddinDescription adesc;
-						if (afi.IsRoot)
-							GetHostDescription (progressStatus, afi.AddinId, file, out adesc);
-						else
-							GetAddinDescription (progressStatus, afi.AddinId, out adesc);
+						GetAddinDescription (progressStatus, afi.Domain, afi.AddinId, out adesc);
 						if (adesc != null)
 							adesc.Save (outFile);
 						return;
@@ -996,6 +1059,15 @@ namespace Mono.Addins.Database
 			}
 		}
 		
+		public string GetFolderDomain (IProgressStatus progressStatus, string path)
+		{
+			AddinScanFolderInfo folderInfo;
+			if (GetFolderInfoForPath (progressStatus, path, out folderInfo) && folderInfo != null && !folderInfo.SharedFolder)
+				return folderInfo.Domain;
+			else
+				return GlobalDomain;
+		}
+		
 		Assembly OnResolveAddinAssembly (object s, ResolveEventArgs args)
 		{
 			string file = currentScanResult.GetAssemblyLocation (args.Name);
@@ -1019,23 +1091,13 @@ namespace Mono.Addins.Database
 			return Path.Combine (AddinFolderCachePath, s + ".data");
 		}
 		
-		internal void UninstallAddin (IProgressStatus monitor, string addinId, AddinScanResult scanResult)
+		internal void UninstallAddin (IProgressStatus monitor, string domain, string addinId, AddinScanResult scanResult)
 		{
 			scanResult.AddRemovedAddin (addinId);
-			string file = GetDescriptionPath (addinId);
-			DeleteAddin (monitor, file, scanResult);
-		}
-		
-		internal void UninstallRootAddin (IProgressStatus monitor, string addinId, string addinFile, AddinScanResult scanResult)
-		{
-			string file = fileDatabase.GetSharedObjectFile (AddinCachePath, addinId, ".mroot", addinFile);
-			DeleteAddin (monitor, file, scanResult);
-		}
-		
-		void DeleteAddin (IProgressStatus monitor, string file, AddinScanResult scanResult)
-		{
-			if (!fileDatabase.Exists (file))
+			string file = GetDescriptionPath (domain, addinId);
+			if (!fileDatabase.Exists (file)) {
 				return;
+			}
 			
 			// Add-in already existed. The dependencies of the old add-in need to be re-analized
 
@@ -1049,29 +1111,15 @@ namespace Mono.Addins.Database
 				scanResult.RegenerateRelationData = true;
 
 			SafeDelete (monitor, file);
+			string dir = Path.GetDirectoryName (file);
+			if (fileDatabase.DirectoryIsEmpty (dir))
+				SafeDeleteDir (monitor, dir);
 			SafeDeleteDir (monitor, Path.Combine (AddinPrivateDataPath, Path.GetFileNameWithoutExtension (file)));
 		}
 		
-		public bool GetHostDescription (IProgressStatus monitor, string addinId, string fileName, out AddinDescription description)
+		public bool GetAddinDescription (IProgressStatus monitor, string domain, string addinId, out AddinDescription description)
 		{
-			try {
-				description = AddinDescription.ReadHostBinary (fileDatabase, AddinCachePath, addinId, fileName);
-				if (description != null)
-					description.OwnerDatabase = this;
-				return true;
-			}
-			catch (Exception ex) {
-				if (monitor == null)
-					throw;
-				description = null;
-				monitor.ReportError ("Could not read folder info file", ex);
-				return false;
-			}
-		}
-		
-		public bool GetAddinDescription (IProgressStatus monitor, string addinId, out AddinDescription description)
-		{
-			string file = GetDescriptionPath (addinId);
+			string file = GetDescriptionPath (domain, addinId);
 			return ReadAddinDescription (monitor, file, out description);
 		}
 		
@@ -1097,10 +1145,13 @@ namespace Mono.Addins.Database
 			try {
 				if (replaceFileName != null)
 					desc.SaveBinary (fileDatabase, replaceFileName);
-				else if (desc.IsRoot)
-					desc.SaveHostBinary (fileDatabase, AddinCachePath);
-				else
-					desc.SaveBinary (fileDatabase, GetDescriptionPath (desc.AddinId));
+				else {
+					string file = GetDescriptionPath (desc.Domain, desc.AddinId);
+					string dir = Path.GetDirectoryName (file);
+					if (!fileDatabase.DirExists (dir))
+						fileDatabase.CreateDir (dir);
+					desc.SaveBinary (fileDatabase, file);
+				}
 				return true;
 			}
 			catch (Exception ex) {
@@ -1109,14 +1160,10 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		public bool AddinDescriptionExists (string addinId)
+		public bool AddinDescriptionExists (string domain, string addinId)
 		{
-			return fileDatabase.Exists (GetDescriptionPath (addinId));
-		}
-		
-		public bool HostDescriptionExists (string addinId, string sourceFile)
-		{
-			return fileDatabase.SharedObjectExists (AddinCachePath, addinId, ".mroot", sourceFile);
+			string file = GetDescriptionPath (domain, addinId);
+			return fileDatabase.Exists (file);
 		}
 		
 		public bool ReadFolderInfo (IProgressStatus monitor, string file, out AddinScanFolderInfo folderInfo)
@@ -1140,7 +1187,8 @@ namespace Mono.Addins.Database
 			}
 			catch (Exception ex) {
 				folderInfo = null;
-				monitor.ReportError ("Could not read folder info file", ex);
+				if (monitor != null)
+					monitor.ReportError ("Could not read folder info file", ex);
 				return false;
 			}
 		}
@@ -1227,12 +1275,21 @@ namespace Mono.Addins.Database
 				return name;
 			
 			int n = 1;
-			while (fileDatabase.Exists (GetDescriptionPath (id))) {
+			while (AddinIdExists (id)) {
 				name = baseId + "_" + n;
 				id = Addin.GetFullId (ns, name, version);
 				n++;
 			}
 			return name;
+		}
+		
+		bool AddinIdExists (string id)
+		{
+			foreach (string d in fileDatabase.GetDirectories (AddinCachePath)) {
+				if (fileDatabase.Exists (Path.Combine (d, id + ".addin")))
+				    return true;
+			}
+			return false;
 		}
 		
 		public void ResetConfiguration ()
@@ -1286,7 +1343,7 @@ namespace Mono.Addins.Database
 				scanResult.LocateAssembliesOnly = true;
 			
 				foreach (string dir in registry.AddinDirectories)
-					scanner.ScanFolder (progressStatus, dir, scanResult);
+					scanner.ScanFolder (progressStatus, dir, AddinDatabase.GlobalDomain, scanResult);
 			}
 		
 			string afile = scanResult.GetAssemblyLocation (args.Name);
@@ -1295,6 +1352,101 @@ namespace Mono.Addins.Database
 			else
 				return null;
 		}
+	}
+	
+	class AddinIndex
+	{
+		Hashtable addins = new Hashtable ();
+		
+		public void Add (AddinDescription desc)
+		{
+			string id = Addin.GetFullId (desc.Namespace, desc.LocalId, null);
+			ArrayList list = (ArrayList) addins [id];
+			if (list == null) {
+				list = new ArrayList (); 
+				addins [id] = list;
+			}
+			list.Add (desc);
+		}
+		
+		ArrayList FindDescriptions (string domain, string fullid)
+		{
+			// Returns all registered add-ins which are compatible with the provided
+			// fullid. Compatible means that the id is the same and the version is within
+			// the range of compatible versions of the add-in.
+			
+			ArrayList res = new ArrayList ();
+			string id = Addin.GetIdName (fullid);
+			ArrayList list = (ArrayList) addins [id];
+			if (list == null)
+				return res;
+			string version = Addin.GetIdVersion (fullid);
+			foreach (AddinDescription desc in list) {
+				if ((desc.Domain == domain || domain == AddinDatabase.GlobalDomain) && desc.SupportsVersion (version))
+					res.Add (desc);
+			}
+			return res;
+		}
+		
+		public ArrayList GetSortedAddins ()
+		{
+			Hashtable inserted = new Hashtable ();
+			Hashtable lists = new Hashtable ();
+			
+			foreach (ArrayList dlist in addins.Values) {
+				foreach (AddinDescription desc in dlist)
+					InsertSortedAddin (inserted, lists, desc);
+			}
+			
+			// Merge all domain lists into a single list.
+			// Make sure the global domain is inserted the last
+			
+			ArrayList global = (ArrayList) lists [AddinDatabase.GlobalDomain];
+			lists.Remove (AddinDatabase.GlobalDomain);
+			
+			ArrayList list = new ArrayList ();
+			foreach (ArrayList dl in lists.Values) {
+				list.AddRange (dl);
+			}
+			if (global != null)
+				list.AddRange (global);
+			return list;
+		}
+
+		void InsertSortedAddin (Hashtable inserted, Hashtable lists, AddinDescription desc)
+		{
+			string sid = desc.AddinId + " " + desc.Domain;
+			if (inserted.ContainsKey (sid))
+				return;
+			inserted [sid] = desc;
+			foreach (ModuleDescription mod in desc.AllModules) {
+				foreach (Dependency dep in mod.Dependencies) {
+					AddinDependency adep = dep as AddinDependency;
+					if (adep == null)
+						continue;
+					ArrayList descs = FindDescriptions (desc.Domain, adep.FullAddinId);
+					if (descs.Count > 0) {
+						foreach (AddinDescription sd in descs)
+							InsertSortedAddin (inserted, lists, sd);
+					} else 
+						Console.WriteLine ("NOT FOUND: " + adep.FullAddinId + " " + desc.Domain);
+				}
+			}
+			ArrayList list = (ArrayList) lists [desc.Domain];
+			if (list == null) {
+				list = new ArrayList ();
+				lists [desc.Domain] = list;
+			}
+			
+			list.Add (desc);
+		}
+	}
+	
+	enum AddinType
+	{
+		Addin,
+		Root,
+		All
 	}
 }
 

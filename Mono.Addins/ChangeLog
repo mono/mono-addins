@@ -1,5 +1,29 @@
 2007-08-07  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins.Database/AddinDatabase.cs,
+	  Mono.Addins.Database/AddinHostIndex.cs,
+	  Mono.Addins.Database/AddinScanFolderInfo.cs,
+	  Mono.Addins.Database/AddinScanner.cs,
+	  Mono.Addins.Database/AddinUpdateData.cs,
+	  Mono.Addins.Database/FileDatabase.cs,
+	  Mono.Addins.Description/AddinDescription.cs,
+	  Mono.Addins.Description/Extension.cs,
+	  Mono.Addins.Description/ExtensionNodeSet.cs, Mono.Addins.mdp,
+	  Mono.Addins/Addin.cs, Mono.Addins/AddinManager.cs,
+	  Mono.Addins/AddinRegistry.cs, Mono.Addins/AddinSessionService.cs:
+	  Implemented support for non-shared add-in folders. Add-ins located in
+	  such folders won't be visible from other non-shared folders. Folders
+	  containing add-in hosts are non-shared by default, wihch means that
+	  different installations of the same application won't interfere each
+	  other anymore.
+	
+	  Add-in roots now can have depencencies on other add-in roots lacated in
+	  the same folder.
+	
+	  The add-in database format has changed.
+
+2007-08-07  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins/RuntimeAddin.cs: Added missing null check.
 
 2007-07-27  Lluis Sanchez Gual <lluis@novell.com> 

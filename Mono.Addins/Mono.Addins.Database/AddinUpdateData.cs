@@ -57,213 +57,129 @@ namespace Mono.Addins.Database
 			public ExtensionPoint ExtensionPoint;
 		}
 		
-		AddinDatabase database;
+		IProgressStatus monitor;
 		
-		public AddinUpdateData (AddinDatabase database)
+		public AddinUpdateData (AddinDatabase database, IProgressStatus monitor)
 		{
-			this.database = database;
+			this.monitor = monitor;
 		}
 		
-		public void RegisterAddinRootExtensionPoint (AddinDescription description, ExtensionPoint ep)
-		{
-			RelExtensionPoints++;
-			ArrayList list = (ArrayList) pathHash [ep.Path];
-			if (list == null) {
-				list = new ArrayList ();
-				pathHash [ep.Path] = list;
-			}
-			
-			RootExtensionPoint rep = new RootExtensionPoint ();
-			rep.Description = description;
-			rep.ExtensionPoint = ep;
-			ep.RootAddin = description.AddinId;
-			list.Add (rep);
-		}
-
-		public void RegisterAddinRootNodeSet (AddinDescription description, ExtensionNodeSet nodeSet)
-		{
-			ArrayList list = (ArrayList) nodeSetHash [nodeSet.Id];
-			if (list == null) {
-				list = new ArrayList ();
-				nodeSetHash [nodeSet.Id] = list;
-			}
-			
-			RootExtensionPoint rep = new RootExtensionPoint ();
-			rep.Description = description;
-			ExtensionPoint ep = new ExtensionPoint ();
-			ep.RootAddin = description.AddinId;
-			ep.SetNodeSet (nodeSet);
-			rep.ExtensionPoint = ep;
-			list.Add (rep);
-		}
-
 		public void RegisterNodeSet (AddinDescription description, ExtensionNodeSet nset)
 		{
-			string id = Addin.GetFullId (description.Namespace, nset.Id, description.Version);
-			foreach (ExtensionPoint einfo in GetExtensionInfo (nodeSetHash, id, description, description.MainModule, false)) {
-				if (einfo.RootAddin == null || database.AddinDependsOn (einfo.RootAddin, description.AddinId))
-					einfo.RootAddin = description.AddinId;
-				einfo.NodeSet.MergeWith (null, nset);
+			ArrayList extensions = (ArrayList) nodeSetHash [nset.Id];
+			if (extensions != null) {
+				// Extension point already registered
+				ArrayList compatExtensions = GetCompatibleExtensionPoints (nset.Id, description, description.MainModule, extensions);
+				if (compatExtensions.Count > 0) {
+					foreach (ExtensionPoint einfo in compatExtensions)
+						einfo.NodeSet.MergeWith (null, nset);
+					return;
+				}
 			}
+			// Create a new extension set
+			RootExtensionPoint rep = new RootExtensionPoint ();
+			rep.ExtensionPoint = new ExtensionPoint ();
+			rep.ExtensionPoint.SetNodeSet (nset);
+			rep.ExtensionPoint.RootAddin = description.AddinId;
+			rep.ExtensionPoint.Path = nset.Id;
+			rep.Description = description;
+			if (extensions == null) {
+				extensions = new ArrayList ();
+				nodeSetHash [nset.Id] = extensions;
+			}
+			extensions.Add (rep);
 		}
 		
 		public void RegisterExtensionPoint (AddinDescription description, ExtensionPoint ep)
 		{
-			foreach (ExtensionPoint einfo in GetExtensionInfo (pathHash, ep.Path, description, description.MainModule, false)) {
-				if (einfo.RootAddin == null || database.AddinDependsOn (einfo.RootAddin, description.AddinId))
-					einfo.RootAddin = description.AddinId;
-				einfo.MergeWith (null, ep);
+			ArrayList extensions = (ArrayList) pathHash [ep.Path];
+			if (extensions != null) {
+				// Extension point already registered
+				ArrayList compatExtensions = GetCompatibleExtensionPoints (ep.Path, description, description.MainModule, extensions);
+				if (compatExtensions.Count > 0) {
+					foreach (ExtensionPoint einfo in compatExtensions)
+						einfo.MergeWith (null, ep);
+					RegisterObjectTypes (ep);
+					return;
+				}
+			}
+			// Create a new extension
+			RootExtensionPoint rep = new RootExtensionPoint ();
+			rep.ExtensionPoint = ep;
+			rep.ExtensionPoint.RootAddin = description.AddinId;
+			rep.Description = description;
+			if (extensions == null) {
+				extensions = new ArrayList ();
+				pathHash [ep.Path] = extensions;
+			}
+			extensions.Add (rep);
+			RegisterObjectTypes (ep);
+		}
+			
+		void RegisterObjectTypes (ExtensionPoint ep)
+		{
+			// Register extension points bound to a node type
+			
+			foreach (ExtensionNodeType nt in ep.NodeSet.NodeTypes) {
+				if (nt.ObjectTypeName.Length > 0) {
+					ArrayList list = (ArrayList) objectTypeExtensions [nt.ObjectTypeName];
+					if (list == null) {
+						list = new ArrayList ();
+						objectTypeExtensions [nt.ObjectTypeName] = list;
+					}
+					list.Add (ep);
+				}
 			}
 		}
 
 		public void RegisterExtension (AddinDescription description, ModuleDescription module, Extension extension)
 		{
 			if (extension.Path.StartsWith ("$")) {
-				UnresolvedObjectTypeExtension extData = new UnresolvedObjectTypeExtension ();
-				extData.Description = description;
-				extData.ModuleDescription = module;
-				extData.Extension = extension;
 				string[] objectTypes = extension.Path.Substring (1).Split (',');
+				bool found = false;
 				foreach (string s in objectTypes) {
 					ArrayList list = (ArrayList) objectTypeExtensions [s];
-					if (list == null) {
-						list = new ArrayList ();
-						objectTypeExtensions [s] = list;
+					if (list != null) {
+						found = true;
+						foreach (ExtensionPoint ep in list) {
+							if (IsAddinCompatible (ep.ParentAddinDescription, description, module)) {
+								extension.Path = ep.Path;
+								RegisterExtension (description, module, ep.Path);
+							}
+						}
 					}
-					list.Add (extData);
 				}
-			}
-		}
-		
-		void CollectObjectTypeExtensions (AddinDescription desc, ExtensionPoint ep, string objectTypeName)
-		{
-			ArrayList list = (ArrayList) objectTypeExtensions [objectTypeName];
-			if (list == null)
-				return;
-			
-			foreach (UnresolvedObjectTypeExtension data in list) {
-				if (IsAddinCompatible (desc, data.Description, data.ModuleDescription)) {
-					data.Extension.Path = ep.Path;
-					RegisterExtension (data.Description, data.ModuleDescription, ep.Path);
-					data.FoundExtensionPoint = true;
-				}
+				if (!found)
+					monitor.ReportWarning ("The add-in '" + description.AddinId + "' is trying to register the class '" + extension.Path.Substring (1) + "', but there isn't any add-in defining a suitable extension point");
 			}
 		}
 		
 		public void RegisterExtension (AddinDescription description, ModuleDescription module, string path)
 		{
-			foreach (ExtensionPoint einfo in GetExtensionInfo (pathHash, path, description, module, true)) {
-				if (!einfo.Addins.Contains (description.AddinId))
-					einfo.Addins.Add (description.AddinId);
-			}
-		}
-		
-		public IEnumerable GetUnresolvedExtensionPoints ()
-		{
-			ArrayList list = new ArrayList ();
-			foreach (object ob in pathHash.Values)
-				if (ob is ExtensionPoint)
-					list.Add (ob);
-			return list;
-		}
-
-		public IEnumerable GetUnresolvedExtensionSets ()
-		{
-			ArrayList list = new ArrayList ();
-			foreach (object ob in nodeSetHash.Values)
-				if (ob is ExtensionPoint)
-					list.Add (ob);
-			return list;
-		}
-		
-		public void ResolveExtensions (IProgressStatus monitor, Hashtable descriptions)
-		{
-			// Make a copy of the extensions found, sice the hash may change while being scanned
-			object[] extensionPointsFound = new object [pathHash.Count];
-			pathHash.Values.CopyTo (extensionPointsFound, 0);
-
-			foreach (object ob in extensionPointsFound) {
-				ExtensionPoint ep = ob as ExtensionPoint;
-				
-				if (ep == null) {
-					// It is a list of extension from a root add-in
-					ArrayList rootExtensionPoints = (ArrayList) ob;
-					foreach (RootExtensionPoint rep in rootExtensionPoints) {
-						foreach (ExtensionNodeType nt in rep.ExtensionPoint.NodeSet.NodeTypes) {
-							if (nt.ObjectTypeName.Length > 0)
-								CollectObjectTypeExtensions (rep.Description, rep.ExtensionPoint, nt.ObjectTypeName);
-						}
-					}
-					continue;
-				}
-				
-				if (ep.RootAddin == null) {
-					// Ignore class extensions
-					if (!ep.Path.StartsWith ("$")) {
-						// No add-in has defined this extension point, but some add-in
-						// is trying to extend it. A parent extension may exist. Check it now.
-						ExtensionPoint pep = GetParentExtensionPoint (ep.Path);
-						if (pep != null) {
-							foreach (string a in ep.Addins)
-								if (!pep.Addins.Contains (a))
-									pep.Addins.Add (a);
-						} else {
-							foreach (string s in ep.Addins)
-								monitor.ReportWarning ("The add-in '" + s + "' is trying to extend '" + ep.Path + "', but there isn't any add-in defining this extension point");
-						}
-					}
-					pathHash.Remove (ep.Path);
-				}
-				else {
-					foreach (ExtensionNodeType nt in ep.NodeSet.NodeTypes) {
-						if (nt.ObjectTypeName.Length > 0) {
-							AddinDescription desc = (AddinDescription) descriptions [ep.RootAddin];
-							CollectObjectTypeExtensions (desc, ep, nt.ObjectTypeName);
-						}
-					}
-				}
-			}
-			
-			foreach (ArrayList list in objectTypeExtensions.Values) {
-				foreach (UnresolvedObjectTypeExtension data in list) {
-					if (!data.FoundExtensionPoint) {
-						monitor.ReportWarning ("The add-in '" + data.Description.AddinId + "' is trying to register the class '" + data.Extension.Path + "', but there isn't any add-in defining a suitable extension point");
-						// The type extensions may be registered using different base classes.
-						// Make sure the warning is shown only once
-						data.FoundExtensionPoint = true;
-					}
-				}
-			}
-		}
-		
-		IEnumerable GetExtensionInfo (Hashtable hash, string path, AddinDescription description, ModuleDescription module, bool lookInParents)
-		{
-			ArrayList list = new ArrayList ();
-			
-			object data = hash [path];
-			if (data == null && lookInParents) {
+			ArrayList extensions = (ArrayList) pathHash [path];
+			if (extensions == null) {
 				// Root add-in extension points are registered before any other kind of extension,
 				// so we should find it now.
-				data = GetParentExtensionInfo (path);
+				extensions = GetParentExtensionInfo (path);
+			}
+			if (extensions == null) {
+				monitor.ReportWarning ("The add-in '" + description.AddinId + "' is trying to extend '" + path + "', but there isn't any add-in defining this extension point");
+				return;
 			}
 			
-			if (data is ArrayList) {
-				// Extension point which belongs to a root assembly.
-				list.AddRange (GetRootExtensionInfo (hash, path, description, module, (ArrayList) data));
-			}
-			else {
-				ExtensionPoint info = (ExtensionPoint) data;
-				if (info == null) {
-					info = new ExtensionPoint ();
-					info.Path = path;
-					hash [path] = info;
+			bool found = false;
+			foreach (RootExtensionPoint einfo in extensions) {
+				if (IsAddinCompatible (einfo.Description, description, module)) {
+					if (!einfo.ExtensionPoint.Addins.Contains (description.AddinId))
+						einfo.ExtensionPoint.Addins.Add (description.AddinId);
+					found = true;
 				}
-				list.Add (info);
 			}
-			return list;
+			if (!found)
+				monitor.ReportWarning ("The add-in '" + description.AddinId + "' is trying to extend '" + path + "', but there isn't any compatible add-in defining this extension point");
 		}
-	
-		ArrayList GetRootExtensionInfo (Hashtable hash, string path, AddinDescription description, ModuleDescription module, ArrayList rootExtensionPoints)
+		
+		ArrayList GetCompatibleExtensionPoints (string path, AddinDescription description, ModuleDescription module, ArrayList rootExtensionPoints)
 		{
 			ArrayList list = new ArrayList ();
 			foreach (RootExtensionPoint rep in rootExtensionPoints) {
@@ -275,18 +191,13 @@ namespace Mono.Addins.Database
 			return list;
 		}
 		
-		ExtensionPoint GetParentExtensionPoint (string path)
-		{
-			return GetParentExtensionInfo (path) as ExtensionPoint;
-		}
-		
-		object GetParentExtensionInfo (string path)
+		ArrayList GetParentExtensionInfo (string path)
 		{
 			int i = path.LastIndexOf ('/');
 			if (i == -1)
 				return null;
 			string np = path.Substring (0, i);
-			object ep = pathHash [np];
+			ArrayList ep = (ArrayList) pathHash [np];
 			if (ep != null)
 				return ep;
 			else
@@ -295,6 +206,14 @@ namespace Mono.Addins.Database
 		
 		bool IsAddinCompatible (AddinDescription installedDescription, AddinDescription description, ModuleDescription module)
 		{
+			if (installedDescription == description)
+				return true;
+			if (installedDescription.Domain != AddinDatabase.GlobalDomain) {
+				if (description.Domain != AddinDatabase.GlobalDomain && description.Domain != installedDescription.Domain)
+					return false;
+			} else if (description.Domain != AddinDatabase.GlobalDomain)
+				return false;
+				
 			string addinId = Addin.GetFullId (installedDescription.Namespace, installedDescription.LocalId, null);
 			string requiredVersion = null;
 			
@@ -316,13 +235,5 @@ namespace Mono.Addins.Database
 			
 			return true;
 		}
-	}
-	
-	class UnresolvedObjectTypeExtension
-	{
-		public AddinDescription Description;
-		public ModuleDescription ModuleDescription;
-		public Extension Extension;
-		public bool FoundExtensionPoint;
 	}
 }

@@ -42,6 +42,8 @@ namespace Mono.Addins
 		AddinDatabase database;
 		StringCollection addinDirs;
 		string basePath;
+		string currentDomain;
+		string startupDirectory;
 		
 		public AddinRegistry (string registryPath): this (registryPath, null)
 		{
@@ -53,6 +55,11 @@ namespace Mono.Addins
 			database = new AddinDatabase (this);
 			addinDirs = new StringCollection ();
 			addinDirs.Add (Path.Combine (basePath, "addins"));
+			if (startupDirectory != null) {
+				currentDomain = database.GetFolderDomain (null, startupDirectory);
+				this.startupDirectory = startupDirectory;
+			} else
+				currentDomain = AddinDatabase.GlobalDomain;
 		}
 		
 		public static AddinRegistry GetGlobalRegistry ()
@@ -96,23 +103,23 @@ namespace Mono.Addins
 		
 		public Addin GetAddin (string id)
 		{
-			return database.GetInstalledAddin (id);
+			return database.GetInstalledAddin (currentDomain, id);
 		}
 		
 		public Addin GetAddin (string id, bool exactVersionMatch)
 		{
-			return database.GetInstalledAddin (id, exactVersionMatch);
+			return database.GetInstalledAddin (currentDomain, id, exactVersionMatch);
 		}
 		
 		public Addin[] GetAddins ()
 		{
-			ArrayList list = database.GetInstalledAddins ();
+			ArrayList list = database.GetInstalledAddins (currentDomain, AddinType.Addin);
 			return (Addin[]) list.ToArray (typeof(Addin));
 		}
 		
 		public Addin[] GetAddinRoots ()
 		{
-			ArrayList list = database.GetAddinRoots ();
+			ArrayList list = database.GetInstalledAddins (currentDomain, AddinType.Root);
 			return (Addin[]) list.ToArray (typeof(Addin));
 		}
 		
@@ -153,17 +160,17 @@ namespace Mono.Addins
 		
 		public bool IsAddinEnabled (string id)
 		{
-			return database.IsAddinEnabled (id);
+			return database.IsAddinEnabled (currentDomain, id);
 		}
 		
 		public void EnableAddin (string id)
 		{
-			database.EnableAddin (id, true);
+			database.EnableAddin (currentDomain, id, true);
 		}
 		
 		public void DisableAddin (string id)
 		{
-			database.DisableAddin (id);
+			database.DisableAddin (currentDomain, id);
 		}
 		
 		public void DumpFile (string file)
@@ -178,22 +185,26 @@ namespace Mono.Addins
 
 		public void Update (IProgressStatus monitor)
 		{
-			database.Update (monitor);
+			database.Update (monitor, currentDomain);
+			if (startupDirectory != null)
+				currentDomain = database.GetFolderDomain (null, startupDirectory);
 		}
 
 		public void Rebuild (IProgressStatus monitor)
 		{
-			database.Repair (monitor);
+			database.Repair (monitor, currentDomain);
+			if (startupDirectory != null)
+				currentDomain = database.GetFolderDomain (null, startupDirectory);
 		}
 		
 		internal Addin GetAddinForHostAssembly (string filePath)
 		{
-			return database.GetAddinForHostAssembly (filePath);
+			return database.GetAddinForHostAssembly (currentDomain, filePath);
 		}
 		
 		internal bool AddinDependsOn (string id1, string id2)
 		{
-			return database.AddinDependsOn (id1, id2);
+			return database.AddinDependsOn (currentDomain, id1, id2);
 		}
 		
 		internal void ScanFolders (IProgressStatus monitor, string folderToScan, StringCollection filesToIgnore)
@@ -248,7 +259,9 @@ namespace Mono.Addins
 				tw.Formatting = Formatting.Indented;
 				tw.WriteStartElement ("Addins");
 				tw.WriteAttributeString ("host-reference", hostFile);
-				tw.WriteElementString ("Directory", Path.GetDirectoryName (hostFile));
+				tw.WriteStartElement ("Directory");
+				tw.WriteAttributeString ("shared", "false");
+				tw.WriteString (Path.GetDirectoryName (hostFile));
 				tw.WriteEndElement ();
 				tw.Close ();
 			}

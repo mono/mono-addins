@@ -62,8 +62,11 @@ namespace Mono.Addins
 			if (initialized)
 				return;
 			
-			startupDirectory = new Uri (Assembly.GetCallingAssembly ().CodeBase).LocalPath;
-			startupDirectory = Path.GetDirectoryName (startupDirectory);
+			Assembly asm = Assembly.GetEntryAssembly ();
+			if (asm == null) asm = Assembly.GetCallingAssembly ();
+			string asmFile = new Uri (asm.CodeBase).LocalPath;
+			
+			startupDirectory = Path.GetDirectoryName (asmFile);
 			
 			string customDir = Environment.GetEnvironmentVariable ("MONO_ADDINS_REGISTRY");
 			if (customDir != null && customDir.Length > 0)
@@ -74,9 +77,6 @@ namespace Mono.Addins
 			else
 				registry = new AddinRegistry (configDir, startupDirectory);
 
-			Assembly asm = Assembly.GetEntryAssembly ();
-			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			string asmFile = new Uri (asm.CodeBase).LocalPath;
 			if (registry.CreateHostAddinsFile (asmFile))
 				registry.Update (new ConsoleProgressStatus (false));
 			

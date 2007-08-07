@@ -42,7 +42,6 @@ namespace Mono.Addins
 		AddinInfo addin;
 		string configFile;
 		string sourceFile;
-		string hostId;
 		WeakReference desc;
 		AddinDatabase database;
 		
@@ -52,15 +51,12 @@ namespace Mono.Addins
 			configFile = file;
 		}
 		
-		internal Addin (AddinDatabase database, string hostId, string hostSourceFile)
-		{
-			this.database = database;
-			this.hostId = hostId;
-			this.sourceFile = hostSourceFile;
-		}
-		
 		public string Id {
-			get { return this.AddinInfo.Id; }
+			get {
+				if (configFile != null)
+					return Path.GetFileNameWithoutExtension (configFile);
+				return this.AddinInfo.Id; 
+			}
 		}
 		
 		public string Namespace {
@@ -102,12 +98,12 @@ namespace Mono.Addins
 		}
 		
 		public bool Enabled {
-			get { return AddinInfo.IsRoot ? true : database.IsAddinEnabled (AddinInfo.Id, true); }
+			get { return AddinInfo.IsRoot ? true : database.IsAddinEnabled (Description.Domain, AddinInfo.Id, true); }
 			set {
 				if (value)
-					database.EnableAddin (AddinInfo.Id, true);
+					database.EnableAddin (Description.Domain, AddinInfo.Id, true);
 				else
-					database.DisableAddin (AddinInfo.Id);
+					database.DisableAddin (Description.Domain, AddinInfo.Id);
 			}
 		}
 		
@@ -143,13 +139,9 @@ namespace Mono.Addins
 					if (d != null)
 						return d;
 				}
-				
+
 				AddinDescription m;
-				
-				if (hostId != null)
-					database.GetHostDescription (null, hostId, sourceFile, out m);
-				else
-					database.ReadAddinDescription (null, configFile, out m);
+				database.ReadAddinDescription (null, configFile, out m);
 				
 				if (m == null)
 					throw new InvalidOperationException ("Could not read add-in description");
@@ -162,7 +154,7 @@ namespace Mono.Addins
 			}
 		}
 			
-		
+		// returns -1 if v1 > v2
 		public static int CompareVersions (string v1, string v2)
 		{
 			string[] a1 = v1.Split ('.');

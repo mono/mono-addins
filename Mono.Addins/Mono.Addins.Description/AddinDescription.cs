@@ -43,7 +43,6 @@ namespace Mono.Addins.Description
 	{
 		XmlDocument configDoc;
 		string configFile;
-		bool fromBinaryFile;
 		AddinDatabase ownerDatabase;
 		
 		string id;
@@ -62,6 +61,7 @@ namespace Mono.Addins.Description
 		bool hasUserId;
 		bool canWrite = true;
 		bool defaultEnabled = true;
+		string domain;
 		
 		ModuleDescription mainModule;
 		ModuleCollection optionalModules;
@@ -181,6 +181,12 @@ namespace Mono.Addins.Description
 		internal bool HasUserId {
 			get { return hasUserId; }
 			set { hasUserId = value; }
+		}
+		
+		internal bool SupportsVersion (string ver)
+		{
+			return Addin.CompareVersions (ver, Version) >= 0 &&
+				   (CompatVersion.Length == 0 || Addin.CompareVersions (ver, CompatVersion) <= 0);
 		}
 		
 		public StringCollection AllFiles {
@@ -309,7 +315,7 @@ namespace Mono.Addins.Description
 			foreach (Dependency dep in MainModule.Dependencies) {
 				AddinDependency adep = dep as AddinDependency;
 				if (adep == null) continue;
-				Addin ad = OwnerDatabase.GetInstalledAddin (adep.FullAddinId);
+				Addin ad = OwnerDatabase.GetInstalledAddin (Domain, adep.FullAddinId);
 				if (ad != null && ad.Description != null) {
 					ExtensionNodeDescription node = ad.Description.FindExtensionNode (path, false);
 					if (node != null)
@@ -331,6 +337,11 @@ namespace Mono.Addins.Description
 		public string FileName {
 			get { return configFile; }
 			set { configFile = value; }
+		}
+		
+		internal string Domain {
+			get { return domain; }
+			set { domain = value; }
 		}
 		
 		internal void StoreFileInfo ()
@@ -525,19 +536,6 @@ namespace Mono.Addins.Description
 			AddinDescription description = (AddinDescription) fdb.ReadSharedObject (configFile, typeMap);
 			if (description != null) {
 				description.FileName = configFile;
-				description.fromBinaryFile = true;
-				description.canWrite = !fdb.IgnoreDescriptionData;
-			}
-			return description;
-		}
-		
-		internal static AddinDescription ReadHostBinary (FileDatabase fdb, string basePath, string addinId, string addinFile)
-		{
-			string fileName;
-			AddinDescription description = (AddinDescription) fdb.ReadSharedObject (basePath, addinId, ".mroot", Util.GetFullPath (addinFile), typeMap, out fileName);
-			if (description != null) {
-				description.FileName = fileName;
-				description.fromBinaryFile = true;
 				description.canWrite = !fdb.IgnoreDescriptionData;
 			}
 			return description;
@@ -557,15 +555,6 @@ namespace Mono.Addins.Description
 //			BinaryXmlReader.DumpFile (configFile);
 		}
 		
-		internal void SaveHostBinary (FileDatabase fdb, string basePath)
-		{
-			if (!canWrite)
-				throw new InvalidOperationException ("Can't write incomplete description.");
-			if (!fromBinaryFile)
-				FileName = null;
-			FileName = fdb.WriteSharedObject (basePath, AddinId, ".mroot", AddinFile, FileName, typeMap, this);
-		}
-		
 		public StringCollection Verify ()
 		{
 			StringCollection errors = new StringCollection ();
@@ -573,8 +562,6 @@ namespace Mono.Addins.Description
 			if (IsRoot) {
 				if (OptionalModules.Count > 0)
 					errors.Add ("Root add-in hosts can't have optional modules.");
-				if (MainModule.Dependencies.Count > 0)
-					errors.Add ("Root add-in hosts can't have dependencies.");
 			}
 			
 			if (AddinId.Length == 0 || Version.Length == 0) {
@@ -664,6 +651,7 @@ namespace Mono.Addins.Description
 			writer.WriteValue ("basePath", basePath);
 			writer.WriteValue ("sourceAddinFile", sourceAddinFile);
 			writer.WriteValue ("defaultEnabled", defaultEnabled);
+			writer.WriteValue ("domain", domain);
 			writer.WriteValue ("MainModule", MainModule);
 			writer.WriteValue ("OptionalModules", OptionalModules);
 			writer.WriteValue ("NodeSets", ExtensionNodeSets);
@@ -689,6 +677,7 @@ namespace Mono.Addins.Description
 			basePath = reader.ReadStringValue ("basePath");
 			sourceAddinFile = reader.ReadStringValue ("sourceAddinFile");
 			defaultEnabled = reader.ReadBooleanValue ("defaultEnabled");
+			domain = reader.ReadStringValue ("domain");
 			mainModule = (ModuleDescription) reader.ReadValue ("MainModule");
 			optionalModules = (ModuleCollection) reader.ReadValue ("OptionalModules", new ModuleCollection (this));
 			nodeSets = (ExtensionNodeSetCollection) reader.ReadValue ("NodeSets", new ExtensionNodeSetCollection (this));

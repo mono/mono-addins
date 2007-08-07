@@ -337,7 +337,7 @@ namespace Mono.Addins
 					if (ainfo == null)
 						return;
 				}
-				InsertAddin (null, ainfo);
+				LoadAddin (null, ainfo.Id, false);
 			}
 		}
 	}
