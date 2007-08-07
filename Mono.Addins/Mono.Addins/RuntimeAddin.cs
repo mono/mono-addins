@@ -286,8 +286,13 @@ namespace Mono.Addins
 			// Collect dependent ids
 			foreach (Dependency dep in module.Dependencies) {
 				AddinDependency pdep = dep as AddinDependency;
-				if (pdep != null)
-					plugList.Add (AddinManager.SessionService.GetAddin (Addin.GetFullId (ns, pdep.AddinId, pdep.Version)));
+				if (pdep != null) {
+					RuntimeAddin adn = AddinManager.SessionService.GetAddin (Addin.GetFullId (ns, pdep.AddinId, pdep.Version));
+					if (adn != null)
+						plugList.Add (adn);
+					else
+						AddinManager.ReportError ("Add-in dependency not loaded: " + pdep.FullAddinId, module.ParentAddinDescription.AddinId, null, false);
+				}
 			}
 		}
 		

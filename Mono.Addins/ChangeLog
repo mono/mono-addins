@@ -1,3 +1,7 @@
+2007-08-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/RuntimeAddin.cs: Added missing null check.
+
 2007-07-27  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Database/AddinDatabase.cs,
