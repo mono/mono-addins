@@ -182,19 +182,21 @@ namespace Mono.Addins
 		{
 			database.ResetConfiguration ();
 		}
+		
+		internal void NotifyDatabaseUpdated ()
+		{
+			if (startupDirectory != null)
+				currentDomain = database.GetFolderDomain (null, startupDirectory);
+		}
 
 		public void Update (IProgressStatus monitor)
 		{
 			database.Update (monitor, currentDomain);
-			if (startupDirectory != null)
-				currentDomain = database.GetFolderDomain (null, startupDirectory);
 		}
 
 		public void Rebuild (IProgressStatus monitor)
 		{
 			database.Repair (monitor, currentDomain);
-			if (startupDirectory != null)
-				currentDomain = database.GetFolderDomain (null, startupDirectory);
 		}
 		
 		internal Addin GetAddinForHostAssembly (string filePath)

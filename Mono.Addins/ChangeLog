@@ -1,3 +1,9 @@
+2007-08-08  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/AddinRegistry.cs, Mono.Addins.Database/AddinDatabase.cs: Fix
+	  problem about the current registry domain not being properly set when
+	  the add-in database is regenerated due to an internal check.
+
 2007-08-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Database/AddinDatabase.cs,

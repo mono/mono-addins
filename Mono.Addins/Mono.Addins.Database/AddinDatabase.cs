@@ -313,15 +313,6 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-/*		public Addin GetInstalledAddin (string domain, string id, string version)
-		{
-			foreach (Addin ia in GetInstalledAddins (domain)) {
-				if ((id == null || ia.Id == id) && (version == null || ia.Version == version))
-					return ia;
-			}
-			return null;
-		}
-*/		
 		public void Shutdown ()
 		{
 			ResetCachedData ();
@@ -735,6 +726,8 @@ namespace Mono.Addins.Database
 				RunScannerProcess (monitor);
 			
 				ResetCachedData ();
+				
+				registry.NotifyDatabaseUpdated ();
 			}
 			
 			if (fatalDatabseError)
