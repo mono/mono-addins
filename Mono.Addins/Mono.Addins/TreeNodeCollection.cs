@@ -72,5 +72,13 @@ namespace Mono.Addins
 		public int Count {
 			get { return list != null ? list.Count : 0; }
 		}
+		
+		public TreeNodeCollection Clone ()
+		{
+			if (list != null)
+				return new TreeNodeCollection ((ArrayList) list.Clone ());
+			else
+				return Empty;
+		}
 	}
 }

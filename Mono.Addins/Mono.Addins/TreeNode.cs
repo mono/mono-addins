@@ -236,7 +236,7 @@ namespace Mono.Addins
 			if (extensionNode != null && extensionNode.AddinId == ad.Addin.Id)
 				extensionNode.OnAddinLoaded ();
 			if (recursive && childrenLoaded) {
-				foreach (TreeNode node in Children)
+				foreach (TreeNode node in Children.Clone ())
 					node.NotifyAddinLoaded (ad, true);
 			}
 		}
