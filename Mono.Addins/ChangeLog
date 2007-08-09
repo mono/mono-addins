@@ -1,5 +1,11 @@
 2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins/TreeNode.cs, Mono.Addins/ExtensionContext.cs: When activating
+	  an add-in (maybe as a result of a registry update), make sure only
+	  loaded extension points are updated.
+
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins/AddinRegistry.cs: Create host addin files in a directory
 	  inside the database.
 	* Mono.Addins.Database/AddinDatabase.cs: Bump add-in database version.

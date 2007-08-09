@@ -377,7 +377,7 @@ namespace Mono.Addins
 				Hashtable eps = new Hashtable ();
 				foreach (ModuleDescription mod in addin.Description.AllModules) {
 					foreach (Extension ext in mod.Extensions) {
-						ExtensionPoint ep = tree.FindExtensionPoint (ext.Path);
+						ExtensionPoint ep = tree.FindLoadedExtensionPoint (ext.Path);
 						if (ep != null && !eps.Contains (ep))
 							eps.Add (ep, ep);
 					}
