@@ -42,7 +42,7 @@ namespace Mono.Addins.Database
 	{
 		public const string GlobalDomain = "global";
 		
-		const string VersionTag = "000";
+		const string VersionTag = "001";
 
 		ArrayList allSetupInfos;
 		ArrayList addinSetupInfos;
@@ -79,6 +79,10 @@ namespace Mono.Addins.Database
 		
 		public string AddinPrivateDataPath {
 			get { return Path.Combine (AddinDbDir, "addin-priv-data"); }
+		}
+		
+		public string HostsPath {
+			get { return Path.Combine (AddinDbDir, "hosts"); }
 		}
 		
 		string HostIndexFile {
@@ -1421,8 +1425,9 @@ namespace Mono.Addins.Database
 					if (descs.Count > 0) {
 						foreach (AddinDescription sd in descs)
 							InsertSortedAddin (inserted, lists, sd);
-					} else 
-						Console.WriteLine ("NOT FOUND: " + adep.FullAddinId + " " + desc.Domain);
+					}
+//					else 
+//						Console.WriteLine ("NOT FOUND: " + adep.FullAddinId + " " + desc.Domain + " from " + sid);
 				}
 			}
 			ArrayList list = (ArrayList) lists [desc.Domain];

@@ -1,3 +1,10 @@
+2007-08-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/AddinRegistry.cs: Create host addin files in a directory
+	  inside the database.
+	* Mono.Addins.Database/AddinDatabase.cs: Bump add-in database version.
+	  Removed debug code.
+
 2007-08-08  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/TreeNodeCollection.cs, Mono.Addins/TreeNode.cs: Clone the node

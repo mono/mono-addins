@@ -53,11 +53,17 @@ namespace Mono.Addins
 		{
 			basePath = Util.GetFullPath (registryPath);
 			database = new AddinDatabase (this);
+
+			// Look for add-ins in the hosts directory and in the default
+			// addins directory
 			addinDirs = new StringCollection ();
-			addinDirs.Add (Path.Combine (basePath, "addins"));
+			addinDirs.Add (database.HostsPath);
+			addinDirs.Add (DefaultAddinsFolder);
+			
+			// Get the domain corresponding to the startup folder
 			if (startupDirectory != null) {
-				currentDomain = database.GetFolderDomain (null, startupDirectory);
 				this.startupDirectory = startupDirectory;
+				currentDomain = database.GetFolderDomain (null, startupDirectory);
 			} else
 				currentDomain = AddinDatabase.GlobalDomain;
 		}
@@ -231,10 +237,10 @@ namespace Mono.Addins
 		{
 			hostFile = Util.GetFullPath (hostFile);
 			string baseName = Path.GetFileNameWithoutExtension (hostFile);
-			if (!Directory.Exists (DefaultAddinsFolder))
-				Directory.CreateDirectory (DefaultAddinsFolder);
+			if (!Directory.Exists (database.HostsPath))
+				Directory.CreateDirectory (database.HostsPath);
 			
-			foreach (string s in Directory.GetFiles (DefaultAddinsFolder, baseName + "*.host.addins")) {
+			foreach (string s in Directory.GetFiles (database.HostsPath, baseName + "*.addins")) {
 				try {
 					using (StreamReader sr = new StreamReader (s)) {
 						XmlTextReader tr = new XmlTextReader (sr);
@@ -249,10 +255,10 @@ namespace Mono.Addins
 				}
 			}
 			
-			string file = Path.Combine (DefaultAddinsFolder, baseName) + ".host.addins";
+			string file = Path.Combine (database.HostsPath, baseName) + ".addins";
 			int n=1;
 			while (File.Exists (file)) {
-				file = Path.Combine (DefaultAddinsFolder, baseName) + "_" + n + ".host.addins";
+				file = Path.Combine (database.HostsPath, baseName) + "_" + n + ".addins";
 				n++;
 			}
 			
