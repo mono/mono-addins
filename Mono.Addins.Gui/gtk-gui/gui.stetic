@@ -2,11 +2,12 @@
 <stetic-interface>
   <configuration>
     <images-root-path>../</images-root-path>
+    <target-gtk-version>2.8.3</target-gtk-version>
   </configuration>
-  <widget class="Gtk.Dialog" id="Mono.Addins.Gui.ErrorDialog" design-size="628 145">
+  <widget class="Gtk.Dialog" id="Mono.Addins.Gui.ErrorDialog" design-size="632 155">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
-    <property name="Title" translatable="yes">MonoDevelop</property>
+    <property name="Title" translatable="yes">Error</property>
     <property name="TypeHint">Dialog</property>
     <property name="BorderWidth">6</property>
     <property name="Buttons">1</property>
@@ -14,7 +15,7 @@
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox5">
         <property name="MemberName" />
-        <property name="BorderWidth">2</property>
+        <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.HBox" id="hbox59">
             <property name="MemberName" />
@@ -133,7 +134,7 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="IsDialogButton">False</property>
+            <property name="ResponseId">-5</property>
             <property name="label">gtk-ok</property>
           </widget>
         </child>
@@ -143,8 +144,9 @@
   <widget class="Gtk.Dialog" id="Mono.Addins.Gui.AddinManagerDialog" design-size="524 432">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
-    <property name="Title" translatable="yes">MonoDevelop Add-in Manager</property>
+    <property name="Title" translatable="yes">Add-in Manager</property>
     <property name="TypeHint">Dialog</property>
+    <property name="BorderWidth">6</property>
     <property name="DefaultWidth">700</property>
     <property name="DefaultHeight">550</property>
     <property name="Buttons">1</property>
@@ -152,12 +154,13 @@
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox8">
         <property name="MemberName" />
+        <property name="Spacing">3</property>
         <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox93">
             <property name="MemberName" />
             <property name="Spacing">6</property>
-            <property name="BorderWidth">12</property>
+            <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.HBox" id="hbox85">
                 <property name="MemberName" />
@@ -166,7 +169,7 @@
                   <widget class="Gtk.Image" id="imageInstall">
                     <property name="MemberName" />
                     <property name="Yalign">0</property>
-                    <property name="Pixbuf">stock:gtk-dialog-warning Dialog</property>
+                    <property name="Pixbuf">resource:system-software-update.png</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -178,7 +181,7 @@
                 <child>
                   <widget class="Gtk.Label" id="label144">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">&lt;big&gt;&lt;b&gt;MonoDevelop Add-in Manager&lt;/b&gt;&lt;/big&gt;</property>
+                    <property name="LabelProp" translatable="yes">&lt;big&gt;&lt;b&gt;Add-in Manager&lt;/b&gt;&lt;/big&gt;</property>
                     <property name="UseMarkup">True</property>
                   </widget>
                   <packing>
@@ -262,7 +265,6 @@
                             <property name="Icon">stock:gtk-add Button</property>
                             <property name="Label" translatable="yes">_Install Add-ins...</property>
                             <property name="UseUnderline">True</property>
-                            <property name="IsDialogButton">False</property>
                             <signal name="Clicked" handler="OnInstall" />
                           </widget>
                           <packing>
@@ -273,13 +275,12 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.Button" id="button3">
+                          <widget class="Gtk.Button" id="btnRepositories">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Type">TextOnly</property>
                             <property name="Label" translatable="yes">_Repositories...</property>
                             <property name="UseUnderline">True</property>
-                            <property name="IsDialogButton">False</property>
                             <signal name="Clicked" handler="OnManageRepos" />
                           </widget>
                           <packing>
@@ -308,7 +309,6 @@
                             <property name="Icon">stock:gtk-remove Button</property>
                             <property name="Label" translatable="yes">_Uninstall...</property>
                             <property name="UseUnderline">True</property>
-                            <property name="IsDialogButton">False</property>
                             <signal name="Clicked" handler="OnUninstall" />
                           </widget>
                           <packing>
@@ -326,7 +326,6 @@
                             <property name="Icon">stock:gtk-yes Button</property>
                             <property name="Label" translatable="yes">Enable</property>
                             <property name="UseUnderline">True</property>
-                            <property name="IsDialogButton">False</property>
                             <signal name="Clicked" handler="OnEnable" />
                           </widget>
                           <packing>
@@ -344,7 +343,6 @@
                             <property name="Icon">stock:gtk-no Button</property>
                             <property name="Label" translatable="yes">Disable</property>
                             <property name="UseUnderline">True</property>
-                            <property name="IsDialogButton">False</property>
                             <signal name="Clicked" handler="OnDisable" />
                           </widget>
                           <packing>
@@ -361,7 +359,6 @@
                             <property name="UseStock">True</property>
                             <property name="Type">StockItem</property>
                             <property name="StockId">gtk-dialog-info</property>
-                            <property name="IsDialogButton">False</property>
                             <signal name="Clicked" handler="OnShowInfo" />
                             <property name="label">gtk-dialog-info</property>
                           </widget>
@@ -415,19 +412,20 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-close</property>
-            <property name="IsDialogButton">False</property>
+            <property name="ResponseId">-7</property>
             <property name="label">gtk-close</property>
           </widget>
         </child>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="Mono.Addins.Gui.AddinInstallDialog" design-size="698 517">
+  <widget class="Gtk.Dialog" id="Mono.Addins.Gui.AddinInstallDialog" design-size="698 521">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Add-in Installation</property>
     <property name="TypeHint">Dialog</property>
     <property name="Modal">True</property>
+    <property name="BorderWidth">6</property>
     <property name="DefaultWidth">725</property>
     <property name="DefaultHeight">550</property>
     <property name="Buttons">0</property>
@@ -435,6 +433,7 @@
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox9">
         <property name="MemberName" />
+        <property name="Spacing">6</property>
         <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.Notebook" id="wizardNotebook">
@@ -442,7 +441,7 @@
             <property name="CanFocus">True</property>
             <property name="CurrentPage">0</property>
             <property name="ShowBorder">False</property>
-            <property name="BorderWidth">12</property>
+            <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.VBox" id="vbox82">
                 <property name="MemberName" />
@@ -496,7 +495,6 @@
                         <property name="UseStock">True</property>
                         <property name="Type">StockItem</property>
                         <property name="StockId">gtk-refresh</property>
-                        <property name="IsDialogButton">False</property>
                         <signal name="Clicked" handler="OnUpdateRepo" />
                         <property name="label">gtk-refresh</property>
                       </widget>
@@ -514,7 +512,6 @@
                         <property name="Type">TextOnly</property>
                         <property name="Label" translatable="yes">_Repositories...</property>
                         <property name="UseUnderline">True</property>
-                        <property name="IsDialogButton">False</property>
                         <signal name="Clicked" handler="OnManageSites" />
                       </widget>
                       <packing>
@@ -588,7 +585,6 @@ Show updates only</property>
                                 <property name="UseStock">True</property>
                                 <property name="Type">StockItem</property>
                                 <property name="StockId">gtk-dialog-info</property>
-                                <property name="IsDialogButton">False</property>
                                 <signal name="Clicked" handler="OnShowInfo" />
                                 <property name="label">gtk-dialog-info</property>
                               </widget>
@@ -607,7 +603,6 @@ Show updates only</property>
                                 <property name="Type">TextOnly</property>
                                 <property name="Label" translatable="yes">_Unselect All</property>
                                 <property name="UseUnderline">True</property>
-                                <property name="IsDialogButton">False</property>
                                 <signal name="Clicked" handler="OnUnselectAll" />
                               </widget>
                               <packing>
@@ -625,7 +620,6 @@ Show updates only</property>
                                 <property name="Type">TextOnly</property>
                                 <property name="Label" translatable="yes">Select _All</property>
                                 <property name="UseUnderline">True</property>
-                                <property name="IsDialogButton">False</property>
                                 <signal name="Clicked" handler="OnSelectAll" />
                               </widget>
                               <packing>
@@ -779,7 +773,7 @@ asd
                 <child>
                   <widget class="Gtk.ProgressBar" id="mainProgressBar">
                     <property name="MemberName" />
-                    <property name="PulseStep">0,10000000149</property>
+                    <property name="PulseStep">10000000149</property>
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -816,7 +810,7 @@ asd
                 <child>
                   <widget class="Gtk.ProgressBar" id="progressBar">
                     <property name="MemberName" />
-                    <property name="PulseStep">0,10000000149</property>
+                    <property name="PulseStep">10000000149</property>
                   </widget>
                   <packing>
                     <property name="Position">4</property>
@@ -967,7 +961,6 @@ asd
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-cancel</property>
-                <property name="IsDialogButton">False</property>
                 <signal name="Clicked" handler="OnCancel" />
                 <property name="label">gtk-cancel</property>
               </widget>
@@ -980,7 +973,6 @@ asd
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-go-back</property>
-                <property name="IsDialogButton">False</property>
                 <signal name="Clicked" handler="OnPrevPage" />
                 <property name="label">gtk-go-back</property>
               </widget>
@@ -996,7 +988,6 @@ asd
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-go-forward</property>
-                <property name="IsDialogButton">False</property>
                 <signal name="Clicked" handler="OnNextPage" />
                 <property name="label">gtk-go-forward</property>
               </widget>
@@ -1013,7 +1004,6 @@ asd
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-ok</property>
-                <property name="IsDialogButton">False</property>
                 <signal name="Clicked" handler="OnOk" />
                 <property name="label">gtk-ok</property>
               </widget>
@@ -1030,23 +1020,12 @@ asd
             <property name="Fill">False</property>
           </packing>
         </child>
-        <child>
-          <widget class="Gtk.HSeparator" id="hseparator3">
-            <property name="MemberName" />
-          </widget>
-          <packing>
-            <property name="PackType">End</property>
-            <property name="Position">3</property>
-            <property name="AutoSize">False</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
       </widget>
     </child>
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="hbuttonbox1">
         <property name="MemberName" />
+        <property name="Visible">False</property>
         <property name="Spacing">10</property>
         <property name="BorderWidth">5</property>
         <property name="Size">0</property>
@@ -1054,11 +1033,12 @@ asd
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="Mono.Addins.Gui.ManageSitesDialog" design-size="537 327">
+  <widget class="Gtk.Dialog" id="Mono.Addins.Gui.ManageSitesDialog" design-size="538 357">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Add-in Repository Management</property>
     <property name="TypeHint">Dialog</property>
+    <property name="BorderWidth">6</property>
     <property name="DefaultWidth">600</property>
     <property name="DefaultHeight">300</property>
     <property name="Buttons">1</property>
@@ -1066,12 +1046,12 @@ asd
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox10">
         <property name="MemberName" />
-        <property name="BorderWidth">2</property>
+        <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.HBox" id="hbox67">
             <property name="MemberName" />
             <property name="Spacing">12</property>
-            <property name="BorderWidth">12</property>
+            <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow17">
                 <property name="MemberName" />
@@ -1104,7 +1084,6 @@ asd
                     <property name="UseStock">True</property>
                     <property name="Type">StockItem</property>
                     <property name="StockId">gtk-add</property>
-                    <property name="IsDialogButton">False</property>
                     <signal name="Clicked" handler="OnAdd" />
                     <property name="label">gtk-add</property>
                   </widget>
@@ -1122,7 +1101,6 @@ asd
                     <property name="UseStock">True</property>
                     <property name="Type">StockItem</property>
                     <property name="StockId">gtk-delete</property>
-                    <property name="IsDialogButton">False</property>
                     <signal name="Clicked" handler="OnRemove" />
                     <property name="label">gtk-delete</property>
                   </widget>
@@ -1153,7 +1131,7 @@ asd
       <widget class="Gtk.HButtonBox" id="dialog-action_area10">
         <property name="MemberName" />
         <property name="Spacing">10</property>
-        <property name="BorderWidth">5</property>
+        <property name="BorderWidth">6</property>
         <property name="Size">1</property>
         <property name="LayoutStyle">End</property>
         <child>
@@ -1164,30 +1142,31 @@ asd
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-close</property>
-            <property name="IsDialogButton">False</property>
+            <property name="ResponseId">-7</property>
             <property name="label">gtk-close</property>
           </widget>
         </child>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="Mono.Addins.Gui.NewSiteDialog" design-size="576 235">
+  <widget class="Gtk.Dialog" id="Mono.Addins.Gui.NewSiteDialog" design-size="576 247">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Add New Repository</property>
     <property name="TypeHint">Dialog</property>
+    <property name="BorderWidth">6</property>
     <property name="DefaultWidth">550</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox11">
         <property name="MemberName" />
-        <property name="BorderWidth">2</property>
+        <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.VBox" id="vbox89">
             <property name="MemberName" />
             <property name="Spacing">6</property>
-            <property name="BorderWidth">12</property>
+            <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.Label" id="label121">
                 <property name="MemberName" />
@@ -1340,7 +1319,6 @@ asd
                         <property name="Type">TextOnly</property>
                         <property name="Label" translatable="yes">Browse...</property>
                         <property name="UseUnderline">True</property>
-                        <property name="IsDialogButton">False</property>
                         <signal name="Clicked" handler="OnButtonBrowseClicked" />
                       </widget>
                       <packing>
@@ -1376,7 +1354,7 @@ asd
       <widget class="Gtk.HButtonBox" id="dialog-action_area11">
         <property name="MemberName" />
         <property name="Spacing">10</property>
-        <property name="BorderWidth">5</property>
+        <property name="BorderWidth">6</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
         <child>
@@ -1387,7 +1365,7 @@ asd
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-cancel</property>
-            <property name="IsDialogButton">False</property>
+            <property name="ResponseId">-6</property>
             <property name="label">gtk-cancel</property>
           </widget>
         </child>
@@ -1399,7 +1377,7 @@ asd
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="IsDialogButton">False</property>
+            <property name="ResponseId">-5</property>
             <property name="label">gtk-ok</property>
           </widget>
           <packing>
@@ -1412,8 +1390,9 @@ asd
   <widget class="Gtk.Dialog" id="Mono.Addins.Gui.AddinInfoDialog" design-size="496 368">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
-    <property name="Title" translatable="yes">MonoDevelop Package</property>
+    <property name="Title" translatable="yes">Package</property>
     <property name="TypeHint">Dialog</property>
+    <property name="BorderWidth">6</property>
     <property name="DefaultWidth">550</property>
     <property name="DefaultHeight">400</property>
     <property name="Buttons">1</property>
@@ -1421,12 +1400,12 @@ asd
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox12">
         <property name="MemberName" />
-        <property name="BorderWidth">2</property>
+        <property name="Spacing">6</property>
         <child>
           <widget class="Gtk.HBox" id="hbox81">
             <property name="MemberName" />
             <property name="Spacing">12</property>
-            <property name="BorderWidth">12</property>
+            <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.VBox" id="vbox94">
                 <property name="MemberName" />
@@ -1494,7 +1473,7 @@ asd
       <widget class="Gtk.HButtonBox" id="dialog-action_area12">
         <property name="MemberName" />
         <property name="Spacing">10</property>
-        <property name="BorderWidth">5</property>
+        <property name="BorderWidth">6</property>
         <property name="Size">1</property>
         <property name="LayoutStyle">End</property>
         <child>
@@ -1505,7 +1484,7 @@ asd
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-close</property>
-            <property name="IsDialogButton">False</property>
+            <property name="ResponseId">-7</property>
             <property name="label">gtk-close</property>
           </widget>
         </child>
@@ -1517,18 +1496,20 @@ asd
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Add-in Manager</property>
     <property name="WindowPosition">CenterOnParent</property>
+    <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
     <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
+        <property name="Spacing">6</property>
         <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox2">
             <property name="MemberName" />
             <property name="Spacing">6</property>
-            <property name="BorderWidth">12</property>
+            <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
@@ -1609,7 +1590,7 @@ asd
       <widget class="Gtk.HButtonBox" id="dialog1_ActionArea">
         <property name="MemberName" />
         <property name="Spacing">10</property>
-        <property name="BorderWidth">5</property>
+        <property name="BorderWidth">6</property>
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
         <child>
@@ -1620,7 +1601,6 @@ asd
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-cancel</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-6</property>
             <property name="label">gtk-cancel</property>
           </widget>
@@ -1637,7 +1617,6 @@ asd
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-1</property>
             <signal name="Clicked" handler="OnButtonOkClicked" />
             <property name="label">gtk-ok</property>

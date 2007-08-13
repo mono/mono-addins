@@ -35,16 +35,18 @@ namespace Mono.Addins.Gui {
             this.Name = "Mono.Addins.Gui.AddinInstallerDialog";
             this.Title = Mono.Unix.Catalog.GetString("Add-in Manager");
             this.WindowPosition = ((Gtk.WindowPosition)(4));
+            this.BorderWidth = ((uint)(6));
             this.HasSeparator = false;
             // Internal child Mono.Addins.Gui.AddinInstallerDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog1_VBox";
+            w1.Spacing = 6;
             w1.BorderWidth = ((uint)(2));
             // Container child dialog1_VBox.Gtk.Box+BoxChild
             this.vbox2 = new Gtk.VBox();
             this.vbox2.Name = "vbox2";
             this.vbox2.Spacing = 6;
-            this.vbox2.BorderWidth = ((uint)(12));
+            this.vbox2.BorderWidth = ((uint)(6));
             // Container child vbox2.Gtk.Box+BoxChild
             this.label1 = new Gtk.Label();
             this.label1.Name = "label1";
@@ -74,7 +76,6 @@ namespace Mono.Addins.Gui {
             this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow1.Gtk.Container+ContainerChild
             Gtk.Viewport w4 = new Gtk.Viewport();
-            w4.Name = "GtkViewport";
             w4.ShadowType = ((Gtk.ShadowType)(0));
             // Container child GtkViewport.Gtk.Container+ContainerChild
             this.addinList = new Gtk.Label();
@@ -105,7 +106,7 @@ namespace Mono.Addins.Gui {
             Gtk.HButtonBox w10 = this.ActionArea;
             w10.Name = "dialog1_ActionArea";
             w10.Spacing = 10;
-            w10.BorderWidth = ((uint)(5));
+            w10.BorderWidth = ((uint)(6));
             w10.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
             this.buttonCancel = new Gtk.Button();

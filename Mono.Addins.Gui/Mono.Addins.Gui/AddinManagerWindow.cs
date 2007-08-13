@@ -33,13 +33,27 @@ namespace Mono.Addins.Gui
 {
 	public class AddinManagerWindow
 	{
+		private static bool mAllowInstall = true;
+		
+		public static bool AllowInstall
+		{
+			get { return mAllowInstall; }
+			set { mAllowInstall = value; }
+		}
+		
 		private AddinManagerWindow()
 		{
+		}
+		
+		private static void InitDialog (AddinManagerDialog dlg)
+		{
+			dlg.AllowInstall = AllowInstall;
 		}
 		
 		public static Gtk.Window Show (Gtk.Window parent)
 		{
 			AddinManagerDialog dlg = new AddinManagerDialog (parent);
+			InitDialog (dlg);
 			dlg.Show ();
 			return dlg;
 		}
@@ -48,6 +62,7 @@ namespace Mono.Addins.Gui
 		{
 			AddinManagerDialog dlg = new AddinManagerDialog (parent);
 			try {
+				InitDialog (dlg);
 				dlg.Run ();
 			} finally {
 				dlg.Destroy ();

@@ -37,7 +37,7 @@ namespace Mono.Addins.Gui {
         
         private Gtk.Button btnInstall;
         
-        private Gtk.Button button3;
+        private Gtk.Button btnRepositories;
         
         private Gtk.HSeparator hseparator4;
         
@@ -55,19 +55,21 @@ namespace Mono.Addins.Gui {
             Stetic.Gui.Initialize();
             // Widget Mono.Addins.Gui.AddinManagerDialog
             this.Name = "Mono.Addins.Gui.AddinManagerDialog";
-            this.Title = Mono.Unix.Catalog.GetString("MonoDevelop Add-in Manager");
+            this.Title = Mono.Unix.Catalog.GetString("Add-in Manager");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
+            this.BorderWidth = ((uint)(6));
             this.DefaultWidth = 700;
             this.DefaultHeight = 550;
             // Internal child Mono.Addins.Gui.AddinManagerDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox8";
+            w1.Spacing = 3;
             w1.BorderWidth = ((uint)(2));
             // Container child dialog-vbox8.Gtk.Box+BoxChild
             this.vbox93 = new Gtk.VBox();
             this.vbox93.Name = "vbox93";
             this.vbox93.Spacing = 6;
-            this.vbox93.BorderWidth = ((uint)(12));
+            this.vbox93.BorderWidth = ((uint)(6));
             // Container child vbox93.Gtk.Box+BoxChild
             this.hbox85 = new Gtk.HBox();
             this.hbox85.Name = "hbox85";
@@ -76,7 +78,7 @@ namespace Mono.Addins.Gui {
             this.imageInstall = new Gtk.Image();
             this.imageInstall.Name = "imageInstall";
             this.imageInstall.Yalign = 0F;
-            this.imageInstall.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-warning", 48);
+            this.imageInstall.Pixbuf = Gdk.Pixbuf.LoadFromResource("system-software-update.png");
             this.hbox85.Add(this.imageInstall);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.hbox85[this.imageInstall]));
             w2.Position = 0;
@@ -85,7 +87,7 @@ namespace Mono.Addins.Gui {
             // Container child hbox85.Gtk.Box+BoxChild
             this.label144 = new Gtk.Label();
             this.label144.Name = "label144";
-            this.label144.LabelProp = Mono.Unix.Catalog.GetString("<big><b>MonoDevelop Add-in Manager</b></big>");
+            this.label144.LabelProp = Mono.Unix.Catalog.GetString("<big><b>Add-in Manager</b></big>");
             this.label144.UseMarkup = true;
             this.hbox85.Add(this.label144);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox85[this.label144]));
@@ -135,6 +137,7 @@ namespace Mono.Addins.Gui {
             this.addinTree = new Gtk.TreeView();
             this.addinTree.CanFocus = true;
             this.addinTree.Name = "addinTree";
+            this.addinTree.HeadersClickable = true;
             this.scrolledwindow13.Add(this.addinTree);
             this.hbox72.Add(this.scrolledwindow13);
             Gtk.Box.BoxChild w8 = ((Gtk.Box.BoxChild)(this.hbox72[this.scrolledwindow13]));
@@ -150,19 +153,15 @@ namespace Mono.Addins.Gui {
             this.btnInstall.UseUnderline = true;
             // Container child btnInstall.Gtk.Container+ContainerChild
             Gtk.Alignment w9 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w9.Name = "GtkAlignment";
             // Container child GtkAlignment.Gtk.Container+ContainerChild
             Gtk.HBox w10 = new Gtk.HBox();
-            w10.Name = "GtkHBox";
             w10.Spacing = 2;
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Image w11 = new Gtk.Image();
-            w11.Name = "image5";
-            w11.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-add", 20);
+            w11.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-add", Gtk.IconSize.Button, 20);
             w10.Add(w11);
             // Container child GtkHBox.Gtk.Container+ContainerChild
             Gtk.Label w13 = new Gtk.Label();
-            w13.Name = "GtkLabel";
             w13.LabelProp = Mono.Unix.Catalog.GetString("_Install Add-ins...");
             w13.UseUnderline = true;
             w10.Add(w13);
@@ -174,13 +173,13 @@ namespace Mono.Addins.Gui {
             w17.Expand = false;
             w17.Fill = false;
             // Container child vbox933.Gtk.Box+BoxChild
-            this.button3 = new Gtk.Button();
-            this.button3.CanFocus = true;
-            this.button3.Name = "button3";
-            this.button3.UseUnderline = true;
-            this.button3.Label = Mono.Unix.Catalog.GetString("_Repositories...");
-            this.vbox933.Add(this.button3);
-            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox933[this.button3]));
+            this.btnRepositories = new Gtk.Button();
+            this.btnRepositories.CanFocus = true;
+            this.btnRepositories.Name = "btnRepositories";
+            this.btnRepositories.UseUnderline = true;
+            this.btnRepositories.Label = Mono.Unix.Catalog.GetString("_Repositories...");
+            this.vbox933.Add(this.btnRepositories);
+            Gtk.Box.BoxChild w18 = ((Gtk.Box.BoxChild)(this.vbox933[this.btnRepositories]));
             w18.Position = 1;
             w18.Expand = false;
             w18.Fill = false;
@@ -199,19 +198,15 @@ namespace Mono.Addins.Gui {
             this.btnUninstall.UseUnderline = true;
             // Container child btnUninstall.Gtk.Container+ContainerChild
             Gtk.Alignment w20 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w20.Name = "GtkAlignment1";
             // Container child GtkAlignment1.Gtk.Container+ContainerChild
             Gtk.HBox w21 = new Gtk.HBox();
-            w21.Name = "GtkHBox1";
             w21.Spacing = 2;
             // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Image w22 = new Gtk.Image();
-            w22.Name = "image6";
-            w22.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-remove", 20);
+            w22.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-remove", Gtk.IconSize.Button, 20);
             w21.Add(w22);
             // Container child GtkHBox1.Gtk.Container+ContainerChild
             Gtk.Label w24 = new Gtk.Label();
-            w24.Name = "GtkLabel2";
             w24.LabelProp = Mono.Unix.Catalog.GetString("_Uninstall...");
             w24.UseUnderline = true;
             w21.Add(w24);
@@ -229,19 +224,15 @@ namespace Mono.Addins.Gui {
             this.btnEnable.UseUnderline = true;
             // Container child btnEnable.Gtk.Container+ContainerChild
             Gtk.Alignment w29 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w29.Name = "GtkAlignment2";
             // Container child GtkAlignment2.Gtk.Container+ContainerChild
             Gtk.HBox w30 = new Gtk.HBox();
-            w30.Name = "GtkHBox2";
             w30.Spacing = 2;
             // Container child GtkHBox2.Gtk.Container+ContainerChild
             Gtk.Image w31 = new Gtk.Image();
-            w31.Name = "image7";
-            w31.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-yes", 20);
+            w31.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-yes", Gtk.IconSize.Button, 20);
             w30.Add(w31);
             // Container child GtkHBox2.Gtk.Container+ContainerChild
             Gtk.Label w33 = new Gtk.Label();
-            w33.Name = "GtkLabel3";
             w33.LabelProp = Mono.Unix.Catalog.GetString("Enable");
             w33.UseUnderline = true;
             w30.Add(w33);
@@ -259,19 +250,15 @@ namespace Mono.Addins.Gui {
             this.btnDisable.UseUnderline = true;
             // Container child btnDisable.Gtk.Container+ContainerChild
             Gtk.Alignment w38 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-            w38.Name = "GtkAlignment3";
             // Container child GtkAlignment3.Gtk.Container+ContainerChild
             Gtk.HBox w39 = new Gtk.HBox();
-            w39.Name = "GtkHBox3";
             w39.Spacing = 2;
             // Container child GtkHBox3.Gtk.Container+ContainerChild
             Gtk.Image w40 = new Gtk.Image();
-            w40.Name = "image8";
-            w40.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-no", 20);
+            w40.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-no", Gtk.IconSize.Button, 20);
             w39.Add(w40);
             // Container child GtkHBox3.Gtk.Container+ContainerChild
             Gtk.Label w42 = new Gtk.Label();
-            w42.Name = "GtkLabel4";
             w42.LabelProp = Mono.Unix.Catalog.GetString("Disable");
             w42.UseUnderline = true;
             w39.Add(w42);
@@ -329,7 +316,7 @@ namespace Mono.Addins.Gui {
             this.Show();
             this.addinTree.CursorChanged += new System.EventHandler(this.OnSelectionChanged);
             this.btnInstall.Clicked += new System.EventHandler(this.OnInstall);
-            this.button3.Clicked += new System.EventHandler(this.OnManageRepos);
+            this.btnRepositories.Clicked += new System.EventHandler(this.OnManageRepos);
             this.btnUninstall.Clicked += new System.EventHandler(this.OnUninstall);
             this.btnEnable.Clicked += new System.EventHandler(this.OnEnable);
             this.btnDisable.Clicked += new System.EventHandler(this.OnDisable);

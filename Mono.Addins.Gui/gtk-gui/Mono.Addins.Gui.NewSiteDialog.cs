@@ -51,16 +51,17 @@ namespace Mono.Addins.Gui {
             this.Name = "Mono.Addins.Gui.NewSiteDialog";
             this.Title = Mono.Unix.Catalog.GetString("Add New Repository");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
+            this.BorderWidth = ((uint)(6));
             this.DefaultWidth = 550;
             // Internal child Mono.Addins.Gui.NewSiteDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox11";
-            w1.BorderWidth = ((uint)(2));
+            w1.Spacing = 6;
             // Container child dialog-vbox11.Gtk.Box+BoxChild
             this.vbox89 = new Gtk.VBox();
             this.vbox89.Name = "vbox89";
             this.vbox89.Spacing = 6;
-            this.vbox89.BorderWidth = ((uint)(12));
+            this.vbox89.BorderWidth = ((uint)(6));
             // Container child vbox89.Gtk.Box+BoxChild
             this.label121 = new Gtk.Label();
             this.label121.Name = "label121";
@@ -195,7 +196,7 @@ namespace Mono.Addins.Gui {
             Gtk.HButtonBox w16 = this.ActionArea;
             w16.Name = "dialog-action_area11";
             w16.Spacing = 10;
-            w16.BorderWidth = ((uint)(5));
+            w16.BorderWidth = ((uint)(6));
             w16.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area11.Gtk.ButtonBox+ButtonBoxChild
             this.cancelbutton1 = new Gtk.Button();
@@ -220,7 +221,7 @@ namespace Mono.Addins.Gui {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultHeight = 235;
+            this.DefaultHeight = 247;
             this.Show();
             this.btnOnlineRep.Clicked += new System.EventHandler(this.OnOptionClicked);
             this.btnLocalRep.Clicked += new System.EventHandler(this.OnOptionClicked);

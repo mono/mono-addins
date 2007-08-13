@@ -33,17 +33,18 @@ namespace Mono.Addins.Gui {
             this.Name = "Mono.Addins.Gui.ManageSitesDialog";
             this.Title = Mono.Unix.Catalog.GetString("Add-in Repository Management");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
+            this.BorderWidth = ((uint)(6));
             this.DefaultWidth = 600;
             this.DefaultHeight = 300;
             // Internal child Mono.Addins.Gui.ManageSitesDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox10";
-            w1.BorderWidth = ((uint)(2));
+            w1.Spacing = 6;
             // Container child dialog-vbox10.Gtk.Box+BoxChild
             this.hbox67 = new Gtk.HBox();
             this.hbox67.Name = "hbox67";
             this.hbox67.Spacing = 12;
-            this.hbox67.BorderWidth = ((uint)(12));
+            this.hbox67.BorderWidth = ((uint)(6));
             // Container child hbox67.Gtk.Box+BoxChild
             this.scrolledwindow17 = new Gtk.ScrolledWindow();
             this.scrolledwindow17.CanFocus = true;
@@ -56,6 +57,7 @@ namespace Mono.Addins.Gui {
             this.repoTree.CanFocus = true;
             this.repoTree.Name = "repoTree";
             this.repoTree.HeadersVisible = false;
+            this.repoTree.HeadersClickable = true;
             this.scrolledwindow17.Add(this.repoTree);
             this.hbox67.Add(this.scrolledwindow17);
             Gtk.Box.BoxChild w3 = ((Gtk.Box.BoxChild)(this.hbox67[this.scrolledwindow17]));
@@ -100,7 +102,7 @@ namespace Mono.Addins.Gui {
             Gtk.HButtonBox w8 = this.ActionArea;
             w8.Name = "dialog-action_area10";
             w8.Spacing = 10;
-            w8.BorderWidth = ((uint)(5));
+            w8.BorderWidth = ((uint)(6));
             w8.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area10.Gtk.ButtonBox+ButtonBoxChild
             this.closebutton2 = new Gtk.Button();

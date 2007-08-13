@@ -47,6 +47,7 @@ RESOURCES =  \
 	icons/package-x-generic.png \
 	icons/package-x-generic_16.png \
 	icons/package-x-generic_22.png \
+	icons/system-software-update.png \
 	icons/user-package.png 
 
 EXTRAS = \

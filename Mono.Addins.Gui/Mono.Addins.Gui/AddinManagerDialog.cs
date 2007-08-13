@@ -38,12 +38,20 @@ namespace Mono.Addins.Gui
 		AddinTreeWidget tree;
 		SetupService service = new SetupService ();
 		
+		internal bool AllowInstall
+		{
+			set {
+				this.btnInstall.Visible = value;
+				this.btnRepositories.Visible = value;
+				this.hseparator4.Visible = value;
+				this.btnUninstall.Visible = value;
+			}
+		}
+		
 		public AddinManagerDialog (Window parent)
 		{
 			Build ();
 			TransientFor = parent;
-			imageInstall.Stock = "md-software-update";
-			imageInstall.IconSize = (int)IconSize.Dialog;
 
 			tree = new AddinTreeWidget (addinTree);
 			LoadAddins ();
@@ -134,6 +142,7 @@ namespace Mono.Addins.Gui
 		internal void OnManageRepos (object sender, EventArgs e)
 		{
 			ManageSitesDialog dlg = new ManageSitesDialog (service);
+			dlg.TransientFor = this;
 			try {
 				dlg.Run ();
 			} finally {

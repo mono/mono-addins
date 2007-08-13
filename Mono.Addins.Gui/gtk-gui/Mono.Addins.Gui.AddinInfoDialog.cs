@@ -29,19 +29,20 @@ namespace Mono.Addins.Gui {
             Stetic.Gui.Initialize();
             // Widget Mono.Addins.Gui.AddinInfoDialog
             this.Name = "Mono.Addins.Gui.AddinInfoDialog";
-            this.Title = Mono.Unix.Catalog.GetString("MonoDevelop Package");
+            this.Title = Mono.Unix.Catalog.GetString("Package");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
+            this.BorderWidth = ((uint)(6));
             this.DefaultWidth = 550;
             this.DefaultHeight = 400;
             // Internal child Mono.Addins.Gui.AddinInfoDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox12";
-            w1.BorderWidth = ((uint)(2));
+            w1.Spacing = 6;
             // Container child dialog-vbox12.Gtk.Box+BoxChild
             this.hbox81 = new Gtk.HBox();
             this.hbox81.Name = "hbox81";
             this.hbox81.Spacing = 12;
-            this.hbox81.BorderWidth = ((uint)(12));
+            this.hbox81.BorderWidth = ((uint)(6));
             // Container child hbox81.Gtk.Box+BoxChild
             this.vbox94 = new Gtk.VBox();
             this.vbox94.Name = "vbox94";
@@ -66,7 +67,6 @@ namespace Mono.Addins.Gui {
             this.scrolledwindow22.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             // Container child scrolledwindow22.Gtk.Container+ContainerChild
             Gtk.Viewport w4 = new Gtk.Viewport();
-            w4.Name = "viewport4";
             w4.ShadowType = ((Gtk.ShadowType)(0));
             // Container child viewport4.Gtk.Container+ContainerChild
             this.infoLabel = new Gtk.Label();
@@ -90,7 +90,7 @@ namespace Mono.Addins.Gui {
             Gtk.HButtonBox w9 = this.ActionArea;
             w9.Name = "dialog-action_area12";
             w9.Spacing = 10;
-            w9.BorderWidth = ((uint)(5));
+            w9.BorderWidth = ((uint)(6));
             w9.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area12.Gtk.ButtonBox+ButtonBoxChild
             this.closebutton3 = new Gtk.Button();

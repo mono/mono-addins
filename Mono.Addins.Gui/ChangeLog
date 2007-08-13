@@ -1,3 +1,19 @@
+2007-08-07  Chris Howie <cdhowie@nerdshack.com>
+
+	* gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInfoDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.ErrorDialog.cs, gtk-gui/gui.stetic: Removed
+	  MonoDevelop-specific strings.
+	* gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs, gtk-gui/generated.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs: Regenerated.
+	* Mono.Addins.Gui/AddinManagerWindow.cs: Added static property for
+	  the flag that hides install buttons.
+	* Mono.Addins.Gui/AddinManagerDialog.cs: Implementation of the above
+	  property.
+	* icons/system-software-update.png: Added missing icon.
+
 2007-07-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am: Don't try to install the assembly if gui is disabled.

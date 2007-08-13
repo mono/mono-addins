@@ -37,13 +37,13 @@ namespace Mono.Addins.Gui {
             Stetic.Gui.Initialize();
             // Widget Mono.Addins.Gui.ErrorDialog
             this.Name = "Mono.Addins.Gui.ErrorDialog";
-            this.Title = Mono.Unix.Catalog.GetString("MonoDevelop");
+            this.Title = Mono.Unix.Catalog.GetString("Error");
             this.TypeHint = ((Gdk.WindowTypeHint)(1));
             this.BorderWidth = ((uint)(6));
             // Internal child Mono.Addins.Gui.ErrorDialog.VBox
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox5";
-            w1.BorderWidth = ((uint)(2));
+            w1.Spacing = 6;
             // Container child dialog-vbox5.Gtk.Box+BoxChild
             this.hbox59 = new Gtk.HBox();
             this.hbox59.Name = "hbox59";
@@ -55,7 +55,7 @@ namespace Mono.Addins.Gui {
             // Container child vbox72.Gtk.Box+BoxChild
             this.icon = new Gtk.Image();
             this.icon.Name = "icon";
-            this.icon.Pixbuf = Stetic.IconLoader.LoadIcon("gtk-dialog-error", 48);
+            this.icon.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-dialog-error", Gtk.IconSize.Dialog, 48);
             this.vbox72.Add(this.icon);
             Gtk.Box.BoxChild w2 = ((Gtk.Box.BoxChild)(this.vbox72[this.icon]));
             w2.Position = 0;
@@ -137,8 +137,8 @@ namespace Mono.Addins.Gui {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultWidth = 628;
-            this.DefaultHeight = 145;
+            this.DefaultWidth = 632;
+            this.DefaultHeight = 155;
             this.Show();
         }
     }

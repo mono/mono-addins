@@ -191,6 +191,7 @@ namespace Mono.Addins.Gui
 		protected void OnManageSites (object sender, EventArgs e)
 		{
 			ManageSitesDialog dlg = new ManageSitesDialog (service);
+			dlg.TransientFor = this;
 			try {
 				dlg.Run ();
 				FillRepos ();
