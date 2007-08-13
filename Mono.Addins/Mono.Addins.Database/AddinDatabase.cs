@@ -42,7 +42,7 @@ namespace Mono.Addins.Database
 	{
 		public const string GlobalDomain = "global";
 		
-		const string VersionTag = "001";
+		public const string VersionTag = "001";
 
 		ArrayList allSetupInfos;
 		ArrayList addinSetupInfos;
@@ -219,10 +219,11 @@ namespace Mono.Addins.Database
 
 		void FindInstalledAddins (ArrayList result, string domain, string idFilter)
 		{
-			if (idFilter == null) idFilter = "*";
+			if (idFilter == null) 
+				idFilter = "*";
 			string dir = Path.Combine (AddinCachePath, domain);
 			if (Directory.Exists (dir)) {
-				foreach (string file in fileDatabase.GetDirectoryFiles (dir, idFilter + ".maddin")) {
+				foreach (string file in fileDatabase.GetDirectoryFiles (dir, idFilter + ",*.maddin")) {
 					string id = Path.GetFileNameWithoutExtension (file);
 					result.Add (GetInstalledDomainAddin (domain, id, true, false, false));
 				}
