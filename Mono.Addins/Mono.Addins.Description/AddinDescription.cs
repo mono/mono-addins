@@ -502,7 +502,7 @@ namespace Mono.Addins.Description
 				config.configDoc = new XmlDocument ();
 				config.configDoc.Load (stream);
 			} catch (Exception ex) {
-				throw new InvalidOperationException ("The add-in configuration file is invalid.", ex);
+				throw new InvalidOperationException ("The add-in configuration file is invalid: " + ex.Message, ex);
 			}
 			
 			XmlElement elem = config.configDoc.DocumentElement;
