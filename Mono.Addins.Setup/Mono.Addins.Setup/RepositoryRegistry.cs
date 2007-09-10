@@ -58,7 +58,7 @@ namespace Mono.Addins.Setup
 			if (rr != null)
 				return rr;
 
-			RegisterRepository (url, false);
+			rr = RegisterRepository (url, false);
 			
 			try {
 				if (updateNow) {
