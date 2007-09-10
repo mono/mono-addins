@@ -1,3 +1,15 @@
+2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs, gtk-gui/generated.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.ErrorDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInfoDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.NewSiteDialog.cs, gtk-gui/gui.stetic,
+	  Mono.Addins.Gui/NewSiteDialog.cs: Fix some GUI issues in the manage
+	  sites dialog.
+
 2007-08-07  Chris Howie <cdhowie@nerdshack.com>
 
 	* gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs,

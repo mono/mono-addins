@@ -30,7 +30,7 @@ namespace Mono.Addins.Gui {
         private Gtk.Button buttonOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget Mono.Addins.Gui.AddinInstallerDialog
             this.Name = "Mono.Addins.Gui.AddinInstallerDialog";
             this.Title = Mono.Unix.Catalog.GetString("Add-in Manager");

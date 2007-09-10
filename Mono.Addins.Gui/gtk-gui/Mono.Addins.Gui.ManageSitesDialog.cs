@@ -28,7 +28,7 @@ namespace Mono.Addins.Gui {
         private Gtk.Button closebutton2;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget Mono.Addins.Gui.ManageSitesDialog
             this.Name = "Mono.Addins.Gui.ManageSitesDialog";
             this.Title = Mono.Unix.Catalog.GetString("Add-in Repository Management");

@@ -34,7 +34,7 @@ namespace Mono.Addins.Gui {
         private Gtk.Button okButton;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget Mono.Addins.Gui.ErrorDialog
             this.Name = "Mono.Addins.Gui.ErrorDialog";
             this.Title = Mono.Unix.Catalog.GetString("Error");

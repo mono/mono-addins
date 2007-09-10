@@ -102,7 +102,7 @@ namespace Mono.Addins.Gui {
         private Gtk.Button btnOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget Mono.Addins.Gui.AddinInstallDialog
             this.Name = "Mono.Addins.Gui.AddinInstallDialog";
             this.Title = Mono.Unix.Catalog.GetString("Add-in Installation");
@@ -280,6 +280,7 @@ namespace Mono.Addins.Gui {
             this.label108.Name = "label108";
             this.label108.LabelProp = "label108";
             this.wizardNotebook.SetTabLabel(this.vbox82, this.label108);
+            this.label108.ShowAll();
             // Container child wizardNotebook.Gtk.Notebook+NotebookChild
             this.scrolledwindow19 = new Gtk.ScrolledWindow();
             this.scrolledwindow19.CanFocus = true;
@@ -330,6 +331,7 @@ namespace Mono.Addins.Gui {
             this.label124.Name = "label124";
             this.label124.LabelProp = Mono.Unix.Catalog.GetString("label124");
             this.wizardNotebook.SetTabLabel(this.scrolledwindow19, this.label124);
+            this.label124.ShowAll();
             // Container child wizardNotebook.Gtk.Notebook+NotebookChild
             this.vbox86 = new Gtk.VBox();
             this.vbox86.Name = "vbox86";
@@ -391,6 +393,7 @@ namespace Mono.Addins.Gui {
             this.label110.Name = "label110";
             this.label110.LabelProp = "label110";
             this.wizardNotebook.SetTabLabel(this.vbox86, this.label110);
+            this.label110.ShowAll();
             // Container child wizardNotebook.Gtk.Notebook+NotebookChild
             this.scrolledwindow20 = new Gtk.ScrolledWindow();
             this.scrolledwindow20.CanFocus = true;
@@ -470,6 +473,7 @@ namespace Mono.Addins.Gui {
             this.label111.Name = "label111";
             this.label111.LabelProp = "label111";
             this.wizardNotebook.SetTabLabel(this.scrolledwindow20, this.label111);
+            this.label111.ShowAll();
             w1.Add(this.wizardNotebook);
             Gtk.Box.BoxChild w40 = ((Gtk.Box.BoxChild)(w1[this.wizardNotebook]));
             w40.Position = 0;

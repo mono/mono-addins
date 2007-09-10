@@ -51,10 +51,10 @@ namespace Mono.Addins.Gui
 			get {
 				if (btnOnlineRep.Active)
 					return urlText.Text;
-				else if (pathEntry.Text != "")
+				else if (pathEntry.Text.Length > 0)
 					return "file://" + pathEntry.Text;
 				else
-					return "";
+					return string.Empty;
 			}
 		}
 		
@@ -103,6 +103,11 @@ namespace Mono.Addins.Gui
 		}
 
 		protected virtual void OnPathEntryChanged(object sender, System.EventArgs e)
+		{
+			CheckValues ();
+		}
+
+		protected virtual void OnUrlTextChanged (object sender, System.EventArgs e)
 		{
 			CheckValues ();
 		}

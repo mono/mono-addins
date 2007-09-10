@@ -46,7 +46,7 @@ namespace Mono.Addins.Gui {
         private Gtk.Button btnOk;
         
         protected virtual void Build() {
-            Stetic.Gui.Initialize();
+            Stetic.Gui.Initialize(this);
             // Widget Mono.Addins.Gui.NewSiteDialog
             this.Name = "Mono.Addins.Gui.NewSiteDialog";
             this.Title = Mono.Unix.Catalog.GetString("Add New Repository");
@@ -57,6 +57,7 @@ namespace Mono.Addins.Gui {
             Gtk.VBox w1 = this.VBox;
             w1.Name = "dialog-vbox11";
             w1.Spacing = 6;
+            w1.BorderWidth = ((uint)(2));
             // Container child dialog-vbox11.Gtk.Box+BoxChild
             this.vbox89 = new Gtk.VBox();
             this.vbox89.Name = "vbox89";
@@ -76,7 +77,6 @@ namespace Mono.Addins.Gui {
             this.btnOnlineRep = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Register an on-line repository"));
             this.btnOnlineRep.CanFocus = true;
             this.btnOnlineRep.Name = "btnOnlineRep";
-            this.btnOnlineRep.Active = true;
             this.btnOnlineRep.DrawIndicator = true;
             this.btnOnlineRep.UseUnderline = true;
             this.btnOnlineRep.Group = new GLib.SList(System.IntPtr.Zero);
@@ -196,7 +196,7 @@ namespace Mono.Addins.Gui {
             Gtk.HButtonBox w16 = this.ActionArea;
             w16.Name = "dialog-action_area11";
             w16.Spacing = 10;
-            w16.BorderWidth = ((uint)(6));
+            w16.BorderWidth = ((uint)(5));
             w16.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area11.Gtk.ButtonBox+ButtonBoxChild
             this.cancelbutton1 = new Gtk.Button();
@@ -221,9 +221,10 @@ namespace Mono.Addins.Gui {
             if ((this.Child != null)) {
                 this.Child.ShowAll();
             }
-            this.DefaultHeight = 247;
+            this.DefaultHeight = 249;
             this.Show();
             this.btnOnlineRep.Clicked += new System.EventHandler(this.OnOptionClicked);
+            this.urlText.Changed += new System.EventHandler(this.OnUrlTextChanged);
             this.btnLocalRep.Clicked += new System.EventHandler(this.OnOptionClicked);
             this.pathEntry.Changed += new System.EventHandler(this.OnPathEntryChanged);
             this.buttonBrowse.Clicked += new System.EventHandler(this.OnButtonBrowseClicked);
