@@ -1,5 +1,11 @@
 2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins.Database/AddinDatabase.cs: Fix bug in
+	  InternalGetInstalledAddins. It should return root addins when Type is
+	  set to Root.
+
+2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins.Description/AddinDescription.cs: Improved error message.
 
 2007-08-14  Lluis Sanchez Gual <lluis@novell.com> 

@@ -198,7 +198,7 @@ namespace Mono.Addins.Database
 				if (rootSetupInfos == null) {
 					rootSetupInfos = new ArrayList ();
 					foreach (Addin adn in allSetupInfos)
-						if (!adn.Description.IsRoot)
+						if (adn.Description.IsRoot)
 							rootSetupInfos.Add (adn);
 				}
 				return FilterById (rootSetupInfos, idFilter);
