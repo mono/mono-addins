@@ -161,8 +161,10 @@ namespace Mono.Addins
 			string[] a2 = v2.Split ('.');
 			
 			for (int n=0; n<a1.Length; n++) {
-				if (a1[n] == "") {
-					if (a2[n] != "")
+				if (n >= a2.Length)
+					return -1;
+				if (a1[n].Length == 0) {
+					if (a2[n].Length != 0)
 						return 1;
 					continue;
 				}
@@ -177,6 +179,8 @@ namespace Mono.Addins
 					return 1;
 				}
 			}
+			if (a2.Length > a1.Length)
+				return 1;
 			return 0;
 		}
 		
