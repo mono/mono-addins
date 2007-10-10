@@ -1,3 +1,7 @@
+2007-10-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Gui/AddinTreeWidget.cs: Make this class public.
+
 2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs, gtk-gui/generated.cs,

@@ -37,7 +37,7 @@ using Mono.Unix;
 
 namespace Mono.Addins.Gui
 {
-	class AddinTreeWidget
+	public class AddinTreeWidget
 	{
 		protected Gtk.TreeView treeView;
 		protected Gtk.TreeStore treeStore;
