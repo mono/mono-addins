@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using Mono.Addins.Description;
 
 namespace Mono.Addins
@@ -41,6 +42,9 @@ namespace Mono.Addins
 		ExtensionContext parentContext;
 		ExtensionTree tree;
 		bool fireEvents = false;
+		
+		ArrayList runTimeEnabledAddins;
+		ArrayList runTimeDisabledAddins;
 		
 		public event ExtensionEventHandler ExtensionChanged;
 		
@@ -372,6 +376,9 @@ namespace Mono.Addins
 					AddinManager.ReportError ("Required add-in not found", id, null, false);
 					return;
 				}
+				// Take note that his add-in has been enabled at run-time
+				// Needed because loaded add-in descriptions may not include this add-in. 
+				RegisterRuntimeEnabledAddin (id);
 				
 				// Look for loaded extension points
 				Hashtable eps = new Hashtable ();
@@ -426,6 +433,10 @@ namespace Mono.Addins
 		internal void RemoveAddinExtensions (string id)
 		{
 			try {
+				// Registers this add-in as disabled, so from now on extension from this
+				// add-in will be ignored
+				RegisterRuntimeDisabledAddin (id);
+				
 				fireEvents = true;
 
 				// This method removes all extension nodes added by the add-in
@@ -457,6 +468,55 @@ namespace Mono.Addins
 			}
 		}
 		
+		void RegisterRuntimeDisabledAddin (string addinId)
+		{
+			if (runTimeDisabledAddins == null)
+				runTimeDisabledAddins = new ArrayList ();
+			if (!runTimeDisabledAddins.Contains (addinId))
+				runTimeDisabledAddins.Add (addinId);
+			
+			if (runTimeEnabledAddins != null)
+				runTimeEnabledAddins.Remove (addinId);
+		}
+		
+		void RegisterRuntimeEnabledAddin (string addinId)
+		{
+			if (runTimeEnabledAddins == null)
+				runTimeEnabledAddins = new ArrayList ();
+			if (!runTimeEnabledAddins.Contains (addinId))
+				runTimeEnabledAddins.Add (addinId);
+			
+			if (runTimeDisabledAddins != null)
+				runTimeDisabledAddins.Remove (addinId);
+		}
+		
+		internal ICollection GetAddinsForPath (string path, StringCollection col)
+		{
+			ArrayList newlist = null;
+			
+			// Always consider add-ins which have been enabled at runtime since
+			// they may contain extensioin for this path.
+			// Ignore addins disabled at run-time.
+			
+			if (runTimeEnabledAddins != null && runTimeEnabledAddins.Count > 0) {
+				newlist = new ArrayList ();
+				newlist.AddRange (col);
+				foreach (string s in runTimeEnabledAddins)
+					if (!newlist.Contains (s))
+						newlist.Add (s);
+			}
+			
+			if (runTimeDisabledAddins != null && runTimeDisabledAddins.Count > 0) {
+				if (newlist == null) {
+					newlist = new ArrayList ();
+					newlist.AddRange (col);
+				}
+				foreach (string s in runTimeDisabledAddins)
+					newlist.Remove (s);
+			}
+			
+			return newlist != null ? (ICollection)newlist : (ICollection)col;
+		}
 		
 		// Load the extension nodes at the specified path. If the path
 		// contains extension nodes implemented in an add-in which is
@@ -477,7 +537,7 @@ namespace Mono.Addins
 				
 				ArrayList loadData = new ArrayList ();
 				
-				foreach (string addin in ep.Addins) {
+				foreach (string addin in GetAddinsForPath (ep.Path, ep.Addins)) {
 					ExtensionLoadData ed = GetAddinExtensions (addin, ep);
 					if (ed != null) {
 						// Insert the addin data taking into account dependencies.
@@ -652,7 +712,6 @@ namespace Mono.Addins
 		{
 			return tree.FindExtensionPathByType (monitor, type, nodeName, out path, out pathNodeName);
 		}
-		
 	}
 	
 	class ConditionInfo

@@ -1,3 +1,10 @@
+2007-10-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/ExtensionContext.cs: When an add-in is enabled at run-time,
+	  take it into account when loading any extension point, since the add-in
+	  list of the extension point may not have the latest info from the
+	  registry. The same when disabled.
+
 2007-09-13  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/Addin.cs: Fix issue in CompareVersions.
