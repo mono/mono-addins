@@ -1,3 +1,7 @@
+2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AssemblyInfo.cs: Get ready for 0.3 release.
+
 2007-09-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Setup/RepositoryRegistry.cs: Make sure RegisterRepository

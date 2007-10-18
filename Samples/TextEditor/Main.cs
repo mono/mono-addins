@@ -14,7 +14,7 @@ namespace TextEditor
 			AddinManager.AddinLoaded += OnLoad;
 			AddinManager.AddinUnloaded += OnUnload;
 			
-			AddinManager.Initialize (".");
+			AddinManager.Initialize ();
 			AddinManager.Registry.Update (null);
 			AddinManager.ExtensionChanged += OnExtensionChange;
 			

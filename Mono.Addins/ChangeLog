@@ -1,3 +1,7 @@
+2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AssemblyInfo.cs: Get ready for 0.3 release.
+
 2007-10-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/ExtensionContext.cs: When an add-in is enabled at run-time,

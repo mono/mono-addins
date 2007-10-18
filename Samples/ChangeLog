@@ -1,3 +1,7 @@
+2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* TextEditor/Main.cs: Get ready for 0.3 release.
+
 2007-07-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* TextEditorLib/TextEditorLib.mdp,
