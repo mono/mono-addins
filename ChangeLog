@@ -1,3 +1,7 @@
+2007-10-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure.ac: Added missing AC_SUBST.
+
 2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* configure.ac: Get ready for 0.3 release.
