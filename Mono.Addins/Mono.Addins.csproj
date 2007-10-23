@@ -110,6 +110,7 @@
     <Compile Include="Mono.Addins\ExtensionPointAttribute.cs" />
     <Compile Include="Mono.Addins\ExtensionTree.cs" />
     <Compile Include="Mono.Addins\GettextCatalog.cs" />
+    <Compile Include="Mono.Addins\IAddinInstaller.cs" />
     <Compile Include="Mono.Addins\InstanceExtensionNode.cs" />
     <Compile Include="Mono.Addins\IProgressStatus.cs" />
     <Compile Include="Mono.Addins\MissingDependencyException.cs" />

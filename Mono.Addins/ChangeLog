@@ -1,3 +1,7 @@
+2007-10-23  Ankit Jain  <jankit@novell.com>
+
+	* Mono.Addins.csproj: Add missing IAddinInstaller.cs
+
 2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AssemblyInfo.cs: Get ready for 0.3 release.
