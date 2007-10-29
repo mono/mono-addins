@@ -33,13 +33,13 @@
     <Execute type="None" entry="TextEditor.CompilerService.CSharp" />
   </StartMode>
   <Entries>
-    <Entry filename="./WriterService/WriterService.mdp" />
-    <Entry filename="./WriterServiceHost/WriterServiceHost.mdp" />
-    <Entry filename="./WriterService.SampleExtender/WriterService.SampleExtender.mdp" />
-    <Entry filename="./TextEditor/TextEditor.mdp" />
-    <Entry filename="./TextEditorLib/TextEditorLib.mdp" />
-    <Entry filename="./TextEditor.Xml/TextEditor.Xml.mdp" />
-    <Entry filename="./TextEditor.CompilerService/TextEditor.CompilerService.mdp" />
-    <Entry filename="./TextEditor.CompilerService.CSharp/TextEditor.CompilerService.CSharp.mdp" />
+    <Entry filename="WriterService/WriterService.mdp" />
+    <Entry filename="WriterServiceHost/WriterServiceHost.mdp" />
+    <Entry filename="WriterService.SampleExtender/WriterService.SampleExtender.mdp" />
+    <Entry filename="TextEditor/TextEditor.mdp" />
+    <Entry filename="TextEditorLib/TextEditorLib.mdp" />
+    <Entry filename="TextEditor.Xml/TextEditor.Xml.mdp" />
+    <Entry filename="TextEditor.CompilerService/TextEditor.CompilerService.mdp" />
+    <Entry filename="TextEditor.CompilerService.CSharp/TextEditor.CompilerService.CSharp.mdp" />
   </Entries>
 </Combine>

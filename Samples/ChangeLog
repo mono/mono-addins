@@ -1,3 +1,14 @@
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Samples.mds,
+	  TextEditor.CompilerService.CSharp/TextEditor.CompilerService.CSharp.mdp,
+	  TextEditor.CompilerService/TextEditor.CompilerService.mdp,
+	  TextEditor.Xml/TextEditor.Xml.mdp, TextEditor/TextEditor.mdp,
+	  TextEditorLib/TextEditorLib.mdp,
+	  WriterService.SampleExtender/WriterService.SampleExtender.mdp,
+	  WriterService/WriterService.mdp,
+	  WriterServiceHost/WriterServiceHost.mdp: Update paths.
+
 2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* TextEditor/Main.cs: Get ready for 0.3 release.

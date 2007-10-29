@@ -1,3 +1,7 @@
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.mds, Packages.mdse: Update paths.
+
 2007-10-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* configure.ac: Added missing AC_SUBST.

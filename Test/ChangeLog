@@ -1,3 +1,12 @@
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CommandExtension/CommandExtension.mdp,
+	  FileContentExtension/FileContentExtension.mdp,
+	  FileExtender/FileExtender.mdp,
+	  HelloWorldExtension/HelloWorldExtension.mdp,
+	  SystemInfoExtension/SystemInfoExtension.mdp, Test.mds,
+	  UnitTests/UnitTests.mdp: Update paths.
+
 2007-07-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* UnitTests/TestEvents.cs,

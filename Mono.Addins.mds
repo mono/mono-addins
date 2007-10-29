@@ -25,13 +25,13 @@
     <Execute type="None" entry="Packages" />
   </StartMode>
   <Entries>
-    <Entry filename="./Mono.Addins/Mono.Addins.mdp" />
-    <Entry filename="./mautil/mautil.mdp" />
-    <Entry filename="./Mono.Addins.Gui/Mono.Addins.Gui.mdp" />
-    <Entry filename="./Test/Test.mds" />
-    <Entry filename="./docs/docs.mdp" />
-    <Entry filename="./Mono.Addins.Setup/Mono.Addins.Setup.mdp" />
-    <Entry filename="./Samples/Samples.mds" />
-    <Entry filename="./Packages.mdse" />
+    <Entry filename="Mono.Addins/Mono.Addins.mdp" />
+    <Entry filename="mautil/mautil.mdp" />
+    <Entry filename="Mono.Addins.Gui/Mono.Addins.Gui.mdp" />
+    <Entry filename="Test/Test.mds" />
+    <Entry filename="docs/docs.mdp" />
+    <Entry filename="Mono.Addins.Setup/Mono.Addins.Setup.mdp" />
+    <Entry filename="Samples/Samples.mds" />
+    <Entry filename="Packages.mdse" />
   </Entries>
 </Combine>

@@ -18,11 +18,11 @@
     <Execute type="None" entry="FileExtender" />
   </StartMode>
   <Entries>
-    <Entry filename="./CommandExtension/CommandExtension.mdp" />
-    <Entry filename="./FileContentExtension/FileContentExtension.mdp" />
-    <Entry filename="./HelloWorldExtension/HelloWorldExtension.mdp" />
-    <Entry filename="./SystemInfoExtension/SystemInfoExtension.mdp" />
-    <Entry filename="./UnitTests/UnitTests.mdp" />
-    <Entry filename="./FileExtender/FileExtender.mdp" />
+    <Entry filename="CommandExtension/CommandExtension.mdp" />
+    <Entry filename="FileContentExtension/FileContentExtension.mdp" />
+    <Entry filename="HelloWorldExtension/HelloWorldExtension.mdp" />
+    <Entry filename="SystemInfoExtension/SystemInfoExtension.mdp" />
+    <Entry filename="UnitTests/UnitTests.mdp" />
+    <Entry filename="FileExtender/FileExtender.mdp" />
   </Entries>
 </Combine>

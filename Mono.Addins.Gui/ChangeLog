@@ -1,3 +1,7 @@
+2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Gui.mdp: Update paths.
+
 2007-10-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AssemblyInfo.cs: Get ready for 0.3 release.
