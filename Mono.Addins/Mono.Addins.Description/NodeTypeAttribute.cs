@@ -39,6 +39,7 @@ namespace Mono.Addins.Description
 		string name;
 		string type;
 		bool required;
+		bool localizable;
 		string description;
 	
 		public NodeTypeAttribute()
@@ -53,6 +54,11 @@ namespace Mono.Addins.Description
 		public bool Required {
 			get { return required; }
 			set { required = value; }
+		}
+		
+		public bool Localizable {
+			get { return localizable; }
+			set { localizable = value; }
 		}
 		
 		public string Type {
@@ -75,6 +81,7 @@ namespace Mono.Addins.Description
 			name = elem.GetAttribute ("name");
 			type = elem.GetAttribute ("type");
 			required = elem.GetAttribute ("required").ToLower () == "true";
+			localizable = elem.GetAttribute ("localizable").ToLower () == "true";
 			description = ReadXmlDescription ();
 		}
 		
@@ -93,6 +100,11 @@ namespace Mono.Addins.Description
 			else
 				Element.RemoveAttribute ("required");
 			
+			if (localizable)
+				Element.SetAttribute ("localizable", "True");
+			else
+				Element.RemoveAttribute ("localizable");
+			
 			SaveXmlDescription (description);
 		}
 		
@@ -102,6 +114,7 @@ namespace Mono.Addins.Description
 			writer.WriteValue ("type", type);
 			writer.WriteValue ("required", required);
 			writer.WriteValue ("description", description);
+			writer.WriteValue ("localizable", localizable);
 		}
 		
 		internal override void Read (BinaryXmlReader reader)
@@ -111,6 +124,7 @@ namespace Mono.Addins.Description
 			required = reader.ReadBooleanValue ("required");
 			if (!reader.IgnoreDescriptionData)
 				description = reader.ReadStringValue ("description");
+			localizable = reader.ReadBooleanValue ("localizable");
 		}
 	}
 }

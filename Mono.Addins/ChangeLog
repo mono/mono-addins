@@ -1,3 +1,23 @@
+2007-11-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Localization, Mono.Addins.Localization/GettextDomain.cs,
+	  Mono.Addins.Localization/IAddinLocalizer.cs,
+	  Mono.Addins.Localization/NullLocalizer.cs,
+	  Mono.Addins.Localization/StringTableLocalizer.cs,
+	  Mono.Addins.Localization/StringResourceLocalizer.cs,
+	  Mono.Addins.Localization/IAddinLocalizerFactory.cs,
+	  Mono.Addins.Localization/GettextLocalizer.cs, Mono.Addins.mdp,
+	  Mono.Addins/RuntimeAddin.cs, Mono.Addins/ExtensionTree.cs,
+	  Mono.Addins/NodeAttributeAttribute.cs, Mono.Addins/AddinManager.cs,
+	  Mono.Addins/ExtensionNode.cs, Mono.Addins/AddinLocalizer.cs,
+	  Makefile.am, Mono.Addins.Description/NodeTypeAttribute.cs,
+	  Mono.Addins.Description/AddinDescription.cs,
+	  Mono.Addins.Description/ExtensionNodeType.cs: Implemented support for
+	  add-in localization.
+	* Mono.Addins/NodeElement.cs,
+	  Mono.Addins.Description/ExtensionNodeDescriptionCollection.cs: Added
+	  ChildNodes property to NodeElement.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.mdp: Update paths.

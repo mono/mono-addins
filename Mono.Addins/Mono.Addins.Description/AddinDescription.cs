@@ -68,6 +68,7 @@ namespace Mono.Addins.Description
 		ExtensionNodeSetCollection nodeSets;
 		ConditionTypeDescriptionCollection conditionTypes;
 		ExtensionPointCollection extensionPoints;
+		ExtensionNodeDescription localizer;
 		object[] fileInfo;
 		
 		internal static BinaryXmlTypeMap typeMap;
@@ -278,6 +279,11 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		public ExtensionNodeDescription Localizer {
+			get { return localizer; }
+			set { localizer = value; }
+		}
+		
 		public ExtensionPoint AddExtensionPoint (string path)
 		{
 			ExtensionPoint ep = new ExtensionPoint ();
@@ -467,7 +473,16 @@ namespace Mono.Addins.Description
 				elem.SetAttribute ("category", category);
 			else
 				elem.RemoveAttribute ("category");
-				
+			
+			if (localizer == null || localizer.Element == null) {
+				// Remove old element if it exists
+				XmlElement oldLoc = (XmlElement) elem.SelectSingleNode ("Localizer");
+				if (oldLoc != null)
+					elem.RemoveChild (oldLoc);
+			}
+			if (localizer != null)
+				localizer.SaveXml (elem);
+			
 			if (mainModule != null) {
 				mainModule.Element = elem;
 				mainModule.SaveXml (elem);
@@ -524,6 +539,10 @@ namespace Mono.Addins.Description
 			
 			s = elem.GetAttribute ("defaultEnabled");
 			config.defaultEnabled = s.Length == 0 || s == "true" || s == "yes";
+			
+			XmlElement localizerElem = (XmlElement) elem.SelectSingleNode ("Localizer");
+			if (localizerElem != null)
+				config.localizer = new ExtensionNodeDescription (localizerElem);
 			
 			if (config.id.Length > 0)
 				config.hasUserId = true;
@@ -596,6 +615,10 @@ namespace Mono.Addins.Description
 				}
 			}
 			
+			if (localizer != null && localizer.GetAttribute ("type").Length == 0) {
+				errors.Add ("The attribute 'type' in the Location element is required.");
+			}
+			
 			return errors;
 		}
 		
@@ -658,6 +681,7 @@ namespace Mono.Addins.Description
 			writer.WriteValue ("ExtensionPoints", ExtensionPoints);
 			writer.WriteValue ("ConditionTypes", ConditionTypes);
 			writer.WriteValue ("FilesInfo", fileInfo);
+			writer.WriteValue ("Localizer", localizer);
 		}
 		
 		void IBinaryXmlElement.Read (BinaryXmlReader reader)
@@ -684,6 +708,7 @@ namespace Mono.Addins.Description
 			extensionPoints = (ExtensionPointCollection) reader.ReadValue ("ExtensionPoints", new ExtensionPointCollection (this));
 			conditionTypes = (ConditionTypeDescriptionCollection) reader.ReadValue ("ConditionTypes", new ConditionTypeDescriptionCollection (this));
 			fileInfo = (object[]) reader.ReadValue ("FilesInfo", null);
+			localizer = (ExtensionNodeDescription) reader.ReadValue ("Localizer");
 			
 			if (mainModule != null)
 				mainModule.SetParent (this);

@@ -31,7 +31,7 @@ using System.IO;
 using System.Reflection;
 using System.Collections;
 
-using Mono.Addins;
+using Mono.Addins.Localization;
 
 namespace Mono.Addins
 {
@@ -43,7 +43,8 @@ namespace Mono.Addins
 		static string startupDirectory;
 		static bool initialized;
 		static IAddinInstaller installer;
-		
+		static AddinLocalizer defaultLocalizer;
+
 		public static event AddinErrorEventHandler AddinLoadError;
 		public static event AddinEventHandler AddinLoaded;
 		public static event AddinEventHandler AddinUnloaded;
@@ -94,6 +95,14 @@ namespace Mono.Addins
 			initialized = false;
 		}
 		
+		public static void InitializeDefaultLocalizer (IAddinLocalizer localizer)
+		{
+			if (localizer != null)
+				defaultLocalizer = new AddinLocalizer (localizer);
+			else
+				defaultLocalizer = null;
+		}
+		
 		internal static string StartupDirectory {
 			get { return startupDirectory; }
 		}
@@ -105,6 +114,15 @@ namespace Mono.Addins
 		public static IAddinInstaller DefaultInstaller {
 			get { return installer; }
 			set { installer = value; }
+		}
+		
+		public static AddinLocalizer DefaultLocalizer {
+			get {
+				if (defaultLocalizer != null)
+					return defaultLocalizer; 
+				else
+					return NullLocalizer.Instance;
+			}
 		}
 		
 		internal static AddinSessionService SessionService {
@@ -250,8 +268,11 @@ namespace Mono.Addins
 		{
 			if (AddinLoadError != null)
 				AddinLoadError (null, new AddinErrorEventArgs (message, addinId, exception));
-			else
+			else {
 				Console.WriteLine (message);
+				if (exception != null)
+					Console.WriteLine (exception);
+			}
 		}
 		
 		internal static void ReportAddinLoad (string id)

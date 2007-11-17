@@ -208,27 +208,27 @@ namespace Mono.Addins
 			}
 			
 			Hashtable fields = new Hashtable ();
-			ArrayList reqFields = new ArrayList ();
 			
 			// Check if the type has NodeAttribute attributes applied to fields.
 			foreach (FieldInfo field in ntype.Type.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 				NodeAttributeAttribute at = (NodeAttributeAttribute) Attribute.GetCustomAttribute (field, typeof(NodeAttributeAttribute), true);
 				if (at != null) {
+					ExtensionNodeType.FieldData fdata = new ExtensionNodeType.FieldData ();
+					fdata.Field = field;
+					fdata.Required = at.Required;
+					fdata.Localizable = at.Localizable;
+					
 					string name;
 					if (at.Name != null && at.Name.Length > 0)
 						name = at.Name;
 					else
 						name = field.Name;
 					
-					if (at.Required) reqFields.Add (name);
-					fields [name] = field;
+					fields [name] = fdata;
 				}
 			}
-			if (fields.Count > 0) {
+			if (fields.Count > 0)
 				ntype.Fields = fields;
-				if (reqFields.Count > 0)
-					ntype.RequiredFields = (string[]) reqFields.ToArray (typeof(string));
-			}
 				
 			return true;
 		}

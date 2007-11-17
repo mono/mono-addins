@@ -36,6 +36,7 @@ namespace Mono.Addins
 	{
 		string name;
 		bool required;
+		bool localizable;
 		Type type;
 		string description;
 		
@@ -106,6 +107,11 @@ namespace Mono.Addins
 		public string Description {
 			get { return description != null ? description : string.Empty; }
 			set { description = value; }
+		}
+
+		public bool Localizable {
+			get { return localizable; }
+			set { localizable = value; }
 		}
 	}
 }

@@ -33,9 +33,11 @@ using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Xml;
-using Mono.Addins.Description;
 using System.Resources;
 using System.Globalization;
+
+using Mono.Addins.Description;
+using Mono.Addins.Localization;
 
 namespace Mono.Addins
 {
@@ -49,6 +51,7 @@ namespace Mono.Addins
 		Assembly[] assemblies;
 		RuntimeAddin[] depAddins;
 		ResourceManager[] resourceManagers;
+		AddinLocalizer localizer;
 		
 		internal RuntimeAddin()
 		{
@@ -228,6 +231,15 @@ namespace Mono.Addins
 			return null;
 		}
 		
+		public AddinLocalizer Localizer {
+			get {
+				if (localizer != null)
+					return localizer;
+				else
+					return AddinManager.DefaultLocalizer;
+			}
+		}
+		
 		internal AddinDescription Load (Addin iad)
 		{
 			ainfo = iad;
@@ -250,6 +262,20 @@ namespace Mono.Addins
 			
 			depAddins = (RuntimeAddin[]) plugList.ToArray (typeof(RuntimeAddin));
 			assemblies = (Assembly[]) asmList.ToArray (typeof(Assembly));
+			
+			if (description.Localizer != null) {
+				string cls = description.Localizer.GetAttribute ("type");
+				
+				// First try getting one of the stock localizers. If none of found try getting the type.
+				object fob = CreateInstance ("Mono.Addins.Localization." + cls + "Localizer", false);
+				if (fob == null)
+					fob = CreateInstance (cls, true);
+				
+				IAddinLocalizerFactory factory = fob as IAddinLocalizerFactory;
+				if (factory == null)
+					throw new InvalidOperationException ("Localizer factory type '" + cls + "' must implement IAddinLocalizerFactory");
+				localizer = new AddinLocalizer (factory.CreateLocalizer (this, description.Localizer));
+			}
 			
 			return description;
 		}

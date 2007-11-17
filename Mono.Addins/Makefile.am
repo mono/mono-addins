@@ -49,6 +49,13 @@ FILES =  \
 	Mono.Addins.Description/NodeTypeAttributeCollection.cs \
 	Mono.Addins.Description/ObjectDescription.cs \
 	Mono.Addins.Description/ObjectDescriptionCollection.cs \
+	Mono.Addins.Localization/GettextDomain.cs \
+	Mono.Addins.Localization/GettextLocalizer.cs \
+	Mono.Addins.Localization/IAddinLocalizer.cs \
+	Mono.Addins.Localization/IAddinLocalizerFactory.cs \
+	Mono.Addins.Localization/NullLocalizer.cs \
+	Mono.Addins.Localization/StringResourceLocalizer.cs \
+	Mono.Addins.Localization/StringTableLocalizer.cs \
 	Mono.Addins.Serialization/BinaryXmlReader.cs \
 	Mono.Addins.Serialization/BinaryXmlTypeMap.cs \
 	Mono.Addins.Serialization/BinaryXmlWriter.cs \
@@ -59,6 +66,7 @@ FILES =  \
 	Mono.Addins/AddinErrorEventArgs.cs \
 	Mono.Addins/AddinEventArgs.cs \
 	Mono.Addins/AddinInfo.cs \
+	Mono.Addins/AddinLocalizer.cs \
 	Mono.Addins/AddinManager.cs \
 	Mono.Addins/AddinRegistry.cs \
 	Mono.Addins/AddinRootAttribute.cs \

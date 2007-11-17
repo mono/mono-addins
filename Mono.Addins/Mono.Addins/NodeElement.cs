@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Collections;
 
 namespace Mono.Addins
 {
@@ -36,6 +37,7 @@ namespace Mono.Addins
 		string NodeName { get; }
 		string GetAttribute (string key);
 		NodeAttribute[] Attributes { get; }
+		NodeElementCollection ChildNodes { get; }
 	}
 	
 	public class NodeAttribute
@@ -54,5 +56,10 @@ namespace Mono.Addins
 		public string Value {
 			get { return value; }
 		}
+	}
+	
+	public interface NodeElementCollection: IList, ICollection, IEnumerable
+	{
+		new NodeElement this [int n] { get; }
 	}
 }

@@ -1,5 +1,5 @@
 //
-// ExtensionNodeDescriptionCollection.cs
+// IAddinLocalizer.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -26,37 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 using System;
-using System.Collections;
 
-namespace Mono.Addins.Description
+namespace Mono.Addins.Localization
 {
-	public class ExtensionNodeDescriptionCollection: ObjectDescriptionCollection, NodeElementCollection
+	public interface IAddinLocalizer
 	{
-		public ExtensionNodeDescriptionCollection ()
-		{
-		}
-		
-		internal ExtensionNodeDescriptionCollection (object owner): base (owner)
-		{
-		}
-		
-		public ExtensionNodeDescription this [int n] {
-			get { return (ExtensionNodeDescription) List [n]; }
-		}
-		
-		public ExtensionNodeDescription this [string id] {
-			get {
-				foreach (ExtensionNodeDescription node in List)
-					if (node.Id == id)
-						return node;
-				return null;
-			}
-		}
-		
-		NodeElement NodeElementCollection.this [int n] {
-			get { return (NodeElement) List [n]; }
-		}
+		string GetString (string msgid);
 	}
 }

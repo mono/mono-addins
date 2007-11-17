@@ -31,6 +31,7 @@ using System;
 using System.Xml;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Reflection;
 using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Description
@@ -50,7 +51,12 @@ namespace Mono.Addins.Description
 		// Cached serializable fields
 		[NonSerialized]
 		internal Hashtable Fields;
-		internal string[] RequiredFields;
+		
+		internal class FieldData {
+			public FieldInfo Field;
+			public bool Required;
+			public bool Localizable;
+		}
 		
 		// Addin where this extension type is implemented
 		internal string AddinId {

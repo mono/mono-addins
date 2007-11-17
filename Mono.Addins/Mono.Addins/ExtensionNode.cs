@@ -200,29 +200,25 @@ namespace Mono.Addins
 				return;
 
 			NodeAttribute[] attributes = elem.Attributes;
-			string[] required = nodeType.RequiredFields != null ? (string[]) nodeType.RequiredFields.Clone () : null;
-			int nreq = required != null ? required.Length : 0;
+			Hashtable fields = (Hashtable) nodeType.Fields.Clone ();
 			
 			foreach (NodeAttribute at in attributes) {
 				
-				FieldInfo f = (FieldInfo) nodeType.Fields [at.name];
+				ExtensionNodeType.FieldData f = (ExtensionNodeType.FieldData) fields [at.name];
 				if (f == null)
 					continue;
-					
-				if (required != null) {
-					int i = Array.IndexOf (required, at.name);
-					if (i != -1) {
-						required [i] = null;
-						nreq--;
-					}
-				}
+				
+				fields.Remove (at.name);
 					
 				object val;
 
-				if (f.FieldType == typeof(string)) {
-					val = at.value;
+				if (f.Field.FieldType == typeof(string)) {
+					if (f.Localizable)
+						val = Addin.Localizer.GetString (at.value);
+					else
+						val = at.value;
 				}
-				else if (f.FieldType == typeof(string[])) {
+				else if (f.Field.FieldType == typeof(string[])) {
 					string[] ss = at.value.Split (',');
 					if (ss.Length == 0 && ss[0].Length == 0)
 						val = new string [0];
@@ -232,23 +228,27 @@ namespace Mono.Addins
 						val = ss;
 					}
 				}
-				else if (f.FieldType.IsEnum) {
-					val = Enum.Parse (f.FieldType, at.value);
+				else if (f.Field.FieldType.IsEnum) {
+					val = Enum.Parse (f.Field.FieldType, at.value);
 				}
 				else {
 					try {
-						val = Convert.ChangeType (at.Value, f.FieldType);
+						val = Convert.ChangeType (at.Value, f.Field.FieldType);
 					} catch (InvalidCastException) {
-						throw new InvalidOperationException ("Property type not supported by [NodeAttribute]: " + f.DeclaringType + "." + f.Name);
+						throw new InvalidOperationException ("Property type not supported by [NodeAttribute]: " + f.Field.DeclaringType + "." + f.Field.Name);
 					}
 				}
 					
-				f.SetValue (this, val);
+				f.Field.SetValue (this, val);
 			}
-			if (nreq > 0) {
-				foreach (string s in required)
-					if (s != null)
-						throw new InvalidOperationException ("Required attribute '" + s + "' not found.");
+			
+			if (fields.Count > 0) {
+				// Check if one of the remaining fields is mandatory
+				foreach (DictionaryEntry e in fields) {
+					ExtensionNodeType.FieldData f = (ExtensionNodeType.FieldData) e.Value;
+					if (f.Required)
+						throw new InvalidOperationException ("Required attribute '" + e.Key + "' not found.");
+				}
 			}
 		}
 		
