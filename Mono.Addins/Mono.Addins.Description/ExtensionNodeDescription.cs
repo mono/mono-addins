@@ -209,6 +209,10 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		NodeElementCollection NodeElement.ChildNodes {
+			get { return ChildNodes; }
+		}
+		
 		void SaveXmlAttributes ()
 		{
 			attributes = new string [Element.Attributes.Count * 2];

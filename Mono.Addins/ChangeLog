@@ -1,5 +1,10 @@
 2007-11-17  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins.Description/ExtensionNodeDescription.cs: Add missing
+	  ChildNodes property.
+
+2007-11-17  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins.Localization, Mono.Addins.Localization/GettextDomain.cs,
 	  Mono.Addins.Localization/IAddinLocalizer.cs,
 	  Mono.Addins.Localization/NullLocalizer.cs,
