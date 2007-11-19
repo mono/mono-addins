@@ -1,3 +1,7 @@
+2007-11-19  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Database/AddinDatabase.cs: Workaround for mcs bug.
+
 2007-11-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Description/ExtensionNodeDescription.cs: Add missing

@@ -273,7 +273,7 @@ namespace Mono.Addins.Database
 			if (dbLockCheck)
 				InternalCheck (domain);
 			
-			using (dbLockCheck ? fileDatabase.LockRead () : null)
+			using ((dbLockCheck ? fileDatabase.LockRead () : null))
 			{
 				string path = GetDescriptionPath (domain, id);
 				if (sinfo == null && fileDatabase.Exists (path)) {
