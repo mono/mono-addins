@@ -3,6 +3,7 @@ using System;
 using NUnit.Framework;
 using Mono.Addins;
 using System.IO;
+using SimpleApp;
 
 namespace UnitTests
 {
@@ -153,6 +154,18 @@ namespace UnitTests
 			ainfo = AddinManager.Registry.GetAddin ("SimpleApp.CommandExtension");
 			Assert.IsNotNull (ainfo, "t2");
 			Assert.IsTrue (ainfo.Enabled, "t2.1");
+		}
+		
+		[Test()]
+		public void TestCurrentAddin ()
+		{
+			Assert.AreEqual ("SimpleApp.Core,0.1.0", AddinManager.CurrentAddin.ToString ());
+			
+			InstanceExtensionNode node = (InstanceExtensionNode) AddinManager.GetExtensionNode ("/SimpleApp/Writers/HelloWorldExtension.HelloWorldWriter");
+			Assert.IsNotNull (node, "t1");
+			
+			IWriter w = (IWriter) node.CreateInstance ();
+			Assert.AreEqual ("SimpleApp.HelloWorldExtension,0.1.0", w.Test ("currentAddin"));
 		}
 	}
 }

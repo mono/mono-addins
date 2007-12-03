@@ -10,5 +10,6 @@ namespace SimpleApp
 	{
 		string Title { get; }
 		string Write ();
+		string Test (string test);
 	}
 }

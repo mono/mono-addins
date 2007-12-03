@@ -16,6 +16,8 @@
 		<Addin id="CommandExtension" version="0.1.0" />
 	</Dependencies>
 	
+	<Localizer type="StringResource" />
+	
 	<ExtensionPoint path = "/SystemInformation/Modules" name = "Modules">
 		<Description>Module information providers.</Description>
 		<ExtensionNode name="Module" type="SystemInfoExtension.ModuleExtensionNode"/>
@@ -120,7 +122,7 @@
 	</Extension>
 	
 	<Extension path = "/SystemInformation/Modules">
-		<Module name="System information" />
+		<Module name="System information" id="System"/>
 	</Extension>
 
 	<Extension path = "/SimpleApp/Writers2">

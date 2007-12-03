@@ -19,5 +19,14 @@ namespace HelloWorldExtension
 		{
 			return "Hello world!";
 		}
+		
+		public string Test (string test)
+		{
+			switch (test) {
+			case "currentAddin":
+				return AddinManager.CurrentAddin.ToString ();
+			}
+			return "Unknown test";
+		}
 	}
 }

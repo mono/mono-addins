@@ -1,3 +1,21 @@
+2007-12-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* UnitTests/UnitTests.mdp, UnitTests/TestLoadUnload.cs,
+	  UnitTests/IWriter.cs, UnitTests/TestLocalization.cs,
+	  UnitTests/Makefile.am, UnitTests/TestBase.cs,
+	  FileContentExtension/FileContentExtensionNode.cs,
+	  FileContentExtension/FileContentExtension.addin.xml,
+	  HelloWorldExtension/HelloWorldWriter.cs,
+	  CommandExtension/CommandExtensionNode.cs,
+	  SystemInfoExtension/SystemInfoWriter.cs,
+	  SystemInfoExtension/Makefile.am,
+	  SystemInfoExtension/SystemInfoExtension.addin.xml,
+	  SystemInfoExtension/Resources.resx,
+	  SystemInfoExtension/ModuleExtensionNode.cs,
+	  SystemInfoExtension/SystemInfoExtension.mdp,
+	  SystemInfoExtension/Resources.ca.resx,
+	  FileExtender/ExtraExtender.addin.xml: Added localization tests.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* CommandExtension/CommandExtension.mdp,

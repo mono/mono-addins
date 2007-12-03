@@ -8,11 +8,11 @@ namespace CommandExtension
 {
 	public class CommandExtensionNode: TypeExtensionNode, IWriter
 	{
-		[NodeAttribute]
-		string title;
+		[NodeAttribute (Localizable=true)]
+		protected string title;
 		
 		[NodeAttribute]
-		string command;
+		protected string command;
 		
 		public override object CreateInstance ()
 		{
@@ -26,6 +26,16 @@ namespace CommandExtension
 		public string Write ()
 		{
 			return "cmd:" + command;
+		}
+		
+		public override string ToString ()
+		{
+			return title;
+		}
+		
+		public string Test (string test)
+		{
+			return test;
 		}
 	}
 }

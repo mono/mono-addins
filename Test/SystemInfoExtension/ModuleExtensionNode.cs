@@ -6,18 +6,30 @@ namespace SystemInfoExtension
 {
 	public class ModuleExtensionNode: ExtensionNode
 	{
-		[NodeAttribute]
+		// Not using NodeAttribute here to avoid caching localized strings
 		string name;
 		
 		[NodeAttribute (Required=false)]
-		string version;
+		protected string version;
 
 		public string Name {
-			get { return name; }
+			get { return Addin.Localizer.GetString (name); }
 		}
 		
 		public string Version {
 			get { return version; }
 		}
+		
+		public override string ToString ()
+		{
+			return name;
+		}
+		
+		protected override void Read (NodeElement elem)
+		{
+			base.Read (elem);
+			name = elem.GetAttribute ("name");
+		}
+
 	}
 }

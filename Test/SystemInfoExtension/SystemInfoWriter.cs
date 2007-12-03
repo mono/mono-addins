@@ -8,7 +8,7 @@ namespace SystemInfoExtension
 	public class SystemInfoWriter: IWriter
 	{
 		public string Title {
-			get { return "Modules"; }
+			get { return AddinManager.CurrentLocalizer.GetString ("Modules"); }
 		}
 		
 		public string Write ()
@@ -17,6 +17,11 @@ namespace SystemInfoExtension
 			foreach (ModuleExtensionNode node in AddinManager.GetExtensionNodes ("/SystemInformation/Modules"))
 				s += " " + node.Name;
 			return s;
+		}
+		
+		public string Test (string test)
+		{
+			return test;
 		}
 	}
 }

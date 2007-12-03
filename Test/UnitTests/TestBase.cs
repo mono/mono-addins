@@ -33,8 +33,8 @@ namespace UnitTests
 		
 		void OnLoadError (object s, AddinErrorEventArgs args)
 		{
-			Console.WriteLine ("Add-in error: " + args.Message);
-			Console.WriteLine (args.AddinId);
+			Console.WriteLine ("Add-in error (" + args.AddinId + "): " + args.Message);
+			Console.WriteLine (args.Exception);
 		}
 		
 		void OnLoad (object s, AddinEventArgs args)

@@ -23,6 +23,7 @@ FILES =  \
 	TestEvents.cs \
 	TestExtensions.cs \
 	TestLoadUnload.cs \
+	TestLocalization.cs \
 	TestSetup.cs 
 
 DATA_FILES =  \

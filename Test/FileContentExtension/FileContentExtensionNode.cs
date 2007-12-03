@@ -8,10 +8,17 @@ namespace FileContentExtension
 	public class FileContentExtensionNode: TypeExtensionNode, IWriter
 	{
 		[NodeAttribute]
-		string fileName;
+		protected string fileName;
+		
+		[NodeAttribute (Localizable=true)]
+		protected string title;
 		
 		public string FileName {
 			get { return fileName; }
+		}
+		
+		public string Title {
+			get { return title; }
 		}
 		
 		public override object CreateInstance ()
@@ -30,12 +37,22 @@ namespace FileContentExtension
 				s += "[" + c + "]";
 			return s;
 		}
+		
+		public override string ToString ()
+		{
+			return title;
+		}
+		
+		public string Test (string test)
+		{
+			return test;
+		}
 	}
 	
 	public class ContentExtensionNode: TypeExtensionNode
 	{
 		[NodeAttribute]
-		string xpath;
+		protected string xpath;
 		
 		public string XPath {
 			get { return xpath; }
