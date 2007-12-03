@@ -1,5 +1,15 @@
 2007-12-03  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins/RuntimeAddin.cs, Mono.Addins/Addin.cs: Added more informative
+	  implementation of ToString ().
+	* Mono.Addins/AddinSessionService.cs, Mono.Addins/AddinManager.cs: Added
+	  CurrentAddin property, which returns the add-in on which the calling
+	  method is implemented. Same for CurrentLocalizer.
+	* Mono.Addins/ExtensionNode.cs: Allow getting the extension context bound to
+	  an extension node.
+
+2007-12-03  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins.Database/AddinScanner.cs: ScanNodeSet may change the
 	  ExtensionNodeSets collection, so it is necessary to make a copy when
 	  iterating with it.

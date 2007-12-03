@@ -34,6 +34,7 @@ using System.Reflection;
 
 using Mono.Addins.Description;
 using Mono.Addins.Database;
+using Mono.Addins.Localization;
 
 namespace Mono.Addins
 {
@@ -44,6 +45,8 @@ namespace Mono.Addins
 		ExtensionContext defaultContext;
 		Hashtable nodeSets = new Hashtable ();
 		Hashtable autoExtensionTypes = new Hashtable ();
+		Hashtable loadedAssemblies = new Hashtable ();
+		AddinLocalizer defaultLocalizer;
 		
 		internal void Initialize ()
 		{
@@ -57,11 +60,52 @@ namespace Mono.Addins
 			AppDomain.CurrentDomain.AssemblyLoad -= new AssemblyLoadEventHandler (OnAssemblyLoaded);
 			defaultContext = null;
 			loadedAddins.Clear ();
+			loadedAssemblies.Clear ();
 			defaultContext = null;
+		}
+		
+		public void InitializeDefaultLocalizer (IAddinLocalizer localizer)
+		{
+			if (localizer != null)
+				defaultLocalizer = new AddinLocalizer (localizer);
+			else
+				defaultLocalizer = null;
+		}
+		
+		public AddinLocalizer DefaultLocalizer {
+			get {
+				if (defaultLocalizer != null)
+					return defaultLocalizer; 
+				else
+					return NullLocalizer.Instance;
+			}
 		}
 		
 		internal ExtensionContext DefaultContext {
 			get { return defaultContext; }
+		}
+		
+		public AddinLocalizer CurrentLocalizer {
+			get {
+				Assembly asm = Assembly.GetCallingAssembly ();
+				RuntimeAddin addin = GetAddinForAssembly (asm);
+				if (addin != null)
+					return addin.Localizer;
+				else
+					return DefaultLocalizer;
+			}
+		}
+		
+		public RuntimeAddin CurrentAddin {
+			get {
+				Assembly asm = Assembly.GetCallingAssembly ();
+				return GetAddinForAssembly (asm);
+			}
+		}
+		
+		internal RuntimeAddin GetAddinForAssembly (Assembly asm)
+		{
+			return (RuntimeAddin) loadedAssemblies [asm];
 		}
 		
 		// Enables or disables conflict checking while loading assemblies.
@@ -94,6 +138,8 @@ namespace Mono.Addins
 			if (addin != null) {
 				addin.UnloadExtensions ();
 				loadedAddins.Remove (Addin.GetIdName (id));
+				foreach (Assembly asm in addin.Assemblies)
+					loadedAssemblies.Remove (asm);
 				AddinManager.ReportAddinUnload (id);
 			}
 		}
@@ -173,6 +219,9 @@ namespace Mono.Addins
 					
 				foreach (ExtensionPoint ep in description.ExtensionPoints)
 					InsertExtensionPoint (p, ep);
+				
+				foreach (Assembly asm in p.Assemblies)
+					loadedAssemblies [asm] = p;
 				
 				// Fire loaded event
 				defaultContext.NotifyAddinLoaded (p);

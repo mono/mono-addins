@@ -84,6 +84,11 @@ namespace Mono.Addins
 			return AddinInfo.SupportsVersion (version);
 		}
 		
+		public override string ToString ()
+		{
+			return Id;
+		}
+		
 		internal AddinInfo AddinInfo {
 			get {
 				if (addin == null) {

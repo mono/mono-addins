@@ -72,6 +72,11 @@ namespace Mono.Addins
 		internal Addin Addin {
 			get { return ainfo; }
 		}
+		
+		public override string ToString ()
+		{
+			return ainfo.ToString ();
+		}
 
 		void CreateResourceManagers ()
 		{
@@ -118,7 +123,7 @@ namespace Mono.Addins
 		{
 			if (resourceManagers == null)
 				CreateResourceManagers ();
-
+			
 			// Look in resources of this add-in
 			foreach (ResourceManager manager in resourceManagers)
 			{

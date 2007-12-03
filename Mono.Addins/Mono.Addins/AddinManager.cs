@@ -43,7 +43,6 @@ namespace Mono.Addins
 		static string startupDirectory;
 		static bool initialized;
 		static IAddinInstaller installer;
-		static AddinLocalizer defaultLocalizer;
 
 		public static event AddinErrorEventHandler AddinLoadError;
 		public static event AddinEventHandler AddinLoaded;
@@ -97,10 +96,8 @@ namespace Mono.Addins
 		
 		public static void InitializeDefaultLocalizer (IAddinLocalizer localizer)
 		{
-			if (localizer != null)
-				defaultLocalizer = new AddinLocalizer (localizer);
-			else
-				defaultLocalizer = null;
+			CheckInitialized ();
+			SessionService.InitializeDefaultLocalizer (localizer);
 		}
 		
 		internal static string StartupDirectory {
@@ -118,10 +115,26 @@ namespace Mono.Addins
 		
 		public static AddinLocalizer DefaultLocalizer {
 			get {
-				if (defaultLocalizer != null)
-					return defaultLocalizer; 
+				CheckInitialized ();
+				return SessionService.DefaultLocalizer;
+			}
+		}
+		
+		public static AddinLocalizer CurrentLocalizer {
+			get {
+				CheckInitialized ();
+				RuntimeAddin addin = SessionService.GetAddinForAssembly (Assembly.GetCallingAssembly ());
+				if (addin != null)
+					return addin.Localizer;
 				else
-					return NullLocalizer.Instance;
+					return SessionService.DefaultLocalizer;
+			}
+		}
+		
+		public static RuntimeAddin CurrentAddin {
+			get {
+				CheckInitialized ();
+				return SessionService.GetAddinForAssembly (Assembly.GetCallingAssembly ());
 			}
 		}
 		

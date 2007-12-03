@@ -62,6 +62,10 @@ namespace Mono.Addins
 			}
 		}
 		
+		public ExtensionContext ExtensionContext {
+			get { return treeNode.Context; }
+		}
+		
 		public bool HasId {
 			get { return !Id.StartsWith (ExtensionTree.AutoIdPrefix); }
 		}
