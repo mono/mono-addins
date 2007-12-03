@@ -1,5 +1,9 @@
 2007-12-03  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* SystemInfoExtension/Makefile.am: Added missing files.
+
+2007-12-03  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* UnitTests/UnitTests.mdp, UnitTests/TestLoadUnload.cs,
 	  UnitTests/IWriter.cs, UnitTests/TestLocalization.cs,
 	  UnitTests/Makefile.am, UnitTests/TestBase.cs,

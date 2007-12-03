@@ -24,7 +24,7 @@ RESOURCES =
 SATELLITE_ASSEMBLY = ../lib/ca/SystemInfoExtension.resources.dll
 MAIN_RESOURCE = Resources.resources
 
-EXTRAS = 
+EXTRAS = Resources.resx Resources.ca.resx
 
 REFERENCES = -r:System
 
