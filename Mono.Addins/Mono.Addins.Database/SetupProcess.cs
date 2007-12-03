@@ -52,8 +52,10 @@ namespace Mono.Addins.Database
 			Process process = new Process ();
 			if (Util.IsWindows)
 				process.StartInfo = new ProcessStartInfo (asm, sb.ToString ());
-			else
+			else {
+				asm = asm.Replace(" ", @"\ ");
 				process.StartInfo = new ProcessStartInfo ("mono", "--debug " + asm + " " + sb.ToString ());
+			}
 			process.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
 			process.StartInfo.UseShellExecute = false;
 			process.StartInfo.RedirectStandardInput = true;

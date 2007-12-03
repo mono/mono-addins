@@ -32,8 +32,8 @@ using System.Xml;
 
 namespace Mono.Addins
 {
-	[ExtensionNode ("Type", Description="Specifies a class that will be used to create an extension object. The name of the class can be provided in the 'class' attribute. If 'class' is not provided, the name will be taken from the 'id' attribute")]
-	[NodeAttribute ("class", typeof(Type), false, Description="Name of the class")]
+	[ExtensionNode ("Type", Description="Specifies a class that will be used to create an extension object.")]
+	[NodeAttribute ("class", typeof(Type), false, Description="Name of the class. If a value is not provided, the class name will be taken from the 'id' attribute")]
 	public class TypeExtensionNode: InstanceExtensionNode
 	{
 		string typeName;

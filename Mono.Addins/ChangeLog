@@ -1,3 +1,11 @@
+2007-12-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/TypeExtensionNode.cs: Made the description of
+	  TypeExtensionNode shorter.
+	* Mono.Addins/AddinRegistry.cs: Made the add-in registry constructor public.
+	* Mono.Addins.Database/SetupProcess.cs: Fix problem when M.A. is located in
+	  a folder with spaces in the name. Fix by Georg Wächter.
+
 2007-11-19  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Database/AddinDatabase.cs: Workaround for mcs bug.
