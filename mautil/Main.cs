@@ -15,6 +15,7 @@ namespace mautil
 				Console.WriteLine ();
 				Console.WriteLine ("Options:");
 				Console.WriteLine ("  --registry (-reg) Specify add-in registry path");
+				Console.WriteLine ("  --path (-p)       Specify startup path");
 				Console.WriteLine ("  -v                Verbose output");
 			}
 			
@@ -26,6 +27,7 @@ namespace mautil
 					verbose = true;
 			
 			string path = null;
+			string startupPath = null;
 			bool toolParam = true;
 			
 			while (toolParam && ppos < args.Length)
@@ -38,6 +40,14 @@ namespace mautil
 					path = args [ppos + 1];
 					ppos += 2;
 				}
+				if (args [ppos] == "-p" || args [ppos] == "--path") {
+					if (ppos + 1 >= args.Length) {
+						Console.WriteLine ("Startup path not provided.");
+						return 1;
+					}
+					startupPath = args [ppos + 1];
+					ppos += 2;
+				}
 				else if (args [ppos] == "-v") {
 					verbose = true;
 					ppos++;
@@ -45,7 +55,10 @@ namespace mautil
 					toolParam = false;
 			}
 			
-			AddinRegistry reg = path != null ? new AddinRegistry (path) : AddinRegistry.GetGlobalRegistry ();
+			if (startupPath == null)
+				startupPath = Environment.CurrentDirectory;
+			
+			AddinRegistry reg = path != null ? new AddinRegistry (path, startupPath) : AddinRegistry.GetGlobalRegistry ();
 			try {
 				SetupTool setupTool = new SetupTool (reg);
 				setupTool.VerboseOutput = verbose;
