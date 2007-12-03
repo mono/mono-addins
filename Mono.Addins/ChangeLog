@@ -1,5 +1,11 @@
 2007-12-03  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins.Database/AddinScanner.cs: ScanNodeSet may change the
+	  ExtensionNodeSets collection, so it is necessary to make a copy when
+	  iterating with it.
+
+2007-12-03  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins/TypeExtensionNode.cs: Made the description of
 	  TypeExtensionNode shorter.
 	* Mono.Addins/AddinRegistry.cs: Made the add-in registry constructor public.

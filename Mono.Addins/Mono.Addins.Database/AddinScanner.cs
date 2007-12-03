@@ -551,7 +551,9 @@ namespace Mono.Addins.Database
 			
 			Hashtable internalNodeSets = new Hashtable ();
 			
-			foreach (ExtensionNodeSet eset in config.ExtensionNodeSets)
+			ArrayList setsCopy = new ArrayList ();
+			setsCopy.AddRange (config.ExtensionNodeSets);
+			foreach (ExtensionNodeSet eset in setsCopy)
 				ScanNodeSet (config, eset, assemblies, internalNodeSets);
 			
 			foreach (ExtensionPoint ep in config.ExtensionPoints) {
