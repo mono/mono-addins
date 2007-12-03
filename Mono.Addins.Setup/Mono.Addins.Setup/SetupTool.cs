@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Xml;
 using System.Collections;
 using Mono.Addins;
 using Mono.Addins.Setup.ProgressMonitoring;
@@ -46,6 +47,7 @@ namespace Mono.Addins.Setup
 		AddinRegistry registry;
 		ArrayList commands = new ArrayList ();
 		string setupAppName = "";
+		int uniqueId = 0;
 		
 		bool verbose;
 		
@@ -382,21 +384,197 @@ namespace Mono.Addins.Setup
 		
 		void PrintAddinInfo (string[] args)
 		{
-			if (args.Length == 0)
-				throw new InstallException ("A file name or add-in ID is required.");
+			bool generateXml = false;
+			bool generateAll = false;
+			bool pickNamespace = false;
+			bool extensionModel = true;
 			
-			AddinDescription desc = null;
-			if (File.Exists (args[0]))
-				desc = registry.GetAddinDescription (new Mono.Addins.ConsoleProgressStatus (verbose), args[0]);
-			else {
-				Addin addin = registry.GetAddin (args [0]);
-				if (addin != null)
-					desc = addin.Description;
+			ArrayList addins = new ArrayList ();
+			ArrayList namespaces = new ArrayList ();
+			
+			foreach (string a in args) {
+				if (pickNamespace) {
+					namespaces.Add (a);
+					pickNamespace = false;
+					continue;
+				}
+				if (a == "--xml") {
+					generateXml = true;
+					continue;
+				}
+				if (a == "--namespace" || a == "-n") {
+					pickNamespace = true;
+					continue;
+				}
+				if (a == "--all") {
+					generateAll = true;
+					continue;
+				}
+				if (a == "--full") {
+					extensionModel = false;
+					continue;
+				}
+				AddinDescription desc = null;
+				if (File.Exists (args[0]))
+					desc = registry.GetAddinDescription (new Mono.Addins.ConsoleProgressStatus (verbose), args[0]);
+				else {
+					Addin addin = registry.GetAddin (args [0]);
+					if (addin != null)
+						desc = addin.Description;
+				}
+				if (desc == null)
+					throw new InstallException (string.Format ("Add-in '{0}' not found.", a));
+				if (desc != null)
+					addins.Add (desc);
 			}
 			
-			if (desc == null)
-				throw new InstallException ("Add-in not found.");
+			if (generateAll) {
+				ArrayList list = new ArrayList ();
+				list.AddRange (registry.GetAddinRoots ());
+				list.AddRange (registry.GetAddins ());
+				foreach (Addin addin in list) {
+					if (namespaces.Count > 0) {
+						foreach (string ns in namespaces) {
+							if (addin.Id.StartsWith (ns + ".")) {
+								addins.Add (addin.Description);
+								break;
+							}
+						}
+					} else {
+						addins.Add (addin.Description);
+					}
+				}
+			}
 			
+			if (addins.Count == 0)
+				throw new InstallException ("A file name or add-in ID is required.");
+			
+			
+			if (generateXml) {
+				XmlTextWriter tw = new XmlTextWriter (Console.Out);
+				tw.Formatting = Formatting.Indented;
+				tw.WriteStartElement ("Addins");
+				foreach (AddinDescription desc in addins) {
+					if (extensionModel && desc.ExtensionPoints.Count == 0)
+						continue;
+					PrintAddinXml (tw, desc);
+				}
+				tw.Close ();
+			}
+			else {
+				foreach (AddinDescription des in addins)
+					PrintAddin (des);
+			}
+		}
+		
+		void PrintAddinXml (XmlWriter tw, AddinDescription desc)
+		{
+			tw.WriteStartElement ("Addin");
+			tw.WriteAttributeString ("name", desc.Name);
+			tw.WriteAttributeString ("addinId", desc.LocalId);
+			tw.WriteAttributeString ("fullId", desc.AddinId);
+			tw.WriteAttributeString ("id", "addin_" + uniqueId);
+			uniqueId++;
+			if (desc.Namespace.Length > 0)
+				tw.WriteAttributeString ("namespace", desc.Namespace);
+			tw.WriteAttributeString ("isroot", desc.IsRoot.ToString ());
+
+			tw.WriteAttributeString ("version", desc.Version);
+			if (desc.CompatVersion.Length > 0)
+				tw.WriteAttributeString ("compatVersion", desc.CompatVersion);
+			
+			if (desc.Author.Length > 0)
+				tw.WriteAttributeString ("author", desc.Author);
+			if (desc.Category.Length > 0)
+				tw.WriteAttributeString ("category", desc.Category);
+			if (desc.Copyright.Length > 0)
+				tw.WriteAttributeString ("copyright", desc.Copyright);
+			if (desc.Url.Length > 0)
+				tw.WriteAttributeString ("url", desc.Url);
+
+			if (desc.Description.Length > 0)
+				tw.WriteElementString ("Description", desc.Description);
+			
+			if (desc.ExtensionPoints.Count > 0) {
+				ArrayList list = new ArrayList ();
+				Hashtable visited = new Hashtable ();
+				foreach (ExtensionPoint ep in desc.ExtensionPoints) {
+					tw.WriteStartElement ("ExtensionPoint");
+					tw.WriteAttributeString ("path", ep.Path);
+					if (ep.Name.Length > 0)
+						tw.WriteAttributeString ("name", ep.Name);
+					else
+						tw.WriteAttributeString ("name", ep.Path);
+					if (ep.Description.Length > 0)
+						tw.WriteElementString ("Description", ep.Description);
+					PrintExtensionNodeSetXml (tw, desc, ep.NodeSet, list, visited);
+					tw.WriteEndElement ();
+				}
+				
+				for (int n=0; n<list.Count; n++) {
+					
+					ExtensionNodeType nt = (ExtensionNodeType) list [n];
+					
+					tw.WriteStartElement ("ExtensionNodeType");
+					tw.WriteAttributeString ("name", nt.Id);
+					tw.WriteAttributeString ("id", visited [nt.Id + " " + nt.TypeName].ToString ());
+					
+					if (nt.Description.Length > 0)
+						tw.WriteElementString ("Description", nt.Description);
+					
+					if (nt.Attributes.Count > 0) {
+						tw.WriteStartElement ("Attributes");
+						foreach (NodeTypeAttribute att in nt.Attributes) {
+							tw.WriteStartElement ("Attribute");
+							tw.WriteAttributeString ("name", att.Name);
+							tw.WriteAttributeString ("type", att.Type);
+							tw.WriteAttributeString ("required", att.Required.ToString ());
+							tw.WriteAttributeString ("localizable", att.Localizable.ToString ());
+							if (att.Description.Length > 0)
+								tw.WriteElementString ("Description", att.Description);
+							tw.WriteEndElement ();
+						}
+						tw.WriteEndElement ();
+					}
+					
+					if (nt.NodeTypes.Count > 0 || nt.NodeSets.Count > 0) {
+						tw.WriteStartElement ("ChildNodes");
+						PrintExtensionNodeSetXml (tw, desc, nt, list, visited);
+						tw.WriteEndElement ();
+					}
+					tw.WriteEndElement ();
+				}
+			}
+			tw.WriteEndElement ();
+		}
+		
+		void PrintExtensionNodeSetXml (XmlWriter tw, AddinDescription desc, ExtensionNodeSet nset, ArrayList list, Hashtable visited)
+		{
+			foreach (ExtensionNodeType nt in nset.GetAllowedNodeTypes ()) {
+				tw.WriteStartElement ("ExtensionNode");
+				tw.WriteAttributeString ("name", nt.Id);
+				string id = RegisterNodeXml (nt, list, visited);
+				tw.WriteAttributeString ("id", id.ToString ());
+				if (nt.Description.Length > 0)
+					tw.WriteElementString ("Description", nt.Description);
+				tw.WriteEndElement ();
+			}
+		}
+		
+		string RegisterNodeXml (ExtensionNodeType nt, ArrayList list, Hashtable visited)
+		{
+			string key = nt.Id + " " + nt.TypeName;
+			if (visited.Contains (key))
+				return (string) visited [key];
+			string k = "ntype_" + uniqueId;
+			uniqueId++;
+			visited [key] = k;
+			list.Add (nt);
+			return k;
+		}
+		
+		void PrintAddin (AddinDescription desc)
+		{
 			Console.WriteLine ();
 			Console.WriteLine ("Addin Header");
 			Console.WriteLine ("------------");

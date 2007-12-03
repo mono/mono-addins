@@ -1,3 +1,9 @@
+2007-12-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Setup.mdp: Updated.
+	* Mono.Addins.Setup/SetupTool.cs: Added initial support for generating
+	  add-in documentation as XML.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Setup.mdp: Update paths.
