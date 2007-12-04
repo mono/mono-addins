@@ -7,5 +7,5 @@ Name: Mono.Addins.Gui
 Description: 
 Version: @VERSION@
 
-Requires:  gnome-sharp-2.0 gtk-sharp-2.0 glade-sharp-2.0 Mono.Addins
+Requires: mono-addins
 Libs:  -r:${pkglibdir}/@MONO_ADDINS_GUI_DEFAULT_LIB@

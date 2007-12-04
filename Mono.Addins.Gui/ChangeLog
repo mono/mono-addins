@@ -1,3 +1,7 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* mono-addins-gui.pc.in: Fix dependencies.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Gui.mdp: Update paths.

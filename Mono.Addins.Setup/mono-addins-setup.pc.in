@@ -7,5 +7,5 @@ Name: Mono.Addins.Setup
 Description: 
 Version: @VERSION@
 
-Requires:  Mono.Addins
+Requires:  mono-addins
 Libs:  -r:${pkglibdir}/@MONO_ADDINS_SETUP_DEFAULT_LIB@
