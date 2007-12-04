@@ -1,3 +1,8 @@
+2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Localization/GettextDomain.cs: Fix bug in string
+	  unmarshalling.
+
 2007-12-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/RuntimeAddin.cs, Mono.Addins/Addin.cs: Added more informative

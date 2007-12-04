@@ -111,8 +111,8 @@ namespace Mono.Addins.Localization
 			int sz = 0;
 			while (Marshal.ReadByte (ptr, sz) != 0)
 				sz++;
-            byte[] bytes = new byte [sz - 1];
-            Marshal.Copy (ptr, bytes, 0, sz - 1);
+            byte[] bytes = new byte [sz];
+            Marshal.Copy (ptr, bytes, 0, sz);
             return Encoding.UTF8.GetString (bytes);
 		}
 	}
