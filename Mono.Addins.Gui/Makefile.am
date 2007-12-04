@@ -54,7 +54,6 @@ EXTRAS = \
 	./Makefile.am 
 
 REFERENCES =  \
-	-pkg:gnome-sharp-2.0 \
 	-pkg:gtk-sharp-2.0 \
 	-r:Mono.Posix \
 	-r:System

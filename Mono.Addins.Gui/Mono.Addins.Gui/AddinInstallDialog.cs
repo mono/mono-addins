@@ -32,6 +32,7 @@ using System.Text;
 using System.Threading;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using Mono.Unix;
 
 using Gtk;
@@ -259,7 +260,7 @@ namespace Mono.Addins.Gui
 				return;
 				
 			if (info.Url != "")
-				Gnome.Url.Show (info.Url);
+				Process.Start (info.Url);
 		}
 		
 		protected void OnShowInfo (object sender, EventArgs e)

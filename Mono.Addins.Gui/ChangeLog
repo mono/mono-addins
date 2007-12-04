@@ -1,3 +1,10 @@
+2007-12-04  Geoff Norton  <gnorton@novell.com>
+
+	* Mono.Addins.Gui/AddinInstallDialog.cs: Use Process.Start to launch
+	a web browser rather than Gnome.Url.Show.
+	* Mono.Addins.Gui.mdp: 
+	* Makefile.am: Remove dependency on gnome-sharp
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* mono-addins-gui.pc.in: Fix dependencies.
