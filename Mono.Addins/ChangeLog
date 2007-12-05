@@ -1,3 +1,11 @@
+2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Localization/GettextDomain.cs,
+	  Mono.Addins.Localization/IPluralAddinLocalizer.cs,
+	  Mono.Addins.Localization/GettextLocalizer.cs, Mono.Addins.mdp,
+	  Mono.Addins/AddinLocalizer.cs, Makefile.am: Add support for plural
+	  forms.
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Localization/GettextDomain.cs: Fix bug in string

@@ -45,6 +45,8 @@ namespace Mono.Addins.Localization
 		static extern IntPtr bind_textdomain_codeset (IntPtr domainname, IntPtr codeset);
 		[DllImport("intl")]
 		static extern IntPtr dgettext (IntPtr domainname, IntPtr instring);
+		[DllImport("intl")]
+		static extern IntPtr dngettext (IntPtr domainname, IntPtr instring, IntPtr plural, int n);
 		
 		IntPtr ipackage;
 		
@@ -90,6 +92,25 @@ namespace Mono.Addins.Localization
 			}
 			finally {
 				Marshal.FreeHGlobal (ints);
+			}
+		}
+		
+		public String GetPluralString (String singular, String defaultPlural, int n)
+		{
+			IntPtr ints = StringToPtr (singular);
+			IntPtr intp = StringToPtr (defaultPlural);
+			try {
+				// gettext(3) returns the input pointer if no translation is found
+				IntPtr r = dngettext (ipackage, ints, intp, n);
+				if (r == ints)
+					return singular;
+				if (r == intp)
+					return defaultPlural;
+				return PtrToString (r);
+			}
+			finally {
+				Marshal.FreeHGlobal (ints);
+				Marshal.FreeHGlobal (intp);
 			}
 		}
 		

@@ -34,10 +34,12 @@ namespace Mono.Addins
 	public class AddinLocalizer
 	{
 		IAddinLocalizer localizer;
+		IPluralAddinLocalizer pluralLocalizer;
 		
 		internal AddinLocalizer (IAddinLocalizer localizer)
 		{
 			this.localizer = localizer;
+			pluralLocalizer = localizer as IPluralAddinLocalizer;
 		}
 		
 		public string GetString (string msgid)
@@ -48,6 +50,23 @@ namespace Mono.Addins
 		public string GetString (string msgid, params string[] args)
 		{
 			return string.Format (localizer.GetString (msgid), args);
+		}
+		
+		public string GetPluralString (string msgid, string defaultPlural, int n)
+		{
+			// If the localizer does not support plural forms, just use GetString to
+			// get a translation. It is not correct to check 'n' in this case because
+			// there is no guarantee that 'defaultPlural' will be translated.
+			
+			if (pluralLocalizer != null)
+				return pluralLocalizer.GetPluralString (msgid, defaultPlural, n);
+			else
+				return GetString (msgid);
+		}
+		
+		public string GetPluralString (string singular, string defaultPlural, int n, params string[] args)
+		{
+			return string.Format (GetPluralString (singular, defaultPlural, n), args);
 		}
 	}
 }

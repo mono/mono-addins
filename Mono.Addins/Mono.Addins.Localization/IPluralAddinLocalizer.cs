@@ -1,9 +1,9 @@
-// GettextLocalizer.cs
+// IPluralAddinLocalizer.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,37 +26,11 @@
 //
 
 using System;
-using Mono.Addins;
 
 namespace Mono.Addins.Localization
 {
-	class GettextLocalizer: IAddinLocalizerFactory, IAddinLocalizer, IPluralAddinLocalizer
+	public interface IPluralAddinLocalizer
 	{
-		GettextDomain domain;
-		
-		public IAddinLocalizer CreateLocalizer (RuntimeAddin addin, NodeElement element)
-		{
-			string pkg = element.GetAttribute ("catalog");
-			if (pkg.Length == 0)
-				pkg = addin.Id;
-			string dir = element.GetAttribute ("location");
-			if (dir.Length == 0)
-				dir = "locale";
-			dir = addin.GetFilePath (dir);
-			domain = new GettextDomain ();
-			domain.Init (pkg, dir);
-			return this;
-		}
-
-		public string GetString (string msgid)
-		{
-			return domain.GetString (msgid);
-		}
-		
-		public string GetPluralString (string singular, string defaultPlural, int n)
-		{
-			return domain.GetPluralString (singular, defaultPlural, n);
-		}
-
+		string GetPluralString (string singular, String defaultPlural, int n);
 	}
 }

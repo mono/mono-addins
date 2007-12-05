@@ -53,6 +53,7 @@ FILES =  \
 	Mono.Addins.Localization/GettextLocalizer.cs \
 	Mono.Addins.Localization/IAddinLocalizer.cs \
 	Mono.Addins.Localization/IAddinLocalizerFactory.cs \
+	Mono.Addins.Localization/IPluralAddinLocalizer.cs \
 	Mono.Addins.Localization/NullLocalizer.cs \
 	Mono.Addins.Localization/StringResourceLocalizer.cs \
 	Mono.Addins.Localization/StringTableLocalizer.cs \
