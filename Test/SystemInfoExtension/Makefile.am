@@ -20,7 +20,6 @@ FILES =  \
 DATA_FILES = SystemInfoExtension.addin.xml 
 
 RESOURCES =
-	
 SATELLITE_ASSEMBLY = ../lib/ca/SystemInfoExtension.resources.dll
 MAIN_RESOURCE = Resources.resources
 

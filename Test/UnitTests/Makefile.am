@@ -13,6 +13,7 @@ all:
 endif
 
 FILES =  \
+	AddinInformationTests.cs \
 	ComplexNode.cs \
 	GlobalInfoCondition.cs \
 	ISampleExtender.cs \
