@@ -1,3 +1,10 @@
+2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/gui.stetic, Mono.Addins.Gui.mdp: Flush.
+	* Mono.Addins.Gui/AddinInstallDialog.cs: When checking if an add-in is
+	  installed, don't provide the version number. This will return whatever
+	  version is installed.
+
 2007-12-04  Geoff Norton  <gnorton@novell.com>
 
 	* Mono.Addins.Gui/AddinInstallDialog.cs: Use Process.Start to launch
