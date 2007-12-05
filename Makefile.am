@@ -1,5 +1,5 @@
 
-SUBDIRS =  Mono.Addins Mono.Addins.Setup Mono.Addins.Gui mautil Test Samples
+SUBDIRS =  Mono.Addins Mono.Addins.Setup Mono.Addins.Gui mautil
 
 DOCFILES = \
 	$(top_builddir)/bin/Mono.Addins.dll \

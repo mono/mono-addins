@@ -1,5 +1,10 @@
 2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Makefile.am: Don't build tests and samples by default.
+	* README: Updated.
+
+2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* configure.ac: Disable tests by default.
 
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
