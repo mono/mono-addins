@@ -1,3 +1,12 @@
+2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* TextEditorLib/gtk-gui/gui.stetic,
+	  TextEditor.CompilerService/TextEditor.CompilerService.mdp,
+	  TextEditor.Xml/TextEditor.Xml.mdp,
+	  WriterServiceHost/WriterServiceHost.mdp,
+	  WriterService.SampleExtender/WriterService.SampleExtender.mdp,
+	  WriterService/WriterService.mdp: Flush.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Samples.mds,

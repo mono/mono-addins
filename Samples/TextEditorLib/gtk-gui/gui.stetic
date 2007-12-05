@@ -1,5 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
+  <configuration>
+    <images-root-path>..</images-root-path>
+    <target-gtk-version>2.8.3</target-gtk-version>
+  </configuration>
   <widget class="Gtk.Window" id="MainWindow" design-size="586 356">
     <action-group name="Default" />
     <property name="MemberName" />

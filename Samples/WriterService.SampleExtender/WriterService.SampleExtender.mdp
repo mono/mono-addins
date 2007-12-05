@@ -23,6 +23,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Project" localcopy="True" refto="WriterService" />
   </References>
+  <Deployment.LinuxDeployData scriptName="writerservice.sampleextender" generatePcFile="False" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar Sync="True" Name="DATA_FILES" />
@@ -32,5 +33,4 @@
     <AsmRefVar Sync="True" Name="DLL_REFERENCES" />
     <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <Deployment.LinuxDeployData scriptName="writerservice.sampleextender" generatePcFile="False" />
 </Project>

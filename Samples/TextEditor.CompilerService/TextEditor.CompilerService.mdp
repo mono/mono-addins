@@ -31,6 +31,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
+  <Deployment.LinuxDeployData scriptName="texteditor.compilerservice" generatePcFile="False" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar Sync="True" Name="DATA_FILES" />
@@ -40,5 +41,4 @@
     <AsmRefVar Sync="True" Name="DLL_REFERENCES" />
     <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <Deployment.LinuxDeployData scriptName="texteditor.compilerservice" generatePcFile="False" />
 </Project>
