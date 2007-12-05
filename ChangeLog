@@ -1,3 +1,7 @@
+2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* configure.ac: Disable tests by default.
+
 2007-10-29  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.mds, Packages.mdse: Update paths.

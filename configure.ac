@@ -36,8 +36,8 @@ AM_CONDITIONAL(ENABLE_GUI, test x$enable_gui = xyes)
 
 AC_ARG_ENABLE(tests,
 	AC_HELP_STRING([--enable-tests],
-		[build unit tests [default=yes]]),
-		enable_tests=${enableval}, enable_tests=yes)
+		[build unit tests [default=no]]),
+		enable_tests=${enableval}, enable_tests=no)
 
 AM_CONDITIONAL(ENABLE_TESTS, test x$enable_tests = xyes)
 
