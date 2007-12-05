@@ -186,7 +186,7 @@ namespace Mono.Addins.Setup
 		
 		internal override void Resolve (IProgressMonitor monitor, AddinStore service, PackageCollection toInstall, PackageCollection toUninstall, PackageCollection installedRequired, DependencyCollection unresolved)
 		{
-			Addin ia = service.Registry.GetAddin (info.Id);
+			Addin ia = service.Registry.GetAddin (Mono.Addins.Addin.GetIdName (info.Id));
 			
 			if (ia != null) {
 				Package p = AddinPackage.FromInstalledAddin (ia);

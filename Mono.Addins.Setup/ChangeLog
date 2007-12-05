@@ -1,3 +1,9 @@
+2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Setup/AddinPackage.cs: When checking if an add-in is
+	  installed, don't provide the version number. This will return whatever
+	  version is installed.
+
 2007-12-04  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* mono-addins-setup.pc.in: Fix dependencies.
