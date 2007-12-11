@@ -495,14 +495,26 @@ namespace Mono.Addins.Database
 			
 			if (partialGeneration) {
 				changedAddins = new Hashtable ();
-				foreach (string s in addinsToUpdate) {
-					changedAddins [s] = s;
+				foreach (string sa in addinsToUpdate) {
+					changedAddins [sa] = sa;
+					
+					// Look for all versions of the add-in, because this id may be the id of a reference,
+					// and the exact reference version may not be installed.
+					string s = sa;
+					int i = s.LastIndexOf (',');
+					if (i != -1)
+						s = s.Substring (0, i);
+					s += ",*";
 					
 					// Look for the add-in in any of the existing folders
 					foreach (string domain in domains) {
 						string mp = GetDescriptionPath (domain, s);
-						if (fileDatabase.Exists (mp)) {
-							files.Add (mp);
+						string dir = Path.GetDirectoryName (mp);
+						string pat = Path.GetFileName (mp);
+						foreach (string fmp in fileDatabase.GetDirectoryFiles (dir, pat)) {
+							files.Add (fmp);
+							string an = Path.GetFileNameWithoutExtension (fmp);
+							changedAddins [an] = an;
 						}
 					}
 				}

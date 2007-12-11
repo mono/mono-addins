@@ -1,3 +1,9 @@
+2007-12-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Database/AddinDatabase.cs: The addinstoUpdate list may contain
+	  add-in with a version not installed (e.g. if it comes from an add-in
+	  reference). Make sure the correct add-in is found in this case.
+
 2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Localization/GettextDomain.cs,
