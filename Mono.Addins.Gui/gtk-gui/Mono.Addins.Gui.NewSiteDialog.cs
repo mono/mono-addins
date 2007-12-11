@@ -77,6 +77,7 @@ namespace Mono.Addins.Gui {
             this.btnOnlineRep = new Gtk.RadioButton(Mono.Unix.Catalog.GetString("Register an on-line repository"));
             this.btnOnlineRep.CanFocus = true;
             this.btnOnlineRep.Name = "btnOnlineRep";
+            this.btnOnlineRep.Active = true;
             this.btnOnlineRep.DrawIndicator = true;
             this.btnOnlineRep.UseUnderline = true;
             this.btnOnlineRep.Group = new GLib.SList(System.IntPtr.Zero);

@@ -439,7 +439,7 @@
           <widget class="Gtk.Notebook" id="wizardNotebook">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="CurrentPage">0</property>
+            <property name="CurrentPage">3</property>
             <property name="ShowBorder">False</property>
             <property name="BorderWidth">6</property>
             <child>
@@ -871,13 +871,26 @@ asd
                           </packing>
                         </child>
                         <child>
+                          <widget class="Gtk.Image" id="imageWarn">
+                            <property name="MemberName" />
+                            <property name="Yalign">1</property>
+                            <property name="Pixbuf">stock:gtk-dialog-warning Dialog</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">2</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
                           <widget class="Gtk.Image" id="imageInfo">
                             <property name="MemberName" />
                             <property name="Yalign">1</property>
                             <property name="Pixbuf">stock:gtk-dialog-info Dialog</property>
                           </widget>
                           <packing>
-                            <property name="Position">2</property>
+                            <property name="Position">3</property>
                             <property name="AutoSize">False</property>
                             <property name="Expand">False</property>
                             <property name="Fill">False</property>
@@ -905,7 +918,7 @@ asd
                             </child>
                           </widget>
                           <packing>
-                            <property name="Position">3</property>
+                            <property name="Position">4</property>
                             <property name="AutoSize">False</property>
                             <property name="Expand">False</property>
                             <property name="Fill">False</property>
@@ -917,7 +930,7 @@ asd
                             <property name="LabelProp" translatable="yes" />
                           </widget>
                           <packing>
-                            <property name="Position">4</property>
+                            <property name="Position">5</property>
                             <property name="AutoSize">False</property>
                           </packing>
                         </child>
@@ -1186,6 +1199,7 @@ asd
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Register an on-line repository</property>
+                <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>

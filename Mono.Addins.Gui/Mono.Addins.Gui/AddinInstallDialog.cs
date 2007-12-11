@@ -431,6 +431,7 @@ namespace Mono.Addins.Gui
 			string txt;
 			string okmessage;
 			string errmessage;
+			string warnmessage;
 			
 			installMonitor = new InstallMonitor (progressLabel, progressBar, mainProgressBar);
 			ThreadStart oper;
@@ -439,10 +440,12 @@ namespace Mono.Addins.Gui
 				oper = new ThreadStart (RunInstall);
 				okmessage = Catalog.GetString ("The installation has been successfully completed.");
 				errmessage = Catalog.GetString ("The installation failed!");
+				warnmessage = Catalog.GetString ("The installation has completed with warnings.");
 			} else {
 				oper = new ThreadStart (RunUninstall);
 				okmessage = Catalog.GetString ("The uninstallation has been successfully completed.");
 				errmessage = Catalog.GetString ("The uninstallation failed!");
+				warnmessage = Catalog.GetString ("The uninstallation has completed with warnings.");
 			}
 			
 			Thread t = new Thread (oper);
@@ -454,16 +457,25 @@ namespace Mono.Addins.Gui
 			
 			wizardNotebook.NextPage ();
 
-			if (installMonitor.Success) {
+			if (installMonitor.Success && installMonitor.Warnings.Count == 0) {
+				imageWarn.Visible = false;
 				imageError.Visible = false;
 				imageInfo.Visible = true;
 				txt = "<b>" + okmessage + "</b>\n\n";
-			} else {
-				imageError.Visible = true;
+			} else if (installMonitor.Success) {
+				imageWarn.Visible = true;
 				imageInfo.Visible = false;
+				imageError.Visible = false;
+				txt = "<b>" + warnmessage + "</b>\n\n";
+				foreach (string s in installMonitor.Warnings)
+					txt += GLib.Markup.EscapeText (s) + "\n";
+			} else {
+				imageWarn.Visible = false;
+				imageInfo.Visible = false;
+				imageError.Visible = true;
 				txt = "<span foreground=\"red\"><b>" + errmessage + "</b></span>\n\n";
 				foreach (string s in installMonitor.Errors)
-					txt += s + "\n";
+					txt += GLib.Markup.EscapeText (s) + "\n";
 			}
 			
 			labelResult.Markup = txt;

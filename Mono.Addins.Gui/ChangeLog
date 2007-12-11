@@ -1,3 +1,10 @@
+2007-12-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.NewSiteDialog.cs, gtk-gui/gui.stetic,
+	  Makefile.am, Mono.Addins.Gui.mdp, Mono.Addins.Gui/AddinInstallDialog.cs:
+	  Properly report warnings when installing add-ins.
+
 2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/gui.stetic, Mono.Addins.Gui.mdp: Flush.
