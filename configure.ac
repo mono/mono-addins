@@ -10,6 +10,11 @@ if test "x$PKG_CONFIG" = "xno"; then
         AC_MSG_ERROR([You need to install pkg-config])
 fi
 
+API_VERSION=0.3.0.0
+AC_SUBST(API_VERSION)
+POLICY_VERSIONS="0.2"
+AC_SUBST(POLICY_VERSIONS)
+
 AC_PROG_INSTALL
 
 AC_PATH_PROG(MCS, mcs, no)
@@ -20,6 +25,11 @@ fi
 AC_PATH_PROG(GACUTIL, gacutil, no)
 if test "x$GACUTIL" = "xno" ; then
 	AC_MSG_ERROR([No gacutil tool found])
+fi
+
+AC_PATH_PROG(AL, al, no)
+if test "x$AL" = "xno" ; then
+	AC_MSG_ERROR([No al tool found. You need to install either the mono or .Net SDK.])
 fi
 
 GACUTIL_FLAGS='/package mono-addins /root $(DESTDIR)$(prefix)/lib'
@@ -64,6 +74,7 @@ AC_CONFIG_FILES([
 ./Mono.Addins.Gui/mono-addins-gui.pc
 ./Mono.Addins.Setup/mono-addins-setup.pc
 ./Makefile
+./policy.config
 ./Mono.Addins.Gui/Makefile
 ./Mono.Addins.Setup/Makefile
 ./Mono.Addins/Makefile

@@ -1,3 +1,8 @@
+2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.include, configure.ac, Makefile.am, policy.config.in: Generate
+	  and install policy files for old Mono.Addins versions.
+
 2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am: Don't build tests and samples by default.

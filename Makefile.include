@@ -10,9 +10,33 @@ pc_files = $(PC_FILES_IN:.pc.in=.pc)
 
 build_datafiles = $(addprefix $(BUILD_DIR)/, $(DATA_FILES))
   
+POLICY_ASSEMBLIES = $(addsuffix .$(ASSEMBLY_NAME).dll, $(addprefix policy., $(POLICY_VERSIONS)))
+POLICY_CONFIGS = $(addsuffix .config, $(addprefix policy., $(POLICY_VERSIONS)))
+
 $(build_datafiles): $(BUILD_DIR)/% : $(addprefix $(srcdir)/, %)
 	mkdir -p $(dir $@)		
 	cp $< $@
+
+$(POLICY_ASSEMBLIES): $(top_builddir)/policy.config $(top_srcdir)/mono-addins.snk
+	@for i in $(POLICY_VERSIONS); do	\
+	  echo "Creating policy.$$i.$(ASSEMBLY_NAME)";	\
+	  sed -e "s/@ASSEMBLY_NAME@/$(ASSEMBLY_NAME)/" -e "s/@POLICY@/$$i/" $(top_builddir)/policy.config > policy.$$i.config;	\
+	  $(AL) -link:policy.$$i.config -out:policy.$$i.$(ASSEMBLY_NAME).dll -keyfile:$(top_srcdir)/mono-addins.snk;	\
+	done
+
+gac-install: $(POLICY_ASSEMBLIES)
+	$(GACUTIL) /i $(ASSEMBLY) /f $(GACUTIL_FLAGS) || exit 1;
+	@for p in $(POLICY_ASSEMBLIES); do \
+		echo $(GACUTIL) /i $$p /f $(GACUTIL_FLAGS) || exit 1; \
+		$(GACUTIL) /i $$p /f $(GACUTIL_FLAGS) || exit 1; \
+	done
+
+gac-uninstall:
+	$(GACUTIL) /us $(ASSEMBLY) $(GACUTIL_FLAGS) || exit 1;
+	@for p in $(POLICY_ASSEMBLIES); do \
+		echo $(GACUTIL) /us $$p /f $(GACUTIL_FLAGS) || exit 1; \
+		$(GACUTIL) /us $$p /f $(GACUTIL_FLAGS) || exit 1; \
+	done
 
 EXTRA_DIST = $(FILES) $(GENERATED_FILES) $(RESOURCES) $(ASSEMBLY_WRAPPER_IN) $(EXTRAS) $(DATA_FILES) $(PC_FILES_IN)
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DLL_REFERENCES)

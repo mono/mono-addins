@@ -875,7 +875,7 @@ namespace Mono.Addins.Setup
 			cmd.AppendDesc ("New add-ins will be added and deleted add-ins will be removed.");
 			commands.Add (cmd);
 
-			cmd = new SetupCommand (cat, "reg-build", "rgu", new SetupCommandHandler (RepairRegistry));
+			cmd = new SetupCommand (cat, "reg-build", "rgb", new SetupCommandHandler (RepairRegistry));
 			cmd.Description = "Rebuilds the add-in registry.";
 			cmd.AppendDesc ("Regenerates the add-in registry");
 			commands.Add (cmd);

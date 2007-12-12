@@ -590,10 +590,9 @@ namespace Mono.Addins.Database
 		void ReportReflectionException (IProgressStatus monitor, Exception ex, AddinDescription config, AddinScanResult scanResult)
 		{
 			scanResult.AddFileToWithFailure (config.AddinFile);
+			monitor.ReportWarning ("[" + config.AddinId + "] Could not load some add-in assemblies: " + ex.Message);
 			if (monitor.LogLevel <= 1)
 			    return;
-			
-			monitor.Log ("Could not load some add-in assemblies: " + ex.Message);
 			
 			ReflectionTypeLoadException rex = ex as ReflectionTypeLoadException;
 			if (rex != null) {
