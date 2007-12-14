@@ -1,3 +1,7 @@
+2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* policy.config.in: Set correct public token.
+
 2007-12-12  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.include, configure.ac, Makefile.am, policy.config.in: Generate
