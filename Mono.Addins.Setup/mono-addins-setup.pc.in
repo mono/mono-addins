@@ -1,7 +1,7 @@
 prefix=@prefix@
 exec_prefix=${prefix}
-pkglibdir=@libdir@/@PACKAGE@
-Libraries=  ${pkglibdir}/mono/@MONO_ADDINS_SETUP_DEFAULT_LIB@
+pkglibdir=@libdir@/mono/@PACKAGE@
+Libraries=  ${pkglibdir}/@MONO_ADDINS_SETUP_DEFAULT_LIB@
 
 Name: Mono.Addins.Setup
 Description: 
