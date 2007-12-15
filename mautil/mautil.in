@@ -2,6 +2,6 @@
 
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"
-libdir="@libdir@/@PACKAGE@"
+libdir="@libdir@/mono/@PACKAGE@"
 
 exec mono  ${libdir}/"mautil.exe" "$@"

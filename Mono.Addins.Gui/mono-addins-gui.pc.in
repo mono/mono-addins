@@ -1,6 +1,6 @@
 prefix=@prefix@
 exec_prefix=${prefix}
-pkglibdir=@libdir@/@PACKAGE@
+pkglibdir=@libdir@/mono/@PACKAGE@
 Libraries=  ${pkglibdir}/@MONO_ADDINS_GUI_DEFAULT_LIB@
 
 Name: Mono.Addins.Gui

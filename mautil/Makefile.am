@@ -33,3 +33,6 @@ $(ASSEMBLY) $(ASSEMBLY).mdb: $(build_sources) $(build_resources) $(build_datafil
 	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$@ -target:$(COMPILE_TARGET) $(build_sources) $(build_resources_embed) $(build_references_ref)
 
 include $(top_srcdir)/Makefile.include
+
+pkglibdir = $(DESTDIR)$(prefix)/lib/mono/mono-addins
+pkglib_SCRIPTS = $(ASSEMBLY) $(build_datafiles)
