@@ -34,5 +34,5 @@ $(ASSEMBLY) $(ASSEMBLY).mdb: $(build_sources) $(build_resources) $(build_datafil
 
 include $(top_srcdir)/Makefile.include
 
-pkglibdir = $(DESTDIR)$(prefix)/lib/mono/mono-addins
+pkglibdir = $(prefix)/lib/mono/mono-addins
 pkglib_SCRIPTS = $(ASSEMBLY) $(build_datafiles)
