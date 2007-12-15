@@ -33,9 +33,11 @@ if test "x$AL" = "xno" ; then
 fi
 
 GACUTIL_FLAGS='/package mono-addins /root $(DESTDIR)$(prefix)/lib'
+GACUTIL_POLICY_FLAGS='/root $(DESTDIR)$(prefix)/lib'
 
 AC_SUBST(GACUTIL)
 AC_SUBST(GACUTIL_FLAGS)
+AC_SUBST(GACUTIL_POLICY_FLAGS)
 
 AC_ARG_ENABLE(gui,
 	AC_HELP_STRING([--enable-gui],

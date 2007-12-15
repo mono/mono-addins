@@ -1,3 +1,9 @@
+2007-12-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.include, configure.ac: Don't install assemblies in
+	  /usr/lib/mono-addins, gacutil will install them in
+	  /usr/lib/mono/mono-addins. Also, install policy files to the gac only.
+
 2007-12-14  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* policy.config.in: Set correct public token.

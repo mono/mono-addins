@@ -27,22 +27,21 @@ $(POLICY_ASSEMBLIES): $(top_builddir)/policy.config $(top_srcdir)/mono-addins.sn
 gac-install: $(POLICY_ASSEMBLIES)
 	$(GACUTIL) /i $(ASSEMBLY) /f $(GACUTIL_FLAGS) || exit 1;
 	@for p in $(POLICY_ASSEMBLIES); do \
-		echo $(GACUTIL) /i $$p /f $(GACUTIL_FLAGS) || exit 1; \
-		$(GACUTIL) /i $$p /f $(GACUTIL_FLAGS) || exit 1; \
+		echo $(GACUTIL) /i $$p /f $(GACUTIL_POLICY_FLAGS) || exit 1; \
+		$(GACUTIL) /i $$p /f $(GACUTIL_POLICY_FLAGS) || exit 1; \
 	done
 
 gac-uninstall:
 	$(GACUTIL) /us $(ASSEMBLY) $(GACUTIL_FLAGS) || exit 1;
 	@for p in $(POLICY_ASSEMBLIES); do \
-		echo $(GACUTIL) /us $$p /f $(GACUTIL_FLAGS) || exit 1; \
-		$(GACUTIL) /us $$p /f $(GACUTIL_FLAGS) || exit 1; \
+		echo $(GACUTIL) /us $$p /f $(GACUTIL_POLICY_FLAGS) || exit 1; \
+		$(GACUTIL) /us $$p /f $(GACUTIL_POLICY_FLAGS) || exit 1; \
 	done
 
 EXTRA_DIST = $(FILES) $(GENERATED_FILES) $(RESOURCES) $(ASSEMBLY_WRAPPER_IN) $(EXTRAS) $(DATA_FILES) $(PC_FILES_IN)
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(DLL_REFERENCES)
 DISTCLEANFILES = $(GENERATED_FILES) $(build_datafiles) $(pc_files)
 
-pkglib_SCRIPTS = $(ASSEMBLY) $(build_datafiles)
 bin_SCRIPTS = $(ASSEMBLY_WRAPPER)
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = $(pc_files)
