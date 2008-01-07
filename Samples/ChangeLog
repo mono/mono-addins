@@ -1,3 +1,11 @@
+2008-01-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* TextEditorLib/TextEditorLib.mdp: Update.
+	* TextEditorLib/gtk-gui/MainWindow.cs, TextEditorLib/gtk-gui/generated.cs:
+	  Regenerated.
+	* TextEditorLib/Makefile.am: Remove undeeded reference. Patch by Ben
+	  Motmans.
+
 2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* TextEditorLib/gtk-gui/gui.stetic,

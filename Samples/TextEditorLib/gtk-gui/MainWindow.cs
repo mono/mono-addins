@@ -37,7 +37,7 @@ public partial class MainWindow {
     private Gtk.Statusbar statusbar1;
     
     protected virtual void Build() {
-        Stetic.Gui.Initialize();
+        Stetic.Gui.Initialize(this);
         // Widget MainWindow
         Gtk.UIManager w1 = new Gtk.UIManager();
         Gtk.ActionGroup w2 = new Gtk.ActionGroup("Default");
@@ -73,8 +73,6 @@ public partial class MainWindow {
         this.scrolledwindow1 = new Gtk.ScrolledWindow();
         this.scrolledwindow1.CanFocus = true;
         this.scrolledwindow1.Name = "scrolledwindow1";
-        this.scrolledwindow1.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-        this.scrolledwindow1.HscrollbarPolicy = ((Gtk.PolicyType)(1));
         this.scrolledwindow1.ShadowType = ((Gtk.ShadowType)(1));
         // Container child scrolledwindow1.Gtk.Container+ContainerChild
         this.textview = new Gtk.TextView();
@@ -111,19 +109,15 @@ public partial class MainWindow {
         this.button1.Relief = ((Gtk.ReliefStyle)(2));
         // Container child button1.Gtk.Container+ContainerChild
         Gtk.Alignment w8 = new Gtk.Alignment(0.5F, 0.5F, 0F, 0F);
-        w8.Name = "GtkAlignment";
         // Container child GtkAlignment.Gtk.Container+ContainerChild
         Gtk.HBox w9 = new Gtk.HBox();
-        w9.Name = "GtkHBox";
         w9.Spacing = 2;
         // Container child GtkHBox.Gtk.Container+ContainerChild
         Gtk.Image w10 = new Gtk.Image();
-        w10.Name = "image1";
-        w10.Pixbuf = Gtk.IconTheme.Default.LoadIcon("gtk-close", 16, 0);
+        w10.Pixbuf = Stetic.IconLoader.LoadIcon(this, "gtk-close", Gtk.IconSize.Menu, 16);
         w9.Add(w10);
         // Container child GtkHBox.Gtk.Container+ContainerChild
         Gtk.Label w12 = new Gtk.Label();
-        w12.Name = "GtkLabel";
         w12.LabelProp = "";
         w9.Add(w12);
         w8.Add(w9);
@@ -143,8 +137,6 @@ public partial class MainWindow {
         this.scrolledwindow2 = new Gtk.ScrolledWindow();
         this.scrolledwindow2.CanFocus = true;
         this.scrolledwindow2.Name = "scrolledwindow2";
-        this.scrolledwindow2.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-        this.scrolledwindow2.HscrollbarPolicy = ((Gtk.PolicyType)(1));
         this.scrolledwindow2.ShadowType = ((Gtk.ShadowType)(1));
         // Container child scrolledwindow2.Gtk.Container+ContainerChild
         this.consoleView = new Gtk.TextView();
