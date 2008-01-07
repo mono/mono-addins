@@ -1,3 +1,8 @@
+2008-01-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Gui.csproj: Updated VS solution files. Patch by Andrés G.
+	  Aragoneses.
+
 2007-12-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* mono-addins-gui.pc.in: Update assembly paths.

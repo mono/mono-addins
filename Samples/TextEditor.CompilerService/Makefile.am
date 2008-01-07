@@ -17,7 +17,6 @@ FILES =  \
 	AssemblyInfo.cs \
 	CompilerManager.cs \
 	ICompiler.cs \
-	MyClass.cs \
 	RunCommand.cs 
 
 DATA_FILES = 

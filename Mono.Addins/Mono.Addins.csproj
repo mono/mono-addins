@@ -85,6 +85,14 @@
     <Compile Include="Mono.Addins.Description\NodeTypeAttributeCollection.cs" />
     <Compile Include="Mono.Addins.Description\ObjectDescription.cs" />
     <Compile Include="Mono.Addins.Description\ObjectDescriptionCollection.cs" />
+    <Compile Include="Mono.Addins.Localization\GettextDomain.cs" />
+    <Compile Include="Mono.Addins.Localization\GettextLocalizer.cs" />
+    <Compile Include="Mono.Addins.Localization\IAddinLocalizer.cs" />
+    <Compile Include="Mono.Addins.Localization\IAddinLocalizerFactory.cs" />
+    <Compile Include="Mono.Addins.Localization\IPluralAddinLocalizer.cs" />
+    <Compile Include="Mono.Addins.Localization\NullLocalizer.cs" />
+    <Compile Include="Mono.Addins.Localization\StringResourceLocalizer.cs" />
+    <Compile Include="Mono.Addins.Localization\StringTableLocalizer.cs" />
     <Compile Include="Mono.Addins.Serialization\BinaryXmlReader.cs" />
     <Compile Include="Mono.Addins.Serialization\BinaryXmlTypeMap.cs" />
     <Compile Include="Mono.Addins.Serialization\BinaryXmlWriter.cs" />
@@ -95,6 +103,7 @@
     <Compile Include="Mono.Addins\AddinErrorEventArgs.cs" />
     <Compile Include="Mono.Addins\AddinEventArgs.cs" />
     <Compile Include="Mono.Addins\AddinInfo.cs" />
+    <Compile Include="Mono.Addins\AddinLocalizer.cs" />
     <Compile Include="Mono.Addins\AddinManager.cs" />
     <Compile Include="Mono.Addins\AddinRegistry.cs" />
     <Compile Include="Mono.Addins\AddinRootAttribute.cs" />

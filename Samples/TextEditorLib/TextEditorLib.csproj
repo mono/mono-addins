@@ -1,0 +1,93 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{71C53A83-E016-42AE-9E2F-722604A0170D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TextEditorLib</RootNamespace>
+    <AssemblyName>TextEditorLib</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL" />
+    <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Commands\CopyCommand.cs" />
+    <Compile Include="Commands\CutCommand.cs" />
+    <Compile Include="Commands\ExitCommand.cs" />
+    <Compile Include="Commands\NewCommand.cs" />
+    <Compile Include="Commands\OpenCommand.cs" />
+    <Compile Include="Commands\PasteCommand.cs" />
+    <Compile Include="Commands\SaveCommand.cs" />
+    <Compile Include="Commands\SetupCommand.cs" />
+    <Compile Include="ExtensionNodes\FileTemplateNode.cs" />
+    <Compile Include="ExtensionNodes\MenuItemNode.cs" />
+    <Compile Include="ExtensionNodes\MenuNode.cs" />
+    <Compile Include="ExtensionNodes\MenuSeparatorNode.cs" />
+    <Compile Include="ExtensionNodes\SubmenuNode.cs" />
+    <Compile Include="ExtensionNodes\TemplateCategoryNode.cs" />
+    <Compile Include="ExtensionNodes\ToolbarNode.cs" />
+    <Compile Include="ExtensionNodes\ToolButtonNode.cs" />
+    <Compile Include="ExtensionNodes\ToolSeparatorNode.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="gtk-gui\MainWindow.cs" />
+    <Compile Include="ICommand.cs" />
+    <Compile Include="MainWindow.cs" />
+    <Compile Include="OpenFileCondition.cs" />
+    <Compile Include="TextEditorApp.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mono.Addins.Gui\Mono.Addins.Gui.csproj">
+      <Project>{5F974F67-5151-4F7C-BB19-04DCF6DEF78E}</Project>
+      <Name>Mono.Addins.Gui</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Mono.Addins\Mono.Addins.csproj">
+      <Project>{76B2FF16-0094-4003-A1BD-C9F6F37D0186}</Project>
+      <Name>Mono.Addins</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="gtk-gui\gui.stetic" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\ChangeLogTemplate.txt" />
+    <EmbeddedResource Include="Templates\DotConfigTemplate.txt" />
+    <EmbeddedResource Include="Templates\TextEditor.addin.xml" />
+    <EmbeddedResource Include="Templates\WorkReport.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

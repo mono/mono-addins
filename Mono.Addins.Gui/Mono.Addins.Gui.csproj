@@ -45,6 +45,14 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Archivos de programa\Mono-1.2.6\lib\mono\2.0\Mono.Posix.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -75,5 +83,15 @@
     <Content Include="icons\package-x-generic_16.png" />
     <Content Include="icons\package-x-generic_22.png" />
     <Content Include="icons\user-package.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mono.Addins.Setup\Mono.Addins.Setup.csproj">
+      <Project>{0AF6E8A8-3D48-46FD-955D-DEC206E83217}</Project>
+      <Name>Mono.Addins.Setup</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj">
+      <Project>{76B2FF16-0094-4003-A1BD-C9F6F37D0186}</Project>
+      <Name>Mono.Addins</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

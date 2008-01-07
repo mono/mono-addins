@@ -12,7 +12,67 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Addins.Setup", "Mono.A
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mautil", "mautil\mautil.csproj", "{9B60C369-9A80-495C-AA83-58BFBF6FAF43}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mautil", "mautil\mautil.csproj", "{EC7F8DC2-1BA8-48C0-BFF5-355AD385C11B}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{C32D2988-9804-4392-83F7-D7A670A1DBE2}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditor", "Samples\TextEditor\TextEditor.csproj", "{A5CF7A9D-E7D6-4A14-856B-188669B071D9}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditorLib", "Samples\TextEditorLib\TextEditorLib.csproj", "{71C53A83-E016-42AE-9E2F-722604A0170D}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Addins.Gui", "Mono.Addins.Gui\Mono.Addins.Gui.csproj", "{5F974F67-5151-4F7C-BB19-04DCF6DEF78E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WriterService.SampleExtender", "Samples\WriterService.SampleExtender\WriterService.SampleExtender.csproj", "{33C60543-1D76-4112-90D7-2396E490A7E2}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WriterService", "Samples\WriterService\WriterService.csproj", "{2DF372C6-3C75-4C8A-AA59-0AFE0467FD94}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditor.Xml", "Samples\TextEditor.Xml\TextEditor.Xml.csproj", "{53FCD703-1CF9-4812-937C-549D7F760BB3}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditor.CompilerService", "Samples\TextEditor.CompilerService\TextEditor.CompilerService.csproj", "{FCE536BF-1925-4E4E-BE7F-61DA9C154CA8}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditor.CompilerService.CSharp", "Samples\TextEditor.CompilerService.CSharp\TextEditor.CompilerService.CSharp.csproj", "{91A73359-83C5-42E1-BF85-3A8AE2DE453A}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WriterServiceHost", "Samples\WriterServiceHost\WriterServiceHost.csproj", "{8A8ADF7A-321E-40AE-9074-963532C0D011}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -32,12 +92,58 @@ Global
 		{0AF6E8A8-3D48-46FD-955D-DEC206E83217}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AF6E8A8-3D48-46FD-955D-DEC206E83217}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AF6E8A8-3D48-46FD-955D-DEC206E83217}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9B60C369-9A80-495C-AA83-58BFBF6FAF43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9B60C369-9A80-495C-AA83-58BFBF6FAF43}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9B60C369-9A80-495C-AA83-58BFBF6FAF43}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9B60C369-9A80-495C-AA83-58BFBF6FAF43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC7F8DC2-1BA8-48C0-BFF5-355AD385C11B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC7F8DC2-1BA8-48C0-BFF5-355AD385C11B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC7F8DC2-1BA8-48C0-BFF5-355AD385C11B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC7F8DC2-1BA8-48C0-BFF5-355AD385C11B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5CF7A9D-E7D6-4A14-856B-188669B071D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5CF7A9D-E7D6-4A14-856B-188669B071D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5CF7A9D-E7D6-4A14-856B-188669B071D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5CF7A9D-E7D6-4A14-856B-188669B071D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71C53A83-E016-42AE-9E2F-722604A0170D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71C53A83-E016-42AE-9E2F-722604A0170D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71C53A83-E016-42AE-9E2F-722604A0170D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71C53A83-E016-42AE-9E2F-722604A0170D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F974F67-5151-4F7C-BB19-04DCF6DEF78E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F974F67-5151-4F7C-BB19-04DCF6DEF78E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F974F67-5151-4F7C-BB19-04DCF6DEF78E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F974F67-5151-4F7C-BB19-04DCF6DEF78E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33C60543-1D76-4112-90D7-2396E490A7E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33C60543-1D76-4112-90D7-2396E490A7E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33C60543-1D76-4112-90D7-2396E490A7E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33C60543-1D76-4112-90D7-2396E490A7E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DF372C6-3C75-4C8A-AA59-0AFE0467FD94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DF372C6-3C75-4C8A-AA59-0AFE0467FD94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DF372C6-3C75-4C8A-AA59-0AFE0467FD94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DF372C6-3C75-4C8A-AA59-0AFE0467FD94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53FCD703-1CF9-4812-937C-549D7F760BB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53FCD703-1CF9-4812-937C-549D7F760BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53FCD703-1CF9-4812-937C-549D7F760BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53FCD703-1CF9-4812-937C-549D7F760BB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCE536BF-1925-4E4E-BE7F-61DA9C154CA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCE536BF-1925-4E4E-BE7F-61DA9C154CA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCE536BF-1925-4E4E-BE7F-61DA9C154CA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCE536BF-1925-4E4E-BE7F-61DA9C154CA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91A73359-83C5-42E1-BF85-3A8AE2DE453A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91A73359-83C5-42E1-BF85-3A8AE2DE453A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91A73359-83C5-42E1-BF85-3A8AE2DE453A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91A73359-83C5-42E1-BF85-3A8AE2DE453A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A8ADF7A-321E-40AE-9074-963532C0D011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A8ADF7A-321E-40AE-9074-963532C0D011}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A8ADF7A-321E-40AE-9074-963532C0D011}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A8ADF7A-321E-40AE-9074-963532C0D011}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A5CF7A9D-E7D6-4A14-856B-188669B071D9} = {C32D2988-9804-4392-83F7-D7A670A1DBE2}
+		{71C53A83-E016-42AE-9E2F-722604A0170D} = {C32D2988-9804-4392-83F7-D7A670A1DBE2}
+		{33C60543-1D76-4112-90D7-2396E490A7E2} = {C32D2988-9804-4392-83F7-D7A670A1DBE2}
+		{2DF372C6-3C75-4C8A-AA59-0AFE0467FD94} = {C32D2988-9804-4392-83F7-D7A670A1DBE2}
+		{53FCD703-1CF9-4812-937C-549D7F760BB3} = {C32D2988-9804-4392-83F7-D7A670A1DBE2}
+		{FCE536BF-1925-4E4E-BE7F-61DA9C154CA8} = {C32D2988-9804-4392-83F7-D7A670A1DBE2}
+		{91A73359-83C5-42E1-BF85-3A8AE2DE453A} = {C32D2988-9804-4392-83F7-D7A670A1DBE2}
+		{8A8ADF7A-321E-40AE-9074-963532C0D011} = {C32D2988-9804-4392-83F7-D7A670A1DBE2}
 	EndGlobalSection
 EndGlobal
