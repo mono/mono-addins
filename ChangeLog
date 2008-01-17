@@ -1,3 +1,7 @@
+2008-01-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* COPYING, Makefile.am: Add COPYING file.
+
 2008-01-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.sln: Updated VS solution files. Patch by Andrés G. Aragoneses.
