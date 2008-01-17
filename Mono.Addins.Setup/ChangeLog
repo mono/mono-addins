@@ -1,3 +1,11 @@
+2008-01-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Setup/AddinPackage.cs: Delete subdirectories when
+	  uninstalling.
+	* Mono.Addins.Setup/AddinStore.cs: Use a more informative uninstall message.
+	* Mono.Addins.Setup/RepositoryRegistry.cs: Fix a nullref. Improved error
+	  reporting.
+
 2007-12-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* mono-addins-setup.pc.in: Update assembly paths.

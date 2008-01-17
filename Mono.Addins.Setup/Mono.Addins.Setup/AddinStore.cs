@@ -263,7 +263,7 @@ namespace Mono.Addins.Setup
 			foreach (Addin dep in deps)
 				toUninstall.Add (AddinPackage.FromInstalledAddin (dep));
 			
-			monitor.BeginTask ("Uninstalling addins", toUninstall.Count*2 + uninstallPrepared.Count + 1);
+			monitor.BeginTask ("Deleting files", toUninstall.Count*2 + uninstallPrepared.Count + 1);
 			
 			// Prepare install
 			

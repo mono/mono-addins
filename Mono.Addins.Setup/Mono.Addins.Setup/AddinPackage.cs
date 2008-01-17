@@ -260,15 +260,24 @@ namespace Mono.Addins.Setup
 			
 			File.Delete (iaddin.AddinFile);
 			
-			if (Directory.GetFiles (basePath).Length == 0) {
-				try {
-					Directory.Delete (basePath);
-				} catch {
-					monitor.ReportWarning ("Directory " + basePath + " could not be deleted.");
-				}
-			}
+			RecDeleteDir (monitor, basePath);
 			
 			monitor.Log.WriteLine ("Done");
+		}
+		
+		void RecDeleteDir (IProgressMonitor monitor, string path)
+		{
+			if (Directory.GetFiles (path).Length != 0)
+				return;
+		
+			foreach (string dir in Directory.GetDirectories (path))
+				RecDeleteDir (monitor, dir);
+
+			try {
+				Directory.Delete (path);
+			} catch {
+				monitor.ReportWarning ("Directory " + path + " could not be deleted.");
+			}
 		}
 		
 		internal override void RollbackUninstall (IProgressMonitor monitor, AddinStore service)
