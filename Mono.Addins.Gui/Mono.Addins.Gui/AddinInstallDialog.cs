@@ -206,9 +206,15 @@ namespace Mono.Addins.Gui
 
 
 		bool updateDone;
+		IProgressStatus updateMonitor;
 		
 		protected void OnUpdateRepo (object sender, EventArgs e)
 		{
+			ProgressDialog pdlg = new ProgressDialog ();
+			pdlg.Show ();
+			pdlg.SetMessage (AddinManager.CurrentLocalizer.GetString ("Updating repository"));
+			updateMonitor = pdlg;
+
 			Thread t = new Thread (new ThreadStart (RunUpdate));
 			t.Start ();
 			updateDone = false;
@@ -217,13 +223,14 @@ namespace Mono.Addins.Gui
 					Gtk.Application.RunIteration ();
 				Thread.Sleep (50);
 			}
+			pdlg.Destroy ();
 			LoadAddins ();
 		}
 		
 		void RunUpdate ()
 		{
 			try {
-				service.Repositories.UpdateAllRepositories (null);
+				service.Repositories.UpdateAllRepositories (updateMonitor);
 			} finally {
 				updateDone = true;
 			}
@@ -433,15 +440,16 @@ namespace Mono.Addins.Gui
 			string errmessage;
 			string warnmessage;
 			
-			installMonitor = new InstallMonitor (progressLabel, progressBar, mainProgressBar);
 			ThreadStart oper;
 				
 			if (uninstallId == null) {
+				installMonitor = new InstallMonitor (globalProgressLabel, mainProgressBar, Catalog.GetString ("Installing Add-ins"));
 				oper = new ThreadStart (RunInstall);
 				okmessage = Catalog.GetString ("The installation has been successfully completed.");
 				errmessage = Catalog.GetString ("The installation failed!");
 				warnmessage = Catalog.GetString ("The installation has completed with warnings.");
 			} else {
+				installMonitor = new InstallMonitor (globalProgressLabel, mainProgressBar, Catalog.GetString ("Uninstalling Add-ins"));
 				oper = new ThreadStart (RunUninstall);
 				okmessage = Catalog.GetString ("The uninstallation has been successfully completed.");
 				errmessage = Catalog.GetString ("The uninstallation failed!");
@@ -509,17 +517,17 @@ namespace Mono.Addins.Gui
 	{
 		Label progressLabel;
 		ProgressBar progressBar;
-		ProgressBar mainProgressBar;
 		StringCollection errors = new StringCollection ();
 		StringCollection warnings = new StringCollection ();
 		bool canceled;
 		bool done;
+		string mainOperation;
 		
-		public InstallMonitor (Label progressLabel, ProgressBar progressBar, ProgressBar mainProgressBar)
+		public InstallMonitor (Label progressLabel, ProgressBar progressBar, string mainOperation)
 		{
 			this.progressLabel = progressLabel;
 			this.progressBar = progressBar;
-			this.mainProgressBar = mainProgressBar;
+			this.mainOperation = mainOperation;
 		}
 		
 		public InstallMonitor ()
@@ -529,13 +537,11 @@ namespace Mono.Addins.Gui
 		public void SetMessage (string msg)
 		{
 			if (progressLabel != null)
-				progressLabel.Text = msg;
+				progressLabel.Markup = "<b>" + GLib.Markup.EscapeText (mainOperation) + "</b>\n" + GLib.Markup.EscapeText (msg);
 		}
 		
 		public void SetProgress (double progress)
 		{
-			if (mainProgressBar != null)
-				mainProgressBar.Fraction = progress;
 			if (progressBar != null)
 				progressBar.Fraction = progress;
 		}

@@ -63,8 +63,6 @@ namespace Mono.Addins.Gui {
             this.scrolledwindow22 = new Gtk.ScrolledWindow();
             this.scrolledwindow22.CanFocus = true;
             this.scrolledwindow22.Name = "scrolledwindow22";
-            this.scrolledwindow22.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow22.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             // Container child scrolledwindow22.Gtk.Container+ContainerChild
             Gtk.Viewport w4 = new Gtk.Viewport();
             w4.ShadowType = ((Gtk.ShadowType)(0));

@@ -30,6 +30,7 @@
 using System;
 using Gtk;
 using Mono.Unix;
+using System.Threading;
 
 using Mono.Addins.Setup;
 
@@ -83,12 +84,44 @@ namespace Mono.Addins.Gui
 					}
 					
 					if (!service.Repositories.ContainsRepository (url)) {
-						IProgressStatus m = new ConsoleProgressStatus (false);
-						AddinRepository rr = service.Repositories.RegisterRepository (m, url);
-						if (rr == null) {
-							Services.ShowError (null, "The repository could not be registered", null, true);
+						ProgressDialog pdlg = new ProgressDialog ();
+						pdlg.Show ();
+						pdlg.SetMessage (AddinManager.CurrentLocalizer.GetString ("Registering repository"));
+						
+						bool done = false;
+						AddinRepository rr = null;
+						Exception error = null;
+						
+						ThreadPool.QueueUserWorkItem (delegate {
+							try {
+								rr = service.Repositories.RegisterRepository (pdlg, url, true);
+							} catch (Exception ex) {
+								error = ex;
+							} finally {
+								done = true;
+							}
+						});
+						
+						while (!done) {
+							if (Gtk.Application.EventsPending ())
+								Gtk.Application.RunIteration ();
+							else
+								Thread.Sleep (100);
+						}
+
+						pdlg.Destroy ();
+						
+						if (pdlg.HadError) {
+							if (rr != null)
+								service.Repositories.RemoveRepository (rr.Url);
 							return;
 						}
+						
+						if (error != null) {
+							Services.ShowError (error, "The repository could not be registered", null, true);
+							return;
+						}
+						
 						treeStore.AppendValues (rr.Url, rr.Title);
 					}
 				}

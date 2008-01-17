@@ -28,6 +28,7 @@ FILES =  \
 	gtk-gui/Mono.Addins.Gui.ErrorDialog.cs \
 	gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs \
 	gtk-gui/Mono.Addins.Gui.NewSiteDialog.cs \
+	gtk-gui/Mono.Addins.Gui.ProgressDialog.cs \
 	Mono.Addins.Gui/AddinInfoDialog.cs \
 	Mono.Addins.Gui/AddinInstallDialog.cs \
 	Mono.Addins.Gui/AddinInstaller.cs \
@@ -38,6 +39,7 @@ FILES =  \
 	Mono.Addins.Gui/ErrorDialog.cs \
 	Mono.Addins.Gui/ManageSitesDialog.cs \
 	Mono.Addins.Gui/NewSiteDialog.cs \
+	Mono.Addins.Gui/ProgressDialog.cs \
 	Mono.Addins.Gui/Services.cs 
 
 DATA_FILES = 

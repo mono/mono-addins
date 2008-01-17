@@ -36,6 +36,8 @@
     <File name="Mono.Addins.Gui/AddinInstallerDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs" subtype="Code" buildaction="Compile" />
     <File name="icons/system-software-update.png" subtype="Code" buildaction="EmbedAsResource" />
+    <File name="gtk-gui/Mono.Addins.Gui.ProgressDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Addins.Gui/ProgressDialog.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -48,6 +50,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </References>
+  <GtkDesignInfo gtkVersion="2.8.3" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar Sync="True" Name="DATA_FILES" />
@@ -57,5 +60,4 @@
     <AsmRefVar Sync="True" Name="DLL_REFERENCES" />
     <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <GtkDesignInfo />
 </Project>

@@ -1,3 +1,18 @@
+2008-01-17  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.ErrorDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInfoDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs: Regenerated.
+	* gtk-gui/Mono.Addins.Gui.ProgressDialog.cs, gtk-gui/gui.stetic,
+	  Makefile.am, Mono.Addins.Gui.mdp, Mono.Addins.Gui/ProgressDialog.cs:
+	  Added new progress dialog to be used when updating registries.
+	* Mono.Addins.Gui/ManageSitesDialog.cs: When adding a repository, update it
+	  to get the add-in list.
+	* Mono.Addins.Gui/AddinInstallDialog.cs: Improve progress reporting.
+
 2008-01-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Gui.csproj: Updated VS solution files. Patch by Andrés G.

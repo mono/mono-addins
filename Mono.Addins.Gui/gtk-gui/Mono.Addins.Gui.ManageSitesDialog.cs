@@ -49,8 +49,6 @@ namespace Mono.Addins.Gui {
             this.scrolledwindow17 = new Gtk.ScrolledWindow();
             this.scrolledwindow17.CanFocus = true;
             this.scrolledwindow17.Name = "scrolledwindow17";
-            this.scrolledwindow17.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow17.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow17.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow17.Gtk.Container+ContainerChild
             this.repoTree = new Gtk.TreeView();

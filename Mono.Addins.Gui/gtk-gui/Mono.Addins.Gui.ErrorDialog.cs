@@ -92,8 +92,6 @@ namespace Mono.Addins.Gui {
             this.scrolledwindow10 = new Gtk.ScrolledWindow();
             this.scrolledwindow10.CanFocus = true;
             this.scrolledwindow10.Name = "scrolledwindow10";
-            this.scrolledwindow10.VscrollbarPolicy = ((Gtk.PolicyType)(1));
-            this.scrolledwindow10.HscrollbarPolicy = ((Gtk.PolicyType)(1));
             this.scrolledwindow10.ShadowType = ((Gtk.ShadowType)(1));
             // Container child scrolledwindow10.Gtk.Container+ContainerChild
             this.detailsTextView = new Gtk.TextView();
