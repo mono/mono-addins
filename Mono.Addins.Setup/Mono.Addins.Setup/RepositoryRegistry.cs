@@ -176,12 +176,12 @@ namespace Mono.Addins.Setup
 		}
 			                     
 		
-		public bool UpdateAllRepositories (IProgressStatus monitor)
+		public void UpdateAllRepositories (IProgressStatus monitor)
 		{
-			return UpdateRepository (monitor, (string)null);
+			UpdateRepository (monitor, (string)null);
 		}
 		
-		public bool UpdateRepository (IProgressStatus statusMonitor, string url)
+		public void UpdateRepository (IProgressStatus statusMonitor, string url)
 		{
 			repoList = null;
 			
@@ -198,15 +198,14 @@ namespace Mono.Addins.Setup
 				}
 			} catch (Exception ex) {
 				statusMonitor.ReportError ("Could not get information from repository", ex);
-				return false;
+				return;
 			} finally {
 				monitor.EndTask ();
 			}
 			service.SaveConfiguration ();
-			return true;
 		}
 
-		bool UpdateRepository (IProgressMonitor monitor, Uri baseUri, RepositoryRecord rr)
+		void UpdateRepository (IProgressMonitor monitor, Uri baseUri, RepositoryRecord rr)
 		{
 			Uri absUri = new Uri (baseUri, rr.Url);
 			monitor.BeginTask ("Updating from " + absUri.ToString (), 2);
@@ -221,7 +220,7 @@ namespace Mono.Addins.Setup
 			
 			if (newRep == null) {
 				monitor.ReportError ("Could not get information from repository" + ": " + absUri.ToString (), error);
-				return false;
+				return;
 			}
 			
 			monitor.Step (1);
@@ -238,7 +237,6 @@ namespace Mono.Addins.Setup
 			}
 			monitor.EndTask ();
 			rr.UpdateCachedRepository (newRep);
-			return true;
 		}
 		
 		public AddinRepositoryEntry[] GetAvailableUpdates ()
