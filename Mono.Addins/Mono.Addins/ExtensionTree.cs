@@ -210,22 +210,26 @@ namespace Mono.Addins
 			Hashtable fields = new Hashtable ();
 			
 			// Check if the type has NodeAttribute attributes applied to fields.
-			foreach (FieldInfo field in ntype.Type.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
-				NodeAttributeAttribute at = (NodeAttributeAttribute) Attribute.GetCustomAttribute (field, typeof(NodeAttributeAttribute), true);
-				if (at != null) {
-					ExtensionNodeType.FieldData fdata = new ExtensionNodeType.FieldData ();
-					fdata.Field = field;
-					fdata.Required = at.Required;
-					fdata.Localizable = at.Localizable;
-					
-					string name;
-					if (at.Name != null && at.Name.Length > 0)
-						name = at.Name;
-					else
-						name = field.Name;
-					
-					fields [name] = fdata;
+			Type type = ntype.Type;
+			while (type != typeof(object) && type != null) {
+				foreach (FieldInfo field in type.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)) {
+					NodeAttributeAttribute at = (NodeAttributeAttribute) Attribute.GetCustomAttribute (field, typeof(NodeAttributeAttribute), true);
+					if (at != null) {
+						ExtensionNodeType.FieldData fdata = new ExtensionNodeType.FieldData ();
+						fdata.Field = field;
+						fdata.Required = at.Required;
+						fdata.Localizable = at.Localizable;
+						
+						string name;
+						if (at.Name != null && at.Name.Length > 0)
+							name = at.Name;
+						else
+							name = field.Name;
+						
+						fields [name] = fdata;
+					}
 				}
+				type = type.BaseType;
 			}
 			if (fields.Count > 0)
 				ntype.Fields = fields;
