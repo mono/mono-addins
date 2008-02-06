@@ -1,0 +1,4 @@
+2008-02-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am: Added makefile.
+

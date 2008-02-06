@@ -337,7 +337,6 @@
     <File name="Mono.Cecil/README" subtype="Code" buildaction="Nothing" />
     <File name="Mono.Cecil/standalone.make" subtype="Code" buildaction="Nothing" />
     <File name="Mono.Cecil/TODO" subtype="Code" buildaction="Nothing" />
-    <File name="Mono.Addins.CecilReflector" subtype="Directory" buildaction="Compile" />
     <File name="Mono.Addins.CecilReflector/Reflector.cs" subtype="Code" buildaction="Compile" />
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
@@ -354,4 +353,5 @@
     <AsmRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
     <ProjectRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
   </MonoDevelop.Autotools.MakefileInfo>
+  <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="OneChangeLogInProjectRootDirectory" />
 </Project>
