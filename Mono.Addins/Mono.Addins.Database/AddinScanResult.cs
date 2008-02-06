@@ -36,7 +36,7 @@ using Mono.Addins.Description;
 
 namespace Mono.Addins.Database
 {
-	internal class AddinScanResult: MarshalByRefObject
+	internal class AddinScanResult: MarshalByRefObject, IAssemblyLocator
 	{
 		internal ArrayList AddinsToScan = new ArrayList ();
 		internal ArrayList AddinsToUpdateRelations = new ArrayList ();

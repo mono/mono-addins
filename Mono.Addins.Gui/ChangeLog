@@ -1,3 +1,8 @@
+2008-02-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AssemblyInfo.cs: Added support for pluggable add-in assembly reflectors.
+	  Implemented an add-in assembly reflector based on Cecil.
+
 2008-01-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs,

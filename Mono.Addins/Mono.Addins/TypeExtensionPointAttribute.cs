@@ -37,6 +37,7 @@ namespace Mono.Addins
 		string path;
 		string nodeName;
 		Type nodeType;
+		string nodeTypeName;
 		string desc;
 		string name;
 		
@@ -71,7 +72,12 @@ namespace Mono.Addins
 
 		public Type NodeType {
 			get { return nodeType != null ? nodeType : typeof(TypeExtensionNode); }
-			set { nodeType = value; }
+			set { nodeType = value; nodeTypeName = value.FullName; }
+		}
+
+		internal string NodeTypeName {
+			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).FullName; }
+			set { nodeTypeName = value; nodeType = null; }
 		}
 }
 }

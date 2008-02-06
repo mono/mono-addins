@@ -36,6 +36,7 @@ namespace Mono.Addins
 	{
 		string nodeName;
 		Type extensionNodeType;
+		string extensionNodeTypeName;
 		
 		public ExtensionNodeChildAttribute (string nodeName)
 			: this (typeof(TypeExtensionNode), nodeName)
@@ -60,7 +61,12 @@ namespace Mono.Addins
 		
 		public Type ExtensionNodeType {
 			get { return extensionNodeType; }
-			set { extensionNodeType = value; }
+			set { extensionNodeType = value; extensionNodeTypeName = value.FullName; }
+		}
+		
+		internal string ExtensionNodeTypeName {
+			get { return extensionNodeTypeName; }
+			set { extensionNodeTypeName = value; extensionNodeType = null; }
 		}
 	}
 }

@@ -43,10 +43,27 @@ namespace Mono.Addins.Database
 	class AddinScanner: MarshalByRefObject
 	{
 		AddinDatabase database;
+		IAssemblyReflector reflector;
+		object coreAssembly;
 		
-		public AddinScanner (AddinDatabase database)
+		public AddinScanner (AddinDatabase database, AddinScanResult scanResult, IProgressStatus monitor)
 		{
 			this.database = database;
+			if (!scanResult.CheckOnly) {
+				string refName = GetType().Assembly.FullName;
+				int i = refName.IndexOf (',');
+				refName = "Mono.Addins.CecilReflector.Reflector, Mono.Addins.CecilReflector" + refName.Substring (i);
+				Type t = Type.GetType (refName, false);
+				if (t != null)
+					reflector = (IAssemblyReflector) Activator.CreateInstance (t);
+				else
+					reflector = new DefaultAssemblyReflector ();
+				
+				if (monitor.LogLevel > 1)
+					monitor.Log ("Using assembly reflector: " + reflector.GetType ());
+				reflector.Initialize (scanResult);
+				coreAssembly = reflector.LoadAssembly (GetType().Assembly.Location);
+			}
 		}
 		
 		public void ScanFolder (IProgressStatus monitor, string path, string domain, AddinScanResult scanResult)
@@ -521,12 +538,12 @@ namespace Mono.Addins.Database
 				foreach (string s in config.MainModule.Assemblies) {
 					string asmFile = Path.Combine (config.BasePath, s);
 					asmFiles.Add (asmFile);
-					Assembly asm = Util.LoadAssemblyForReflection (asmFile);
+					object asm = reflector.LoadAssembly (asmFile);
 					assemblies.Add (asm);
 					scanResult.AddFileToIgnore (Util.GetFullPath (asmFile));
 				}
 				
-				foreach (Assembly asm in assemblies)
+				foreach (object asm in assemblies)
 					ScanAssemblyAddinHeaders (config, asm, scanResult);
 				
 				// The add-in id and version must be already assigned at this point
@@ -535,7 +552,7 @@ namespace Mono.Addins.Database
 				if (scanResult.HostIndex != null)
 					scanResult.HostIndex.RemoveHostData (config.AddinId, config.AddinFile);
 
-				foreach (Assembly asm in assemblies)
+				foreach (object asm in assemblies)
 					ScanAssemblyContents (config, asm, hostExtensionClasses, scanResult);
 				
 			} catch (Exception ex) {
@@ -543,7 +560,7 @@ namespace Mono.Addins.Database
 				return false;
 			}
 			
-			foreach (Type t in hostExtensionClasses) {
+			foreach (object t in hostExtensionClasses) {
 				RegisterHostTypeNode (config, t, assemblies);
 			}
 			
@@ -570,11 +587,11 @@ namespace Mono.Addins.Database
 						foreach (string s in mod.Assemblies) {
 							string asmFile = Path.Combine (config.BasePath, s);
 							asmFiles.Add (asmFile);
-							Assembly asm = Util.LoadAssemblyForReflection (asmFile);
+							object asm = reflector.LoadAssembly (asmFile);
 							assemblies.Add (asm);
 							scanResult.AddFileToIgnore (Util.GetFullPath (asmFile));
 						}
-						foreach (Assembly asm in assemblies)
+						foreach (object asm in assemblies)
 							ScanAssemblyContents (config, asm, null, scanResult);
 						
 					} catch (Exception ex) {
@@ -601,10 +618,10 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		void ScanAssemblyAddinHeaders (AddinDescription config, Assembly asm, AddinScanResult scanResult)
+		void ScanAssemblyAddinHeaders (AddinDescription config, object asm, AddinScanResult scanResult)
 		{
 			// Get basic add-in information
-			AddinAttribute att = (AddinAttribute) Attribute.GetCustomAttribute (asm, typeof(AddinAttribute), false);
+			AddinAttribute att = (AddinAttribute) reflector.GetCustomAttribute (asm, typeof(AddinAttribute), false);
 			if (att != null) {
 				if (att.Id.Length > 0)
 					config.LocalId = att.Id;
@@ -618,11 +635,11 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		void ScanAssemblyContents (AddinDescription config, Assembly asm, ArrayList hostExtensionClasses, AddinScanResult scanResult)
+		void ScanAssemblyContents (AddinDescription config, object asm, ArrayList hostExtensionClasses, AddinScanResult scanResult)
 		{
 			// Get dependencies
 			
-			object[] deps = asm.GetCustomAttributes (typeof(AddinDependencyAttribute), false);
+			object[] deps = reflector.GetCustomAttributes (asm, typeof(AddinDependencyAttribute), false);
 			foreach (AddinDependencyAttribute dep in deps) {
 				AddinDependency adep = new AddinDependency ();
 				adep.AddinId = dep.Id;
@@ -632,18 +649,21 @@ namespace Mono.Addins.Database
 			
 			// Get extension points
 			
-			object[] extPoints = asm.GetCustomAttributes (typeof(ExtensionPointAttribute), false);
+			object[] extPoints = reflector.GetCustomAttributes (asm, typeof(ExtensionPointAttribute), false);
 			foreach (ExtensionPointAttribute ext in extPoints) {
 				ExtensionPoint ep = config.AddExtensionPoint (ext.Path);
 				ep.Description = ext.Description;
 				ep.Name = ext.Name;
-				ep.AddExtensionNode (ext.NodeName, ext.NodeType.FullName);
+				ep.AddExtensionNode (ext.NodeName, ext.NodeTypeName);
 			}
 			
-			foreach (Type t in asm.GetTypes ()) {
+			foreach (object t in reflector.GetAssemblyTypes (asm)) {
 				
-				if (Attribute.IsDefined (t, typeof(ExtensionAttribute))) {
-					foreach (ExtensionAttribute eatt in t.GetCustomAttributes (typeof(ExtensionAttribute), false)) {
+				string typeFullName = reflector.GetTypeFullName (t);
+				
+				object[] extensionAtts = reflector.GetCustomAttributes (t, typeof(ExtensionAttribute), false);
+				if (extensionAtts.Length > 0) {
+					foreach (ExtensionAttribute eatt in extensionAtts) {
 						string path;
 						string nodeName;
 						
@@ -659,7 +679,7 @@ namespace Mono.Addins.Database
 								if (path == "$") {
 									// The type does not implement any interface and has no superclass.
 									// Will be reported later as an error.
-									path = "$" + t.FullName;
+									path = "$" + typeFullName;
 								}
 								nodeName = "Type";
 							}
@@ -671,9 +691,9 @@ namespace Mono.Addins.Database
 						ExtensionNodeDescription elem = config.MainModule.AddExtensionNode (path, nodeName);
 						if (eatt.Id.Length > 0) {
 							elem.SetAttribute ("id", eatt.Id);
-							elem.SetAttribute ("type", t.FullName);
+							elem.SetAttribute ("type", typeFullName);
 						} else {
-							elem.SetAttribute ("id", t.FullName);
+							elem.SetAttribute ("id", typeFullName);
 						}
 						if (eatt.InsertAfter.Length > 0)
 							elem.SetAttribute ("insertafter", eatt.InsertAfter);
@@ -681,8 +701,8 @@ namespace Mono.Addins.Database
 							elem.SetAttribute ("insertbefore", eatt.InsertAfter);
 					}
 				}
-				else if (Attribute.IsDefined (t, typeof(TypeExtensionPointAttribute))) {
-					foreach (TypeExtensionPointAttribute epa in t.GetCustomAttributes (typeof(TypeExtensionPointAttribute), false)) {
+				else {
+					foreach (TypeExtensionPointAttribute epa in reflector.GetCustomAttributes (t, typeof(TypeExtensionPointAttribute), false)) {
 						ExtensionPoint ep;
 						
 						ExtensionNodeType nt = new ExtensionNodeType ();
@@ -691,8 +711,8 @@ namespace Mono.Addins.Database
 							ep = config.AddExtensionPoint (epa.Path);
 						}
 						else {
-							ep = config.AddExtensionPoint (GetDefaultTypeExtensionPath (config, t));
-							nt.ObjectTypeName = t.FullName;
+							ep = config.AddExtensionPoint (GetDefaultTypeExtensionPath (config, typeFullName));
+							nt.ObjectTypeName = typeFullName;
 						}
 						nt.Id = epa.NodeName;
 						nt.TypeName = epa.NodeType.FullName;
@@ -717,12 +737,12 @@ namespace Mono.Addins.Database
 			if (nt.TypeName.Length == 0)
 				nt.TypeName = "Mono.Addins.TypeExtensionNode";
 			
-			Type ntype = FindAddinType (nt.TypeName, assemblies);
+			object ntype = FindAddinType (nt.TypeName, assemblies);
 			if (ntype == null)
 				return;
 			
 			// Add type information declared with attributes in the code
-			ExtensionNodeAttribute nodeAtt = (ExtensionNodeAttribute) Attribute.GetCustomAttribute (ntype, typeof(ExtensionNodeAttribute), true);
+			ExtensionNodeAttribute nodeAtt = (ExtensionNodeAttribute) reflector.GetCustomAttribute (ntype, typeof(ExtensionNodeAttribute), true);
 			if (nodeAtt != null) {
 				if (nt.Id.Length == 0 && nodeAtt.NodeName.Length > 0)
 					nt.Id = nodeAtt.NodeName;
@@ -731,34 +751,34 @@ namespace Mono.Addins.Database
 			} else {
 				// Use the node type name as default name
 				if (nt.Id.Length == 0)
-					nt.Id = ntype.Name;
+					nt.Id = reflector.GetTypeName (ntype);
 			}
 			
 			// Add information about attributes
-			object[] fieldAtts = ntype.GetCustomAttributes (typeof(NodeAttributeAttribute), true);
+			object[] fieldAtts = reflector.GetCustomAttributes (ntype, typeof(NodeAttributeAttribute), true);
 			foreach (NodeAttributeAttribute fatt in fieldAtts) {
 				NodeTypeAttribute natt = new NodeTypeAttribute ();
 				natt.Name = fatt.Name;
 				natt.Required = fatt.Required;
-				if (fatt.Type != null)
-					natt.Type = fatt.Type.FullName;
+				if (fatt.TypeName != null)
+					natt.Type = fatt.TypeName;
 				if (fatt.Description.Length > 0)
 					natt.Description = fatt.Description;
 				nt.Attributes.Add (natt);
 			}
 			
 			// Check if the type has NodeAttribute attributes applied to fields.
-			foreach (FieldInfo field in ntype.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
-				NodeAttributeAttribute fatt = (NodeAttributeAttribute) Attribute.GetCustomAttribute (field, typeof(NodeAttributeAttribute));
+			foreach (object field in reflector.GetFields (ntype)) {
+				NodeAttributeAttribute fatt = (NodeAttributeAttribute) reflector.GetCustomAttribute (field, typeof(NodeAttributeAttribute), false);
 				if (fatt != null) {
 					NodeTypeAttribute natt = new NodeTypeAttribute ();
 					if (fatt.Name.Length > 0)
 						natt.Name = fatt.Name;
 					else
-						natt.Name = field.Name;
+						natt.Name = reflector.GetFieldName (field);
 					if (fatt.Description.Length > 0)
 						natt.Description = fatt.Description;
-					natt.Type = field.FieldType.FullName;
+					natt.Type = reflector.GetFieldTypeFullName (field);
 					natt.Required = fatt.Required;
 					nt.Attributes.Add (natt);
 				}
@@ -770,17 +790,17 @@ namespace Mono.Addins.Database
 			string childSet = (string) internalNodeSets [nt.TypeName];
 			
 			if (childSet == null) {
-				object[] ats = ntype.GetCustomAttributes (typeof(ExtensionNodeChildAttribute), true);
+				object[] ats = reflector.GetCustomAttributes (ntype, typeof(ExtensionNodeChildAttribute), true);
 				if (ats.Length > 0) {
 					// Create a new node set for this type. It is necessary to create a new node set
 					// instead of just adding child ExtensionNodeType objects to the this node type
 					// because child types references can be recursive.
 					ExtensionNodeSet internalSet = new ExtensionNodeSet ();
-					internalSet.Id = ntype.Name + "_" + Guid.NewGuid().ToString ();
+					internalSet.Id = reflector.GetTypeName (ntype) + "_" + Guid.NewGuid().ToString ();
 					foreach (ExtensionNodeChildAttribute at in ats) {
 						ExtensionNodeType internalType = new ExtensionNodeType ();
 						internalType.Id = at.NodeName;
-						internalType.TypeName = at.ExtensionNodeType.FullName;
+						internalType.TypeName = at.ExtensionNodeTypeName;
 						internalSet.NodeTypes.Add (internalType);
 					}
 					config.ExtensionNodeSets.Add (internalSet);
@@ -789,7 +809,7 @@ namespace Mono.Addins.Database
 					// Register the new set in a hashtable, to allow recursive references to the
 					// same internal set.
 					internalNodeSets [nt.TypeName] = internalSet.Id;
-					internalNodeSets [ntype.AssemblyQualifiedName] = internalSet.Id;
+					internalNodeSets [reflector.GetTypeAssemblyQualifiedName (ntype)] = internalSet.Id;
 					ScanNodeSet (config, internalSet, assemblies, internalNodeSets);
 				}
 			}
@@ -807,25 +827,19 @@ namespace Mono.Addins.Database
 			ScanNodeSet (config, nt, assemblies, internalNodeSets);
 		}
 		
-		string GetBaseTypeNameList (Type type)
+		string GetBaseTypeNameList (object type)
 		{
 			StringBuilder sb = new StringBuilder ("$");
-			Type btype = type.BaseType;
-			while (btype != typeof(object)) {
-				sb.Append (btype.FullName).Append (',');
-				btype = btype.BaseType;
-			}
-			foreach (Type iterf in type.GetInterfaces ()) {
-				sb.Append (iterf.FullName).Append (',');
-			}
+			foreach (string tn in reflector.GetBaseTypeFullNameList (type))
+				sb.Append (tn).Append (',');
 			if (sb.Length > 0)
 				sb.Remove (sb.Length - 1, 1);
 			return sb.ToString ();
 		}
 		
-		void RegisterHostTypeNode (AddinDescription config, Type t, ArrayList assemblies)
+		void RegisterHostTypeNode (AddinDescription config, object t, ArrayList assemblies)
 		{
-			foreach (ExtensionAttribute eatt in t.GetCustomAttributes (typeof(ExtensionAttribute), false)) {
+			foreach (ExtensionAttribute eatt in reflector.GetCustomAttributes (t, typeof(ExtensionAttribute), false)) {
 				if (eatt.Path.Length > 0)
 					continue;
 				
@@ -833,9 +847,9 @@ namespace Mono.Addins.Database
 					foreach (ExtensionNodeType nt in ep.NodeSet.NodeTypes) {
 						if (nt.ObjectTypeName.Length == 0)
 							continue;
-						Type etype = FindAddinType (nt.ObjectTypeName, assemblies);
-						if (etype != null && etype.IsAssignableFrom (t)) {
-							RegisterTypeNode (config, eatt, ep.Path, nt.Id, t);
+						object etype = FindAddinType (nt.ObjectTypeName, assemblies);
+						if (etype != null && reflector.TypeIsAssignableFrom (etype, t)) {
+							RegisterTypeNode (config, eatt, ep.Path, nt.Id, reflector.GetTypeFullName (t));
 							return;
 						}
 					}
@@ -843,16 +857,16 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		Type FindAddinType (string typeName, ArrayList assemblies)
+		object FindAddinType (string typeName, ArrayList assemblies)
 		{
 			// Look in the current assembly
-			Type etype = Type.GetType (typeName, false);
+			object etype = reflector.GetType (coreAssembly, typeName);
 			if (etype != null)
 				return etype;
 			
 			// Look in referenced assemblies
-			foreach (Assembly asm in assemblies) {
-				etype = asm.GetType (typeName);
+			foreach (object asm in assemblies) {
+				etype = reflector.GetType (asm, typeName);
 				if (etype != null)
 					return etype;
 			}
@@ -860,28 +874,30 @@ namespace Mono.Addins.Database
 			Hashtable visited = new Hashtable ();
 			
 			// Look in indirectly referenced assemblies
-			foreach (Assembly asm in assemblies) {
-				foreach (AssemblyName aref in asm.GetReferencedAssemblies ()) {
+			foreach (object asm in assemblies) {
+				foreach (object aref in reflector.GetAssemblyReferences (asm)) {
 					if (visited.Contains (aref))
 						continue;
 					visited.Add (aref, aref);
-					Assembly rasm = Assembly.Load (aref);
-					etype = rasm.GetType (typeName);
-					if (etype != null)
-						return etype;
+					object rasm = reflector.LoadAssemblyFromReference (aref);
+					if (rasm != null) {
+						etype = reflector.GetType (rasm, typeName);
+						if (etype != null)
+							return etype;
+					}
 				}
 			}
 			return null;
 		}
 
-		void RegisterTypeNode (AddinDescription config, ExtensionAttribute eatt, string path, string nodeName, Type t)
+		void RegisterTypeNode (AddinDescription config, ExtensionAttribute eatt, string path, string nodeName, string typeFullName)
 		{
 			ExtensionNodeDescription elem = config.MainModule.AddExtensionNode (path, nodeName);
 			if (eatt.Id.Length > 0) {
 				elem.SetAttribute ("id", eatt.Id);
-				elem.SetAttribute ("type", t.FullName);
+				elem.SetAttribute ("type", typeFullName);
 			} else {
-				elem.SetAttribute ("id", t.FullName);
+				elem.SetAttribute ("id", typeFullName);
 			}
 			if (eatt.InsertAfter.Length > 0)
 				elem.SetAttribute ("insertafter", eatt.InsertAfter);
@@ -889,9 +905,9 @@ namespace Mono.Addins.Database
 				elem.SetAttribute ("insertbefore", eatt.InsertAfter);
 		}
 		
-		internal string GetDefaultTypeExtensionPath (AddinDescription desc, Type type)
+		internal string GetDefaultTypeExtensionPath (AddinDescription desc, string typeFullName)
 		{
-			return "/" + Addin.GetIdName (desc.AddinId) + "/TypeExtensions/" + type.FullName;
+			return "/" + Addin.GetIdName (desc.AddinId) + "/TypeExtensions/" + typeFullName;
 		}
 	}
 }

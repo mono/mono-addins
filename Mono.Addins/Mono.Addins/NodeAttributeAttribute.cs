@@ -38,6 +38,7 @@ namespace Mono.Addins
 		bool required;
 		bool localizable;
 		Type type;
+		string typeName;
 		string description;
 		
 		public NodeAttributeAttribute ()
@@ -101,7 +102,12 @@ namespace Mono.Addins
 		
 		public Type Type {
 			get { return type; }
-			set { type = value; }
+			set { type = value; typeName = type.FullName; }
+		}
+		
+		internal string TypeName {
+			get { return typeName; }
+			set { typeName = value; type = null; }
 		}
 		
 		public string Description {

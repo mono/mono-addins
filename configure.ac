@@ -1,7 +1,7 @@
 dnl Warning: This is an automatically generated file, do not edit!
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.54])
-AC_INIT([mono-addins], [0.3.1])
+AC_INIT([mono-addins], [0.4])
 AM_INIT_AUTOMAKE([foreign])
 
 dnl pkg-config
@@ -10,9 +10,9 @@ if test "x$PKG_CONFIG" = "xno"; then
         AC_MSG_ERROR([You need to install pkg-config])
 fi
 
-API_VERSION=0.3.0.0
+API_VERSION=0.4.0.0
 AC_SUBST(API_VERSION)
-POLICY_VERSIONS="0.2"
+POLICY_VERSIONS="0.2 0.3"
 AC_SUBST(POLICY_VERSIONS)
 
 AC_PROG_INSTALL
@@ -80,6 +80,7 @@ AC_CONFIG_FILES([
 ./Mono.Addins.Gui/Makefile
 ./Mono.Addins.Setup/Makefile
 ./Mono.Addins/Makefile
+./Mono.Addins.CecilReflector/Makefile
 ./mautil/Makefile
 ./mautil/mautil
 ./Test/HelloWorldExtension/Makefile

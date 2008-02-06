@@ -1,3 +1,17 @@
+2008-02-06  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* AssemblyInfo.cs, Mono.Addins.mdp, Mono.Addins/NodeAttributeAttribute.cs,
+	  Mono.Addins/TypeExtensionPointAttribute.cs,
+	  Mono.Addins/ExtensionPointAttribute.cs,
+	  Mono.Addins/ExtensionNodeChildAttribute.cs, Makefile.am,
+	  Mono.Addins.Database/IAssemblyReflector.cs,
+	  Mono.Addins.Database/AddinScanResult.cs,
+	  Mono.Addins.Database/AddinDatabase.cs,
+	  Mono.Addins.Database/AddinScanner.cs,
+	  Mono.Addins.Database/DefaultAssemblyReflector.cs: Added support for
+	  pluggable add-in assembly reflectors. Implemented an add-in assembly
+	  reflector based on Cecil.
+
 2008-01-21  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/ExtensionTree.cs: Since Mono r93079, GetFields don't return

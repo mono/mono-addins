@@ -40,6 +40,8 @@ namespace Mono.Addins
 		string desc;
 		string name;
 		Type objectType;
+		string nodeTypeName;
+		string objectTypeName;
 		
 		public ExtensionPointAttribute ()
 		{
@@ -75,12 +77,22 @@ namespace Mono.Addins
 		
 		public Type NodeType {
 			get { return nodeType != null ? nodeType : typeof(TypeExtensionNode); }
-			set { nodeType = value; }
+			set { nodeType = value; nodeTypeName = value.FullName; }
 		}
 		
 		public Type ObjectType {
 			get { return objectType; }
-			set { objectType = value; }
+			set { objectType = value; objectTypeName = value.FullName; }
+		}
+		
+		internal string NodeTypeName {
+			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).FullName; }
+			set { nodeTypeName = value; }
+		}
+		
+		internal string ObjectTypeName {
+			get { return objectTypeName; }
+			set { objectTypeName = value; }
 		}
 		
 		public string NodeName {

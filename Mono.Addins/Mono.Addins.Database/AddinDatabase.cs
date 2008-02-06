@@ -941,7 +941,7 @@ namespace Mono.Addins.Database
 				scanResult.RegenerateAllData = true;
 			}
 			
-			AddinScanner scanner = new AddinScanner (this);
+			AddinScanner scanner = new AddinScanner (this, scanResult, monitor);
 			
 			// Check if any of the previously scanned folders has been deleted
 			
@@ -1046,8 +1046,8 @@ namespace Mono.Addins.Database
 					}
 				}
 				
-				
-				AddinScanner scanner = new AddinScanner (this);
+				AddinScanResult sr = new AddinScanResult ();
+				AddinScanner scanner = new AddinScanner (this, sr, progressStatus);
 				
 				SingleFileAssemblyResolver res = new SingleFileAssemblyResolver (progressStatus, registry, scanner);
 				ResolveEventHandler resolver = new ResolveEventHandler (res.Resolve);
@@ -1058,7 +1058,7 @@ namespace Mono.Addins.Database
 					AppDomain.CurrentDomain.AssemblyResolve += resolver;
 					if (einfo != null) einfo.AddEventHandler (AppDomain.CurrentDomain, resolver);
 				
-					AddinDescription desc = scanner.ScanSingleFile (progressStatus, file, new AddinScanResult ());
+					AddinDescription desc = scanner.ScanSingleFile (progressStatus, file, sr);
 					if (desc != null)
 						desc.Save (outFile);
 				}
@@ -1080,7 +1080,7 @@ namespace Mono.Addins.Database
 		
 		Assembly OnResolveAddinAssembly (object s, ResolveEventArgs args)
 		{
-			string file = currentScanResult.GetAssemblyLocation (args.Name);
+			string file = currentScanResult != null ? currentScanResult.GetAssemblyLocation (args.Name) : null;
 			if (file != null)
 				return Util.LoadAssemblyForReflection (file);
 			else {
