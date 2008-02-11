@@ -512,6 +512,8 @@ namespace Mono.Addins.Database
 						string dir = Path.GetDirectoryName (mp);
 						string pat = Path.GetFileName (mp);
 						foreach (string fmp in fileDatabase.GetDirectoryFiles (dir, pat)) {
+							if (files.Contains (fmp))
+								continue;
 							files.Add (fmp);
 							string an = Path.GetFileNameWithoutExtension (fmp);
 							changedAddins [an] = an;

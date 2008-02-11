@@ -1,3 +1,8 @@
+2008-02-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Database/AddinDatabase.cs: Fix add-in scan issue. Avoid
+	  updating the same add-in twice.
+
 2008-02-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AssemblyInfo.cs, Mono.Addins.mdp, Mono.Addins/NodeAttributeAttribute.cs,
