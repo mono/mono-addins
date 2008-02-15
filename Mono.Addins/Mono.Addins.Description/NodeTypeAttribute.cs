@@ -34,7 +34,7 @@ using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Description
 {
-	public class NodeTypeAttribute: ObjectDescription
+	public sealed class NodeTypeAttribute: ObjectDescription
 	{
 		string name;
 		string type;
@@ -44,6 +44,15 @@ namespace Mono.Addins.Description
 	
 		public NodeTypeAttribute()
 		{
+		}
+		
+		public void CopyFrom (NodeTypeAttribute att)
+		{
+			name = att.name;
+			type = att.type;
+			required = att.required;
+			localizable = att.localizable;
+			description = att.description;
 		}
 		
 		public string Name {

@@ -49,6 +49,21 @@ namespace Mono.Addins.Description
 			id = element.GetAttribute (IdAttribute);
 		}
 		
+		public void CopyFrom (ExtensionNodeSet nset)
+		{
+			id = nset.id;
+			NodeTypes.Clear ();
+			foreach (ExtensionNodeType nt in nset.NodeTypes) {
+				ExtensionNodeType cnt = new ExtensionNodeType ();
+				cnt.CopyFrom (nt);
+				NodeTypes.Add (cnt);
+			}
+			NodeSets.Clear ();
+			foreach (string ns in nset.NodeSets)
+				NodeSets.Add (ns);
+			missingNodeSetId = nset.missingNodeSetId;
+		}
+		
 		internal override void Verify (string location, StringCollection errors)
 		{
 			if (missingNodeSetId)
@@ -278,6 +293,11 @@ namespace Mono.Addins.Description
 			int i = IndexOf (nodeSetId);
 			if (i != -1)
 				list.RemoveAt (i);
+		}
+		
+		public void Clear ()
+		{
+			list.Clear ();
 		}
 		
 		public bool Contains (string nodeSetId)

@@ -52,6 +52,11 @@ namespace Mono.Addins
 			return string.Format (localizer.GetString (msgid), args);
 		}
 		
+		public string GetString (string msgid, params object[] args)
+		{
+			return string.Format (localizer.GetString (msgid), args);
+		}
+		
 		public string GetPluralString (string msgid, string defaultPlural, int n)
 		{
 			// If the localizer does not support plural forms, just use GetString to
@@ -65,6 +70,11 @@ namespace Mono.Addins
 		}
 		
 		public string GetPluralString (string singular, string defaultPlural, int n, params string[] args)
+		{
+			return string.Format (GetPluralString (singular, defaultPlural, n), args);
+		}
+		
+		public string GetPluralString (string singular, string defaultPlural, int n, params object[] args)
 		{
 			return string.Format (GetPluralString (singular, defaultPlural, n), args);
 		}

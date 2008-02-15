@@ -532,6 +532,7 @@ namespace Mono.Addins.Description
 			config.description = elem.GetAttribute ("description");
 			config.category = elem.GetAttribute ("category");
 			config.basePath = elem.GetAttribute ("basePath");
+			config.domain = "global";
 			
 			string s = elem.GetAttribute ("isRoot");
 			if (s.Length == 0) s = elem.GetAttribute ("isroot");

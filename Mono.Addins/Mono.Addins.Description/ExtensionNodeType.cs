@@ -36,7 +36,7 @@ using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Description
 {
-	public class ExtensionNodeType: ExtensionNodeSet
+	public sealed class ExtensionNodeType: ExtensionNodeSet
 	{
 		string typeName;
 		string objectTypeName;
@@ -119,8 +119,23 @@ namespace Mono.Addins.Description
 				description = de.InnerText;
 		}
 		
-		internal ExtensionNodeType ()
+		public ExtensionNodeType ()
 		{
+		}
+		
+		public void CopyFrom (ExtensionNodeType ntype)
+		{
+			base.CopyFrom (ntype);
+			this.typeName = ntype.TypeName;
+			this.objectTypeName = ntype.ObjectTypeName;
+			this.description = ntype.Description;
+			this.addinId = ntype.AddinId;
+			Attributes.Clear ();
+			foreach (NodeTypeAttribute att in ntype.Attributes) {
+				NodeTypeAttribute catt = new NodeTypeAttribute ();
+				catt.CopyFrom (att);
+				Attributes.Add (catt);
+			}
 		}
 			
 		internal override string IdAttribute {

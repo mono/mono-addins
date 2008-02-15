@@ -355,6 +355,7 @@ namespace Mono.Addins.Database
 
 				if (scanSuccessful && config != null) {
 					
+					config.Domain = "global";
 					if (config.Version.Length == 0)
 						config.Version = "0.0.0.0";
 					

@@ -108,12 +108,22 @@ namespace Mono.Addins.Description
 		
 		public string InsertAfter {
 			get { return GetAttribute ("insertafter"); }
-			set { SetAttribute ("insertafter", value); }
+			set {
+				if (value == null || value.Length == 0)
+					RemoveAttribute ("insertafter");
+				else
+					SetAttribute ("insertafter", value); 
+			}
 		}
 		
 		public string InsertBefore {
 			get { return GetAttribute ("insertbefore"); }
-			set { SetAttribute ("insertbefore", value); }
+			set {
+				if (value == null || value.Length == 0)
+					RemoveAttribute ("insertbefore");
+				else
+					SetAttribute ("insertbefore", value); 
+			}
 		}
 		
 		public bool IsCondition {
@@ -175,6 +185,26 @@ namespace Mono.Addins.Description
 			attributes = newList;
 			attributes [attributes.Length - 2] = key;
 			attributes [attributes.Length - 1] = value;
+		}
+		
+		public void RemoveAttribute (string name)
+		{
+			if (Element != null) {
+				Element.RemoveAttribute (name);
+				return;
+			}
+
+			if (attributes == null)
+				return;
+			
+			for (int n=0; n<attributes.Length; n+=2) {
+				if (attributes [n] == name) {
+					string[] newar = new string [attributes.Length - 2];
+					Array.Copy (attributes, 0, newar, 0, n);
+					Array.Copy (attributes, n+2, newar, n, attributes.Length - n - 2);
+					break;
+				}
+			}
 		}
 		
 		public NodeAttribute[] Attributes {

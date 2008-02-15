@@ -35,7 +35,7 @@ using System.Collections.Specialized;
 
 namespace Mono.Addins.Description
 {
-	public class ExtensionPoint: ObjectDescription
+	public sealed class ExtensionPoint: ObjectDescription
 	{
 		string path;
 		string name;
@@ -57,6 +57,24 @@ namespace Mono.Addins.Description
 		
 		public ExtensionPoint ()
 		{
+		}
+		
+		public void CopyFrom (ExtensionPoint ep)
+		{
+			path = ep.path;
+			name = ep.name;
+			description = ep.description;
+			NodeSet.CopyFrom (ep.NodeSet);
+			Conditions.Clear ();
+			foreach (ConditionTypeDescription cond in ep.Conditions) {
+				ConditionTypeDescription cc = new ConditionTypeDescription ();
+				cc.CopyFrom (cond);
+				Conditions.Add (cc);
+			}
+			Addins.Clear ();
+			foreach (string s in ep.Addins)
+				Addins.Add (s);
+			rootAddin = ep.rootAddin;
 		}
 		
 		internal override void Verify (string location, StringCollection errors)

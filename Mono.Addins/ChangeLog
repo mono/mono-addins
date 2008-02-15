@@ -1,3 +1,22 @@
+2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/AddinRegistry.cs: Minor fixes.
+	* Mono.Addins/AddinLocalizer.cs: Ouch, format arguments of GetString should
+	  have been objects, not strings.
+	* Mono.Addins.Description/NodeTypeAttribute.cs,
+	  Mono.Addins.Description/ExtensionNodeType.cs,
+	  Mono.Addins.Description/ExtensionPoint.cs,
+	  Mono.Addins.Description/ConditionTypeDescription.cs,
+	  Mono.Addins.Description/ExtensionNodeSet.cs: Implemented CopyFrom.
+	* Mono.Addins.Description/AddinDescription.cs: Set global domain to
+	  manifests read from xml files.
+	* Mono.Addins.Description/ExtensionNodeDescription.cs: Remove insertbefore
+	  and insertafter attributes when set to an empty string.
+	* Mono.Addins.Database/AddinScanner.cs: Set a domain for files parsed with
+	  ScanSingleFile.
+	* Mono.Addins.Database/DefaultAssemblyReflector.cs: Fix bug in
+	  GetCustomAttribute.
+
 2008-02-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Database/AddinDatabase.cs: Fix add-in scan issue. Avoid

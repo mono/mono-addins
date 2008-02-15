@@ -161,6 +161,7 @@ namespace Mono.Addins
 		{
 			AddinDescription desc = AddinDescription.Read (file);
 			desc.OwnerDatabase = database;
+			desc.Domain = currentDomain;
 			return desc;
 		}
 		
@@ -276,7 +277,7 @@ namespace Mono.Addins
 			return true;
 		}
 		
-		internal static string[] GetRegisteredStartupFolders (string registryPath)
+		public static string[] GetRegisteredStartupFolders (string registryPath)
 		{
 			string dbDir = Path.Combine (registryPath, "addin-db-" + AddinDatabase.VersionTag);
 			dbDir = Path.Combine (dbDir, "hosts");
@@ -292,7 +293,9 @@ namespace Mono.Addins
 						XmlTextReader tr = new XmlTextReader (sr);
 						tr.MoveToContent ();
 						string host = tr.GetAttribute ("host-reference");
-						dirs.Add (Path.GetDirectoryName (host));
+						host = Path.GetDirectoryName (host);
+						if (!dirs.Contains (host))
+							dirs.Add (host);
 					}
 				}
 				catch {

@@ -34,7 +34,7 @@ using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Description
 {
-	public class ConditionTypeDescription: ObjectDescription
+	public sealed class ConditionTypeDescription: ObjectDescription
 	{
 		string id;
 		string typeName;
@@ -50,6 +50,14 @@ namespace Mono.Addins.Description
 			id = elem.GetAttribute ("id");
 			typeName = elem.GetAttribute ("type");
 			description = ReadXmlDescription ();
+		}
+		
+		public void CopyFrom (ConditionTypeDescription cond)
+		{
+			id = cond.id;
+			typeName = cond.typeName;
+			addinId = cond.AddinId;
+			description = cond.description;
 		}
 		
 		internal override void Verify (string location, StringCollection errors)
