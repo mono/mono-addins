@@ -1,3 +1,7 @@
+2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.CecilReflector/Reflector.cs: Fix bug in GetCustomAttribute.
+
 2008-02-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am: Added makefile.

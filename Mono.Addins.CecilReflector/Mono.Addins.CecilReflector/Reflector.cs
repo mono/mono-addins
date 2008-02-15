@@ -178,7 +178,7 @@ namespace Mono.Addins.CecilReflector
 		public object GetCustomAttribute (object obj, Type type, bool inherit)
 		{
 			foreach (object att in GetCustomAttributes (obj, type, inherit))
-				if (type.IsInstanceOfType (obj))
+				if (type.IsInstanceOfType (att))
 					return att;
 			return null;
 		}
