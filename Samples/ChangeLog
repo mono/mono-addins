@@ -1,3 +1,9 @@
+2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* TextEditorLib/TextEditorLib.mdp,
+	  TextEditor.CompilerService/TextEditor.CompilerService.mdp,
+	  TextEditor.Xml/TextEditor.Xml.mdp, TextEditor/TextEditor.mdp: Flush.
+
 2008-01-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* TextEditor.CompilerService/MyClass.cs,
