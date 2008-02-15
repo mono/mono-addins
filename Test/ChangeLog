@@ -1,3 +1,10 @@
+2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* UnitTests/UnitTests.mdp, FileContentExtension/FileContentExtension.mdp,
+	  HelloWorldExtension/HelloWorldExtension.mdp,
+	  CommandExtension/CommandExtension.mdp, FileExtender/FileExtender.mdp:
+	  Flush.
+
 2007-12-05  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* UnitTests/UnitTests.mdp, UnitTests/Makefile.am,

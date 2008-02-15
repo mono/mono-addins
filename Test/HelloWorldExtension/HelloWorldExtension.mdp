@@ -17,6 +17,7 @@
     <ProjectReference type="Project" localcopy="True" refto="UnitTests" />
     <ProjectReference type="Project" localcopy="True" refto="Mono.Addins" />
   </References>
+  <Deployment.LinuxDeployData scriptName="helloworldextension" generatePcFile="False" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
     <BuildFilesVar Sync="True" Name="FILES" />
     <DeployFilesVar Sync="True" Name="DATA_FILES" />
@@ -26,5 +27,4 @@
     <AsmRefVar Sync="True" Name="DLL_REFERENCES" />
     <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
   </MonoDevelop.Autotools.MakefileInfo>
-  <Deployment.LinuxDeployData scriptName="helloworldextension" generatePcFile="False" />
 </Project>
