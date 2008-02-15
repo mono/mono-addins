@@ -519,7 +519,6 @@ namespace Mono.Addins.Gui {
             w45.Fill = false;
             // Internal child Mono.Addins.Gui.AddinInstallDialog.ActionArea
             Gtk.HButtonBox w46 = this.ActionArea;
-            w46.Name = "hbuttonbox1";
             w46.Spacing = 6;
             w46.BorderWidth = ((uint)(5));
             w46.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));

@@ -396,7 +396,7 @@
     <child internal-child="ActionArea">
       <widget class="Gtk.HButtonBox" id="dialog-action_area8">
         <property name="MemberName" />
-        <property name="Spacing">10</property>
+        <property name="Spacing">6</property>
         <property name="BorderWidth">5</property>
         <property name="Size">1</property>
         <property name="LayoutStyle">End</property>

@@ -296,7 +296,7 @@ namespace Mono.Addins.Gui {
             // Internal child Mono.Addins.Gui.AddinManagerDialog.ActionArea
             Gtk.HButtonBox w52 = this.ActionArea;
             w52.Name = "dialog-action_area8";
-            w52.Spacing = 10;
+            w52.Spacing = 6;
             w52.BorderWidth = ((uint)(5));
             w52.LayoutStyle = ((Gtk.ButtonBoxStyle)(4));
             // Container child dialog-action_area8.Gtk.ButtonBox+ButtonBoxChild

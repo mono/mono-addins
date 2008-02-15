@@ -1,3 +1,9 @@
+2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs,
+	  gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs, gtk-gui/gui.stetic,
+	  Mono.Addins.Gui.mdp: Flush.
+
 2008-02-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AssemblyInfo.cs: Added support for pluggable add-in assembly reflectors.
