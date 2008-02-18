@@ -61,8 +61,9 @@ namespace Mono.Addins
 			addinDirs.Add (DefaultAddinsFolder);
 			
 			// Get the domain corresponding to the startup folder
-			if (startupDirectory != null) {
+			if (startupDirectory != null && startupDirectory.Length > 0) {
 				this.startupDirectory = startupDirectory;
+				addinDirs.Add (startupDirectory);
 				currentDomain = database.GetFolderDomain (null, startupDirectory);
 			} else
 				currentDomain = AddinDatabase.GlobalDomain;
@@ -232,6 +233,17 @@ namespace Mono.Addins
 		
 		internal StringCollection AddinDirectories {
 			get { return addinDirs; }
+		}
+
+		internal string StartupDirectory {
+			get {
+				return startupDirectory;
+			}
+		}
+		
+		public void RegisterAddinRoot (string hostFile)
+		{
+			CreateHostAddinsFile (hostFile);
 		}
 		
 		internal bool CreateHostAddinsFile (string hostFile)

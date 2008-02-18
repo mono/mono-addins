@@ -1,3 +1,11 @@
+2008-02-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/AddinRegistry.cs: Allow getting the startup path of the
+	  registry.
+	* Mono.Addins.Description/AddinDescription.cs: Improve error message.
+	* Mono.Addins.Database/AddinDatabase.cs: Use the startup patch provided by
+	  the registry, not the global one.
+
 2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/AddinRegistry.cs: Minor fixes.

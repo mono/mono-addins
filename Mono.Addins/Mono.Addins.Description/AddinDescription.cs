@@ -610,9 +610,9 @@ namespace Mono.Addins.Description
 				
 			if (bp != null) {
 				foreach (string file in AllFiles) {
-					string asmFile = Path.Combine (BasePath, file);
+					string asmFile = Path.Combine (bp, file);
 					if (!File.Exists (asmFile))
-						errors.Add ("The file '" + file + "' referenced in the manifest could not be found.");
+						errors.Add ("The file '" + asmFile + "' referenced in the manifest could not be found.");
 				}
 			}
 			

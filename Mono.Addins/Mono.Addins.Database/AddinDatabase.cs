@@ -783,7 +783,7 @@ namespace Mono.Addins.Database
 				try {
 					if (monitor.LogLevel > 1)
 						monitor.Log ("Looking for addins");
-					SetupProcess.ExecuteCommand (scanMonitor, registry.RegistryPath, AddinManager.StartupDirectory, "scan", (string[]) pparams.ToArray (typeof(string)));
+					SetupProcess.ExecuteCommand (scanMonitor, registry.RegistryPath, registry.StartupDirectory, "scan", (string[]) pparams.ToArray (typeof(string)));
 					retry = false;
 				}
 				catch (Exception ex) {
@@ -1029,7 +1029,7 @@ namespace Mono.Addins.Database
 		public void ParseAddin (IProgressStatus progressStatus, string file, string outFile, bool inProcess)
 		{
 			if (!inProcess) {
-				SetupProcess.ExecuteCommand (progressStatus, registry.RegistryPath, AddinManager.StartupDirectory, "get-desc", Path.GetFullPath (file), outFile);
+				SetupProcess.ExecuteCommand (progressStatus, registry.RegistryPath, registry.StartupDirectory, "get-desc", Path.GetFullPath (file), outFile);
 				return;
 			}
 			
