@@ -37,6 +37,7 @@ namespace Mono.Addins
 	public class TypeExtensionNode: InstanceExtensionNode
 	{
 		string typeName;
+		Type type;
 		
 		internal protected override void Read (NodeElement elem)
 		{
@@ -50,11 +51,18 @@ namespace Mono.Addins
 		
 		public override object CreateInstance ()
 		{
-			if (typeName.Length == 0)
-				throw new InvalidOperationException ("Type name not specified.");
-
-			Type t = Addin.GetType (typeName, true);
-			return Activator.CreateInstance (t);
+			return Activator.CreateInstance (Type);
+		}
+		
+		public Type Type {
+			get {
+				if (type == null) {
+					if (typeName.Length == 0)
+						throw new InvalidOperationException ("Type name not specified.");
+					type = Addin.GetType (typeName, true);
+				}
+				return type;
+			}
 		}
 	}
 }

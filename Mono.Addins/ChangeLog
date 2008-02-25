@@ -1,3 +1,8 @@
+2008-02-25  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/TypeExtensionNode.cs: Added property for getting the type
+	  of an extension node. Based on a patch by Brad Taylor.
+
 2008-02-18  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/AddinRegistry.cs: Allow getting the startup path of the
