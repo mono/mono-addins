@@ -1,3 +1,10 @@
+2008-04-07  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.csproj: Added missing files.
+	* Mono.Addins/ExtensionNode.cs: When subscribing the extension changed
+	  event, fire it for existing nodes, but only fire for the new
+	  handler.
+
 2008-02-25  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/TypeExtensionNode.cs: Added property for getting the type

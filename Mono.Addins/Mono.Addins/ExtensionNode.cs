@@ -107,7 +107,7 @@ namespace Mono.Addins
 				extensionNodeChanged += value;
 				foreach (ExtensionNode node in ChildNodes) {
 					try {
-						extensionNodeChanged (this, new ExtensionNodeEventArgs (ExtensionChange.Add, node));
+						value (this, new ExtensionNodeEventArgs (ExtensionChange.Add, node));
 					} catch (Exception ex) {
 						AddinManager.ReportError (null, null, ex, false);
 					}

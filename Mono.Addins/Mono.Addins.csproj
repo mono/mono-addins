@@ -58,6 +58,8 @@
     <Compile Include="Mono.Addins.Database\AddinUpdateData.cs" />
     <Compile Include="Mono.Addins.Database\DatabaseConfiguration.cs" />
     <Compile Include="Mono.Addins.Database\FileDatabase.cs" />
+    <Compile Include="Mono.Addins.Database\IAssemblyReflector.cs" />
+    <Compile Include="Mono.Addins.Database\DefaultAssemblyReflector.cs" />
     <Compile Include="Mono.Addins.Database\ProcessProgressStatus.cs" />
     <Compile Include="Mono.Addins.Database\SetupProcess.cs" />
     <Compile Include="Mono.Addins.Database\Util.cs" />
