@@ -1,3 +1,7 @@
+2008-04-10  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* mautil.csproj: Fix project file.
+
 2008-01-17  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* mautil.csproj: Add missing project file.
