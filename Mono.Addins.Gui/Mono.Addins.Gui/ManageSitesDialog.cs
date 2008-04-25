@@ -95,7 +95,7 @@ namespace Mono.Addins.Gui
 						ThreadPool.QueueUserWorkItem (delegate {
 							try {
 								rr = service.Repositories.RegisterRepository (pdlg, url, true);
-							} catch (Exception ex) {
+							} catch (System.Exception ex) {
 								error = ex;
 							} finally {
 								done = true;
