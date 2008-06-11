@@ -1,5 +1,12 @@
 2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins.Database/AddinScanFolderInfo.cs,
+	  Mono.Addins.Database/FileDatabase.cs: Fix problem in windows, where
+	  the path of folder info files could exceed the max allowed path
+	  length.
+
+2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins.mdp, Makefile.am,
 	  Mono.Addins.Description/AddinDescription.cs,
 	  Mono.Addins.Description/AddinFlags.cs: Added flags property to

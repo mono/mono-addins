@@ -345,7 +345,7 @@ namespace Mono.Addins.Database
 		
 		object ReadSharedObject (string directory, string sharedFileName, string extension, string objectId, BinaryXmlTypeMap typeMap, bool checkOnly, out string fileName)
 		{
-			string name = sharedFileName + "_" + Util.GetStringHashCode (objectId).ToString ("x");
+			string name = GetFileKey (directory, sharedFileName, objectId);
 			string file = Path.Combine (directory, name + extension);
 
 			object result;
@@ -399,7 +399,7 @@ namespace Mono.Addins.Database
 			
 			if (file == null) {
 				int count = 1;
-				string name = sharedFileName + "_" + Util.GetStringHashCode (objectId).ToString ("x");
+				string name = GetFileKey (directory, sharedFileName, objectId);
 				file = Path.Combine (directory, name + extension);
 				
 				while (Exists (file)) {
@@ -433,5 +433,15 @@ namespace Mono.Addins.Database
 				writer.WriteValue ("data", obj);
 			}
 		}	
+		
+		string GetFileKey (string directory, string sharedFileName, string objectId)
+		{
+			int avlen = System.Math.Max (240 - directory.Length, 10);
+			string name = sharedFileName + "_" + Util.GetStringHashCode (objectId).ToString ("x");
+			if (name.Length > avlen)
+				return name.Substring (name.Length - avlen);
+			else
+				return name;
+		}
 	}
 }

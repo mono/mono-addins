@@ -84,8 +84,6 @@ namespace Mono.Addins.Database
 			s = s.Replace (Path.AltDirectorySeparatorChar, '_');
 			s = s.Replace (Path.VolumeSeparatorChar, '_');
 			s = s.Trim ('_');
-			if (s.Length > 200)
-				s = s.Substring (s.Length - 200);
 			return s;
 		}
 		
