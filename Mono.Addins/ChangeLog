@@ -1,5 +1,11 @@
 2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins.Database/Util.cs: Make sure GetStringHashCode never
+	  throws an arithmentic overflow exception. Patch by Lauris
+	  Bukšis-Haberkorns.
+
+2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins.mdp: Updated.
 	* Mono.Addins/ExtensionContext.cs: For consistency, the ExtensionEvent
 	  event must be fired even for extension points which have not yet

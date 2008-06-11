@@ -113,17 +113,19 @@ namespace Mono.Addins.Database
 			}
 			return root + string.Join (new string (Path.DirectorySeparatorChar, 1), newParts, 0, i);
 		}
-		
+
+		// A private hash calculation method is used to be able to get consistent
+		// results across different .NET versions and implementations.
 		public static int GetStringHashCode (string s)
 		{
 			int h = 0;
 			int n = 0;
 			for (; n < s.Length - 1; n+=2) {
-				h = (h << 5) - h + s[n];
-				h = (h << 5) - h + s[n+1];
+				h = unchecked ((h << 5) - h + s[n]);
+				h = unchecked ((h << 5) - h + s[n+1]);
 			}
 			if (n < s.Length)
-				h = (h << 5) - h + s[n];
+				h = unchecked ((h << 5) - h + s[n]);
 			return h;
 		}
 		
