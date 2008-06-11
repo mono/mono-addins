@@ -56,6 +56,14 @@ namespace Mono.Addins.CecilReflector
 				if (catt != null)
 					atts.Add (catt);
 			}
+			if (inherit && (obj is TypeDefinition)) {
+				TypeDefinition td = (TypeDefinition) obj;
+				if (td.BaseType != null && td.BaseType.FullName != "System.Object") {
+					TypeDefinition bt = FindTypeDefinition (td.Module.Assembly, td.BaseType);
+					if (bt != null)
+						atts.AddRange (GetCustomAttributes (bt, type, true));
+				}
+			}
 			return atts.ToArray ();
 		}
 		
@@ -213,26 +221,29 @@ namespace Mono.Addins.CecilReflector
 			ArrayList list = new ArrayList ();
 			Hashtable visited = new Hashtable ();
 			GetBaseTypeFullNameList (visited, list, asm, t);
+			list.Remove (t.FullName);
 			return list;
 		}
 
 		void GetBaseTypeFullNameList (Hashtable visited, ArrayList list, AssemblyDefinition asm, TypeReference tr)
 		{
+			if (tr.FullName == "System.Object" || visited.Contains (tr.FullName))
+				return;
+			
+			visited [tr.FullName] = tr;
+			list.Add (tr.FullName);
+			
 			TypeDefinition type = FindTypeDefinition (asm, tr);
 			if (type == null)
 				return;
-			
+
 			asm = GetAssemblyDefinition (type);
 
-			TypeReference btype = type.BaseType;
-			if (btype != null && btype.FullName != "System.Object" && !visited.Contains (btype.FullName)) {
-				list.Add (btype.FullName);
-				visited [btype.FullName] = btype;
-				GetBaseTypeFullNameList (visited, list, asm, btype);
-			}
-			foreach (TypeReference interf in type.Interfaces) {
+			if (type.BaseType != null)
+				GetBaseTypeFullNameList (visited, list, asm, type.BaseType);
+
+			foreach (TypeReference interf in type.Interfaces)
 				GetBaseTypeFullNameList (visited, list, asm, interf);
-			}
 		}
 		
 		TypeDefinition FindTypeDefinition (AssemblyDefinition referencer, TypeReference rt)

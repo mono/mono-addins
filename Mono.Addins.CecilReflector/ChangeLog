@@ -1,3 +1,8 @@
+2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.CecilReflector/Reflector.cs: Fix retrieval of inherited
+	  attributes. Fix code that get the list of base interfaces.
+
 2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.CecilReflector/Reflector.cs: Fix bug in GetCustomAttribute.
