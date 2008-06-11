@@ -156,7 +156,7 @@ namespace Mono.Addins.Gui
 			
 			tree.Clear ();
 			foreach (Addin ainfo in AddinManager.Registry.GetAddins ()) {
-				if (Services.InApplicationNamespace (service, ainfo.Id))
+				if (Services.InApplicationNamespace (service, ainfo.Id) && !ainfo.Description.Hidden)
 					tree.AddAddin (SetupService.GetAddinHeader (ainfo), ainfo, ainfo.Enabled, ainfo.IsUserAddin);
 			}
 			
@@ -173,9 +173,9 @@ namespace Mono.Addins.Gui
 				btnUninstall.Sensitive = false;
 				btnInfo.Sensitive = false;
 			} else {
-				btnEnable.Sensitive = !sinfo.Enabled;
-				btnDisable.Sensitive = sinfo.Enabled;
-				btnUninstall.Sensitive = true;
+				btnEnable.Sensitive = !sinfo.Enabled && sinfo.Description.CanDisable;
+				btnDisable.Sensitive = sinfo.Enabled && sinfo.Description.CanDisable;
+				btnUninstall.Sensitive = true && sinfo.Description.CanUninstall;
 				btnInfo.Sensitive = true;
 			}
 		}
