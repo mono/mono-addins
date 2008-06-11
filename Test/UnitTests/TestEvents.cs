@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections;
 using NUnit.Framework;
 using Mono.Addins;
 using SimpleApp;
@@ -70,6 +71,9 @@ namespace UnitTests
 
 			Assert.AreEqual (2, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 2");
 			
+			InitChangedExtensionEvent ("/SimpleApp/Writers",
+			                           "/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender");
+			
 			AddinManager.ExtensionChanged += OnExtensionChangedHandler;
 			AddinManager.AddExtensionNodeHandler ("/SimpleApp/Writers", OnExtensionChange);
 			
@@ -84,11 +88,12 @@ namespace UnitTests
 			
 			Assert.AreEqual (3, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 3");
 			
+			CheckChangedExtensionEvent ("events check 3");
 			Assert.IsTrue (errorTag == "", errorTag);
 			Assert.AreEqual (1, notifyCount, "notifyCount 2");
-			Assert.AreEqual (1, addCount, "addCount 1");
-			Assert.AreEqual (0, removeCount, "removeCount 1");
-			Assert.AreEqual (2, eventCount, "eventCount 2");
+			Assert.AreEqual (1, addCount, "addCount 2");
+			Assert.AreEqual (0, removeCount, "removeCount 2");
+			Assert.AreEqual (2, eventCount, "eventCount 2"); // 1 for each extension of HelloWorldExtension, not only /SimpleApp/Writers
 			
 			// Now unregister
 			
@@ -127,11 +132,25 @@ namespace UnitTests
 			}
 		}
 		
+		ArrayList expectedPathsEvent = new ArrayList ();
 		void OnExtensionChangedHandler (object s, ExtensionEventArgs args)
 		{
 			eventCount++;
-			if (args.Path != "/SimpleApp/Writers" && args.Path != "/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender")
-				errorTag += "t4 (" + args.Path + ")";
+			if (expectedPathsEvent.Contains (args.Path))
+				expectedPathsEvent.Remove (args.Path);
+			else
+				errorTag += "t4 (" + args.Path + ") ";
+		}
+		
+		void InitChangedExtensionEvent (params string[] expectedPaths)
+		{
+			expectedPathsEvent.Clear ();
+			expectedPathsEvent.AddRange (expectedPaths);
+		}
+		
+		void CheckChangedExtensionEvent (string tag)
+		{
+			Assert.IsTrue (expectedPathsEvent.Count == 0, tag + ": Event not fired for paths: " + string.Join (", ", (string[])expectedPathsEvent.ToArray (typeof(string))));
 		}
 		
 		
@@ -144,6 +163,9 @@ namespace UnitTests
 			// All addins are enabled
 			
 			Assert.AreEqual (4, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 1");
+			
+			InitChangedExtensionEvent ("/SimpleApp/Writers",
+			                           "/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender");
 			
 			AddinManager.ExtensionChanged += OnExtensionChangedHandler;
 			AddinManager.AddExtensionNodeHandler ("/SimpleApp/Writers", OnExtensionChange);
@@ -158,23 +180,29 @@ namespace UnitTests
 			AddinManager.Registry.DisableAddin ("SimpleApp.HelloWorldExtension,0.1.0");
 			
 			Assert.AreEqual (3, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 2");
-			
+
+			CheckChangedExtensionEvent ("events check 2");
 			Assert.IsTrue (errorTag == "", errorTag);
 			Assert.AreEqual (1, notifyCount, "notifyCount 2");
 			Assert.AreEqual (0, addCount, "addCount 2");
 			Assert.AreEqual (1, removeCount, "removeCount 2");
-			Assert.AreEqual (1, eventCount, "eventCount 2");
+			Assert.AreEqual (2, eventCount, "eventCount 2"); // 1 for each extension of HelloWorldExtension, not only /SimpleApp/Writers
 			
+			InitChangedExtensionEvent ("/SimpleApp/Writers",
+			                           "/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender",
+			                           "/SimpleApp/NodeWithChildren",
+			                           "/SystemInformation/Modules");
 			notifyCount = addCount = removeCount = eventCount = 0;
 			AddinManager.Registry.DisableAddin ("SimpleApp.FileContentExtension,0.1.0");
 			
 			Assert.AreEqual (2, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 3");
 			
+			CheckChangedExtensionEvent ("events check 3");
 			Assert.IsTrue (errorTag == "", errorTag);
 			Assert.AreEqual (1, notifyCount, "notifyCount 3");
 			Assert.AreEqual (0, addCount, "addCount 3");
 			Assert.AreEqual (1, removeCount, "removeCount 3");
-			Assert.AreEqual (1, eventCount, "eventCount 3");
+			Assert.AreEqual (4, eventCount, "eventCount 3");
 			
 			// Now unregister
 			

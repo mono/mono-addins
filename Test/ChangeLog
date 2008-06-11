@@ -1,3 +1,7 @@
+2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* UnitTests/TestEvents.cs: Improved Load/Unload tests.
+
 2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* UnitTests/UnitTests.mdp, FileContentExtension/FileContentExtension.mdp,
