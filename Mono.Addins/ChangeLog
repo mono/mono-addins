@@ -1,3 +1,10 @@
+2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.mdp: Updated.
+	* Mono.Addins/ExtensionContext.cs: For consistency, the ExtensionEvent
+	  event must be fired even for extension points which have not yet
+	  been loaded.
+
 2008-04-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.csproj: Added missing files.

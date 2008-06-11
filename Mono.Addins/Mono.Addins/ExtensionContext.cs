@@ -376,14 +376,17 @@ namespace Mono.Addins
 					AddinManager.ReportError ("Required add-in not found", id, null, false);
 					return;
 				}
-				// Take note that his add-in has been enabled at run-time
+				// Take note that this add-in has been enabled at run-time
 				// Needed because loaded add-in descriptions may not include this add-in. 
 				RegisterRuntimeEnabledAddin (id);
 				
 				// Look for loaded extension points
 				Hashtable eps = new Hashtable ();
+				ArrayList newExtensions = new ArrayList ();
 				foreach (ModuleDescription mod in addin.Description.AllModules) {
 					foreach (Extension ext in mod.Extensions) {
+						if (!newExtensions.Contains (ext.Path))
+							newExtensions.Add (ext.Path);
 						ExtensionPoint ep = tree.FindLoadedExtensionPoint (ext.Path);
 						if (ep != null && !eps.Contains (ep))
 							eps.Add (ep, ep);
@@ -404,15 +407,19 @@ namespace Mono.Addins
 							else
 								AddinManager.ReportError ("Extension node not found or not extensible: " + ext.Path, id, null, false);
 						}
-						
-						// Global extension change event. Other events are fired by LoadModuleExtensionNodes.
-						NotifyExtensionsChanged (new ExtensionEventArgs (ep.Path));
 					}
 				}
 				
 				// Call the OnAddinLoaded method on nodes, if the add-in is already loaded
 				foreach (TreeNode nod in loadedNodes)
 					nod.ExtensionNode.OnAddinLoaded ();
+				
+				// Global extension change event. Other events are fired by LoadModuleExtensionNodes.
+				// The event is called for all extensions, even for those not loaded. This is for coherence,
+				// although that something that it doesn't make much sense to do (subcribing the ExtensionChanged
+				// event without first getting the list of nodes that may change).
+				foreach (string newExt in newExtensions)
+					NotifyExtensionsChanged (new ExtensionEventArgs (newExt));
 			}
 			finally {
 				fireEvents = false;
@@ -445,7 +452,6 @@ namespace Mono.Addins
 				tree.FindAddinNodes (id, list);
 				
 				// Remove each node and notify the change
-				ArrayList paths = new ArrayList ();
 				foreach (TreeNode node in list) {
 					if (node.ExtensionNode == null) {
 						// It's an extension point. Just remove it, no notifications are needed
@@ -453,16 +459,26 @@ namespace Mono.Addins
 					}
 					else {
 						string path = node.Parent.GetPath ();
-						if (!paths.Contains (path))
-							paths.Add (path);
 						node.ExtensionNode.OnAddinUnloaded ();
 						node.Remove ();
 					}
 				}
 				
-				// Notify global extension point changes
+				// Notify global extension point changes.
+				// The event is called for all extensions, even for those not loaded. This is for coherence,
+				// although that something that it doesn't make much sense to do (subcribing the ExtensionChanged
+				// event without first getting the list of nodes that may change).
+				Addin addin = AddinManager.Registry.GetAddin (id);
+				ArrayList paths = new ArrayList ();
+				foreach (ModuleDescription mod in addin.Description.AllModules) {
+					foreach (Extension ext in mod.Extensions) {
+						if (!paths.Contains (ext.Path))
+							paths.Add (ext.Path);
+					}
+				}
 				foreach (string path in paths)
 					NotifyExtensionsChanged (new ExtensionEventArgs (path));
+				
 			} finally {
 				fireEvents = false;
 			}
