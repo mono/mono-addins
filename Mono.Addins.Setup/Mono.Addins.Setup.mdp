@@ -1,5 +1,5 @@
 <Project name="Mono.Addins.Setup" fileversion="2.0" language="C#" clr-version="Net_1_1" ctype="DotNetProject">
-  <Configurations active="Debug">
+  <Configurations active="Default">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="../bin" signAssembly="True" assemblyKeyFile="../mono-addins.snk" assembly="Mono.Addins.Setup" />
       <Build debugmode="True" target="Library" />

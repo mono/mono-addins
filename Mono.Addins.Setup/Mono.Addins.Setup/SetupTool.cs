@@ -206,6 +206,8 @@ namespace Mono.Addins.Setup
 			Addin ads = registry.GetAddin (GetFullId (args[0]));
 			if (ads == null)
 				throw new InstallException ("The add-in '" + args[0] + "' is not installed.");
+			if (!ads.Description.CanUninstall)
+				throw new InstallException ("The add-in '" + args[0] + "' is protected and can't be uninstalled.");
 			
 			Console.WriteLine ("The following add-ins will be uninstalled:");
 			Console.WriteLine (" - " + ads.Description.Name);
@@ -221,7 +223,7 @@ namespace Mono.Addins.Setup
 		
 		bool IsHidden (Addin ainfo)
 		{
-			return service.ApplicationNamespace != null && !(ainfo.Namespace + ".").StartsWith (service.ApplicationNamespace + ".");
+			return service.ApplicationNamespace != null && !(ainfo.Namespace + ".").StartsWith (service.ApplicationNamespace + ".") || ainfo.Description.IsHidden;
 		}
 		
 		bool IsHidden (AddinHeader ainfo)

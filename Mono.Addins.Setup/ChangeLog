@@ -1,3 +1,9 @@
+2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Setup.mdp: Updated.
+	* Mono.Addins.Setup/SetupTool.cs: Don't allow uninstalling add-ins with
+	  the CantUninstall flag. Same for hidden flag.
+
 2008-02-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* AssemblyInfo.cs: Added support for pluggable add-in assembly reflectors.
