@@ -29,6 +29,7 @@ FILES =  \
 	Mono.Addins.Database/Util.cs \
 	Mono.Addins.Description/AddinDependency.cs \
 	Mono.Addins.Description/AddinDescription.cs \
+	Mono.Addins.Description/AddinFlags.cs \
 	Mono.Addins.Description/AssemblyDependency.cs \
 	Mono.Addins.Description/ConditionTypeDescription.cs \
 	Mono.Addins.Description/ConditionTypeDescriptionCollection.cs \

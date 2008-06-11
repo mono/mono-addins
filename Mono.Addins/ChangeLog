@@ -1,5 +1,12 @@
 2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins.mdp, Makefile.am,
+	  Mono.Addins.Description/AddinDescription.cs,
+	  Mono.Addins.Description/AddinFlags.cs: Added flags property to
+	  AddinDescription.
+
+2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins.Database/Util.cs: Make sure GetStringHashCode never
 	  throws an arithmentic overflow exception. Patch by Lauris
 	  Bukšis-Haberkorns.
