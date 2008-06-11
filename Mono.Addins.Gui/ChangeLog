@@ -1,5 +1,9 @@
 2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins.Gui/AddinManagerDialog.cs: Fix build.
+
+2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins.Gui/AddinManagerDialog.cs: Don't allow uninstalling
 	  add-ins with the CantUninstall flag. Same for CantDisable and
 	  Hidden flags.

@@ -156,7 +156,7 @@ namespace Mono.Addins.Gui
 			
 			tree.Clear ();
 			foreach (Addin ainfo in AddinManager.Registry.GetAddins ()) {
-				if (Services.InApplicationNamespace (service, ainfo.Id) && !ainfo.Description.Hidden)
+				if (Services.InApplicationNamespace (service, ainfo.Id) && !ainfo.Description.IsHidden)
 					tree.AddAddin (SetupService.GetAddinHeader (ainfo), ainfo, ainfo.Enabled, ainfo.IsUserAddin);
 			}
 			
