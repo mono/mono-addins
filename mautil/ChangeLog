@@ -1,3 +1,8 @@
+2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Makefile.am, mautil.1: Man page for mautil. Patch by Tim Retout.
+	* mautil.mdp: Updated.
+
 2008-04-10  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* mautil.csproj: Fix project file.

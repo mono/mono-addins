@@ -36,3 +36,7 @@ include $(top_srcdir)/Makefile.include
 
 pkglibdir = $(prefix)/lib/mono/mono-addins
 pkglib_SCRIPTS = $(ASSEMBLY) $(build_datafiles)
+
+man_MANS = mautil.1
+EXTRA_DIST = $(man_MANS)
+
