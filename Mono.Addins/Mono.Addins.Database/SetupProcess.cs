@@ -58,6 +58,7 @@ namespace Mono.Addins.Database
 			}
 			process.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
 			process.StartInfo.UseShellExecute = false;
+			process.StartInfo.CreateNoWindow = true;
 			process.StartInfo.RedirectStandardInput = true;
 			process.StartInfo.RedirectStandardOutput = true;
 			process.StartInfo.RedirectStandardError = true;
