@@ -1,3 +1,7 @@
+2008-07-09  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/ExtensionContext.cs: Added missing null check.
+
 2008-07-07  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Database/SetupProcess.cs: Make sure no console window is

@@ -469,16 +469,17 @@ namespace Mono.Addins
 				// although that something that it doesn't make much sense to do (subcribing the ExtensionChanged
 				// event without first getting the list of nodes that may change).
 				Addin addin = AddinManager.Registry.GetAddin (id);
-				ArrayList paths = new ArrayList ();
-				foreach (ModuleDescription mod in addin.Description.AllModules) {
-					foreach (Extension ext in mod.Extensions) {
-						if (!paths.Contains (ext.Path))
-							paths.Add (ext.Path);
+				if (addin != null) {
+					ArrayList paths = new ArrayList ();
+					foreach (ModuleDescription mod in addin.Description.AllModules) {
+						foreach (Extension ext in mod.Extensions) {
+							if (!paths.Contains (ext.Path))
+								paths.Add (ext.Path);
+						}
 					}
-				}
-				foreach (string path in paths)
-					NotifyExtensionsChanged (new ExtensionEventArgs (path));
-				
+					foreach (string path in paths)
+						NotifyExtensionsChanged (new ExtensionEventArgs (path));
+				}				
 			} finally {
 				fireEvents = false;
 			}
