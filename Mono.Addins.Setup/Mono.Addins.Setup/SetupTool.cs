@@ -900,7 +900,7 @@ namespace Mono.Addins.Setup
 	
 			cmd = new SetupCommand (cat, "pack", "p", new SetupCommandHandler (BuildPackage));
 			cmd.Description = "Creates a package from an add-in configuration file.";
-			cmd.Usage = "<file-path>";
+			cmd.Usage = "<file-path> [-d:output-directory]";
 			cmd.AppendDesc ("Creates an add-in package (.mpack file) which includes all files ");
 			cmd.AppendDesc ("needed to deploy an add-in. The command parameter is the path to");
 			cmd.AppendDesc ("the add-in's configuration file.");

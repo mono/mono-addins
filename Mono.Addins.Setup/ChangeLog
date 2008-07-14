@@ -1,3 +1,7 @@
+2008-07-15  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Setup/SetupTool.cs: Add missing parameter documentation.
+
 2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Setup.mdp: Updated.
