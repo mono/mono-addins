@@ -56,6 +56,7 @@ namespace Mono.Addins.Database
 		public bool CheckOnly;
 		public bool LocateAssembliesOnly;
 		public StringCollection FilesToIgnore;
+		public string Domain;
 		
 		public bool ChangesFound {
 			get { return changesFound; }
@@ -108,6 +109,11 @@ namespace Mono.Addins.Database
 			di.File = file;
 			di.AddinScanFolderInfo = folderInfo;
 			FilesToScan.Add (di);
+			RegisterModifiedFolderInfo (folderInfo);
+		}
+		
+		public void RegisterModifiedFolderInfo (AddinScanFolderInfo folderInfo)
+		{
 			if (!ModifiedFolderInfos.Contains (folderInfo))
 				ModifiedFolderInfos.Add (folderInfo);
 		}
@@ -163,11 +169,5 @@ namespace Mono.Addins.Database
 	{
 		public string File;
 		public AddinScanFolderInfo AddinScanFolderInfo;
-	}
-	
-	class ObjectTypeExtenderData
-	{
-		public DependencyCollection Deps;
-		public string TypeName;
 	}
 }

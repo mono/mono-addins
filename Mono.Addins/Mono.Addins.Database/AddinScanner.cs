@@ -74,9 +74,6 @@ namespace Mono.Addins.Database
 			if (!scanResult.VisitFolder (path))
 				return;
 			
-			if (monitor.LogLevel > 1 && !scanResult.LocateAssembliesOnly)
-				monitor.Log ("Checking: " + path);
-			
 			AddinScanFolderInfo folderInfo;
 			if (!database.GetFolderInfoForPath (monitor, path, out folderInfo)) {
 				// folderInfo file was corrupt.
@@ -84,6 +81,7 @@ namespace Mono.Addins.Database
 				if (!Directory.Exists (path))
 					scanResult.RegenerateRelationData = true;
 			} else {
+				// Directory is included but it doesn't exist. Ignore it.
 				if (folderInfo == null && !Directory.Exists (path))
 					return;
 			}
@@ -91,9 +89,14 @@ namespace Mono.Addins.Database
 			// if domain is null it means that a new domain has to be created.
 			
 			bool sharedFolder = domain == AddinDatabase.GlobalDomain;
+			bool isNewFolder = folderInfo == null;
 			
-			if (folderInfo == null)
+			if (isNewFolder) {
+				// No folder info. It is the first time this folder is scanned.
+				// There is no need to store this object if the folder does not
+				// contain add-ins.
 				folderInfo = new AddinScanFolderInfo (path);
+			}
 			
 			if (!sharedFolder && (folderInfo.SharedFolder || folderInfo.Domain != domain)) {
 				// If the folder already has a domain, reuse it
@@ -105,7 +108,11 @@ namespace Mono.Addins.Database
 				}
 				else {
 					folderInfo.Domain = domain;
-					scanResult.RegenerateRelationData = true;
+					if (!isNewFolder) {
+						// Domain has changed. Update the folder info and regenerate everything.
+						scanResult.RegenerateRelationData = true;
+						scanResult.RegisterModifiedFolderInfo (folderInfo);
+					}
 				}
 			}
 			else if (!folderInfo.SharedFolder && sharedFolder) {
@@ -113,6 +120,13 @@ namespace Mono.Addins.Database
 			}
 			
 			folderInfo.SharedFolder = sharedFolder;
+			
+			// Discard folders not belonging to the required domain
+			if (scanResult.Domain != null && domain != scanResult.Domain && domain != AddinDatabase.GlobalDomain)
+				return;
+			
+			if (monitor.LogLevel > 1 && !scanResult.LocateAssembliesOnly)
+				monitor.Log ("Checking: " + path);
 			
 			if (Directory.Exists (path))
 			{
@@ -162,7 +176,7 @@ namespace Mono.Addins.Database
 			ArrayList missing = folderInfo.GetMissingAddins ();
 			if (missing.Count > 0) {
 				if (Directory.Exists (folderInfo.Folder))
-					scanResult.ModifiedFolderInfos.Add (folderInfo);
+					scanResult.RegisterModifiedFolderInfo (folderInfo);
 				scanResult.ChangesFound = true;
 				if (scanResult.CheckOnly)
 					return;

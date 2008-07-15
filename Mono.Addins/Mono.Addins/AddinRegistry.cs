@@ -134,7 +134,7 @@ namespace Mono.Addins
 		{
 			string outFile = Path.GetTempFileName ();
 			try {
-				database.ParseAddin (progressStatus, file, outFile, false);
+				database.ParseAddin (progressStatus, currentDomain, file, outFile, false);
 			}
 			catch {
 				File.Delete (outFile);
@@ -219,12 +219,12 @@ namespace Mono.Addins
 		
 		internal void ScanFolders (IProgressStatus monitor, string folderToScan, StringCollection filesToIgnore)
 		{
-			database.ScanFolders (monitor, folderToScan, filesToIgnore);
+			database.ScanFolders (monitor, currentDomain, folderToScan, filesToIgnore);
 		}
 		
 		internal void ParseAddin (IProgressStatus progressStatus, string file, string outFile)
 		{
-			database.ParseAddin (progressStatus, file, outFile, true);
+			database.ParseAddin (progressStatus, currentDomain, file, outFile, true);
 		}
 		
 		public string DefaultAddinsFolder {

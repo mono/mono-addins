@@ -722,7 +722,7 @@ namespace Mono.Addins.Database
 			DateTime tim = DateTime.Now;
 			
 			Hashtable installed = new Hashtable ();
-			bool changesFound = CheckFolders (monitor);
+			bool changesFound = CheckFolders (monitor, domain);
 			
 			if (monitor.IsCanceled)
 				return;
@@ -856,24 +856,26 @@ namespace Mono.Addins.Database
 		}
 		
 		
-		internal bool CheckFolders (IProgressStatus monitor)
+		internal bool CheckFolders (IProgressStatus monitor, string domain)
 		{
 			using (fileDatabase.LockRead ()) {
 				AddinScanResult scanResult = new AddinScanResult ();
 				scanResult.CheckOnly = true;
+				scanResult.Domain = domain;
 				InternalScanFolders (monitor, scanResult);
 				return scanResult.ChangesFound;
 			}
 		}
 		
-		internal void ScanFolders (IProgressStatus monitor, string folderToScan, StringCollection filesToIgnore)
+		internal void ScanFolders (IProgressStatus monitor, string currentDomain, string folderToScan, StringCollection filesToIgnore)
 		{
 			AddinScanResult res = new AddinScanResult ();
+			res.Domain = currentDomain;
 			res.FilesToIgnore = filesToIgnore;
 			ScanFolders (monitor, res);
 		}
 		
-		internal void ScanFolders (IProgressStatus monitor, AddinScanResult scanResult)
+		void ScanFolders (IProgressStatus monitor, AddinScanResult scanResult)
 		{
 			IDisposable checkLock = null;
 			
@@ -950,7 +952,8 @@ namespace Mono.Addins.Database
 			foreach (string file in Directory.GetFiles (AddinFolderCachePath, "*.data")) {
 				AddinScanFolderInfo folderInfo;
 				bool res = ReadFolderInfo (monitor, file, out folderInfo);
-				if (!res || !Directory.Exists (folderInfo.Folder)) {
+				bool validForDomain = scanResult.Domain == null || folderInfo.Domain == GlobalDomain || folderInfo.Domain == scanResult.Domain;
+				if (!res || (validForDomain && !Directory.Exists (folderInfo.Folder))) {
 					if (res) {
 						// Folder has been deleted. Remove the add-ins it had.
 						scanner.UpdateDeletedAddins (monitor, folderInfo, scanResult);
@@ -1010,8 +1013,11 @@ namespace Mono.Addins.Database
 			
 			tim = DateTime.Now;
 			try {
-				if (scanResult.RegenerateRelationData)
+				if (scanResult.RegenerateRelationData) {
+					if (monitor.LogLevel > 1)
+						monitor.Log ("Regenerating all add-in relations.");
 					scanResult.AddinsToUpdateRelations = null;
+				}
 				
 				GenerateAddinExtensionMapsInternal (monitor, scanResult.AddinsToUpdateRelations, scanResult.RemovedAddins);
 			}
@@ -1026,7 +1032,7 @@ namespace Mono.Addins.Database
 			SaveAddinHostIndex ();
 		}
 		
-		public void ParseAddin (IProgressStatus progressStatus, string file, string outFile, bool inProcess)
+		public void ParseAddin (IProgressStatus progressStatus, string domain, string file, string outFile, bool inProcess)
 		{
 			if (!inProcess) {
 				SetupProcess.ExecuteCommand (progressStatus, registry.RegistryPath, registry.StartupDirectory, "get-desc", Path.GetFullPath (file), outFile);
@@ -1049,6 +1055,7 @@ namespace Mono.Addins.Database
 				}
 				
 				AddinScanResult sr = new AddinScanResult ();
+				sr.Domain = domain;
 				AddinScanner scanner = new AddinScanner (this, sr, progressStatus);
 				
 				SingleFileAssemblyResolver res = new SingleFileAssemblyResolver (progressStatus, registry, scanner);

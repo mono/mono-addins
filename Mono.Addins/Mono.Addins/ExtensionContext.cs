@@ -458,7 +458,6 @@ namespace Mono.Addins
 						node.Remove ();
 					}
 					else {
-						string path = node.Parent.GetPath ();
 						node.ExtensionNode.OnAddinUnloaded ();
 						node.Remove ();
 					}
