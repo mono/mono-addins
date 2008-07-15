@@ -871,7 +871,7 @@ namespace Mono.Addins.Database
 		{
 			AddinScanResult res = new AddinScanResult ();
 			res.Domain = currentDomain;
-			res.FilesToIgnore = filesToIgnore;
+			res.AddPathsToIgnore (filesToIgnore);
 			ScanFolders (monitor, res);
 		}
 		

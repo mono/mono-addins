@@ -1,5 +1,17 @@
 2008-07-15  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Mono.Addins.Description/AddinDescription.cs,
+	  Mono.Addins.Description/ModuleDescription.cs,
+	  Mono.Addins.Database/AddinScanFolderInfo.cs,
+	  Mono.Addins.Database/AddinScanResult.cs,
+	  Mono.Addins.Database/AddinDatabase.cs,
+	  Mono.Addins.Database/AddinScanner.cs: Add support for specifying
+	  paths to exclude in .addins files and in add-in manifests.
+	* Mono.Addins.Database/Util.cs: Make sure window paths are converted to
+	  unix paths when running on unix, and vice-versa.
+
+2008-07-15  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* Mono.Addins/AddinRegistry.cs,
 	  Mono.Addins.Database/AddinScanResult.cs,
 	  Mono.Addins.Database/AddinDatabase.cs,

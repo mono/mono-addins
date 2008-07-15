@@ -49,13 +49,13 @@ namespace Mono.Addins.Database
 		
 		Hashtable assemblyLocations = new Hashtable ();
 		Hashtable assemblyLocationsByFullName = new Hashtable (); 
+		Hashtable filesToIgnore;
 		
 		public bool RegenerateAllData;
 		public bool RegenerateRelationData;
 		public bool changesFound;
 		public bool CheckOnly;
 		public bool LocateAssembliesOnly;
-		public StringCollection FilesToIgnore;
 		public string Domain;
 		
 		public bool ChangesFound {
@@ -65,7 +65,7 @@ namespace Mono.Addins.Database
 		
 		public bool VisitFolder (string folder)
 		{
-			if (visitedFolders.Contains (folder))
+			if (visitedFolders.Contains (folder) || IgnorePath (folder))
 				return false;
 			else {
 				visitedFolders.Add (folder, folder);
@@ -73,16 +73,30 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		public bool IgnoreFile (string file)
+		public bool IgnorePath (string file)
 		{
-			return FilesToIgnore != null && FilesToIgnore.Contains (file);
+			if (filesToIgnore == null)
+				return false;
+			string root = Path.GetPathRoot (file);
+			while (root != file) {
+				if (filesToIgnore.Contains (file))
+					return true;
+				file = Path.GetDirectoryName (file);
+			}
+			return false;
 		}
 		
-		public void AddFileToIgnore (string fileName)
+		public void AddPathToIgnore (string path)
 		{
-			if (FilesToIgnore == null)
-				FilesToIgnore = new StringCollection ();
-			FilesToIgnore.Add (fileName);
+			if (filesToIgnore == null)
+				filesToIgnore = new Hashtable ();
+			filesToIgnore [path] = path;
+		}
+		
+		public void AddPathsToIgnore (IEnumerable paths)
+		{
+			foreach (string p in paths)
+				AddPathToIgnore (p);
 		}
 		
 		public void AddAddinToScan (string addinId)

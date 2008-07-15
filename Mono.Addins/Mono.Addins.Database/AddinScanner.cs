@@ -141,16 +141,21 @@ namespace Mono.Addins.Database
 					}
 				}
 				
+				// Now scan assemblies. They can also add files to the ignore list.
+				
 				foreach (string file in files) {
-					switch (Path.GetExtension (file)) {
-					case ".dll":
-					case ".exe":
+					string ext = Path.GetExtension (file).ToLower ();
+					if (ext == ".dll" || ext == ".exe") {
 						RegisterFileToScan (monitor, file, scanResult, folderInfo);
 						scanResult.AddAssemblyLocation (file);
-						break;
-					case ".addins":
+					}
+				}
+				
+				// Finally scan .addins files
+				
+				foreach (string file in files) {
+					if (Path.GetExtension (file).EndsWith (".addins")) {
 						ScanAddinsFile (monitor, file, domain, scanResult);
-						break;
 					}
 				}
 			}
@@ -206,8 +211,14 @@ namespace Mono.Addins.Database
 			
 				if (!finfo.IsAddin)
 					return;
-				if (database.AddinDescriptionExists (finfo.Domain, finfo.AddinId))
+				
+				if (database.AddinDescriptionExists (finfo.Domain, finfo.AddinId)) {
+					// It is an add-in and it has not changed. Paths in the ignore list
+					// are still valid, so they can be used.
+					if (finfo.IgnorePaths != null)
+						scanResult.AddPathsToIgnore (finfo.IgnorePaths);
 					return;
+				}
 			}
 			
 			scanResult.ChangesFound = true;
@@ -218,7 +229,7 @@ namespace Mono.Addins.Database
 		
 		public void ScanFile (IProgressStatus monitor, string file, AddinScanFolderInfo folderInfo, AddinScanResult scanResult)
 		{
-			if (scanResult.IgnoreFile (file)) {
+			if (scanResult.IgnorePath (file)) {
 				// The file must be ignored. Maybe it caused a crash in a previous scan, or it
 				// might be included by a .addin file (in which case it will be scanned when processing
 				// the .addin file).
@@ -329,6 +340,15 @@ namespace Mono.Addins.Database
 							}
 						}
 						
+						// Update the ignore list in the folder info object. To be used in the next scan
+						
+						foreach (string df in config.AllIgnorePaths) {
+							string path = Path.Combine (config.BasePath, df);
+							fi.AddPathToIgnore (Util.GetFullPath (path));
+						}
+						
+						// Finally save
+						
 						if (database.SaveDescription (monitor, config, replaceFileName)) {
 							// The new dependencies also have to be updated
 							Util.AddDependencies (config, scanResult);
@@ -392,6 +412,8 @@ namespace Mono.Addins.Database
 			XmlTextReader r = null;
 			ArrayList directories = new ArrayList ();
 			ArrayList directoriesWithSubdirs = new ArrayList ();
+			string basePath = Path.GetDirectoryName (file);
+			
 			try {
 				r = new XmlTextReader (new StreamReader (file));
 				r.MoveToContent ();
@@ -413,6 +435,7 @@ namespace Mono.Addins.Database
 						
 						string path = r.ReadElementString ().Trim ();
 						if (path.Length > 0) {
+							path = Util.NormalizePath (path);
 							if (subs == "true")
 								directoriesWithSubdirs.Add (new string[] {path, sdom});
 							else
@@ -422,11 +445,21 @@ namespace Mono.Addins.Database
 					else if (r.NodeType == XmlNodeType.Element && r.LocalName == "GacAssembly") {
 						string aname = r.ReadElementString ().Trim ();
 						if (aname.Length > 0) {
+							aname = Util.NormalizePath (aname);
 							aname = Util.GetGacPath (aname);
 							if (aname != null) {
 								// Gac assemblies always use the global domain
 								directories.Add (new string[] {aname, AddinDatabase.GlobalDomain});
 							}
+						}
+					}
+					else if (r.NodeType == XmlNodeType.Element && r.LocalName == "Exclude") {
+						string path = r.ReadElementString ().Trim ();
+						if (path.Length > 0) {
+							path = Util.NormalizePath (path);
+							if (!Path.IsPathRooted (path))
+								path = Path.Combine (basePath, path);
+							scanResult.AddPathToIgnore (Util.GetFullPath (path));
 						}
 					}
 					else
@@ -440,16 +473,17 @@ namespace Mono.Addins.Database
 				if (r != null)
 					r.Close ();
 			}
+			
 			foreach (string[] d in directories) {
 				string dir = d[0];
 				if (!Path.IsPathRooted (dir))
-					dir = Path.Combine (Path.GetDirectoryName (file), dir);
+					dir = Path.Combine (basePath, dir);
 				ScanFolder (monitor, dir, d[1], scanResult);
 			}
 			foreach (string[] d in directoriesWithSubdirs) {
 				string dir = d[0];
 				if (!Path.IsPathRooted (dir))
-					dir = Path.Combine (Path.GetDirectoryName (file), dir);
+					dir = Path.Combine (basePath, dir);
 				ScanFolderRec (monitor, dir, d[1], scanResult);
 			}
 		}
@@ -547,7 +581,11 @@ namespace Mono.Addins.Database
 				// which are included as 'data' in an add-in.
 				foreach (string df in config.AllFiles) {
 					string file = Path.Combine (config.BasePath, df);
-					scanResult.AddFileToIgnore (Util.GetFullPath (file));
+					scanResult.AddPathToIgnore (Util.GetFullPath (file));
+				}
+				foreach (string df in config.AllIgnorePaths) {
+					string path = Path.Combine (config.BasePath, df);
+					scanResult.AddPathToIgnore (Util.GetFullPath (path));
 				}
 				
 				foreach (string s in config.MainModule.Assemblies) {
@@ -555,7 +593,7 @@ namespace Mono.Addins.Database
 					asmFiles.Add (asmFile);
 					object asm = reflector.LoadAssembly (asmFile);
 					assemblies.Add (asm);
-					scanResult.AddFileToIgnore (Util.GetFullPath (asmFile));
+					scanResult.AddPathToIgnore (Util.GetFullPath (asmFile));
 				}
 				
 				foreach (object asm in assemblies)
@@ -604,7 +642,7 @@ namespace Mono.Addins.Database
 							asmFiles.Add (asmFile);
 							object asm = reflector.LoadAssembly (asmFile);
 							assemblies.Add (asm);
-							scanResult.AddFileToIgnore (Util.GetFullPath (asmFile));
+							scanResult.AddPathToIgnore (Util.GetFullPath (asmFile));
 						}
 						foreach (object asm in assemblies)
 							ScanAssemblyContents (config, asm, null, scanResult);

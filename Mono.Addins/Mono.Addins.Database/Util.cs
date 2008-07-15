@@ -85,12 +85,22 @@ namespace Mono.Addins.Database
 */				return Assembly.LoadFile (fileName);
 		}
 		
+		public static string NormalizePath (string path)
+		{
+			if (IsWindows)
+				return path.Replace ('/','\\');
+			else
+				return path.Replace ('\\','/');
+		}
+		
 		// Works like Path.GetFullPath, but it does not require the path to exist
 		public static string GetFullPath (string path)
 		{
 			if (path == null)
 				throw new ArgumentNullException ("path");
-				
+			
+			path = NormalizePath (path);
+			
 			if (!Path.IsPathRooted (path))
 				path = Path.Combine (Environment.CurrentDirectory, path);
 			

@@ -40,6 +40,7 @@ namespace Mono.Addins.Description
 	{
 		StringCollection assemblies;
 		StringCollection dataFiles;
+		StringCollection ignorePaths;
 		DependencyCollection dependencies;
 		ExtensionCollection extensions;
 		
@@ -65,6 +66,14 @@ namespace Mono.Addins.Description
 					return true;
 			}
 			return false;
+		}
+		
+		public StringCollection IgnorePaths {
+			get {
+				if (ignorePaths == null)
+					ignorePaths = new StringCollection ();
+				return ignorePaths;
+			}
 		}
 		
 		public StringCollection AllFiles {
@@ -164,21 +173,32 @@ namespace Mono.Addins.Description
 		{
 			CreateElement (parent, "Module");
 			
-			if (assemblies != null || dataFiles != null) {
+			if (assemblies != null || dataFiles != null || ignorePaths != null) {
 				XmlElement runtime = GetRuntimeElement ();
 				
 				while (runtime.FirstChild != null)
 					runtime.RemoveChild (runtime.FirstChild);
 					
-				foreach (string s in assemblies) {
-					XmlElement asm = Element.OwnerDocument.CreateElement ("Import");
-					asm.SetAttribute ("assembly", s);
-					runtime.AppendChild (asm);
+				if (assemblies != null) {
+					foreach (string s in assemblies) {
+						XmlElement asm = Element.OwnerDocument.CreateElement ("Import");
+						asm.SetAttribute ("assembly", s);
+						runtime.AppendChild (asm);
+					}
 				}
-				foreach (string s in dataFiles) {
-					XmlElement asm = Element.OwnerDocument.CreateElement ("Import");
-					asm.SetAttribute ("file", s);
-					runtime.AppendChild (asm);
+				if (dataFiles != null) {
+					foreach (string s in dataFiles) {
+						XmlElement asm = Element.OwnerDocument.CreateElement ("Import");
+						asm.SetAttribute ("file", s);
+						runtime.AppendChild (asm);
+					}
+				}
+				if (ignorePaths != null) {
+					foreach (string s in ignorePaths) {
+						XmlElement asm = Element.OwnerDocument.CreateElement ("ScanExclude");
+						asm.SetAttribute ("path", s);
+						runtime.AppendChild (asm);
+					}
 				}
 				runtime.AppendChild (Element.OwnerDocument.CreateTextNode ("\n"));
 			}
@@ -234,16 +254,21 @@ namespace Mono.Addins.Description
 			dataFiles = new StringCollection ();
 			assemblies = new StringCollection ();
 			
-			XmlNodeList elems = Element.SelectNodes ("Runtime/Import");
+			XmlNodeList elems = Element.SelectNodes ("Runtime/*");
 			foreach (XmlElement elem in elems) {
-				string asm = elem.GetAttribute ("assembly");
-				if (asm != "") {
-					assemblies.Add (asm);
-				} else {
-					string file = elem.GetAttribute ("file");
-					if (file != "") {
-						dataFiles.Add (file);
+				if (elem.LocalName == "Import") {
+					string asm = elem.GetAttribute ("assembly");
+					if (asm.Length > 0) {
+						assemblies.Add (asm);
+					} else {
+						string file = elem.GetAttribute ("file");
+						if (file.Length > 0)
+							dataFiles.Add (file);
 					}
+				} else if (elem.LocalName == "ScanExclude") {
+					string path = elem.GetAttribute ("path");
+					if (path.Length > 0)
+						IgnorePaths.Add (path);
 				}
 			}
 		}
@@ -260,6 +285,7 @@ namespace Mono.Addins.Description
 			writer.WriteValue ("DataFiles", DataFiles);
 			writer.WriteValue ("Dependencies", Dependencies);
 			writer.WriteValue ("Extensions", Extensions);
+			writer.WriteValue ("IgnorePaths", ignorePaths);
 		}
 		
 		internal override void Read (BinaryXmlReader reader)
@@ -268,6 +294,7 @@ namespace Mono.Addins.Description
 			dataFiles = (StringCollection) reader.ReadValue ("DataFiles", new StringCollection ());
 			dependencies = (DependencyCollection) reader.ReadValue ("Dependencies", new DependencyCollection (this));
 			extensions = (ExtensionCollection) reader.ReadValue ("Extensions", new ExtensionCollection (this));
+			ignorePaths = (StringCollection) reader.ReadValue ("IgnorePaths", new StringCollection ());
 		}
 	}
 }

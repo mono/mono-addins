@@ -222,6 +222,20 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		public StringCollection AllIgnorePaths {
+			get {
+				StringCollection col = new StringCollection ();
+				foreach (string s in MainModule.IgnorePaths)
+					col.Add (s);
+
+				foreach (ModuleDescription mod in OptionalModules) {
+					foreach (string s in mod.IgnorePaths)
+						col.Add (s);
+				}
+				return col;
+			}
+		}
+		
 		public ModuleDescription MainModule {
 			get {
 				if (mainModule == null) {
