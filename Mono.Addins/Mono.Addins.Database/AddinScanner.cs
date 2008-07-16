@@ -331,8 +331,12 @@ namespace Mono.Addins.Database
 						
 						// Assign the domain
 						if (config.IsRoot) {
-							if (folderInfo.RootsDomain == null)
-								folderInfo.RootsDomain = database.GetUniqueDomainId ();
+							if (folderInfo.RootsDomain == null) {
+								if (scanResult.Domain != null && scanResult.Domain != AddinDatabase.UnknownDomain && scanResult.Domain != AddinDatabase.GlobalDomain)
+									folderInfo.RootsDomain = scanResult.Domain;
+								else
+									folderInfo.RootsDomain = database.GetUniqueDomainId ();
+							}
 							config.Domain = folderInfo.RootsDomain;
 						} else
 							config.Domain = folderInfo.Domain;
