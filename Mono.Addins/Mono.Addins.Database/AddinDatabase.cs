@@ -41,6 +41,7 @@ namespace Mono.Addins.Database
 	class AddinDatabase
 	{
 		public const string GlobalDomain = "global";
+		public const string UnknownDomain = "unknown";
 		
 		public const string VersionTag = "001";
 
@@ -966,22 +967,29 @@ namespace Mono.Addins.Database
 					
 					if (!scanResult.CheckOnly)
 						SafeDelete (monitor, file);
-					else
+					else if (scanResult.ChangesFound)
 						return;
 				}
 			}
 			
 			// Look for changes in the add-in folders
 			
-			foreach (string dir in registry.AddinDirectories) {
-				if (dir == registry.DefaultAddinsFolder)
-					scanner.ScanFolderRec (monitor, dir, GlobalDomain, scanResult);
-				else
-					scanner.ScanFolder (monitor, dir, GlobalDomain, scanResult);
-				if (scanResult.CheckOnly) {
-					if (scanResult.ChangesFound || monitor.IsCanceled)
-						return;
-				}
+			if (registry.StartupDirectory != null)
+				scanner.ScanFolder (monitor, registry.StartupDirectory, null, scanResult);
+			
+			if (scanResult.CheckOnly && (scanResult.ChangesFound || monitor.IsCanceled))
+				return;
+			
+			if (scanResult.Domain == null)
+				scanner.ScanFolder (monitor, HostsPath, GlobalDomain, scanResult);
+			
+			if (scanResult.CheckOnly && (scanResult.ChangesFound || monitor.IsCanceled))
+				return;
+			
+			foreach (string dir in registry.GlobalAddinDirectories) {
+				if (scanResult.CheckOnly && (scanResult.ChangesFound || monitor.IsCanceled))
+					return;
+				scanner.ScanFolderRec (monitor, dir, GlobalDomain, scanResult);
 			}
 			
 			if (scanResult.CheckOnly)
@@ -1084,7 +1092,7 @@ namespace Mono.Addins.Database
 			if (GetFolderInfoForPath (progressStatus, path, out folderInfo) && folderInfo != null && !folderInfo.SharedFolder)
 				return folderInfo.Domain;
 			else
-				return GlobalDomain;
+				return UnknownDomain;
 		}
 		
 		Assembly OnResolveAddinAssembly (object s, ResolveEventArgs args)
@@ -1361,8 +1369,10 @@ namespace Mono.Addins.Database
 				scanResult = new AddinScanResult ();
 				scanResult.LocateAssembliesOnly = true;
 			
-				foreach (string dir in registry.AddinDirectories)
-					scanner.ScanFolder (progressStatus, dir, AddinDatabase.GlobalDomain, scanResult);
+				if (registry.StartupDirectory != null)
+					scanner.ScanFolder (progressStatus, registry.StartupDirectory, null, scanResult);
+				foreach (string dir in registry.GlobalAddinDirectories)
+					scanner.ScanFolderRec (progressStatus, dir, AddinDatabase.GlobalDomain, scanResult);
 			}
 		
 			string afile = scanResult.GetAssemblyLocation (args.Name);

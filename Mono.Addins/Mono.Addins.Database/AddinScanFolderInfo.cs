@@ -159,7 +159,7 @@ namespace Mono.Addins.Database
 			return (AddinFileInfo) files [file];
 		}
 		
-		public void SetLastScanTime (string file, string addinId, bool isRoot, DateTime time, bool scanError)
+		public AddinFileInfo SetLastScanTime (string file, string addinId, bool isRoot, DateTime time, bool scanError)
 		{
 			AddinFileInfo info = (AddinFileInfo) files [file];
 			if (info == null) {
@@ -175,6 +175,7 @@ namespace Mono.Addins.Database
 				info.Domain = GetDomain (isRoot);
 			else
 				info.Domain = null;
+			return info;
 		}
 		
 		public ArrayList GetMissingAddins ()

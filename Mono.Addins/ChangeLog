@@ -1,3 +1,11 @@
+2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/AddinRegistry.cs,
+	  Mono.Addins.Database/AddinScanFolderInfo.cs,
+	  Mono.Addins.Database/AddinDatabase.cs,
+	  Mono.Addins.Database/AddinScanner.cs: Properly assign the domain
+	  when scanning an application for the first time.
+
 2008-07-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Description/AddinDescription.cs,

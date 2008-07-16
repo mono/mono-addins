@@ -121,9 +121,14 @@ namespace Mono.Addins.Database
 			
 			folderInfo.SharedFolder = sharedFolder;
 			
+			// If there is no domain assigned to the host, get one now
+			if (scanResult.Domain == AddinDatabase.UnknownDomain)
+				scanResult.Domain = domain;
+			
 			// Discard folders not belonging to the required domain
-			if (scanResult.Domain != null && domain != scanResult.Domain && domain != AddinDatabase.GlobalDomain)
+			if (scanResult.Domain != null && domain != scanResult.Domain && domain != AddinDatabase.GlobalDomain) {
 				return;
+			}
 			
 			if (monitor.LogLevel > 1 && !scanResult.LocateAssembliesOnly)
 				monitor.Log ("Checking: " + path);
@@ -247,10 +252,10 @@ namespace Mono.Addins.Database
 			string scannedAddinId = null;
 			bool scannedIsRoot = false;
 			bool scanSuccessful = false;
+			AddinDescription config = null;
 			
 			try {
 				string ext = Path.GetExtension (file);
-				AddinDescription config = null;
 				
 				if (ext == ".dll" || ext == ".exe")
 					scanSuccessful = ScanAssembly (monitor, file, scanResult, out config);
@@ -340,13 +345,6 @@ namespace Mono.Addins.Database
 							}
 						}
 						
-						// Update the ignore list in the folder info object. To be used in the next scan
-						
-						foreach (string df in config.AllIgnorePaths) {
-							string path = Path.Combine (config.BasePath, df);
-							fi.AddPathToIgnore (Util.GetFullPath (path));
-						}
-						
 						// Finally save
 						
 						if (database.SaveDescription (monitor, config, replaceFileName)) {
@@ -364,7 +362,16 @@ namespace Mono.Addins.Database
 				monitor.ReportError ("Unexpected error while scanning file: " + file, ex);
 			}
 			finally {
-				folderInfo.SetLastScanTime (file, scannedAddinId, scannedIsRoot, File.GetLastWriteTime (file), !scanSuccessful);
+				AddinFileInfo ainfo = folderInfo.SetLastScanTime (file, scannedAddinId, scannedIsRoot, File.GetLastWriteTime (file), !scanSuccessful);
+				
+				if (scanSuccessful && config != null) {
+					// Update the ignore list in the folder info object. To be used in the next scan
+					foreach (string df in config.AllIgnorePaths) {
+						string path = Path.Combine (config.BasePath, df);
+						ainfo.AddPathToIgnore (Util.GetFullPath (path));
+					}
+				}
+				
 				monitor.Log ("plog:endscan");
 			}
 		}
