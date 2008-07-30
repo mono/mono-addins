@@ -1,3 +1,10 @@
+2008-07-30  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.CecilReflector/Reflector.cs: Properly convert attributes
+	  when found an attribute which is a subclass of the required type.
+	  Fixes a bug when requestion AddinAttribute, since
+	  AddinRootAttribute should be returned too.
+
 2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.CecilReflector/Reflector.cs: Fix retrieval of inherited

@@ -67,10 +67,11 @@ namespace Mono.Addins.CecilReflector
 			return atts.ToArray ();
 		}
 		
-		object ConvertAttribute (CustomAttribute att, Type t)
+		object ConvertAttribute (CustomAttribute att, Type expectedType)
 		{
-			string aname = att.Constructor.DeclaringType.FullName;
-			if (aname != t.FullName)
+			Type attype = typeof(IAssemblyReflector).Assembly.GetType (att.Constructor.DeclaringType.FullName);
+
+			if (attype == null || !expectedType.IsAssignableFrom (attype))
 				return null;
 			
 			object ob;
@@ -91,7 +92,7 @@ namespace Mono.Addins.CecilReflector
 						typeParameters.Add (n);
 					}
 				}
-				ob = Activator.CreateInstance (t, cargs);
+				ob = Activator.CreateInstance (attype, cargs);
 				
 				// If there are arguments of type System.Type, set them using the property
 				if (typeParameters != null) {
@@ -99,34 +100,34 @@ namespace Mono.Addins.CecilReflector
 					for (int n=0; n<cargs.Length; n++) {
 						ptypes [n] = cargs [n].GetType ();
 					}
-					ConstructorInfo ci = t.GetConstructor (ptypes);
+					ConstructorInfo ci = attype.GetConstructor (ptypes);
 					ParameterInfo[] ciParams = ci.GetParameters ();
 					
 					for (int n=0; n<typeParameters.Count; n++) {
 						int ip = (int) typeParameters [n];
 						string propName = ciParams[ip].Name;
 						propName = char.ToUpper (propName [0]) + propName.Substring (1) + "Name";
-						PropertyInfo pi = t.GetProperty (propName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+						PropertyInfo pi = attype.GetProperty (propName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 						pi.SetValue (ob, (string) att.ConstructorParameters [ip], null);
 						if (pi == null)
-							throw new InvalidOperationException ("Property '" + propName + "' not found in type '" + t + "'.");
+							throw new InvalidOperationException ("Property '" + propName + "' not found in type '" + attype + "'.");
 					}
 				}
 			} else {
-				ob = Activator.CreateInstance (t);
+				ob = Activator.CreateInstance (attype);
 			}
 			
 			foreach (DictionaryEntry de in att.Properties) {
 				string pname = (string)de.Key;
-				PropertyInfo prop = t.GetProperty (pname);
+				PropertyInfo prop = attype.GetProperty (pname);
 				if (prop != null) {
 					if (prop.PropertyType == typeof(System.Type)) {
 						// We can't load the type. We have to use the typeName property instead.
 						pname += "Name";
-						prop = t.GetProperty (pname, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+						prop = attype.GetProperty (pname, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 					}
 					if (prop == null) {
-						throw new InvalidOperationException ("Property '" + pname + "' not found in type '" + t + "'.");
+						throw new InvalidOperationException ("Property '" + pname + "' not found in type '" + attype + "'.");
 					}
 					prop.SetValue (ob, de.Value, null);
 				}
