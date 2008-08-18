@@ -329,5 +329,19 @@ namespace Mono.Addins
 			else
 				return false;
 		}
+
+		public void ResetCachedData ()
+		{
+			if (extensionPoint != null) {
+				string aid = Addin.GetIdName (extensionPoint.ParentAddinDescription.AddinId);
+				RuntimeAddin ad = AddinManager.SessionService.GetAddin (aid);
+				if (ad != null)
+					extensionPoint = ad.Addin.Description.ExtensionPoints [GetPath ()];
+			}
+			if (childrenList != null) {
+				foreach (TreeNode cn in childrenList)
+					cn.ResetCachedData ();
+			}
+		}
 	}
 }

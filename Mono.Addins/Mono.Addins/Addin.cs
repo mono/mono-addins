@@ -158,6 +158,12 @@ namespace Mono.Addins
 				return m;
 			}
 		}
+
+		internal void ResetCachedData ()
+		{
+			desc = null;
+			addin = null;
+		}
 			
 		// returns -1 if v1 > v2
 		public static int CompareVersions (string v1, string v2)

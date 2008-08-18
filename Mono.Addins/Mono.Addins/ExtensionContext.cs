@@ -59,6 +59,15 @@ namespace Mono.Addins
 			tree = new ExtensionTree (this);
 		}
 		
+		internal void ResetCachedData ()
+		{
+			tree.ResetCachedData ();
+			if (childContexts != null) {
+				foreach (ExtensionContext ctx in childContexts)
+					ctx.ResetCachedData ();
+			}
+		}
+		
 		internal ExtensionContext CreateChildContext ()
 		{
 			lock (conditionTypes) {

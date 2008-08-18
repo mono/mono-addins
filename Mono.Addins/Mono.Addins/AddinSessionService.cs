@@ -61,7 +61,6 @@ namespace Mono.Addins
 			defaultContext = null;
 			loadedAddins.Clear ();
 			loadedAssemblies.Clear ();
-			defaultContext = null;
 		}
 		
 		public void InitializeDefaultLocalizer (IAddinLocalizer localizer)
@@ -191,6 +190,14 @@ namespace Mono.Addins
 					throw;
 				return false;
 			}
+		}
+
+		internal void ResetCachedData ()
+		{
+			foreach (RuntimeAddin ad in loadedAssemblies.Values)
+				ad.Addin.ResetCachedData ();
+			if (defaultContext != null)
+				defaultContext.ResetCachedData ();
 		}
 			
 		bool InsertAddin (IProgressStatus statusMonitor, Addin iad)

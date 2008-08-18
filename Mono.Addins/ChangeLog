@@ -1,3 +1,13 @@
+2008-08-18  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/AddinSessionService.cs, Mono.Addins/TreeNode.cs,
+	  Mono.Addins/Addin.cs, Mono.Addins/ExtensionContext.cs: When the
+	  registry is updated in memory, reset cached data from all extension
+	  contexts.
+	* Mono.Addins.Database/AddinDatabase.cs: Optimized Update method. The
+	  call to GetInstalledAddins loads all manifests when the provided
+	  AddinType is not All. Avoided using it.
+
 2008-07-16  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Database/AddinScanner.cs: When a new domain needs to be
