@@ -1,5 +1,9 @@
 2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Test.mds: More project file fixes.
+
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* CommandExtension/CommandExtension.csproj,
 	  FileContentExtension/FileContentExtension.csproj,
 	  FileExtender/FileExtender.csproj,

@@ -1,5 +1,9 @@
 2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
 
+	* Samples.mds: More project file fixes.
+
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
 	* TextEditor.CompilerService.CSharp/TextEditor.CompilerService.CSharp.csproj,
 	  TextEditor.CompilerService/TextEditor.CompilerService.csproj,
 	  TextEditor.Xml/TextEditor.Xml.csproj, TextEditor/TextEditor.csproj,
