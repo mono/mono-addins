@@ -1,3 +1,21 @@
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* TextEditor.CompilerService.CSharp/TextEditor.CompilerService.CSharp.csproj,
+	  TextEditor.CompilerService/TextEditor.CompilerService.csproj,
+	  TextEditor.Xml/TextEditor.Xml.csproj, TextEditor/TextEditor.csproj,
+	  TextEditorLib/TextEditorLib.csproj,
+	  WriterService.SampleExtender/WriterService.SampleExtender.csproj,
+	  WriterService/WriterService.csproj,
+	  WriterServiceHost/WriterServiceHost.csproj,
+	  WriterServiceHost/WriterServiceHost.mdp,
+	  WriterService/WriterService.mdp,
+	  TextEditor.CompilerService.CSharp/TextEditor.CompilerService.CSharp.mdp,
+	  TextEditor.CompilerService/TextEditor.CompilerService.mdp,
+	  WriterService.SampleExtender/WriterService.SampleExtender.mdp,
+	  TextEditorLib/TextEditorLib.mdp, TextEditor/TextEditor.mdp,
+	  TextEditor.Xml/TextEditor.Xml.mdp: Use msbuild file format for
+	  projects. Removed the old MD1 projects.
+
 2008-02-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* TextEditorLib/TextEditorLib.mdp,

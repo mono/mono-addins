@@ -1,3 +1,18 @@
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* CommandExtension/CommandExtension.csproj,
+	  FileContentExtension/FileContentExtension.csproj,
+	  FileExtender/FileExtender.csproj,
+	  HelloWorldExtension/HelloWorldExtension.csproj,
+	  SystemInfoExtension/SystemInfoExtension.csproj,
+	  UnitTests/UnitTests.csproj, CommandExtension/CommandExtension.mdp,
+	  FileContentExtension/FileContentExtension.mdp,
+	  FileExtender/FileExtender.mdp,
+	  HelloWorldExtension/HelloWorldExtension.mdp,
+	  SystemInfoExtension/SystemInfoExtension.mdp,
+	  UnitTests/UnitTests.mdp: Use msbuild file format for projects.
+	  Removed the old MD1 projects.
+
 2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* UnitTests/TestEvents.cs: Improved Load/Unload tests.

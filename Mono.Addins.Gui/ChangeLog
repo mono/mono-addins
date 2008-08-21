@@ -1,3 +1,8 @@
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Gui.csproj, Mono.Addins.Gui.mdp: Use msbuild file format
+	  for projects. Removed the old MD1 projects.
+
 2008-06-11  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Gui/AddinManagerDialog.cs: Fix build.

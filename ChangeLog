@@ -1,3 +1,8 @@
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.sln, Mono.Addins.mds: Use msbuild file format for
+	  projects. Removed the old MD1 projects.
+
 2008-02-06  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.mds, Mono.Addins.CecilReflector,

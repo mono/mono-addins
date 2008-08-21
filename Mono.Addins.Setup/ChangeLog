@@ -1,3 +1,8 @@
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Setup.csproj, Mono.Addins.Setup.mdp: Use msbuild file
+	  format for projects. Removed the old MD1 projects.
+
 2008-07-15  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Setup/SetupTool.cs: Add missing parameter documentation.

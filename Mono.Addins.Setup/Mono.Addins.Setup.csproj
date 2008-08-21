@@ -1,63 +1,51 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0AF6E8A8-3D48-46FD-955D-DEC206E83217}</ProjectGuid>
+    <ProjectGuid>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NApf.UI</RootNamespace>
-    <AssemblyName>NApf.UI</AssemblyName>
-    <StartupObject>
-    </StartupObject>
+    <AssemblyName>Mono.Addins.Setup</AssemblyName>
+    <TargetFrameworkVersion>v1.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DocumentationFile>
-    </DocumentationFile>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <StartupObject />
+    <ApplicationIcon>.</ApplicationIcon>
+    <SignAssembly>true</SignAssembly>
+    <ConsolePause>false</ConsolePause>
+    <AssemblyKeyFile>..\mono-addins.snk</AssemblyKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!--<Import Project="$(MSBuildExtensionsPath)\MSBee\MSBuildExtras.FX1_1.CSharp.targets" />-->
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.5.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="ICSharpCode.SharpZipLib" />
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\ConsoleProgressMonitor.cs" />
-    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\LogTextWriter.cs" />
-    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\NullProgressMonitor.cs" />
-    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\ProgressStatusMonitor.cs" />
-    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\ProgressTracker.cs" />
+    <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Mono.Addins.Setup\AddinInfo.cs" />
     <Compile Include="Mono.Addins.Setup\AddinInfoCollection.cs" />
     <Compile Include="Mono.Addins.Setup\AddinPackage.cs" />
@@ -67,8 +55,6 @@
     <Compile Include="Mono.Addins.Setup\AddinSystemConfigurationReaderWriter.cs" />
     <Compile Include="Mono.Addins.Setup\AddinSystemConfigurationSerializer.cs" />
     <Compile Include="Mono.Addins.Setup\InstallException.cs" />
-    <Compile Include="Mono.Addins.Setup\IProgressMonitor.cs" />
-    <Compile Include="Mono.Addins.Setup\NativePackage.cs" />
     <Compile Include="Mono.Addins.Setup\Package.cs" />
     <Compile Include="Mono.Addins.Setup\PackageCollection.cs" />
     <Compile Include="Mono.Addins.Setup\ReferenceRepositoryEntry.cs" />
@@ -77,15 +63,37 @@
     <Compile Include="Mono.Addins.Setup\RepositoryEntryCollection.cs" />
     <Compile Include="Mono.Addins.Setup\RepositoryReaderWriter.cs" />
     <Compile Include="Mono.Addins.Setup\RepositoryRecord.cs" />
-    <Compile Include="Mono.Addins.Setup\RepositoryRegistry.cs" />
     <Compile Include="Mono.Addins.Setup\RepositorySerializer.cs" />
-    <Compile Include="Mono.Addins.Setup\SetupService.cs" />
     <Compile Include="Mono.Addins.Setup\SetupTool.cs" />
+    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\ConsoleProgressMonitor.cs" />
+    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\LogTextWriter.cs" />
+    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\NullProgressMonitor.cs" />
+    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\ProgressStatusMonitor.cs" />
+    <Compile Include="Mono.Addins.Setup.ProgressMonitoring\ProgressTracker.cs" />
+    <Compile Include="Mono.Addins.Setup\IProgressMonitor.cs" />
+    <Compile Include="Mono.Addins.Setup\RepositoryRegistry.cs" />
+    <Compile Include="Mono.Addins.Setup\SetupService.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Mono.Addins.Setup\ConsoleAddinInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj">
-      <Project>{76B2FF16-0094-4003-A1BD-C9F6F37D0186}</Project>
-      <Name>Mono.Addins</Name>
-    </ProjectReference>
+    <None Include="ChangeLog" />
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Deployment.LinuxDeployData scriptName="mono.addins.setup" />
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar Sync="true" Name="DATA_FILES" />
+          <ResourcesVar Sync="true" Name="RESOURCES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFERENCES" Prefix="-r:" />
+          <AsmRefVar Sync="true" Name="DLL_REFERENCES" />
+          <ProjectRefVar Sync="true" Name="PROJECT_REFERENCES" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

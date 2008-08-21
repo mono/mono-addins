@@ -1,3 +1,8 @@
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* mautil.csproj, mautil.mdp: Use msbuild file format for projects.
+	  Removed the old MD1 projects.
+
 2008-07-01  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Makefile.am, mautil.1: Man page for mautil. Patch by Tim Retout.

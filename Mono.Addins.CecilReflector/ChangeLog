@@ -1,3 +1,8 @@
+2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.CecilReflector.csproj, Mono.Addins.CecilReflector.mdp:
+	  Use msbuild file format for projects. Removed the old MD1 projects.
+
 2008-07-30  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.CecilReflector/Reflector.cs: Properly convert attributes
