@@ -51,9 +51,10 @@ namespace Mono.Addins.Database
 		Hashtable assemblyLocationsByFullName = new Hashtable (); 
 		Hashtable filesToIgnore;
 		
+		bool regenerateRelationData;
+		bool changesFound;
+		
 		public bool RegenerateAllData;
-		public bool RegenerateRelationData;
-		public bool changesFound;
 		public bool CheckOnly;
 		public bool LocateAssembliesOnly;
 		public string Domain;
@@ -61,6 +62,15 @@ namespace Mono.Addins.Database
 		public bool ChangesFound {
 			get { return changesFound; }
 			set { changesFound = value; }
+		}
+
+		public bool RegenerateRelationData {
+			get { return regenerateRelationData; }
+			set {
+				regenerateRelationData = value;
+				if (value)
+					ChangesFound = true;
+			}
 		}
 		
 		public bool VisitFolder (string folder)

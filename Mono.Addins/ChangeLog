@@ -1,3 +1,9 @@
+2008-09-03  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins/ExtensionNode.cs: Fix potential race.
+	* Mono.Addins.Database/AddinScanResult.cs: Set the changesFound flag
+	  when all data needs to be regenerated.
+
 2008-08-22  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.csproj, Mono.Addins.mdp: Use msbuild file format for
