@@ -1,3 +1,9 @@
+2008-09-23  Lluis Sanchez Gual <lluis@novell.com> 
+
+	* Mono.Addins.Description/AddinDescription.cs,
+	  Mono.Addins/AddinRegistry.cs: Added methods which allow reading a
+	  manifest from a stream.
+
 2008-09-03  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins/ExtensionNode.cs: Fix potential race.

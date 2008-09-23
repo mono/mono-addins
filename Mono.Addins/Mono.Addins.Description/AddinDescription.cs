@@ -548,11 +548,16 @@ namespace Mono.Addins.Description
 		
 		public static AddinDescription Read (Stream stream, string basePath)
 		{
+			return Read (new StreamReader (stream), basePath);
+		}
+		
+		public static AddinDescription Read (TextReader reader, string basePath)
+		{
 			AddinDescription config = new AddinDescription ();
 			
 			try {
 				config.configDoc = new XmlDocument ();
-				config.configDoc.Load (stream);
+				config.configDoc.Load (reader);
 			} catch (Exception ex) {
 				throw new InvalidOperationException ("The add-in configuration file is invalid: " + ex.Message, ex);
 			}

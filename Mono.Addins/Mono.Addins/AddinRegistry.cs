@@ -176,6 +176,16 @@ namespace Mono.Addins
 			return desc;
 		}
 		
+		public AddinDescription ReadAddinManifestFile (TextReader reader, string baseFile)
+		{
+			if (currentDomain == AddinDatabase.UnknownDomain)
+				return null;
+			AddinDescription desc = AddinDescription.Read (reader, baseFile);
+			desc.OwnerDatabase = database;
+			desc.Domain = currentDomain;
+			return desc;
+		}
+		
 		public bool IsAddinEnabled (string id)
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)
