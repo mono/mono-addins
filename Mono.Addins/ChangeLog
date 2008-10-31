@@ -1,3 +1,7 @@
+2008-10-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins/ExtensionNode.cs: Improve error reporting.
+
 2008-09-23  Lluis Sanchez Gual <lluis@novell.com> 
 
 	* Mono.Addins.Description/AddinDescription.cs,

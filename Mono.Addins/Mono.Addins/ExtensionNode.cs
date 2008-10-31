@@ -109,7 +109,7 @@ namespace Mono.Addins
 					try {
 						value (this, new ExtensionNodeEventArgs (ExtensionChange.Add, node));
 					} catch (Exception ex) {
-						AddinManager.ReportError (null, null, ex, false);
+						AddinManager.ReportError (null, node.Addin != null ? node.Addin.Id : null, ex, false);
 					}
 				}
 			}
