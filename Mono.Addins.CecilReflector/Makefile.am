@@ -337,7 +337,9 @@ REFERENCES =  \
 
 DLL_REFERENCES = 
 
-$(ASSEMBLY) $(ASSEMBLY).mdb: $(build_sources) $(build_resources) $(build_datafiles) $(POLICY_ASSEMBLIES)
+$(ASSEMBLY).mdb: $(ASSEMBLY)
+
+$(ASSEMBLY): $(build_sources) $(build_resources) $(build_datafiles) $(POLICY_ASSEMBLIES)
 	mkdir -p $(dir $(ASSEMBLY))		
 	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$@ -target:$(COMPILE_TARGET) $(build_sources) $(build_resources_embed) $(build_references_ref)
 

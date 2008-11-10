@@ -17,12 +17,11 @@ $(build_datafiles): $(BUILD_DIR)/% : $(addprefix $(srcdir)/, %)
 	mkdir -p $(dir $@)		
 	cp $< $@
 
-$(POLICY_ASSEMBLIES): $(top_builddir)/policy.config $(top_srcdir)/mono-addins.snk
-	@for i in $(POLICY_VERSIONS); do	\
-	  echo "Creating policy.$$i.$(ASSEMBLY_NAME)";	\
-	  sed -e "s/@ASSEMBLY_NAME@/$(ASSEMBLY_NAME)/" -e "s/@POLICY@/$$i/" $(top_builddir)/policy.config > policy.$$i.config;	\
-	  $(AL) -link:policy.$$i.config -out:policy.$$i.$(ASSEMBLY_NAME).dll -keyfile:$(top_srcdir)/mono-addins.snk;	\
-	done
+policy.%.config: $(top_builddir)/policy.config
+	sed -e "s/@ASSEMBLY_NAME@/$(ASSEMBLY_NAME)/" -e "s/@POLICY@/$*/" $(top_builddir)/policy.config > $@
+
+$(POLICY_ASSEMBLIES) : policy.%.$(ASSEMBLY_NAME).dll: policy.%.config $(top_srcdir)/mono-addins.snk
+	$(AL) -link:policy.$*.config -out:$@ -keyfile:$(top_srcdir)/mono-addins.snk
 
 gac-install: $(POLICY_ASSEMBLIES)
 	$(GACUTIL) /i $(ASSEMBLY) /f $(GACUTIL_FLAGS) || exit 1;

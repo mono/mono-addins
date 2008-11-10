@@ -29,7 +29,9 @@ REFERENCES = -r:System
 
 DLL_REFERENCES = 
 
-$(ASSEMBLY) $(ASSEMBLY).mdb: $(build_sources) $(build_resources) $(build_datafiles) $(MAIN_RESOURCE)
+$(ASSEMBLY).mdb: $(ASSEMBLY)
+
+$(ASSEMBLY): $(build_sources) $(build_resources) $(build_datafiles) $(MAIN_RESOURCE)
 	mkdir -p $(dir $(ASSEMBLY))		
 	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$@ -target:$(COMPILE_TARGET) /res:$(MAIN_RESOURCE) $(build_sources) $(build_resources_embed) $(build_references_ref)
 

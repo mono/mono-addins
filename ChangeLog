@@ -1,3 +1,8 @@
+2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.include: Fix building with parallel make jobs (-j8). Fixes
+	bug #443206. Patch by Diego Pettenò.
+
 2008-11-04  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.ac: Use a tar format with support for more than 99 chars in
