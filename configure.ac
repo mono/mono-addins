@@ -32,8 +32,8 @@ if test "x$AL" = "xno" ; then
 	AC_MSG_ERROR([No al tool found. You need to install either the mono or .Net SDK.])
 fi
 
-GACUTIL_FLAGS='/package mono-addins /root $(DESTDIR)$(prefix)/lib'
-GACUTIL_POLICY_FLAGS='/root $(DESTDIR)$(prefix)/lib'
+GACUTIL_FLAGS='/package mono-addins /root $(DESTDIR)$(libdir)'
+GACUTIL_POLICY_FLAGS='/root $(DESTDIR)$(libdir)'
 
 AC_SUBST(GACUTIL)
 AC_SUBST(GACUTIL_FLAGS)

@@ -1,5 +1,10 @@
 2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am: Respect custom libdir during ./configure. Fixes bug
+	#443205. Patch by Diego Pettenò.
+
+2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am: Fix building with parallel make jobs (-j8). Fixes bug
 	#443206. Patch by Diego Pettenò.
 
