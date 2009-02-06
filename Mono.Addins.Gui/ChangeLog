@@ -1,5 +1,9 @@
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins.Gui.csproj: Updated.
+
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui/gui.stetic:
 	* gtk-gui/generated.cs:
 	* gtk-gui/Mono.Addins.Gui.ErrorDialog.cs:
