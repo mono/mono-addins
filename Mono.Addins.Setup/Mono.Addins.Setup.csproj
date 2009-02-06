@@ -7,7 +7,7 @@
     <ProjectGuid>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Addins.Setup</AssemblyName>
-    <TargetFrameworkVersion>v1.1</TargetFrameworkVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -82,7 +82,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties>
+      <Properties InternalTargetFrameworkVersion="1.1">
         <Deployment.LinuxDeployData scriptName="mono.addins.setup" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true">
           <BuildFilesVar Sync="true" Name="FILES" />

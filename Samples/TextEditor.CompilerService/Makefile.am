@@ -16,17 +16,21 @@ endif
 FILES =  \
 	AssemblyInfo.cs \
 	CompilerManager.cs \
+	gtk-gui/generated.cs \
 	ICompiler.cs \
 	RunCommand.cs 
 
 DATA_FILES = 
 
-RESOURCES = TextEditor.CompilerService.addin.xml 
+RESOURCES =  \
+	gtk-gui/gui.stetic \
+	TextEditor.CompilerService.addin.xml 
 
 EXTRAS = 
 
 REFERENCES =  \
 	-pkg:gtk-sharp-2.0 \
+	-r:Mono.Posix \
 	-r:System
 
 DLL_REFERENCES = 

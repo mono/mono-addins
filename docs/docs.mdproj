@@ -6,6 +6,7 @@
     <ItemType>GenericProject</ItemType>
     <ProductVersion>8.0.50727</ProductVersion>
     <ProjectGuid>{87EADEFB-B389-4479-9C36-CDAA07839983}</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Default|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

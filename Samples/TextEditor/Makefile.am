@@ -15,11 +15,12 @@ endif
 
 FILES =  \
 	AssemblyInfo.cs \
+	gtk-gui/generated.cs \
 	Main.cs 
 
 DATA_FILES = 
 
-RESOURCES = 
+RESOURCES = gtk-gui/gui.stetic 
 
 EXTRAS = 
 

@@ -7,7 +7,7 @@
     <ProjectGuid>{4EFD5979-4000-4A32-A687-33D140081F1C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>XmlAddin</AssemblyName>
-    <TargetFrameworkVersion>v1.1</TargetFrameworkVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,12 +29,12 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
     <Reference Include="pango-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="atk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
     <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
@@ -65,9 +65,8 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties>
+      <Properties InternalTargetFrameworkVersion="1.1">
         <Deployment.LinuxDeployData scriptName="texteditor.xml" generatePcFile="false" />
-        <GtkDesignInfo gtkVersion="2.10.3" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar Sync="true" Name="DATA_FILES" />

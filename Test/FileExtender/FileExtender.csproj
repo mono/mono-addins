@@ -7,7 +7,7 @@
     <ProjectGuid>{A32AFFBA-4B83-4D6E-8CB3-812908BA14A9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>FileExtender</AssemblyName>
-    <TargetFrameworkVersion>v1.1</TargetFrameworkVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,7 +58,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties>
+      <Properties InternalTargetFrameworkVersion="1.1">
         <Deployment.LinuxDeployData scriptName="fileextender" generatePcFile="false" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true">
           <BuildFilesVar Sync="true" Name="FILES" />

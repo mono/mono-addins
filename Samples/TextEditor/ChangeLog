@@ -1,0 +1,7 @@
+2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
+
+ * Makefile.am:
+ * TextEditor.csproj:
+ * gtk-gui/gui.stetic:
+ * gtk-gui/generated.cs: Updated.
+

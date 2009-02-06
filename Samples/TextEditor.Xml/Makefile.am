@@ -13,18 +13,21 @@ endif
 
 FILES =  \
 	AssemblyInfo.cs \
-	FormatXmlCommand.cs 
+	FormatXmlCommand.cs \
+	gtk-gui/generated.cs 
 
 DATA_FILES = 
 
 RESOURCES =  \
 	EmptyFile.xml \
+	gtk-gui/gui.stetic \
 	TextEditor.Xml.addin.xml 
 
 EXTRAS = 
 
 REFERENCES =  \
 	-pkg:gtk-sharp-2.0 \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
 
