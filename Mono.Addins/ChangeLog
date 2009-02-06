@@ -1,5 +1,9 @@
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins/ExtensionNode.cs: Improve error message.
+
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Addins/ConditionType.cs:
 	* Mono.Addins/ExtensionTree.cs: Add support for Not condition.
 

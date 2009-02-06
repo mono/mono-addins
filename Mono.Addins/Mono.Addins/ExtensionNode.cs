@@ -192,7 +192,7 @@ namespace Mono.Addins
 						list.Add (node.CreateInstance (arrayElementType));
 				}
 				catch (Exception ex) {
-					AddinManager.ReportError ("Error while getting object for node in path '" + Path + "'.", null, ex, false);
+					AddinManager.ReportError ("Error while getting object for node in path '" + Path + "'.", node.AddinId, ex, false);
 				}
 			}
 			return (object[]) list.ToArray (arrayElementType);
