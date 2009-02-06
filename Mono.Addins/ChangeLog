@@ -1,5 +1,24 @@
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* Mono.Addins.csproj: Updated.
+
+	* Mono.Addins.Database/AddinScanner.cs:
+	* Mono.Addins.Description/AddinDescription.cs: BasePath is now
+	  public.
+
+	* Mono.Addins.Database/Util.cs: Added methods for checking if
+	  the app is running on mono.
+
+	* Mono.Addins.Database/SetupDomain.cs:
+	* Mono.Addins.Database/SetupProcess.cs:
+	* Mono.Addins.Database/ISetupHandler.cs:
+	* Mono.Addins.Database/AddinDatabase.cs: Added support for
+	  scanning the addins in a separate appdomain instead of a
+	  separate process.
+
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Addins/ExtensionNode.cs: Improve error message.
 
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>

@@ -1,3 +1,8 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.Setup/SetupTool.cs: Added command for getting
+	  the list of assemblies of an add-in.
+
 2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
 
  * Mono.Addins.Setup.csproj: Updated.

@@ -673,6 +673,17 @@ namespace Mono.Addins.Database
 		
 		public bool AddinDependsOn (string domain, string id1, string id2)
 		{
+			Hashtable visited = new Hashtable ();
+			return AddinDependsOn (visited, domain, id1, id2);
+		}
+		
+		bool AddinDependsOn (Hashtable visited, string domain, string id1, string id2)
+		{
+			if (visited.Contains (id1))
+				return false;
+			
+			visited.Add (id1, id1);
+			
 			Addin addin1 = GetInstalledAddin (domain, id1, false);
 			
 			// We can assumbe that if the add-in is not returned here, it may be a root addin.
@@ -687,7 +698,7 @@ namespace Mono.Addins.Database
 				string depid = Addin.GetFullId (addin1.AddinInfo.Namespace, adep.AddinId, null);
 				if (depid == id2)
 					return true;
-				else if (AddinDependsOn (domain, depid, id2))
+				else if (AddinDependsOn (visited, domain, depid, id2))
 					return true;
 			}
 			return false;
@@ -784,16 +795,17 @@ namespace Mono.Addins.Database
 		
 		void RunScannerProcess (IProgressStatus monitor)
 		{
+			ISetupHandler setup = GetSetupHandler ();
+			
 			IProgressStatus scanMonitor = monitor;
 			ArrayList pparams = new ArrayList ();
-			pparams.Add (null); // scan folder
 			
 			bool retry = false;
 			do {
 				try {
 					if (monitor.LogLevel > 1)
 						monitor.Log ("Looking for addins");
-					SetupProcess.ExecuteCommand (scanMonitor, registry.RegistryPath, registry.StartupDirectory, "scan", (string[]) pparams.ToArray (typeof(string)));
+					setup.Scan (scanMonitor, registry.RegistryPath, registry.StartupDirectory, null, (string[]) pparams.ToArray (typeof(string)));
 					retry = false;
 				}
 				catch (Exception ex) {
@@ -1052,7 +1064,8 @@ namespace Mono.Addins.Database
 		public void ParseAddin (IProgressStatus progressStatus, string domain, string file, string outFile, bool inProcess)
 		{
 			if (!inProcess) {
-				SetupProcess.ExecuteCommand (progressStatus, registry.RegistryPath, registry.StartupDirectory, "get-desc", Path.GetFullPath (file), outFile);
+				ISetupHandler setup = GetSetupHandler ();
+				setup.GetAddinDescription (progressStatus, registry.RegistryPath, registry.StartupDirectory, Path.GetFullPath (file), outFile);
 				return;
 			}
 			
@@ -1326,6 +1339,14 @@ namespace Mono.Addins.Database
 				    return true;
 			}
 			return false;
+		}
+		
+		ISetupHandler GetSetupHandler ()
+		{
+/*			if (Util.IsMono)
+				return new SetupProcess ();
+			else
+*/				return new SetupDomain ();
 		}
 		
 		public void ResetConfiguration ()

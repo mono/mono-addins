@@ -52,8 +52,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{04C62888-E58A-4C6E-8688-A4F6F5459E14}.Default|Any CPU.ActiveCfg = Debug|Any CPU
 		{04C62888-E58A-4C6E-8688-A4F6F5459E14}.Default|Any CPU.Build.0 = Debug|Any CPU
-		{1CD51E61-1985-4D22-9BFA-D14C8FC61B46}.Default|Any CPU.ActiveCfg = Debug|Any CPU
-		{1CD51E61-1985-4D22-9BFA-D14C8FC61B46}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{1CD51E61-1985-4D22-9BFA-D14C8FC61B46}.Default|Any CPU.ActiveCfg = Default|Any CPU
+		{1CD51E61-1985-4D22-9BFA-D14C8FC61B46}.Default|Any CPU.Build.0 = Default|Any CPU
 		{2FF5459A-495C-4FDF-81EA-D0A6C07E7C0D}.Default|Any CPU.ActiveCfg = Debug|Any CPU
 		{2FF5459A-495C-4FDF-81EA-D0A6C07E7C0D}.Default|Any CPU.Build.0 = Debug|Any CPU
 		{42D1CE65-A14B-4218-B787-58AD7AA68513}.Default|Any CPU.ActiveCfg = Debug|Any CPU
@@ -111,6 +111,23 @@ Global
 		name = Mono.Addins
 		version = 0.1
 		StartupItem = Mono.Addins\Mono.Addins.csproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = Flat
+		$1.ResourceNamePolicy = FileName
+		$0.StandardHeader = $2
+		$2.inheritsSet = MITX11License
+		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
+		$3.TabWidth = 4
+		$3.TabsToSpaces = False
+		$3.NoTabsAfterNonTabs = False
+		$3.RemoveTrailingWhitespace = False
+		$0.VersionControlPolicy = $4
+		$4.inheritsSet = Mono
+		$0.ChangeLogPolicy = $5
+		$5.UpdateMode = ProjectRoot
+		$5.inheritsSet = Mono
 		defaultDeployTarget = Directory
 	EndGlobalSection
 EndGlobal

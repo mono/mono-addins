@@ -367,6 +367,30 @@ namespace Mono.Addins.Setup
 			service.BuildPackage (new ConsoleProgressStatus (verbose), GetOption ("d", "."), GetArguments ());
 		}
 		
+		void PrintLibraries (string[] args)
+		{
+			if (GetArguments ().Length < 1)
+				throw new InstallException ("An add-in id is required.");
+			
+			bool refFormat = HasOption ("r");
+			
+			System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+			foreach (string id in GetArguments ()) {
+				Addin addin = service.Registry.GetAddin (id);
+				if (addin != null) {
+					foreach (string asm in addin.Description.MainModule.Assemblies) {
+						string file = Path.Combine (addin.Description.BasePath, asm);
+						if (sb.Length > 0)
+							sb.Append (' ');
+						if (refFormat)
+							sb.Append ("-r:");
+						sb.Append (file);
+					}
+				}
+			}
+			Console.WriteLine (sb);
+		}
+		
 		void UpdateRegistry (string[] args)
 		{
 			registry.Update (new ConsoleProgressStatus (verbose));
@@ -911,6 +935,17 @@ namespace Mono.Addins.Setup
 			cmd.Usage = "<command>";
 			commands.Add (cmd);
 
+			cat = "Build Commands";
+
+			cmd = new SetupCommand (cat, "libraries", "libs", new SetupCommandHandler (PrintLibraries));
+			cmd.Description = "Lists add-in assemblies.";
+			cmd.Usage = "[-r] <addin-id> ...";
+			cmd.AppendDesc ("Prints a list of assemblies exported by the add-in or add-ins provided");
+			cmd.AppendDesc ("as arguments. This list of assemblies can be used as references for");
+			cmd.AppendDesc ("building add-ins that depend on them. If the -r option is specified,");
+			cmd.AppendDesc ("each assembly is prefixed with '-r:'.");
+			commands.Add (cmd);
+			
 			cat = "Debug Commands";
 
 			cmd = new SetupCommand (cat, "dump-file", null, new SetupCommandHandler (DumpRegistryFile));

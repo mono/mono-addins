@@ -36,9 +36,19 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Mono.Addins.Database
 {
-	internal class SetupProcess
+	internal class SetupProcess: ISetupHandler
 	{
-		internal static void ExecuteCommand (IProgressStatus monitor, string registryPath, string startupDir, string name, params string[] args)
+		public void Scan (IProgressStatus monitor, string registryPath, string startupDir, string scanFolder, string[] filesToIgnore)
+		{
+			ExecuteCommand (monitor, registryPath, startupDir, "scan", scanFolder, filesToIgnore);
+		}
+		
+		public void GetAddinDescription (IProgressStatus monitor, string registryPath, string startupDir, string file, string outFile)
+		{
+			ExecuteCommand (monitor, registryPath, startupDir, "get-desc", file, outFile);
+		}
+		
+		internal static void ExecuteCommand (IProgressStatus monitor, string registryPath, string startupDir, string name, string arg1, params string[] args)
 		{
 			string asm = new Uri (typeof(SetupProcess).Assembly.CodeBase).LocalPath;
 			string verboseParam = monitor.LogLevel.ToString ();
@@ -46,11 +56,12 @@ namespace Mono.Addins.Database
 			// Arguments string
 			StringBuilder sb = new StringBuilder ();
 			sb.Append (verboseParam).Append (' ').Append (name);
+			sb.Append (" \"").Append (arg1).Append ("\"");
 			foreach (string arg in args)
 				sb.Append (" \"").Append (arg).Append ("\"");
 			
 			Process process = new Process ();
-			if (Util.IsWindows)
+			if (!Util.IsMono)
 				process.StartInfo = new ProcessStartInfo (asm, sb.ToString ());
 			else {
 				asm = asm.Replace(" ", @"\ ");
@@ -120,7 +131,11 @@ namespace Mono.Addins.Database
 	{
 		StringCollection progessLog;
 		
-		public ProcessFailedException (StringCollection progessLog)
+		public ProcessFailedException (StringCollection progessLog): this (progessLog, null)
+		{
+		}
+		
+		public ProcessFailedException (StringCollection progessLog, Exception ex): base ("Setup process failed.", ex)
 		{
 			this.progessLog = progessLog;
 		}

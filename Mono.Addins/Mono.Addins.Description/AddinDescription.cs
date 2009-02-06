@@ -63,7 +63,7 @@ namespace Mono.Addins.Description
 		bool defaultEnabled = true;
 		AddinFlags flags = AddinFlags.None;
 		string domain;
-		
+				
 		ModuleDescription mainModule;
 		ModuleCollection optionalModules;
 		ExtensionNodeSetCollection nodeSets;
@@ -165,9 +165,13 @@ namespace Mono.Addins.Description
 			set { category = value; }
 		}
 		
-		internal string BasePath {
+		public string BasePath {
 			get { return basePath != null ? basePath : string.Empty; }
-			set { basePath = value; }
+		}
+		
+		internal void SetBasePath (string path)
+		{
+			basePath = path;
 		}
 		
 		public bool IsRoot {

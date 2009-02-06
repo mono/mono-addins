@@ -38,8 +38,34 @@ namespace Mono.Addins.Database
 {
 	internal class Util
 	{
+		static int isMono;
+		static string monoVersion;
+		
 		public static bool IsWindows {
 			get { return Path.DirectorySeparatorChar == '\\'; }
+		}
+		
+		public static bool IsMono {
+			get {
+				if (isMono == 0)
+					isMono = Type.GetType ("Mono.Runtime") != null ? 1 : -1;
+				return isMono == 1;
+			}
+		}
+		
+		public static string MonoVersion {
+			get {
+				if (monoVersion == null) {
+					if (!IsMono)
+						throw new InvalidOperationException ();
+					MethodInfo mi = Type.GetType ("Mono.Runtime").GetMethod ("GetDisplayName", BindingFlags.NonPublic|BindingFlags.Static);
+					if (mi != null)
+						monoVersion = (string) mi.Invoke (null, null);
+					else
+						monoVersion = string.Empty;
+				}
+				return monoVersion;
+			}
 		}
 			
 		public static void CheckWrittableFloder (string path)

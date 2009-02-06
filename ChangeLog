@@ -1,3 +1,7 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.sln: Updated.
+
 2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.ac: Respect custom libdir during ./configure. Fixes bug

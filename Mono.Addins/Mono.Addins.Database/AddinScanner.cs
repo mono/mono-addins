@@ -518,7 +518,7 @@ namespace Mono.Addins.Database
 				string basePath = Path.GetDirectoryName (filePath);
 				
 				config = AddinDescription.Read (filePath);
-				config.BasePath = basePath;
+				config.SetBasePath (basePath);
 				config.AddinFile = filePath;
 				
 				return ScanDescription (monitor, config, null, scanResult);
@@ -563,7 +563,7 @@ namespace Mono.Addins.Database
 					config = new AddinDescription ();
 				}
 				
-				config.BasePath = Path.GetDirectoryName (filePath);
+				config.SetBasePath (Path.GetDirectoryName (filePath));
 				config.AddinFile = filePath;
 				
 				string rasmFile = Path.GetFileName (filePath);

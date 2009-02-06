@@ -7,7 +7,7 @@
     <ProjectGuid>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Addins</AssemblyName>
-    <TargetFrameworkVersion>v1.1</TargetFrameworkVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Default|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -111,6 +111,8 @@
     <Compile Include="Mono.Addins.Database\IAssemblyReflector.cs" />
     <Compile Include="Mono.Addins.Database\DefaultAssemblyReflector.cs" />
     <Compile Include="Mono.Addins.Description\AddinFlags.cs" />
+    <Compile Include="Mono.Addins.Database\SetupDomain.cs" />
+    <Compile Include="Mono.Addins.Database\ISetupHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Mono.Addins.dll.config">
@@ -123,8 +125,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties>
-        <GtkDesignInfo />
+      <Properties InternalTargetFrameworkVersion="1.1">
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar Sync="true" Name="DATA_FILES" />
