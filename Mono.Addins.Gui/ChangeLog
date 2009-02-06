@@ -1,3 +1,16 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* gtk-gui/Mono.Addins.Gui.ErrorDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.NewSiteDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.ProgressDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.AddinInfoDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs: Flush.
+
 2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* mono-addins-gui.pc.in: Respect custom libdir during ./configure. Fixes
