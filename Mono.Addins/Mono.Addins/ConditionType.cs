@@ -135,6 +135,26 @@ namespace Mono.Addins
 				cond.GetConditionTypes (listToFill);
 		}
 	}
+	
+	class NotCondition: BaseCondition
+	{
+		BaseCondition baseCond;
+		
+		public NotCondition (BaseCondition baseCond, BaseCondition parent): base (parent)
+		{
+			this.baseCond = baseCond;
+		}
+		
+		public override bool Evaluate (ExtensionContext ctx)
+		{
+			return !base.Evaluate (ctx);
+		}
+		
+		internal override void GetConditionTypes (System.Collections.ArrayList listToFill)
+		{
+			baseCond.GetConditionTypes (listToFill);
+		}
+	}
 
 	
 	internal sealed class Condition: BaseCondition

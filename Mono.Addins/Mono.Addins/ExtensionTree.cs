@@ -137,15 +137,22 @@ namespace Mono.Addins
 		
 		BaseCondition ReadComplexCondition (ExtensionNodeDescription elem, BaseCondition parentCondition)
 		{
-			if (elem.NodeName == "Or" || elem.NodeName == "And") {
+			if (elem.NodeName == "Or" || elem.NodeName == "And" || elem.NodeName == "Not") {
 				ArrayList conds = new ArrayList ();
 				foreach (ExtensionNodeDescription celem in elem.ChildNodes) {
 					conds.Add (ReadComplexCondition (celem, null));
 				}
 				if (elem.NodeName == "Or")
 					return new OrCondition ((BaseCondition[]) conds.ToArray (typeof(BaseCondition)), parentCondition);
-				else
+				else if (elem.NodeName == "And")
 					return new AndCondition ((BaseCondition[]) conds.ToArray (typeof(BaseCondition)), parentCondition);
+				else {
+					if (conds.Count != 1) {
+						AddinManager.ReportError ("Invalid complex condition element '" + elem.NodeName + "'. 'Not' condition can only have one parameter.", null, null, false);
+						return new NullCondition ();
+					}
+					return new NotCondition ((BaseCondition) conds [0], parentCondition);
+				}
 			}
 			if (elem.NodeName == "Condition") {
 				return new Condition (elem, parentCondition);

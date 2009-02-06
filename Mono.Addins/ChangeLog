@@ -1,3 +1,8 @@
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins/ConditionType.cs:
+	* Mono.Addins/ExtensionTree.cs: Add support for Not condition.
+
 2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* mono-addins.pc.in: Respect custom libdir during ./configure. Fixes bug
