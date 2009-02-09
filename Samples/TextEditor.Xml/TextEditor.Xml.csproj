@@ -50,14 +50,10 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="FormatXmlCommand.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TextEditor.Xml.addin.xml" />
     <EmbeddedResource Include="EmptyFile.xml" />
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -13,14 +13,12 @@ endif
 
 FILES =  \
 	AssemblyInfo.cs \
-	FormatXmlCommand.cs \
-	gtk-gui/generated.cs 
+	FormatXmlCommand.cs 
 
 DATA_FILES = 
 
 RESOURCES =  \
 	EmptyFile.xml \
-	gtk-gui/gui.stetic \
 	TextEditor.Xml.addin.xml 
 
 EXTRAS = 
