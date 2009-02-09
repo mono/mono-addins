@@ -1,3 +1,8 @@
+2009-02-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* TextEditor.CompilerService.csproj: Fix project file.
+
 2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
 
  * Makefile.am:

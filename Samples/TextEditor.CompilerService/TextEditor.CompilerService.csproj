@@ -53,13 +53,9 @@
     <Compile Include="RunCommand.cs" />
     <Compile Include="ICompiler.cs" />
     <Compile Include="CompilerManager.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TextEditor.CompilerService.addin.xml" />
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

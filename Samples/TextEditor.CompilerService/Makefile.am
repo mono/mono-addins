@@ -16,15 +16,12 @@ endif
 FILES =  \
 	AssemblyInfo.cs \
 	CompilerManager.cs \
-	gtk-gui/generated.cs \
 	ICompiler.cs \
 	RunCommand.cs 
 
 DATA_FILES = 
 
-RESOURCES =  \
-	gtk-gui/gui.stetic \
-	TextEditor.CompilerService.addin.xml 
+RESOURCES = TextEditor.CompilerService.addin.xml 
 
 EXTRAS = 
 
