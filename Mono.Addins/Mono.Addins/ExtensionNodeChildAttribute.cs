@@ -50,7 +50,7 @@ namespace Mono.Addins
 		
 		public ExtensionNodeChildAttribute (Type extensionNodeType, string nodeName)
 		{
-			this.extensionNodeType = extensionNodeType;
+			ExtensionNodeType = extensionNodeType;
 			this.nodeName = nodeName;
 		}
 		

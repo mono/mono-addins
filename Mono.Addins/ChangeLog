@@ -1,3 +1,9 @@
+2009-02-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins/ExtensionNodeChildAttribute.cs: Make sure the
+	  ExtensionNodeTypeName property is set when using the
+	  attribute constructor.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
