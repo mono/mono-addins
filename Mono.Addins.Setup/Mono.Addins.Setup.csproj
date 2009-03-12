@@ -18,7 +18,6 @@
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <StartupObject />
-    <ApplicationIcon>.</ApplicationIcon>
     <SignAssembly>true</SignAssembly>
     <ConsolePause>false</ConsolePause>
     <AssemblyKeyFile>..\mono-addins.snk</AssemblyKeyFile>

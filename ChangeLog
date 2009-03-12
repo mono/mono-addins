@@ -1,3 +1,9 @@
+2009-03-12  Mike Kestner <mkestner@novell.com>
+
+	* *.csproj: updates to support MSBuild on windows.
+	kill a few ApplicationIcon elements and update some
+	gtk-sharp reference versions.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.sln: Updated.
