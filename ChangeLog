@@ -1,5 +1,10 @@
 2009-03-12  Mike Kestner <mkestner@novell.com>
 
+	* Mono.Addins.sln: add new DebugWin32 configuration to disable
+	the doc project build. 
+
+2009-03-12  Mike Kestner <mkestner@novell.com>
+
 	* Samples/*.csproj: 
 	* Mono.Addins.Gui/Mono.Addins.Gui.csproj: 
 	  add SpecificVersion=false to all the gtk-sharp references.
