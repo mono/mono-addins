@@ -1,5 +1,11 @@
 2009-03-12  Mike Kestner <mkestner@novell.com>
 
+	* Samples/*.csproj: 
+	* Mono.Addins.Gui/Mono.Addins.Gui.csproj: 
+	  add SpecificVersion=false to all the gtk-sharp references.
+
+2009-03-12  Mike Kestner <mkestner@novell.com>
+
 	* Mono.Addins/Mono.Addins.csproj: make target=exe since there's
 	a Main method and -main: argument exposed.
 
