@@ -1,5 +1,10 @@
 2009-03-12  Mike Kestner <mkestner@novell.com>
 
+	* Mono.Addins/Mono.Addins.csproj: make target=exe since there's
+	a Main method and -main: argument exposed.
+
+2009-03-12  Mike Kestner <mkestner@novell.com>
+
 	* *.csproj: updates to support MSBuild on windows.
 	kill a few ApplicationIcon elements and update some
 	gtk-sharp reference versions.
