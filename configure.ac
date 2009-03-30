@@ -3,6 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.54])
 AC_INIT([mono-addins], [0.4])
 AM_INIT_AUTOMAKE([foreign tar-ustar])
+AM_MAINTAINER_MODE
 
 dnl pkg-config
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
@@ -53,12 +54,23 @@ AC_ARG_ENABLE(tests,
 
 AM_CONDITIONAL(ENABLE_TESTS, test x$enable_tests = xyes)
 
+AC_ARG_ENABLE(docs,
+	AC_HELP_STRING([--enable-docs],
+		[build documentation [default=no]]),
+		enable_docs=${enableval}, enable_docs=no)
+
+AM_CONDITIONAL(ENABLE_DOCS, test x$enable_docs = xyes)
+
 if test "x$enable_gui" = "xyes"; then
 	PKG_CHECK_MODULES([GTK_SHARP_20], [gtk-sharp-2.0])
 fi
 
 if test "x$enable_tests" = "xyes"; then
 	PKG_CHECK_MODULES([MONO_NUNIT], [mono-nunit])
+fi
+
+if test "x$enable_docs" = "xyes"; then
+	PKG_CHECK_MODULES([MONODOC], [monodoc])
 fi
 
 
@@ -83,6 +95,7 @@ AC_CONFIG_FILES([
 ./Mono.Addins.CecilReflector/Makefile
 ./mautil/Makefile
 ./mautil/mautil
+./docs/Makefile
 ./Test/HelloWorldExtension/Makefile
 ./Test/FileContentExtension/Makefile
 ./Test/UnitTests/Makefile
@@ -110,6 +123,7 @@ echo ""
 echo "   * Installation prefix = $prefix"
 echo "   * gui support: $enable_gui"
 echo "   * unit tests: $enable_tests"
+echo "   * documentation: $enable_docs"
 echo ""
 
 

@@ -241,10 +241,14 @@ Some debug output
         <Parameter Name="handler" Type="Mono.Addins.ExtensionNodeEventHandler" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <param name="handler">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="path">Path of the node.</param>
+        <param name="handler">A handler method.</param>
+        <summary>Register a listener of extension node changes.</summary>
+        <remarks>This method registers a delegate to be called when a node is added to or removed from the provided extension path.
+
+<block subset="none" type="note"><para>
+The handler will be called for all nodes existing in the path at the moment of registration.
+  </para></block></remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -289,10 +293,37 @@ Some debug output
         <Parameter Name="path" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="path">Location of the node.</param>
+        <summary>Returns the extension node in a path</summary>
+        <returns>The node, or null if not found.</returns>
+        <remarks>
+          <para>This method returns the extension node located at the provided path. For example, given the following extension point:</para>
+          <example>
+            <code lang="XML">
+	&lt;Extension path="/MonoDevelop/Workbench/MainMenu"&gt;
+		&lt;ItemSet id="File" _label="_File"&gt;
+			&lt;CommandItem id="NewFile" /&gt;
+			&lt;CommandItem id="NewProject" /&gt;
+		&lt;/ItemSet&gt;
+	&lt;/Extension&gt;
+	</code>
+          </example>
+          <para> The following calls are valid: </para>
+          <example>
+            <code lang="C#">
+ExtensionContext ctx;
+...
+// The following call returns the root element of the extension point
+ExtensionNode node = ctx.GetExtensionNode ("/MonoDevelop/Workbench/MainMenu");
+
+// The following call returns an specific node of the extension point
+ExtensionNode node = ctx.GetExtensionNode ("/MonoDevelop/Workbench/MainMenu/File");
+
+// The following call returns a child of a node of the extension point
+ExtensionNode node = ctx.GetExtensionNode ("/MonoDevelop/Workbench/MainMenu/File/NewProject");
+</code>
+          </example>
+        </remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -308,10 +339,40 @@ Some debug output
         <Parameter Name="path" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="path">An extension path.</param>
+        <summary>Gets extension nodes registered in a path.</summary>
+        <returns>All nodes registered in the provided path.</returns>
+        <remarks>
+          <para>This method returns all nodes registered under the provided path. For example, given the following extension point:</para>
+          <example>
+            <code lang="XML">
+	&lt;Extension path="/MonoDevelop/Workbench/MainMenu"&gt;
+		&lt;ItemSet id="File" _label="_File"&gt;
+			&lt;CommandItem id="NewFile" /&gt;
+			&lt;CommandItem id="NewProject" /&gt;
+		&lt;/ItemSet&gt;
+		&lt;ItemSet id="Edit" _label="_Edit"/&gt;
+		&lt;ItemSet id="View" _label="_View"/&gt;
+	&lt;/Extension&gt;
+	</code>
+          </example>
+          <para> The following calls are valid: </para>
+          <example>
+            <code lang="C#">
+ExtensionContext ctx;
+...
+// The following call prints 'File', 'Edit' and 'View'
+ExtensionNodeList nodes = ctx.GetExtensionNodes ("/MonoDevelop/Workbench/MainMenu");
+foreach (ExtensionNode node in nodes)
+	Console.WriteLine (node.Id);
+
+// The following call prints 'NewFile' and 'NewProject'
+nodes = ctx.GetExtensionNodes ("/MonoDevelop/Workbench/MainMenu/File");
+foreach (ExtensionNode node in nodes)
+	Console.WriteLine (node.Id);
+</code>
+          </example>
+        </remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -328,11 +389,11 @@ Some debug output
         <Parameter Name="expectedNodeType" Type="System.Type" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <param name="expectedNodeType">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="path">An extension path.</param>
+        <param name="expectedNodeType">Expected node type.</param>
+        <summary>Gets extension nodes registered in a path.</summary>
+        <returns>All nodes registered in the provided path.</returns>
+        <remarks>This method returns all nodes registered under the provided path. It will throw a <see cref="T:System.InvalidOperationException" /> if the type of one of the registered nodes is not assignable to the provided type.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -348,10 +409,11 @@ Some debug output
         <Parameter Name="path" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="path">An extension path.</param>
+        <summary>Gets extension objects registered in a path.</summary>
+        <returns>An array of objects registered in the path.</returns>
+        <remarks>This method can only be used if all nodes in the provided extension path are of type <see cref="T:Mono.Addins.TypeExtensionNode" />. The returned objects
+are created by calling <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance()" />.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -367,10 +429,32 @@ Some debug output
         <Parameter Name="instanceType" Type="System.Type" />
       </Parameters>
       <Docs>
-        <param name="instanceType">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="instanceType">Type for which to query extension objects.</param>
+        <summary>Gets extension objects registered in an extension point.</summary>
+        <returns>An array of objects registered in the extension point.</returns>
+        <remarks>
+          <para>This method can be used to query the extension point of a type which does not have a path. For example:</para>
+          <example>
+            <code lang="C#">
+[TypeExtensionPoint]
+public interface ICommand
+{
+	void Run ();
+}
+  </code>
+          </example>
+          <para>The previous interface declares an extension point which will accept types that implement ICommand interface. Since the extension path is not provided in this declaration, the host has to use the GetExtensionObject method to get the registered object. For example:
+</para>
+          <example>
+            <code lang="C#">
+ExtensionContext context;
+...
+foreach (ICommand cmd in context.GetExtensionObjects (typeof(ICommand)))
+	cmd.Run ();
+  </code>
+          </example>
+          <para>The returned array is composed by all objects created by calling the <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance(System.Type)" /> method for each node.</para>
+        </remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -387,11 +471,11 @@ Some debug output
         <Parameter Name="reuseCachedInstance" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <param name="reuseCachedInstance">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="path">An extension path.</param>
+        <param name="reuseCachedInstance">True if the method can reuse instances created in previous calls.</param>
+        <summary>Gets extension objects registered in a path.</summary>
+        <returns>An array of objects registered in the path.</returns>
+        <remarks>This method can only be used if all nodes in the provided extension path are of type <see cref="T:Mono.Addins.TypeExtensionNode" />. The returned array is composed by all objects created by calling the <see cref="M:Mono.Addins.TypeExtensionNode.CreateInstance()" /> method for each node (or <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance()" /> if reuseCachedInstance is set to true).</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -408,11 +492,16 @@ Some debug output
         <Parameter Name="arrayElementType" Type="System.Type" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <param name="arrayElementType">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="path">An extension path.</param>
+        <param name="arrayElementType">Type of the return array elements.</param>
+        <summary>Gets extension objects registered in a path.</summary>
+        <returns>An array of objects registered in the path.</returns>
+        <remarks>This method can only be used if all nodes in the provided extension path are of type <see cref="T:Mono.Addins.TypeExtensionNode" />. The returned objects
+are created by calling <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance(System.Type)" />.
+
+<para>
+A <see cref="T:System.InvalidOperationException" /> exception is thrown if one of the found objects is not a subclass of the provided type.
+</para></remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -429,11 +518,33 @@ Some debug output
         <Parameter Name="reuseCachedInstance" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="instanceType">To be added.</param>
-        <param name="reuseCachedInstance">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="instanceType">Type for which to query extension objects.</param>
+        <param name="reuseCachedInstance">True if the method can reuse instances created in previous calls.</param>
+        <summary>Gets extension objects registered in an extension point.</summary>
+        <returns>An array of objects registered in the extension point.</returns>
+        <remarks>
+          <para>This method can be used to query the extension point of a type which does not have a path. For example:</para>
+          <example>
+            <code lang="C#">
+[TypeExtensionPoint]
+public interface ICommand
+{
+	void Run ();
+}
+  </code>
+          </example>
+          <para>The previous interface declares an extension point which will accept types that implement ICommand interface. Since the extension path is not provided in this declaration, the host has to use the GetExtensionObject method to get the registered object. For example:
+</para>
+          <example>
+            <code lang="C#">
+ExtensionContext context;
+...
+foreach (ICommand cmd in context.GetExtensionObjects (typeof(ICommand)))
+	cmd.Run ();
+  </code>
+          </example>
+          <para>The returned array is composed by all objects created by calling the <see cref="M:Mono.Addins.TypeExtensionNode.CreateInstance(System.Type)" /> method for each node (or <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance(System.Type)" /> if reuseCachedInstance is set to true).</para>
+        </remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -451,12 +562,16 @@ Some debug output
         <Parameter Name="reuseCachedInstance" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <param name="arrayElementType">To be added.</param>
-        <param name="reuseCachedInstance">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="path">An extension path.</param>
+        <param name="arrayElementType">Type of the return array elements.</param>
+        <param name="reuseCachedInstance">True if the method can reuse instances created in previous calls.</param>
+        <summary>Gets extension objects registered in a path.</summary>
+        <returns>An array of objects registered in the path.</returns>
+        <remarks>This method can only be used if all nodes in the provided extension path are of type <see cref="T:Mono.Addins.TypeExtensionNode" />. The returned array is composed by all objects created by calling the <see cref="M:Mono.Addins.TypeExtensionNode.CreateInstance(System.Type)" /> method for each node (or <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance(System.Type)" /> if reuseCachedInstance is set to true).
+
+<para>
+A <see cref="T:System.InvalidOperationException" /> exception is thrown if one of the found objects is not a subclass of the provided type.
+</para></remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -473,10 +588,10 @@ Some debug output
         <Parameter Name="type" Type="Mono.Addins.ConditionType" />
       </Parameters>
       <Docs>
-        <param name="id">To be added.</param>
-        <param name="type">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="id">Identifier of the condition.</param>
+        <param name="type">Condition evaluator.</param>
+        <summary>Registers a new condition in the extension context.</summary>
+        <remarks>The registered condition will be particular to this extension context. Any event that might be fired as a result of changes in the condition will only be fired in this context.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -493,10 +608,14 @@ Some debug output
         <Parameter Name="type" Type="System.Type" />
       </Parameters>
       <Docs>
-        <param name="id">To be added.</param>
-        <param name="type">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="id">Identifier of the condition.</param>
+        <param name="type">Type of the condition evaluator. Must be a subclass of <see cref="T:Mono.Addins.ConditionType" /></param>
+        <summary>Registers a new condition in the extension context.</summary>
+        <remarks>
+          <para>The registered condition will be particular to this extension context. Any event that might be fired as a result of changes in the condition will only be fired in this context.
+</para>
+
+An instance of the condition will be created the first time it is requested, and it will be cached.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -513,10 +632,10 @@ Some debug output
         <Parameter Name="handler" Type="Mono.Addins.ExtensionNodeEventHandler" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <param name="handler">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="path">Path of the node.</param>
+        <param name="handler">A handler method.</param>
+        <summary>Unregister a listener of extension node changes.</summary>
+        <remarks>This method unregisters a delegate from the node change event of a path.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

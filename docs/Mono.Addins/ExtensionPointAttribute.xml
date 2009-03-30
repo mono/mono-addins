@@ -44,8 +44,8 @@ would be equivalent to the following manifest declaration:
       <MemberType>Constructor</MemberType>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Initializes a new instance.</summary>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -58,9 +58,9 @@ would be equivalent to the following manifest declaration:
         <Parameter Name="path" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="path">Path of the extension point.</param>
+        <summary>Initializes a new instance.</summary>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -74,10 +74,10 @@ would be equivalent to the following manifest declaration:
         <Parameter Name="nodeType" Type="System.Type" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <param name="nodeType">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="path">Path of the extension point.</param>
+        <param name="nodeType">Node type allowed in this extension point.</param>
+        <summary>Initializes a new instance.</summary>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -92,11 +92,11 @@ would be equivalent to the following manifest declaration:
         <Parameter Name="nodeType" Type="System.Type" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <param name="nodeName">To be added.</param>
-        <param name="nodeType">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="path">Path of the extension point.</param>
+        <param name="nodeName">Name of extension nodes.</param>
+        <param name="nodeType">Node type allowed in this extension point.</param>
+        <summary>Initializes a new instance.</summary>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -109,9 +109,9 @@ would be equivalent to the following manifest declaration:
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Long description of the extension point.</summary>
+        <value>Long description of the extension point.</value>
+        <remarks>Description to be shown in the extension point documentation.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -124,9 +124,9 @@ would be equivalent to the following manifest declaration:
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Display name of the extension point.</summary>
+        <value>Display name of the extension point.</value>
+        <remarks>This is the name to be shown in the extension point documentation.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -139,9 +139,9 @@ would be equivalent to the following manifest declaration:
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Name of extension nodes.</summary>
+        <value>Name of nodes.</value>
+        <remarks>Name to be used by nodes which extend this extension point.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -154,9 +154,9 @@ would be equivalent to the following manifest declaration:
         <ReturnType>System.Type</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Node type allowed in this extension point.</summary>
+        <value>A subclass of <see cref="T:Mono.Addins.ExtensionNode" />.</value>
+        <remarks>Extension points declared using this attribute can only accept one type of extension node. To allow several types in an extension point, it has to be declared in an xml manifest.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -184,9 +184,9 @@ would be equivalent to the following manifest declaration:
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Path of the extension point.</summary>
+        <value>Path of the extension point.</value>
+        <remarks>Every extension point is identified by a path. The add-in ecosystem of an application can be seen as a tree of extension points, each of which can be reached using a path, like a file path in a file system.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

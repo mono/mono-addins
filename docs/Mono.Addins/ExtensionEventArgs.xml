@@ -11,7 +11,7 @@
   <Interfaces />
   <Docs>
     <summary>Arguments for extension events.</summary>
-    <remarks>To be added.</remarks>
+    <remarks />
   </Docs>
   <Members>
     <Member MemberName=".ctor">
@@ -54,10 +54,10 @@
         <Parameter Name="pathToCheck" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="pathToCheck">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="pathToCheck">An extension path.</param>
+        <summary>Checks if a path has changed.</summary>
+        <returns>'true' if the path is affected by the extension change event.</returns>
+        <remarks>Checks if the specified path or any of its children paths is affected by the extension change event.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

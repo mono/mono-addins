@@ -48,8 +48,8 @@ TypeExtensionNode is the default extension type used when no type is provided in
       <MemberType>Constructor</MemberType>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Initializes a new instance.</summary>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -63,9 +63,9 @@ TypeExtensionNode is the default extension type used when no type is provided in
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Creates a new extension object.</summary>
+        <returns>The new instance.</returns>
+        <remarks>Creates a new extension object of the type represented by this node.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

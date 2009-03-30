@@ -15,7 +15,7 @@
   </Interfaces>
   <Docs>
     <summary>A list of extension nodes.</summary>
-    <remarks>To be added.</remarks>
+    <remarks>A list of extension nodes.</remarks>
   </Docs>
   <Members>
     <Member MemberName="CopyTo">
@@ -45,9 +45,9 @@
         <ReturnType>System.Int32</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Number of nodes of the collection.</summary>
+        <value>Number of nodes of the collection.</value>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -79,10 +79,10 @@
         <Parameter Name="n" Type="System.Int32" />
       </Parameters>
       <Docs>
-        <param name="n">To be added.</param>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <param name="n">Index of the node.</param>
+        <summary>Returns the node in the specified index.</summary>
+        <value>The node.</value>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -98,10 +98,10 @@
         <Parameter Name="id" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="id">To be added.</param>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <param name="id">Identifier of a node.</param>
+        <summary>Returns the node with the specified ID.</summary>
+        <value>The node, or null if not found.</value>
+        <remarks>Returns the node with the specified identifier.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

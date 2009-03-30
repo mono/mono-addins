@@ -19,8 +19,8 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Cancels the operation being montorized.</summary>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -51,9 +51,9 @@
         <Parameter Name="msg" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="msg">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="msg">Message to write.</param>
+        <summary>Writes text to the log.</summary>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -85,10 +85,10 @@
         <Parameter Name="exception" Type="System.Exception" />
       </Parameters>
       <Docs>
-        <param name="message">To be added.</param>
-        <param name="exception">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="message">Error message (may be null).</param>
+        <param name="exception">Exception that originated the error (may be null).</param>
+        <summary>Reports and error.</summary>
+        <remarks>This method is called by the add-in engine to report an error occurred while executing the operation being monitorized.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -104,9 +104,9 @@
         <Parameter Name="message" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="message">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="message">Warning message.</param>
+        <summary>Reports a warning.</summary>
+        <remarks>This method is called by the add-in engine to report a warning in the operation being monitorized.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -122,9 +122,9 @@
         <Parameter Name="msg" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="msg">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="msg">A message.</param>
+        <summary>Sets the description of the current operation.</summary>
+        <remarks>This method is called by the add-in engine to show a description of the operation being monitorized.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -140,9 +140,9 @@
         <Parameter Name="progress" Type="System.Double" />
       </Parameters>
       <Docs>
-        <param name="progress">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="progress">A number between 0 and 1. 0 means no progress, 1 means operation completed.</param>
+        <summary>Sets the progress of the operation.</summary>
+        <remarks>This method is called by the add-in engine to show the progress of the operation being monitorized.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

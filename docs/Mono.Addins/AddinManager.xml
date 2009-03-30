@@ -26,9 +26,9 @@
       </Parameters>
       <Docs>
         <param name="path">Path of the node.</param>
-        <param name="handler">Handler.</param>
+        <param name="handler">A handler method.</param>
         <summary>Register a listener of extension node changes.</summary>
-        <remarks>This method registers a delegate to be called when a node is added to or removed from the provided extension path.
+        <remarks>Hosts can call this method to be subscribed to an extension change event for a specific path. The event will be fired once for every individual node change. The event arguments include the change type (Add or Remove) and the extension node added or removed.
 
 <block subset="none" type="note"><para>
 The handler will be called for all nodes existing in the path at the moment of registration.
@@ -45,8 +45,8 @@ The handler will be called for all nodes existing in the path at the moment of r
         <ReturnType>Mono.Addins.AddinEventHandler</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Add-in loaded event.</summary>
+        <remarks>Fired after loading an add-in in memory.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -59,8 +59,8 @@ The handler will be called for all nodes existing in the path at the moment of r
         <ReturnType>Mono.Addins.AddinErrorEventHandler</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Add-in loading error event.</summary>
+        <remarks>This event is fired when there is an error when loading the extension of an add-in, or any other kind of error that may happen when querying extension points.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -73,8 +73,8 @@ The handler will be called for all nodes existing in the path at the moment of r
         <ReturnType>Mono.Addins.AddinEventHandler</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Add-in unload event.</summary>
+        <remarks>Fired when an add-in is unloaded from memory. It may happen an add-in is disabled or uninstalled.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -189,8 +189,8 @@ The handler will be called for all nodes existing in the path at the moment of r
         <ReturnType>Mono.Addins.ExtensionEventHandler</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Extension change event.</summary>
+        <remarks>This event is fired when any extension point in the add-in system changes. The event args object provides the path of the changed extension, although it does not provide information about what changed. Hosts subscribing to this event should get the new list of nodes using a query method such as AddinManager.GetExtensionNodes() and then update whatever needs to be updated.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -276,7 +276,7 @@ foreach (ExtensionNode node in nodes)
 	Console.WriteLine (node.Id);
 
 // The following call prints 'NewFile' and 'NewProject'
-nodes = AddinManager.GetExtensionNode ("/MonoDevelop/Workbench/MainMenu/File");
+nodes = AddinManager.GetExtensionNodes ("/MonoDevelop/Workbench/MainMenu/File");
 foreach (ExtensionNode node in nodes)
 	Console.WriteLine (node.Id);
 </code>
@@ -302,7 +302,7 @@ foreach (ExtensionNode node in nodes)
         <param name="type">Expected node type.</param>
         <summary>Gets extension nodes registered in a path.</summary>
         <returns>All nodes registered in the provided path.</returns>
-        <remarks>This method returns all nodes registered under the provided path.</remarks>
+        <remarks>This method returns all nodes registered under the provided path. It will throw a <see cref="T:System.InvalidOperationException" /> if the type of one of the registered nodes is not assignable to the provided type.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -338,10 +338,30 @@ are created by calling <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance()"
         <Parameter Name="instanceType" Type="System.Type" />
       </Parameters>
       <Docs>
-        <param name="instanceType">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>This method can only be used if all nodes in the provided extension path are of type <see cref="T:Mono.Addins.TypeExtensionNode" />. The returned array is composed by all objects created by calling the <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance(System.Type)" /> method for each node.</remarks>
+        <param name="instanceType">Type for which to query extension objects.</param>
+        <summary>Gets extension objects registered in an extension point.</summary>
+        <returns>An array of objects registered in the extension point.</returns>
+        <remarks>
+          <para>This method can be used to query the extension point of a type which does not have a path. For example:</para>
+          <example>
+            <code lang="C#">
+[TypeExtensionPoint]
+public interface ICommand
+{
+	void Run ();
+}
+  </code>
+          </example>
+          <para>The previous interface declares an extension point which will accept types that implement ICommand interface. Since the extension path is not provided in this declaration, the host has to use the GetExtensionObject method to get the registered object. For example:
+</para>
+          <example>
+            <code lang="C#">
+foreach (ICommand cmd in AddinManager.GetExtensionObjects (typeof(ICommand)))
+	cmd.Run ();
+  </code>
+          </example>
+          <para>The returned array is composed by all objects created by calling the <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance(System.Type)" /> method for each node.</para>
+        </remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -405,11 +425,31 @@ A <see cref="T:System.InvalidOperationException" /> exception is thrown if one o
         <Parameter Name="reuseCachedInstance" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="instanceType">To be added.</param>
+        <param name="instanceType">Type for which to query extension objects.</param>
         <param name="reuseCachedInstance">True if the method can reuse instances created in previous calls.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Gets extension objects registered in a path.</summary>
+        <returns>An array of objects registered in the extension point.</returns>
+        <remarks>
+          <para>This method can be used to query the extension point of a type which does not have a path. For example:</para>
+          <example>
+            <code lang="C#">
+[TypeExtensionPoint]
+public interface ICommand
+{
+	void Run ();
+}
+  </code>
+          </example>
+          <para>The previous interface declares an extension point which will accept types that implement ICommand interface. Since the extension path is not provided in this declaration, the host has to use the GetExtensionObject method to get the registered object. For example:
+</para>
+          <example>
+            <code lang="C#">
+foreach (ICommand cmd in AddinManager.GetExtensionObjects (typeof(ICommand)))
+	cmd.Run ();
+  </code>
+          </example>
+          <para>The returned array is composed by all objects created by calling the <see cref="M:Mono.Addins.TypeExtensionNode.CreateInstance(System.Type)" /> method for each node (or <see cref="M:Mono.Addins.TypeExtensionNode.GetInstance(System.Type)" /> if reuseCachedInstance is set to true).</para>
+        </remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -450,8 +490,8 @@ A <see cref="T:System.InvalidOperationException" /> exception is thrown if one o
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Initializes the add-in engine.</summary>
+        <remarks>The add-in engine needs to be initialized before doing any add-in operation. When initialized with this method, it will look for add-in in the global add-in registry.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -467,9 +507,9 @@ A <see cref="T:System.InvalidOperationException" /> exception is thrown if one o
         <Parameter Name="configDir" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="configDir">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="configDir">Location of the add-in registry.</param>
+        <summary>Initializes the add-in engine.</summary>
+        <remarks>The add-in engine needs to be initialized before doing any add-in operation. When initialized with this method, it will look for add-in in the add-in registry located in the specified path.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -503,10 +543,10 @@ A <see cref="T:System.InvalidOperationException" /> exception is thrown if one o
         <Parameter Name="id" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="id">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="id">Full identifier of the add-in.</param>
+        <summary>Checks if an add-in has been loaded.</summary>
+        <returns>'true' if the add-in is loaded.</returns>
+        <remarks>Checks if the specified add-in has been loaded in memory.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -519,9 +559,9 @@ A <see cref="T:System.InvalidOperationException" /> exception is thrown if one o
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Gets whether the add-in engine has been initialized.</summary>
+        <value>'true' if the add-in engine has been initialized.</value>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -538,10 +578,10 @@ A <see cref="T:System.InvalidOperationException" /> exception is thrown if one o
         <Parameter Name="id" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="statusMonitor">To be added.</param>
-        <param name="id">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="statusMonitor">Status monitor to keep track of the loading process.</param>
+        <param name="id">Full identifier of the add-in to load.</param>
+        <summary>Loads an add-in.</summary>
+        <remarks>Loads all assemblies that belong to an add-in in memory. All add-ins on which the specified add-in depends will also be loaded. Notice that in general add-ins don't need to be explicitely loaded using this method, since the add-in engine will load them on demand.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -554,9 +594,9 @@ A <see cref="T:System.InvalidOperationException" /> exception is thrown if one o
         <ReturnType>Mono.Addins.AddinRegistry</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Returns the add-in registry being currently used by the add-in engine.</summary>
+        <value>An add-in registry.</value>
+        <remarks>Returns the add-in registry being currently used by the add-in engine.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -573,10 +613,10 @@ A <see cref="T:System.InvalidOperationException" /> exception is thrown if one o
         <Parameter Name="handler" Type="Mono.Addins.ExtensionNodeEventHandler" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <param name="handler">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="path">Path of the node.</param>
+        <param name="handler">A handler method.</param>
+        <summary>Unregister a listener of extension node changes.</summary>
+        <remarks>This method unregisters a delegate from the node change event of a path.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -590,8 +630,8 @@ A <see cref="T:System.InvalidOperationException" /> exception is thrown if one o
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Finalizes an add-in engine session.</summary>
+        <remarks>Finalizes the add-in engine.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

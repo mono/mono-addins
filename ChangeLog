@@ -1,3 +1,12 @@
+2009-03-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* mono-addins-docs.source: Moved to docs.
+
+	* configure.ac: Added option for building the docs.
+
+	* Makefile.am: Added makefile to docs which builds and
+	  installs the documentation.
+
 2009-03-30  Jonathan Pryor  <jpryor@novell.com>
 
 	* . (svn:ignore): Ignore generated files (mono-addins-docs{.tree,.zip}).

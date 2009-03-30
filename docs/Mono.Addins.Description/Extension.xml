@@ -23,7 +23,7 @@
       <MemberType>Constructor</MemberType>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Initializes a new instance.</summary>
         <remarks>To be added.</remarks>
       </Docs>
       <AssemblyInfo>
@@ -38,7 +38,7 @@
       </Parameters>
       <Docs>
         <param name="path">To be added.</param>
-        <summary>To be added.</summary>
+        <summary>Initializes a new instance.</summary>
         <remarks>To be added.</remarks>
       </Docs>
       <AssemblyInfo>

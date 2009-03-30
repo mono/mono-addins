@@ -9,8 +9,8 @@
     <BaseTypeName>System.Enum</BaseTypeName>
   </Base>
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>Type of change in an extension change event.</summary>
+    <remarks>This enumeration is used in extension change events to specify the type of change that occurred.</remarks>
   </Docs>
   <Members>
     <Member MemberName="Add">
@@ -20,7 +20,7 @@
         <ReturnType>Mono.Addins.ExtensionChange</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>An extension node has been added.</summary>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -33,7 +33,7 @@
         <ReturnType>Mono.Addins.ExtensionChange</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>An extension node has been removed.</summary>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

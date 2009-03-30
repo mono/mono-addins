@@ -19,7 +19,7 @@
       <MemberType>Constructor</MemberType>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Initializes a new instance.</summary>
         <remarks>To be added.</remarks>
       </Docs>
       <AssemblyInfo>

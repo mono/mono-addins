@@ -14,8 +14,8 @@
     </Interface>
   </Interfaces>
   <Docs>
-    <summary>An add-in add-in description.</summary>
-    <remarks>To be added.</remarks>
+    <summary>An add-in description.</summary>
+    <remarks>Provides access to all extensibility information declared by an add-in or add-in root.</remarks>
   </Docs>
   <Members>
     <Member MemberName=".ctor">
@@ -23,8 +23,8 @@
       <MemberType>Constructor</MemberType>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Initializes a new instance.</summary>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -592,9 +592,9 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Saves the description to an XML document.</summary>
+        <returns>An xml document containing the add-in description.</returns>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

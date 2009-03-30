@@ -14,8 +14,14 @@
     </Interface>
   </Interfaces>
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>An add-in registry.</summary>
+    <remarks>
+      <para>An add-in registry is a data structure used by the add-in engine to locate add-ins to load.</para>
+      <para>A registry can be configured to look for add-ins in several directories. However, add-ins copied to those directories won't be detected until an explicit add-in scan is requested. The registry can be updated by an application by calling Registry.Update(), or by a user by running the 'mautil' add-in setup tool.</para>
+      <para>The registry has information about the location of every add-in and a timestamp of the last check, so the Update method will only scan new or modified add-ins. An application might add a call to Registry.Update() in the Main method to detect all new add-ins every time the app is started.</para>
+      <para>Every add-in added to the registry is parsed and validated, and if there is any error it will be rejected. The registry is also in charge of scanning the add-in assemblies and look for extensions and other information declared using custom attributes. That information is merged with the manifest information (if there is one) to create a complete add-in description ready to be used at run-time.</para>
+      <para>Mono.Addins allows sharing an add-in registry among several applications. In this context, all applications sharing the registry share the same extension point tree, and it is possible to implement add-ins which extend several hosts.</para>
+    </remarks>
   </Docs>
   <Members>
     <Member MemberName=".ctor">
@@ -25,9 +31,9 @@
         <Parameter Name="registryPath" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="registryPath">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="registryPath">Location of the add-in registry.</param>
+        <summary>Initializes a new instance.</summary>
+        <remarks>Creates a new add-in registry located in the provided path.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -57,9 +63,9 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Gets the default add-ins folder of the registry.</summary>
+        <value>The default add-ins folder.</value>
+        <remarks>For every add-in registry there is an add-in folder where the registry will look for add-ins by default. This folder is an "addins" subdirectory of the directory where the repository is located. In most cases, this folder will only contain .addins files referencing other more convenient locations for add-ins.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -75,9 +81,13 @@
         <Parameter Name="id" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="id">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="id">Identifier of the add-in.</param>
+        <summary>Disables an add-in.</summary>
+        <remarks>Disables an add-in. If the add-in engine is initialized and it is using this registry, all extensions from this add-in will be unloaded.
+
+<para>
+When an add-in is disabled, all extension points it defines will be ignored by the add-in engine. Other add-ins which depend on the disabled add-in will also automatically be disabled.
+</para></remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -91,8 +101,8 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Disposes the add-in engine.</summary>
+        <remarks>Disposes the add-in engine.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -126,9 +136,13 @@
         <Parameter Name="id" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="id">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="id">Identifier of the add-in.</param>
+        <summary>Enables an add-in.</summary>
+        <remarks>Enables an add-in. If the add-in engine is initialized and it is using this registry, all extensions from this add-in will be loaded.
+
+<para>
+If the enabled add-in depends on other add-ins which are disabled, those will automatically be enabled too.
+</para></remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -144,10 +158,21 @@
         <Parameter Name="id" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="id">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="id">Identifier of the add-in.</param>
+        <summary>Returns an add-in from the registry.</summary>
+        <returns>The add-in, or 'null' if not found.</returns>
+        <remarks>
+          <para>The add-in identifier may optionally include a version number. For example:
+</para>
+          <example>
+            <code lang="C#">
+Addin addin = AddinManager.Registry.GetAddin ("TextEditor.Xml,1.0.0.0");
+  </code>
+          </example>
+          <para>
+In this case, if the exact version is not found, it will return one than is compatible with the required version.
+</para>
+        </remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -164,11 +189,22 @@
         <Parameter Name="exactVersionMatch" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="id">To be added.</param>
-        <param name="exactVersionMatch">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="id">Identifier of the add-in.</param>
+        <param name="exactVersionMatch">'true' if the exact add-in version must be found.</param>
+        <summary>Returns an add-in from the registry.</summary>
+        <returns>The add-in, or 'null' if not found.</returns>
+        <remarks>
+          <para>The add-in identifier may optionally include a version number. For example:
+</para>
+          <example>
+            <code lang="C#">
+Addin addin = AddinManager.Registry.GetAddin ("TextEditor.Xml,1.0.0.0", false);
+  </code>
+          </example>
+          <para>
+In this case, if the exact version is not found and exactVersionMatch is 'false', it will return one than is compatible with the required version.
+</para>
+        </remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -185,11 +221,15 @@
         <Parameter Name="file" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="progressStatus">To be added.</param>
-        <param name="file">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="progressStatus">Progress montitor to keep track of the description parsing process.</param>
+        <param name="file">File that implements the add-in. It may be an assembly or a .addin file.</param>
+        <summary>Gets the description of an add-in.</summary>
+        <returns>The description of the add-in.</returns>
+        <remarks>Parses the provided file and returns a complete description of the add-in, or null if the file doesn't implement an add-in.
+
+<para>
+The file doesn't need to be in an add-in directory belonging to the registry, however if the add-in has dependencies, those will be looked up in the registry.
+</para></remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -203,9 +243,9 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Gets all add-in roots registered in the registry.</summary>
+        <returns>Descriptions of all add-in roots.</returns>
+        <remarks>Gets all add-in roots registered in the registry.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -219,9 +259,9 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Gets all add-ins registered in the registry.</summary>
+        <returns>Add-ins registered in the registry.</returns>
+        <remarks>Gets all add-ins registered in the registry.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -235,9 +275,9 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Gets the global registry.</summary>
+        <returns>The global registry.</returns>
+        <remarks>The global add-in registry is created in "~/.config/mono.addins", and it is the default registry used when none is specified.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -272,10 +312,10 @@
         <Parameter Name="id" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="id">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="id">Identifier of the add-in.</param>
+        <summary>Checks whether an add-in is enabled.</summary>
+        <returns>'true' if the add-in is enabled.</returns>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -331,9 +371,9 @@
         <Parameter Name="monitor" Type="Mono.Addins.IProgressStatus" />
       </Parameters>
       <Docs>
-        <param name="monitor">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="monitor">Progress monitor to keep track of the rebuild operation.</param>
+        <summary>Regenerates the cached data of the add-in registry.</summary>
+        <remarks>Regenerates all data cached by the registry.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -346,9 +386,9 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Location of the add-in registry.</summary>
+        <value>Location of the registry.</value>
+        <remarks>Location of the registry.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -379,9 +419,14 @@
         <Parameter Name="monitor" Type="Mono.Addins.IProgressStatus" />
       </Parameters>
       <Docs>
-        <param name="monitor">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="monitor">Progress monitor to keep track of the update operation.</param>
+        <summary>Updates the add-in registry.</summary>
+        <remarks>This method must be called after modifying, installing or uninstalling add-ins. 
+
+<para>
+When calling Update, every add-in added to the registry is parsed and validated, and if there is any error it will be rejected. It will also cache add-in information needed at run-time.</para><para>
+If during the update operation the registry finds new add-ins or detects that some add-ins have been deleted, the loaded extension points will be updated to include or exclude extension nodes from those add-ins.
+</para></remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

@@ -60,7 +60,7 @@ It would also be registered in an extension point declared in an .addin file wit
       <MemberType>Constructor</MemberType>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Initializes a new instance.</summary>
         <remarks>To be added.</remarks>
       </Docs>
       <AssemblyInfo>
@@ -74,9 +74,9 @@ It would also be registered in an extension point declared in an .addin file wit
         <Parameter Name="path" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="path">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="path">Path of the extension point being extended.</param>
+        <summary>Initializes a new instance.</summary>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -105,8 +105,12 @@ It would also be registered in an extension point declared in an .addin file wit
       </ReturnValue>
       <Docs>
         <summary>Identifier of the extension node after which this node has to be added in the extension point.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <value>Identifier of an extension node.</value>
+        <remarks>The <see cref="P:Mono.Addins.ExtensionAttribute.InsertAfter" /> and <see cref="P:Mono.Addins.ExtensionAttribute.InsertBefore" /> properties can be used to specify the relative location of a node. The nodes referenced in those properties must be defined either in the add-in host being extended, or in any add-in on which this add-in depends.
+
+<para>
+The add-in engine ensures that if <see cref="P:Mono.Addins.ExtensionAttribute.InsertAfter" /> is specified, the node will be inserted after the specified node, and before any other node defined in the same extension.
+</para></remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -120,8 +124,12 @@ It would also be registered in an extension point declared in an .addin file wit
       </ReturnValue>
       <Docs>
         <summary>Identifier of the extension node before which this node has to be added in the extension point.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <value>Identifier of an extension node.</value>
+        <remarks>The <see cref="P:Mono.Addins.ExtensionAttribute.InsertAfter" /> and <see cref="P:Mono.Addins.ExtensionAttribute.InsertBefore" /> properties can be used to specify the relative location of a node. The nodes referenced in those properties must be defined either in the add-in host being extended, or in any add-in on which this add-in depends.
+
+<para>
+The add-in engine ensures that if <see cref="P:Mono.Addins.ExtensionAttribute.InsertAfter" /> is specified, the node will be inserted after the specified node, and before any other node defined in the same extension.
+</para></remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

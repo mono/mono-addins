@@ -11,7 +11,59 @@
   <Interfaces />
   <Docs>
     <summary>A condition evaluator.</summary>
-    <remarks>To be added.</remarks>
+    <remarks>Add-ins may use conditions to register nodes in an extension point which are only visible under some contexts.
+
+<para>
+For example, an add-in registering a custom menu option to the main menu of a sample text editor might want to make that option visible only for some kind of files. To allow add-ins to do this kind of check, the host application needs to define a new condition. Conditions are defined like this: 
+</para><example><code lang="XML">
+&lt;Addin namespace="TextEditor" id="Core" version="1.0"&gt;
+	...
+	&lt;ConditionType id="Openfile" type="TextEditor.OpenFileCondition" /&gt;
+	...
+&lt;/Addin&gt;
+</code></example><para>This condition defined in the add-in host can be referenced by add-ins like this:</para><example><code lang="XML">
+&lt;Addin namespace="TextEditor" id="Xml"&gt;
+	...
+	&lt;Extension path = "/TextEditor/MainMenu/Edit"&gt;
+		&lt;Condition id="OpenFile" extension="xml,config"&gt;
+			&lt;MenuSeparator insertafter="Paste" /&gt;
+			&lt;MenuItem label="Format XML" commandType="TextEditor.Xml.FormatXmlCommand" /&gt;
+		&lt;/Condition&gt;
+	&lt;/Extension&gt;
+	...
+&lt;/Addin&gt;
+</code></example><para>Meaning that a separator and new "Format XML" command will be added after the "Paste" command, but only if the current open file has the extension ".xml" or ".config".</para><para>Extension points are dynamically updated when the status of a condition changes. Nodes matching the new condition status will be added, and nodes which do not match the condition will be removed.</para><para>Conditions are implemented using a subclass of <see cref="T:Mono.Addins.ConditionType" />. For example, OpenFileCondition might be implemented like this:</para><example><code lang="C#">
+namespace TextEditor
+{
+	public class OpenFileCondition: ConditionType
+	{
+		public OpenFileCondition ()
+		{
+			// It's important to notify changes in the status of a condition,
+			// to make sure the extension points are properly updated.
+			TextEditorApp.OpenFileChanged += delegate {
+				// The NotifyChanged method must be called when the status
+				// of a condition changes.
+				NotifyChanged ();
+			};
+		}
+		
+		public override bool Evaluate (NodeElement conditionNode)
+		{
+			// Get the required extension value from an attribute,
+			// and check againts the extension of the currently open document
+			string val = conditionNode.GetAttribute ("extension");
+			if (val.Length &gt; 0) {
+				string ext = Path.GetExtension (TextEditorApp.OpenFileName);
+				foreach (string requiredExtension in val.Split (','))
+					if (ext == "." + requiredExtension)
+						return true;
+			}
+			return false;
+		}
+	}
+}
+  </code></example><para>The add-in engine will create an instance of OpenFileCondition when needed, and will call Evaluate to get the result for a specific condition node. </para></remarks>
   </Docs>
   <Members>
     <Member MemberName=".ctor">
@@ -36,10 +88,10 @@
         <Parameter Name="conditionNode" Type="Mono.Addins.NodeElement" />
       </Parameters>
       <Docs>
-        <param name="conditionNode">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="conditionNode">Condition node information.</param>
+        <summary>Evaluates the condition.</summary>
+        <returns>'true' if the condition is satisfied.</returns>
+        <remarks>This method must be overriden to evaluate the condition for the provided node, and should return 'true' if the condition is satisfied.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

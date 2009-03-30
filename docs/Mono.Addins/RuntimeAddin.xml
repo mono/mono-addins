@@ -10,8 +10,8 @@
   </Base>
   <Interfaces />
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>Run-time representation of an add-in.</summary>
+    <remarks>This class provides access to add-in resources and types at run-time.</remarks>
   </Docs>
   <Members>
     <Member MemberName="CreateInstance">
@@ -24,10 +24,19 @@
         <Parameter Name="typeName" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="typeName">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="typeName">Name of the type.</param>
+        <summary>Creates an instance of a type.</summary>
+        <returns>A new instance of the type.</returns>
+        <remarks>
+          <para>
+The type will be looked up in the assemblies that implement the add-in, and recursivelly in all add-ins on which it depends.
+</para>
+
+This method throw a <see cref="T:System.InvalidOperationException" /> if the type can't be found.
+
+<para>
+The specified type must have a default constructor.
+</para></remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -44,11 +53,20 @@
         <Parameter Name="throwIfNotFound" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="typeName">To be added.</param>
-        <param name="throwIfNotFound">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="typeName">Name of the type.</param>
+        <param name="throwIfNotFound">Indicates whether the method should throw an exception if the type can't be found.</param>
+        <summary>Creates an instance of a type.</summary>
+        <returns>A new instance of the type.</returns>
+        <remarks>
+          <para>
+The type will be looked up in the assemblies that implement the add-in, and recursivelly in all add-ins on which it depends.
+</para>
+          <para>
+If the type can't be found, this method throw a <see cref="T:System.InvalidOperationException" /> if 'throwIfNotFound' is 'true', or 'null' otherwise.</para>
+          <para>
+The specified type must have a default constructor.
+</para>
+        </remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -72,6 +90,31 @@
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
       </AssemblyInfo>
+    </Member>
+    <Member MemberName="GetFilePath">
+      <MemberSignature Language="C#" Value="public string GetFilePath (string[] filePath);" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="filePath" Type="System.String[]">
+          <Attributes>
+            <Attribute>
+              <AttributeName>System.ParamArray</AttributeName>
+            </Attribute>
+          </Attributes>
+        </Parameter>
+      </Parameters>
+      <Docs>
+        <param name="filePath">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
     <Member MemberName="GetResource">
       <MemberSignature Language="C#" Value="public System.IO.Stream GetResource (string resourceName);" />
@@ -249,10 +292,15 @@
         <Parameter Name="typeName" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="typeName">To be added.</param>
+        <param name="typeName">Name of the type.</param>
         <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <returns>The type.</returns>
+        <remarks>
+          <para>
+The type will be looked up in the assemblies that implement the add-in, and recursivelly in all add-ins on which it depends.
+</para>
+
+This method throw a <see cref="T:System.InvalidOperationException" /> if the type can't be found.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -269,11 +317,16 @@
         <Parameter Name="throwIfNotFound" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="typeName">To be added.</param>
-        <param name="throwIfNotFound">To be added.</param>
+        <param name="typeName">Name of the type.</param>
+        <param name="throwIfNotFound">Indicates whether the method should throw an exception if the type can't be found.</param>
         <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <returns>The type.</returns>
+        <remarks>
+          <para>
+The type will be looked up in the assemblies that implement the add-in, and recursivelly in all add-ins on which it depends.
+</para>
+
+If the type can't be found, this method throw a <see cref="T:System.InvalidOperationException" /> if 'throwIfNotFound' is 'true', or 'null' otherwise.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -286,9 +339,9 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Identifier of the add-in.</summary>
+        <value>Identifier of the add-in.</value>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -347,9 +400,9 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Version of the add-in.</summary>
+        <value>Version of the add-in.</value>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

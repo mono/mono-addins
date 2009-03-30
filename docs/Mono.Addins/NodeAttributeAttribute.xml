@@ -11,7 +11,66 @@
   <Interfaces />
   <Docs>
     <summary>Indicates that a field is bound to a node attribute</summary>
-    <remarks>To be added.</remarks>
+    <remarks>
+      <para>The [NodeAttribute] custom attribute can be used to specify fields that have to be initialized from node attributes. By default, a field is will get its value from an attribute with the same name, although it is possible to specify a different name by setting the NodeAttribute.Name property. NodeAttribute also has a Required property for specifying if an attribute is mandatory or not.
+</para>
+      <example>
+        <code lang="C#">
+public class FileTemplateNode: ExtensionNode
+{
+	// Will match elements like &lt;FileTemplate resource-name="blah" /&gt;
+	// The true parameter specifies that the attribute is required
+	[NodeAttribute ("resource-name", true, Description="Name of the resource where the template is stored.")]
+	string resource;
+	
+	[NodeAttribute]
+	string name;
+	
+	public string Name {
+		get { return name != null ? name : Id; }
+	}
+		
+	public virtual string GetContent ()
+	{
+		using (StreamReader sr = new StreamReader(Addin.GetResource (resource))) {
+			return sr.ReadToEnd (); 
+		}
+	}
+	
+}  </code>
+      </example>
+      <para>
+If an <see cref="T:Mono.Addins.ExtensionNode" /> subclass overrides the <see cref="M:Mono.Addins.ExtensionNode.Read" /> method to provide a custom node deserialization implementation, [NodeAttribute] attributes applied to fileds will be ignored. In this case, this attribute can also be applied at class level to provide documentation about the supported attributes. For example:
+</para>
+      <example>
+        <code lang="C#">
+[NodeAttribute ("name", typeof(string), false, Description="Name of the template.")]
+[NodeAttribute ("resource-name", typeof(string), true, Description="Name of the resource where the template is stored.")]
+public class FileTemplateNode: ExtensionNode
+{
+	string resource;
+	string name;
+	
+	public string Name {
+		get { return name != null ? name : Id; }
+	}
+
+	public virtual string GetContent ()
+	{
+		using (StreamReader sr = new StreamReader(Addin.GetResource (resource))) {
+			return sr.ReadToEnd (); 
+		}
+	}
+
+	protected override void Read (NodeElement elem)
+	{
+		resource = elem.GetAttribute ("resource-name");
+		name = elem.GetAttribute ("name");
+	}
+}
+  </code>
+      </example>
+    </remarks>
   </Docs>
   <Members>
     <Member MemberName=".ctor">
@@ -19,8 +78,8 @@
       <MemberType>Constructor</MemberType>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Initializes a new instance.</summary>
+        <remarks>It takes the field name and type as name and type of the attribute.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -33,9 +92,9 @@
         <Parameter Name="name" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="name">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="name">XML name of the attribute.</param>
+        <summary>Initializes a new instance.</summary>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -49,10 +108,10 @@
         <Parameter Name="required" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="name">To be added.</param>
-        <param name="required">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="name">XML name of the attribute.</param>
+        <param name="required">Indicates whether the attribute is required or not.</param>
+        <summary>Initializes a new instance.</summary>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -83,10 +142,10 @@
         <Parameter Name="type" Type="System.Type" />
       </Parameters>
       <Docs>
-        <param name="name">To be added.</param>
-        <param name="type">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="name">XML name of the attribute.</param>
+        <param name="type">Type of the extension node attribute.</param>
+        <summary>Initializes a new instance.</summary>
+        <remarks>This constructor can only be used when applying [NodeAttribute] at class level.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -120,11 +179,11 @@
         <Parameter Name="required" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="name">To be added.</param>
-        <param name="type">To be added.</param>
-        <param name="required">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="name">XML name of the attribute.</param>
+        <param name="type">Type of the extension node attribute.</param>
+        <param name="required">Indicates whether the attribute is required or not.</param>
+        <summary>Initializes a new instance.</summary>
+        <remarks>This constructor can only be used when applying [NodeAttribute] at class level.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -177,9 +236,9 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Description of the attribute.</summary>
+        <value>Description of the attribute.</value>
+        <remarks>To be used in the extension point documentation.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -207,9 +266,16 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>XML name of the attribute.</summary>
+        <value>XML name of the attribute.</value>
+        <remarks>
+          <para>
+If the name is not specified, the field name to which the [NodeAttribute] is applied will be used as name.
+</para>
+          <para>
+Providing a name is mandatory when applying [NodeAttribute] at class level.
+</para>
+        </remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -222,9 +288,9 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Indicates whether the attribute is required or not.</summary>
+        <value>'true' if the attribute is required.</value>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -237,9 +303,9 @@
         <ReturnType>System.Type</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Type of the extension node attribute.</summary>
+        <value>A type.</value>
+        <remarks>To be used only when applying [NodeAttribute] at class level. Not required when it is applied to a field, since the attribute type will be the type of the field.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

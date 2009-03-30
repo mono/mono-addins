@@ -3,6 +3,7 @@
   <AssemblyInfo>
     <AssemblyName>Mono.Addins</AssemblyName>
     <AssemblyVersion>0.4.0.0</AssemblyVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.MarshalByRefObject</BaseTypeName>
@@ -13,24 +14,24 @@
     </Interface>
   </Interfaces>
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>An IProgressStatus class which writes output to the console.</summary>
+    <remarks>This is an implementation of the IProgressStatus which writes output to the console.</remarks>
   </Docs>
   <Members>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public ConsoleProgressStatus (bool verboseLog);" />
       <MemberType>Constructor</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>0.4.0.0</AssemblyVersion>
-      </AssemblyInfo>
       <Parameters>
         <Parameter Name="verboseLog" Type="System.Boolean" />
       </Parameters>
       <Docs>
         <param name="verboseLog">To be added.</param>
-        <summary>To be added.</summary>
+        <summary>Initializes a new instance.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public ConsoleProgressStatus (int logLevel);" />
@@ -50,9 +51,6 @@
     <Member MemberName="Cancel">
       <MemberSignature Language="C#" Value="public void Cancel ();" />
       <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>0.4.0.0</AssemblyVersion>
-      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Void</ReturnType>
       </ReturnValue>
@@ -61,13 +59,13 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="IsCanceled">
       <MemberSignature Language="C#" Value="public bool IsCanceled { get; }" />
       <MemberType>Property</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>0.4.0.0</AssemblyVersion>
-      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
@@ -76,13 +74,13 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Log">
       <MemberSignature Language="C#" Value="public void Log (string msg);" />
       <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>0.4.0.0</AssemblyVersion>
-      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Void</ReturnType>
       </ReturnValue>
@@ -94,6 +92,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="LogLevel">
       <MemberSignature Language="C#" Value="public int LogLevel { get; }" />
@@ -113,9 +114,6 @@
     <Member MemberName="ReportError">
       <MemberSignature Language="C#" Value="public void ReportError (string message, Exception exception);" />
       <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>0.4.0.0</AssemblyVersion>
-      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Void</ReturnType>
       </ReturnValue>
@@ -129,13 +127,13 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="ReportWarning">
       <MemberSignature Language="C#" Value="public void ReportWarning (string message);" />
       <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>0.4.0.0</AssemblyVersion>
-      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Void</ReturnType>
       </ReturnValue>
@@ -147,13 +145,13 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="SetMessage">
       <MemberSignature Language="C#" Value="public void SetMessage (string msg);" />
       <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>0.4.0.0</AssemblyVersion>
-      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Void</ReturnType>
       </ReturnValue>
@@ -165,13 +163,13 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="SetProgress">
       <MemberSignature Language="C#" Value="public void SetProgress (double progress);" />
       <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>0.4.0.0</AssemblyVersion>
-      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Void</ReturnType>
       </ReturnValue>
@@ -183,6 +181,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
   </Members>
 </Type>

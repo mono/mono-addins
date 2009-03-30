@@ -11,7 +11,7 @@
   <Interfaces />
   <Docs>
     <summary>An add-in.</summary>
-    <remarks>This class provides access to add-in types and resources.</remarks>
+    <remarks>Represents an add-in installed in a registry.</remarks>
   </Docs>
   <Members>
     <Member MemberName="AddinFile">
@@ -21,9 +21,9 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Location of the add-in.</summary>
+        <value>Full path to the add-in.</value>
+        <remarks>Returns the location of the add-in. It can be an assembly or a .addin file (when distributed standalone).</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -42,7 +42,7 @@
       <Docs>
         <param name="v1">To be added.</param>
         <param name="v2">To be added.</param>
-        <summary>To be added.</summary>
+        <summary>Compares two add-in versions.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -57,9 +57,9 @@
         <ReturnType>Mono.Addins.Description.AddinDescription</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Description of the add-in.</summary>
+        <value>The description of the add-in.</value>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -72,9 +72,14 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Gets or sets the enabled status of the add-in.</summary>
+        <value>'true' if enabled.</value>
+        <remarks>
+          <para>This property can be used to enable or disable an add-in. The enabled status of an add-in is stored in the add-in registry, so when an add-in is disabled, it will be disabled for all applications sharing the same registry.</para>
+          <para>
+When an add-in is enabled or disabled, the extension points currently loaded in memory will be properly updated to include or exclude extensions from the add-in.
+</para>
+        </remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -95,7 +100,7 @@
         <param name="ns">To be added.</param>
         <param name="id">To be added.</param>
         <param name="version">To be added.</param>
-        <summary>To be added.</summary>
+        <summary>Returns the full id of an add-in.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -114,7 +119,7 @@
       </Parameters>
       <Docs>
         <param name="addinId">To be added.</param>
-        <summary>To be added.</summary>
+        <summary>Returns the namespace and id from a full add-in id.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -172,7 +177,7 @@
       <Docs>
         <summary>Identifier of the add-in.</summary>
         <value>Identifier of the add-in.</value>
-        <remarks />
+        <remarks>Full identifier of the add-in, including namespace and version.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -181,6 +186,9 @@
     <Member MemberName="IsUserAddin">
       <MemberSignature Language="C#" Value="public bool IsUserAddin { get; }" />
       <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
@@ -189,9 +197,6 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
-      <AssemblyInfo>
-        <AssemblyVersion>0.4.0.0</AssemblyVersion>
-      </AssemblyInfo>
     </Member>
     <Member MemberName="LocalId">
       <MemberSignature Language="C#" Value="public string LocalId { get; }" />
@@ -200,9 +205,9 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Local identifier of the add-in.</summary>
+        <value>The ID.</value>
+        <remarks>Does not include the namespace.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -215,9 +220,9 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Display name of the add-in.</summary>
+        <value>The name.</value>
+        <remarks>Name to be shown in the add-in management tools.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -230,9 +235,9 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Namespace of the add-in.</summary>
+        <value>Namespace of the add-in.</value>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -248,10 +253,10 @@
         <Parameter Name="version" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="version">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="version">An add-in version.</param>
+        <summary>Checks version compatibility.</summary>
+        <returns>True if the provided version is compatible with this add-in.</returns>
+        <remarks>This method checks the CompatVersion property to know if the provided version is compatible with the version of this add-in.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -280,9 +285,9 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Version of the add-in.</summary>
+        <value>The version.</value>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

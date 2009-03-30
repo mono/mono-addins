@@ -108,8 +108,8 @@ To create the toolbar, the host application would get the nodes registered in th
       </ReturnValue>
       <Docs>
         <summary>The add-in that registered this extension node.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <value>The add-in that created the node.</value>
+        <remarks>This property provides access to the resources and types of the add-in that created this extension node.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -281,8 +281,8 @@ A <see cref="T:System.InvalidOperationException" /> exception will be thrown if 
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Notifies that the owner add-in has been loaded.</summary>
+        <remarks>This overridable method is called when the add-in that registered this node has been loaded in memory.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -296,8 +296,8 @@ A <see cref="T:System.InvalidOperationException" /> exception will be thrown if 
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Notifies that the owner add-in has been unloaded.</summary>
+        <remarks>This overridable method is called when the add-in that registered this node has been unloaded from memory.</remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -413,7 +413,36 @@ The path of the node "NewProject" would be "/MonoDevelop/Workbench/MainMenu/File
       <Docs>
         <param name="elem">To be added.</param>
         <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <remarks>
+          <para>ExtensionNode subclasses can override this method to take control on the process of loading an ExtensionNode instance out of an extension node. If the Read method is overriden (and if it doesn't call the base class) [<see cref="T:Mono.Addins.NodeAttributeAttribute" />] attributes will be ignored.</para>
+          <para>The following example would be equivalent to the example shown for the class <see cref="T:Mono.Addins.NodeAttributeAttribute" />, but this implementation would be more efficient since no reflection would be involved:</para>
+          <example>
+            <code lang="C#">
+public class FileTemplateNode: ExtensionNode
+{
+	string resource;
+	string name;
+	
+	public string Name {
+		get { return name != null ? name : Id; }
+	}
+
+	public virtual string GetContent ()
+	{
+		using (StreamReader sr = new StreamReader(Addin.GetResource (resource))) {
+			return sr.ReadToEnd (); 
+		}
+	}
+
+	protected override void Read (NodeElement elem)
+	{
+		resource = elem.GetAttribute ("resource-name");
+		name = elem.GetAttribute ("name");
+	}
+}
+  </code>
+          </example>
+        </remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

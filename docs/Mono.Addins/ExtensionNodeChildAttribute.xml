@@ -15,8 +15,8 @@
     </Attribute>
   </Attributes>
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>Declares allowed children of an extension node type.</summary>
+    <remarks>This attribute allows declaring the type of children that an extension node can have.</remarks>
   </Docs>
   <Members>
     <Member MemberName=".ctor">
@@ -26,9 +26,9 @@
         <Parameter Name="nodeName" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="nodeName">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="nodeName">Name of the allowed child extension node.</param>
+        <summary>Initializes a new instance.</summary>
+        <remarks>This constructor overload assumes that the child will be of type <see cref="T:Mono.Addins.TypeExtensionNode" /></remarks>
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -41,9 +41,9 @@
         <Parameter Name="extensionNodeType" Type="System.Type" />
       </Parameters>
       <Docs>
-        <param name="extensionNodeType">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="extensionNodeType">Type of the allowed child extension node. Must be a subclass of <see cref="T:Mono.Addins.ExtensionNode" />.</param>
+        <summary>Initializes a new instance.</summary>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -57,10 +57,10 @@
         <Parameter Name="nodeName" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="extensionNodeType">To be added.</param>
-        <param name="nodeName">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="extensionNodeType">Type of the allowed child extension node. Must be a subclass of <see cref="T:Mono.Addins.ExtensionNode" />.</param>
+        <param name="nodeName">Name of the allowed child extension node.</param>
+        <summary>Initializes a new instance.</summary>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -73,9 +73,9 @@
         <ReturnType>System.Type</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Type of the allowed child extension node.</summary>
+        <value>A subclass of <see cref="T:Mono.Addins.ExtensionNode" />.</value>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
@@ -88,9 +88,9 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Name of the allowed child extension node.</summary>
+        <value>Name of the allowed child extension node.</value>
+        <remarks />
       </Docs>
       <AssemblyInfo>
         <AssemblyVersion>0.4.0.0</AssemblyVersion>

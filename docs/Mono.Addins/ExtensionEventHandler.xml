@@ -16,7 +16,7 @@
     <ReturnType>System.Void</ReturnType>
   </ReturnValue>
   <Docs>
-    <param name="sender">The extension context that originated the event.</param>
+    <param name="sender">Sender of the event.</param>
     <param name="args">Extension event arguments.</param>
     <summary>Handler for extension events.</summary>
     <remarks />

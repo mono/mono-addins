@@ -15,8 +15,8 @@
     </Attribute>
   </Attributes>
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>Marks an assembly as being an add-in root.</summary>
+    <remarks>An add-in root is an assemly which can be extended by add-ins.</remarks>
   </Docs>
   <Members>
     <Member MemberName=".ctor">
@@ -24,7 +24,7 @@
       <MemberType>Constructor</MemberType>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Initializes a new instance.</summary>
         <remarks>To be added.</remarks>
       </Docs>
       <AssemblyInfo>
@@ -38,8 +38,8 @@
         <Parameter Name="id" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="id">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="id">Identifier of the add-in.</param>
+        <summary>Initializes a new instance.</summary>
         <remarks>To be added.</remarks>
       </Docs>
       <AssemblyInfo>
@@ -54,9 +54,9 @@
         <Parameter Name="version" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="id">To be added.</param>
-        <param name="version">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="id">Identifier of the add-in.</param>
+        <param name="version">Version of the add-in.</param>
+        <summary>Initializes a new instance.</summary>
         <remarks>To be added.</remarks>
       </Docs>
       <AssemblyInfo>

@@ -16,9 +16,9 @@
     <ReturnType>System.Void</ReturnType>
   </ReturnValue>
   <Docs>
-    <param name="sender">To be added.</param>
-    <param name="args">To be added.</param>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <param name="sender">Sender of the event.</param>
+    <param name="args">Arguments of the event.</param>
+    <summary>Handler used to notify add-in events.</summary>
+    <remarks />
   </Docs>
 </Type>
