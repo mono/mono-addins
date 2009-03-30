@@ -2,6 +2,7 @@
   <TypeSignature Language="C#" Value="public class Extension : Mono.Addins.Description.ObjectDescription, IComparable" />
   <AssemblyInfo>
     <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
@@ -12,6 +13,10 @@
       <InterfaceName>System.IComparable</InterfaceName>
     </Interface>
   </Interfaces>
+  <Docs>
+    <summary>An extension definition.</summary>
+    <remarks>An Extension is a collection of nodes which have to be registered in an extension point. The target extension point is specified in the <see cref="T:Mono.Addins.Description.Extension.Path" /> property.</remarks>
+  </Docs>
   <Members>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public Extension ();" />
@@ -21,6 +26,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public Extension (string path);" />
@@ -33,6 +41,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public Extension (System.Xml.XmlElement element);" />
@@ -45,9 +56,12 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="ExtensionNodes">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeDescriptionCollection ExtensionNodes { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeDescriptionCollection ExtensionNodes { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.ExtensionNodeDescriptionCollection</ReturnType>
@@ -57,9 +71,44 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="GetAllowedNodeTypes">
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeTypeCollection GetAllowedNodeTypes ();" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.Description.ExtensionNodeTypeCollection</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetExtendedObject">
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ObjectDescription GetExtendedObject ();" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.Description.ObjectDescription</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
     <Member MemberName="Path">
-      <MemberSignature Language="C#" Value="public string Path { set; get; };" />
+      <MemberSignature Language="C#" Value="public string Path { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -69,10 +118,28 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="System.IComparable.CompareTo">
+      <MemberSignature Language="C#" Value="int IComparable.CompareTo (object obj);" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="obj" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="obj">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
   </Members>
-  <Docs>
-    <summary>An extension definition.</summary>
-    <remarks>An Extension is a collection of nodes which have to be registered in an extension point. The target extension point is specified in the <see cref="T:Mono.Addins.Description.Extension.Path" /> property.</remarks>
-  </Docs>
 </Type>

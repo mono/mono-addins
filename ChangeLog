@@ -1,3 +1,12 @@
+2009-03-30  Jonathan Pryor  <jpryor@novell.com>
+
+	* . (svn:ignore): Ignore generated files (mono-addins-docs{.tree,.zip}).
+	* docs/**/*: Flush (output of doc-update).
+	* Makefile.am: Add doc-update, doc-assemble, install-docs,
+	  uninstall-docs, clean-docs targets.
+	* mono-addins-docs.source: Monodoc .source file which specifies where
+	  in the tree the Mono.Addins documentation should be inserted.
+
 2009-03-12  Mike Kestner <mkestner@novell.com>
 
 	* Mono.Addins.sln: add new DebugWin32 configuration to disable

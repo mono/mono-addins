@@ -1,0 +1,37 @@
+<Type Name="IPluralAddinLocalizer" FullName="Mono.Addins.Localization.IPluralAddinLocalizer">
+  <TypeSignature Language="C#" Value="public interface IPluralAddinLocalizer" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Interfaces />
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="GetPluralString">
+      <MemberSignature Language="C#" Value="public string GetPluralString (string singular, string defaultPlural, int n);" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="singular" Type="System.String" />
+        <Parameter Name="defaultPlural" Type="System.String" />
+        <Parameter Name="n" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="singular">To be added.</param>
+        <param name="defaultPlural">To be added.</param>
+        <param name="n">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

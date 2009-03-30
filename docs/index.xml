@@ -1,53 +1,32 @@
 <Overview>
   <Assemblies>
-    <Assembly Name="Mono.Addins" Version="1.0.0.0">
+    <Assembly Name="Mono.Addins" Version="0.4.0.0">
       <Attributes>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTrademark("")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCopyright("Copyright (C) 2007 Novell, Inc (http://www.novell.com)")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCopyright("")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyProduct("")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyCompany("")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyDescription("")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyTitle("")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyTitle("Mono.Addins")</AttributeName>
         </Attribute>
       </Attributes>
     </Assembly>
-    <Assembly Name="Mono.Addins.Setup" Version="0.0.0.0" />
-    <Assembly Name="Mono.Addins.Gui" Version="1.0.2645.32627">
+    <Assembly Name="Mono.Addins.Setup" Version="0.4.0.0">
       <Attributes>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyTrademark("")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCopyright("Copyright (C) 2007 Novell, Inc (http://www.novell.com)")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCopyright("")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyTitle("Mono.Addins.Setup")</AttributeName>
+        </Attribute>
+      </Attributes>
+    </Assembly>
+    <Assembly Name="Mono.Addins.Gui" Version="0.4.0.0">
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyCopyright("Copyright (C) 2007 Novell, Inc (http://www.novell.com)")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyProduct("")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyCompany("")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyDescription("")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Reflection.AssemblyTitle("")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyTitle("Mono.Addins.Gui")</AttributeName>
         </Attribute>
       </Attributes>
     </Assembly>
@@ -56,78 +35,97 @@
   <Copyright>To be added.</Copyright>
   <Types>
     <Namespace Name="Mono.Addins">
-      <Type Name="IProgressStatus" />
-      <Type Name="ExtensionNode" />
-      <Type Name="NodeAttribute" />
-      <Type Name="Addin" />
-      <Type Name="TypeExtensionNode" />
-      <Type Name="ExtensionNodeList" />
-      <Type Name="NodeAttributeAttribute" />
-      <Type Name="ExtensionContext" />
-      <Type Name="ConditionType" />
-      <Type Name="AddinAttribute" />
-      <Type Name="ExtensionAttribute" />
-      <Type Name="AddinDependencyAttribute" />
-      <Type Name="ExtensionPointAttribute" />
-      <Type Name="AddinManager" />
-      <Type Name="ExtensionEventHandler" />
-      <Type Name="TypeExtensionPointAttribute" />
-      <Type Name="ExtensionEventArgs" />
-      <Type Name="ExtensionNodeEventArgs" />
-      <Type Name="ExtensionNodeEventHandler" />
-      <Type Name="ExtensionChange" />
-      <Type Name="NodeElement" />
-      <Type Name="RuntimeAddin" />
-      <Type Name="ConsoleProgressStatus" />
-      <Type Name="AddinErrorEventArgs" />
-      <Type Name="AddinEventArgs" />
-      <Type Name="AddinErrorEventHandler" />
-      <Type Name="AddinEventHandler" />
-      <Type Name="AddinRegistry" />
-      <Type Name="ExtensionNodeChildAttribute" />
-      <Type Name="ExtensionNodeAttribute" />
-      <Type Name="AddinRootAttribute" />
+      <Type Name="Addin" Kind="Class" />
+      <Type Name="AddinAttribute" Kind="Class" />
+      <Type Name="AddinDependencyAttribute" Kind="Class" />
+      <Type Name="AddinErrorEventArgs" Kind="Class" />
+      <Type Name="AddinErrorEventHandler" Kind="Delegate" />
+      <Type Name="AddinEventArgs" Kind="Class" />
+      <Type Name="AddinEventHandler" Kind="Delegate" />
+      <Type Name="AddinLocalizer" Kind="Class" />
+      <Type Name="AddinManager" Kind="Class" />
+      <Type Name="AddinRegistry" Kind="Class" />
+      <Type Name="AddinRootAttribute" Kind="Class" />
+      <Type Name="ConditionType" Kind="Class" />
+      <Type Name="ConsoleProgressStatus" Kind="Class" />
+      <Type Name="ExtensionAttribute" Kind="Class" />
+      <Type Name="ExtensionChange" Kind="Enumeration" />
+      <Type Name="ExtensionContext" Kind="Class" />
+      <Type Name="ExtensionEventArgs" Kind="Class" />
+      <Type Name="ExtensionEventHandler" Kind="Delegate" />
+      <Type Name="ExtensionNode" Kind="Class" />
+      <Type Name="ExtensionNodeAttribute" Kind="Class" />
+      <Type Name="ExtensionNodeChildAttribute" Kind="Class" />
+      <Type Name="ExtensionNodeEventArgs" Kind="Class" />
+      <Type Name="ExtensionNodeEventHandler" Kind="Delegate" />
+      <Type Name="ExtensionNodeList" Kind="Class" />
+      <Type Name="ExtensionPointAttribute" Kind="Class" />
+      <Type Name="IAddinInstaller" Kind="Interface" />
+      <Type Name="InstanceExtensionNode" Kind="Class" />
+      <Type Name="IProgressStatus" Kind="Interface" />
+      <Type Name="NodeAttribute" Kind="Class" />
+      <Type Name="NodeAttributeAttribute" Kind="Class" />
+      <Type Name="NodeElement" Kind="Interface" />
+      <Type Name="NodeElementCollection" Kind="Interface" />
+      <Type Name="RuntimeAddin" Kind="Class" />
+      <Type Name="TypeExtensionNode" Kind="Class" />
+      <Type Name="TypeExtensionPointAttribute" Kind="Class" />
     </Namespace>
-    <Namespace Name="Mono.Addins.Setup">
-      <Type Name="InstallException" />
-      <Type Name="Package" />
-      <Type Name="PackageCollection" />
-      <Type Name="AddinRepositoryEntry" />
-      <Type Name="AddinRepository" />
-      <Type Name="AddinHeader" />
-      <Type Name="RepositoryRegistry" />
-      <Type Name="SetupService" />
-      <Type Name="SetupTool" />
-      <Type Name="SetupCommandHandler" />
+    <Namespace Name="Mono.Addins.Database">
+      <Type Name="DefaultAssemblyReflector" Kind="Class" />
+      <Type Name="IAssemblyLocator" Kind="Interface" />
+      <Type Name="IAssemblyReflector" Kind="Interface" />
     </Namespace>
     <Namespace Name="Mono.Addins.Description">
-      <Type Name="AddinDescription" />
-      <Type Name="ExtensionPoint" />
-      <Type Name="ObjectDescription" />
-      <Type Name="ModuleDescription" />
-      <Type Name="ObjectDescriptionCollection" />
-      <Type Name="ExtensionPointCollection" />
-      <Type Name="ExtensionNodeType" />
-      <Type Name="ExtensionNodeSet" />
-      <Type Name="NodeSetIdCollection" />
-      <Type Name="ExtensionNodeSetCollection" />
-      <Type Name="Extension" />
-      <Type Name="ExtensionNodeDescription" />
-      <Type Name="ExtensionNodeDescriptionCollection" />
-      <Type Name="ExtensionCollection" />
-      <Type Name="ConditionTypeDescription" />
-      <Type Name="ConditionTypeDescriptionCollection" />
-      <Type Name="AddinDependency" />
-      <Type Name="Dependency" />
-      <Type Name="AssemblyDependency" />
-      <Type Name="DependencyCollection" />
-      <Type Name="ModuleCollection" />
-      <Type Name="NativeDependency" />
-      <Type Name="NodeTypeAttribute" />
-      <Type Name="NodeTypeAttributeCollection" />
+      <Type Name="AddinDependency" Kind="Class" />
+      <Type Name="AddinDescription" Kind="Class" />
+      <Type Name="AddinFlags" Kind="Enumeration" />
+      <Type Name="AssemblyDependency" Kind="Class" />
+      <Type Name="ConditionTypeDescription" Kind="Class" />
+      <Type Name="ConditionTypeDescriptionCollection" Kind="Class" />
+      <Type Name="Dependency" Kind="Class" />
+      <Type Name="DependencyCollection" Kind="Class" />
+      <Type Name="Extension" Kind="Class" />
+      <Type Name="ExtensionCollection" Kind="Class" />
+      <Type Name="ExtensionNodeDescription" Kind="Class" />
+      <Type Name="ExtensionNodeDescriptionCollection" Kind="Class" />
+      <Type Name="ExtensionNodeSet" Kind="Class" />
+      <Type Name="ExtensionNodeSetCollection" Kind="Class" />
+      <Type Name="ExtensionNodeType" Kind="Class" />
+      <Type Name="ExtensionNodeTypeCollection" Kind="Class" />
+      <Type Name="ExtensionPoint" Kind="Class" />
+      <Type Name="ExtensionPointCollection" Kind="Class" />
+      <Type Name="ModuleCollection" Kind="Class" />
+      <Type Name="ModuleDescription" Kind="Class" />
+      <Type Name="NativeDependency" Kind="Class" />
+      <Type Name="NodeSetIdCollection" Kind="Class" />
+      <Type Name="NodeTypeAttribute" Kind="Class" />
+      <Type Name="NodeTypeAttributeCollection" Kind="Class" />
+      <Type Name="ObjectDescription" Kind="Class" />
+      <Type Name="ObjectDescriptionCollection" Kind="Class" />
     </Namespace>
     <Namespace Name="Mono.Addins.Gui">
-      <Type Name="AddinManagerWindow" />
+      <Type Name="AddinInstaller" Kind="Class" />
+      <Type Name="AddinManagerWindow" Kind="Class" />
+      <Type Name="AddinTreeWidget" Kind="Class" />
+    </Namespace>
+    <Namespace Name="Mono.Addins.Localization">
+      <Type Name="IAddinLocalizer" Kind="Interface" />
+      <Type Name="IAddinLocalizerFactory" Kind="Interface" />
+      <Type Name="IPluralAddinLocalizer" Kind="Interface" />
+    </Namespace>
+    <Namespace Name="Mono.Addins.Setup">
+      <Type Name="AddinHeader" Kind="Interface" />
+      <Type Name="AddinRepository" Kind="Interface" />
+      <Type Name="AddinRepositoryEntry" Kind="Interface" />
+      <Type Name="ConsoleAddinInstaller" Kind="Class" />
+      <Type Name="InstallException" Kind="Class" />
+      <Type Name="Package" Kind="Class" />
+      <Type Name="PackageCollection" Kind="Class" />
+      <Type Name="RepositoryRegistry" Kind="Class" />
+      <Type Name="SetupCommandHandler" Kind="Delegate" />
+      <Type Name="SetupService" Kind="Class" />
+      <Type Name="SetupTool" Kind="Class" />
     </Namespace>
   </Types>
   <Title>Untitled</Title>

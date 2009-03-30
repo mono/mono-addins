@@ -2,17 +2,17 @@
   <TypeSignature Language="C#" Value="public class ExtensionCollection : Mono.Addins.Description.ObjectDescriptionCollection" />
   <AssemblyInfo>
     <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>Mono.Addins.Description.ObjectDescriptionCollection</BaseTypeName>
   </Base>
   <Interfaces />
-  <Attributes>
-    <Attribute>
-      <AttributeName>System.Reflection.DefaultMember("Item")</AttributeName>
-    </Attribute>
-  </Attributes>
+  <Docs>
+    <summary>A collection of extensions.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
   <Members>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public ExtensionCollection ();" />
@@ -22,9 +22,12 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Item">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.Extension this[int n] { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.Extension this[int n] { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.Extension</ReturnType>
@@ -38,10 +41,9 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
   </Members>
-  <Docs>
-    <summary>A collection of extensions.</summary>
-    <remarks>To be added.</remarks>
-  </Docs>
 </Type>

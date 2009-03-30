@@ -1,0 +1,36 @@
+<Type Name="IAddinInstaller" FullName="Mono.Addins.IAddinInstaller">
+  <TypeSignature Language="C#" Value="public interface IAddinInstaller" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Interfaces />
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="InstallAddins">
+      <MemberSignature Language="C#" Value="public void InstallAddins (Mono.Addins.AddinRegistry reg, string message, string[] addinIds);" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="reg" Type="Mono.Addins.AddinRegistry" />
+        <Parameter Name="message" Type="System.String" />
+        <Parameter Name="addinIds" Type="System.String[]" />
+      </Parameters>
+      <Docs>
+        <param name="reg">To be added.</param>
+        <param name="message">To be added.</param>
+        <param name="addinIds">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

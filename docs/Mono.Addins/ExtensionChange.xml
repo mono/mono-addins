@@ -2,11 +2,16 @@
   <TypeSignature Language="C#" Value="public enum ExtensionChange" />
   <AssemblyInfo>
     <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Enum</BaseTypeName>
   </Base>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
   <Members>
     <Member MemberName="Add">
       <MemberSignature Language="C#" Value="Add" />
@@ -17,6 +22,9 @@
       <Docs>
         <summary>To be added.</summary>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Remove">
       <MemberSignature Language="C#" Value="Remove" />
@@ -27,10 +35,9 @@
       <Docs>
         <summary>To be added.</summary>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
   </Members>
-  <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
-  </Docs>
 </Type>

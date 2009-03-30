@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<monodoc>
+  <node label="Mono Libraries" name="classlib-mono" parent="libraries" />
+  <source provider="ecma" basefile="mono-addins-docs" path="classlib-mono"/>
+</monodoc>

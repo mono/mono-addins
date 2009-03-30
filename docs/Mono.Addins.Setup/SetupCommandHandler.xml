@@ -3,6 +3,7 @@
   <AssemblyInfo>
     <AssemblyName>Mono.Addins.Setup</AssemblyName>
     <AssemblyVersion>0.0.0.0</AssemblyVersion>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Delegate</BaseTypeName>

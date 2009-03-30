@@ -3,11 +3,16 @@
   <AssemblyInfo>
     <AssemblyName>Mono.Addins.Setup</AssemblyName>
     <AssemblyVersion>0.0.0.0</AssemblyVersion>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Interfaces />
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
   <Members>
     <Member MemberName="Author">
-      <MemberSignature Language="C#" Value="public string Author { get; };" />
+      <MemberSignature Language="C#" Value="public string Author { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -17,9 +22,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="BaseVersion">
-      <MemberSignature Language="C#" Value="public string BaseVersion { get; };" />
+      <MemberSignature Language="C#" Value="public string BaseVersion { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -29,9 +37,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Category">
-      <MemberSignature Language="C#" Value="public string Category { get; };" />
+      <MemberSignature Language="C#" Value="public string Category { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -41,6 +52,9 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="CompareVersionTo">
       <MemberSignature Language="C#" Value="public int CompareVersionTo (Mono.Addins.Setup.AddinHeader other);" />
@@ -57,9 +71,12 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Copyright">
-      <MemberSignature Language="C#" Value="public string Copyright { get; };" />
+      <MemberSignature Language="C#" Value="public string Copyright { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -69,9 +86,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Dependencies">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.DependencyCollection Dependencies { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.DependencyCollection Dependencies { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.DependencyCollection</ReturnType>
@@ -81,9 +101,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Description">
-      <MemberSignature Language="C#" Value="public string Description { get; };" />
+      <MemberSignature Language="C#" Value="public string Description { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -93,9 +116,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Id">
-      <MemberSignature Language="C#" Value="public string Id { get; };" />
+      <MemberSignature Language="C#" Value="public string Id { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -105,9 +131,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Name">
-      <MemberSignature Language="C#" Value="public string Name { get; };" />
+      <MemberSignature Language="C#" Value="public string Name { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -117,9 +146,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Namespace">
-      <MemberSignature Language="C#" Value="public string Namespace { get; };" />
+      <MemberSignature Language="C#" Value="public string Namespace { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -129,9 +161,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="OptionalDependencies">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.DependencyCollection OptionalDependencies { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.DependencyCollection OptionalDependencies { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.DependencyCollection</ReturnType>
@@ -141,9 +176,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Url">
-      <MemberSignature Language="C#" Value="public string Url { get; };" />
+      <MemberSignature Language="C#" Value="public string Url { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -153,9 +191,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Version">
-      <MemberSignature Language="C#" Value="public string Version { get; };" />
+      <MemberSignature Language="C#" Value="public string Version { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -165,10 +206,9 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
   </Members>
-  <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
-  </Docs>
 </Type>

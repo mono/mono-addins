@@ -2,12 +2,17 @@
   <TypeSignature Language="C#" Value="public class ExtensionNodeSet : Mono.Addins.Description.ObjectDescription" />
   <AssemblyInfo>
     <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>Mono.Addins.Description.ObjectDescription</BaseTypeName>
   </Base>
   <Interfaces />
+  <Docs>
+    <summary>An extension node set definition.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
   <Members>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public ExtensionNodeSet ();" />
@@ -17,9 +22,46 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="CopyFrom">
+      <MemberSignature Language="C#" Value="public void CopyFrom (Mono.Addins.Description.ExtensionNodeSet nset);" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="nset" Type="Mono.Addins.Description.ExtensionNodeSet" />
+      </Parameters>
+      <Docs>
+        <param name="nset">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetAllowedNodeTypes">
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeTypeCollection GetAllowedNodeTypes ();" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.Description.ExtensionNodeTypeCollection</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
     <Member MemberName="Id">
-      <MemberSignature Language="C#" Value="public string Id { set; get; };" />
+      <MemberSignature Language="C#" Value="public string Id { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -29,9 +71,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="NodeSets">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.NodeSetIdCollection NodeSets { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.NodeSetIdCollection NodeSets { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.NodeSetIdCollection</ReturnType>
@@ -41,22 +86,24 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="NodeTypes">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeSetCollection NodeTypes { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeTypeCollection NodeTypes { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
-        <ReturnType>Mono.Addins.Description.ExtensionNodeSetCollection</ReturnType>
+        <ReturnType>Mono.Addins.Description.ExtensionNodeTypeCollection</ReturnType>
       </ReturnValue>
       <Docs>
         <summary>To be added.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
   </Members>
-  <Docs>
-    <summary>An extension node set definition.</summary>
-    <remarks>To be added.</remarks>
-  </Docs>
 </Type>

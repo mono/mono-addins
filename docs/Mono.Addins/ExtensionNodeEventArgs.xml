@@ -2,12 +2,17 @@
   <TypeSignature Language="C#" Value="public class ExtensionNodeEventArgs : Mono.Addins.ExtensionEventArgs" />
   <AssemblyInfo>
     <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>Mono.Addins.ExtensionEventArgs</BaseTypeName>
   </Base>
   <Interfaces />
+  <Docs>
+    <summary>Arguments for extension node events.</summary>
+    <remarks>Arguments for extension node events.</remarks>
+  </Docs>
   <Members>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public ExtensionNodeEventArgs (Mono.Addins.ExtensionChange change, Mono.Addins.ExtensionNode node);" />
@@ -22,9 +27,12 @@
         <summary>Creates an new instance.</summary>
         <remarks />
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Change">
-      <MemberSignature Language="C#" Value="public Mono.Addins.ExtensionChange Change { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.ExtensionChange Change { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.ExtensionChange</ReturnType>
@@ -34,9 +42,12 @@
         <value>Type of change.</value>
         <remarks />
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="ExtensionNode">
-      <MemberSignature Language="C#" Value="public Mono.Addins.ExtensionNode ExtensionNode { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.ExtensionNode ExtensionNode { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.ExtensionNode</ReturnType>
@@ -46,9 +57,12 @@
         <value>A node.</value>
         <remarks>Node that has been added or removed.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="ExtensionObject">
-      <MemberSignature Language="C#" Value="public object ExtensionObject { get; };" />
+      <MemberSignature Language="C#" Value="public object ExtensionObject { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.Object</ReturnType>
@@ -58,10 +72,24 @@
         <value>An extension object.</value>
         <remarks>This method can only be called if the node is of type TypeExtensionNode, an <see cref="T:System.InvalidOperationException" /> exception is thrown otherwise.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="Path">
+      <MemberSignature Language="C#" Value="public override string Path { get; }" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
   </Members>
-  <Docs>
-    <summary>Arguments for extension node events.</summary>
-    <remarks>Arguments for extension node events.</remarks>
-  </Docs>
 </Type>

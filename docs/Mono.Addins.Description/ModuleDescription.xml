@@ -2,12 +2,17 @@
   <TypeSignature Language="C#" Value="public class ModuleDescription : Mono.Addins.Description.ObjectDescription" />
   <AssemblyInfo>
     <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>Mono.Addins.Description.ObjectDescription</BaseTypeName>
   </Base>
   <Interfaces />
+  <Docs>
+    <summary>A module definition.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
   <Members>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public ModuleDescription ();" />
@@ -17,6 +22,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="AddAssemblyReference">
       <MemberSignature Language="C#" Value="public void AddAssemblyReference (string id, string version);" />
@@ -34,6 +42,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="AddExtensionNode">
       <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeDescription AddExtensionNode (string path, string nodeName);" />
@@ -52,9 +63,12 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="AllFiles">
-      <MemberSignature Language="C#" Value="public System.Collections.Specialized.StringCollection AllFiles { get; };" />
+      <MemberSignature Language="C#" Value="public System.Collections.Specialized.StringCollection AllFiles { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.Collections.Specialized.StringCollection</ReturnType>
@@ -64,9 +78,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Assemblies">
-      <MemberSignature Language="C#" Value="public System.Collections.Specialized.StringCollection Assemblies { get; };" />
+      <MemberSignature Language="C#" Value="public System.Collections.Specialized.StringCollection Assemblies { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.Collections.Specialized.StringCollection</ReturnType>
@@ -76,9 +93,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="DataFiles">
-      <MemberSignature Language="C#" Value="public System.Collections.Specialized.StringCollection DataFiles { get; };" />
+      <MemberSignature Language="C#" Value="public System.Collections.Specialized.StringCollection DataFiles { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.Collections.Specialized.StringCollection</ReturnType>
@@ -88,9 +108,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Dependencies">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.DependencyCollection Dependencies { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.DependencyCollection Dependencies { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.DependencyCollection</ReturnType>
@@ -100,9 +123,31 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="DependsOnAddin">
+      <MemberSignature Language="C#" Value="public bool DependsOnAddin (string addinId);" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="addinId" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="addinId">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
     <Member MemberName="Extensions">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionCollection Extensions { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionCollection Extensions { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.ExtensionCollection</ReturnType>
@@ -112,6 +157,9 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="GetExtension">
       <MemberSignature Language="C#" Value="public Mono.Addins.Description.Extension GetExtension (string path);" />
@@ -128,10 +176,24 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="IgnorePaths">
+      <MemberSignature Language="C#" Value="public System.Collections.Specialized.StringCollection IgnorePaths { get; }" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Specialized.StringCollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
   </Members>
-  <Docs>
-    <summary>A module definition.</summary>
-    <remarks>To be added.</remarks>
-  </Docs>
 </Type>

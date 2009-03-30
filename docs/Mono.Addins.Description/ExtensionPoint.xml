@@ -1,13 +1,18 @@
 <Type Name="ExtensionPoint" FullName="Mono.Addins.Description.ExtensionPoint">
-  <TypeSignature Language="C#" Value="public class ExtensionPoint : Mono.Addins.Description.ObjectDescription" />
+  <TypeSignature Language="C#" Value="public sealed class ExtensionPoint : Mono.Addins.Description.ObjectDescription" />
   <AssemblyInfo>
     <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>Mono.Addins.Description.ObjectDescription</BaseTypeName>
   </Base>
   <Interfaces />
+  <Docs>
+    <summary>An extension point definition.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
   <Members>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public ExtensionPoint ();" />
@@ -17,6 +22,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="AddExtensionNode">
       <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeType AddExtensionNode (string name, string typeName);" />
@@ -35,9 +43,12 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Conditions">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ConditionTypeDescriptionCollection Conditions { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ConditionTypeDescriptionCollection Conditions { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.ConditionTypeDescriptionCollection</ReturnType>
@@ -47,9 +58,30 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="CopyFrom">
+      <MemberSignature Language="C#" Value="public void CopyFrom (Mono.Addins.Description.ExtensionPoint ep);" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="ep" Type="Mono.Addins.Description.ExtensionPoint" />
+      </Parameters>
+      <Docs>
+        <param name="ep">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
     <Member MemberName="Description">
-      <MemberSignature Language="C#" Value="public string Description { set; get; };" />
+      <MemberSignature Language="C#" Value="public string Description { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -59,9 +91,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Name">
-      <MemberSignature Language="C#" Value="public string Name { set; get; };" />
+      <MemberSignature Language="C#" Value="public string Name { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -71,9 +106,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="NodeSet">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeSet NodeSet { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeSet NodeSet { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.ExtensionNodeSet</ReturnType>
@@ -83,9 +121,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Path">
-      <MemberSignature Language="C#" Value="public string Path { set; get; };" />
+      <MemberSignature Language="C#" Value="public string Path { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -95,10 +136,9 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
   </Members>
-  <Docs>
-    <summary>An extension point definition.</summary>
-    <remarks>To be added.</remarks>
-  </Docs>
 </Type>

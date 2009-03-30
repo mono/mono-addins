@@ -3,11 +3,16 @@
   <AssemblyInfo>
     <AssemblyName>Mono.Addins.Setup</AssemblyName>
     <AssemblyVersion>0.0.0.0</AssemblyVersion>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
   </Base>
   <Interfaces />
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
   <Members>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public SetupService ();" />
@@ -17,6 +22,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public SetupService (Mono.Addins.AddinRegistry registry);" />
@@ -29,9 +37,12 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="ApplicationNamespace">
-      <MemberSignature Language="C#" Value="public string ApplicationNamespace { set; get; };" />
+      <MemberSignature Language="C#" Value="public string ApplicationNamespace { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -41,6 +52,9 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="BuildPackage">
       <MemberSignature Language="C#" Value="public void BuildPackage (Mono.Addins.IProgressStatus statusMonitor, string targetDirectory, string[] filePaths);" />
@@ -66,6 +80,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="BuildRepository">
       <MemberSignature Language="C#" Value="public void BuildRepository (Mono.Addins.IProgressStatus statusMonitor, string path);" />
@@ -83,6 +100,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="GetAddinHeader">
       <MemberSignature Language="C#" Value="public static Mono.Addins.Setup.AddinHeader GetAddinHeader (Mono.Addins.Addin addin);" />
@@ -99,6 +119,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="GetDependentAddins">
       <MemberSignature Language="C#" Value="public Mono.Addins.Addin[] GetDependentAddins (string id, bool recursive);" />
@@ -117,6 +140,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Install">
       <MemberSignature Language="C#" Value="public bool Install (Mono.Addins.IProgressStatus statusMonitor, Mono.Addins.Setup.AddinRepositoryEntry[] addins);" />
@@ -141,6 +167,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Install">
       <MemberSignature Language="C#" Value="public bool Install (Mono.Addins.IProgressStatus statusMonitor, Mono.Addins.Setup.PackageCollection packages);" />
@@ -159,6 +188,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Install">
       <MemberSignature Language="C#" Value="public bool Install (Mono.Addins.IProgressStatus statusMonitor, string[] files);" />
@@ -183,9 +215,12 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="InstallDirectory">
-      <MemberSignature Language="C#" Value="public string InstallDirectory { set; get; };" />
+      <MemberSignature Language="C#" Value="public string InstallDirectory { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -195,9 +230,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Registry">
-      <MemberSignature Language="C#" Value="public Mono.Addins.AddinRegistry Registry { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.AddinRegistry Registry { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.AddinRegistry</ReturnType>
@@ -207,9 +245,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Repositories">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Setup.RepositoryRegistry Repositories { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Setup.RepositoryRegistry Repositories { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Setup.RepositoryRegistry</ReturnType>
@@ -219,6 +260,9 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="ResolveDependencies">
       <MemberSignature Language="C#" Value="public bool ResolveDependencies (Mono.Addins.IProgressStatus statusMonitor, Mono.Addins.Setup.PackageCollection packages, out Mono.Addins.Setup.PackageCollection toUninstall, out Mono.Addins.Description.DependencyCollection unresolved);" />
@@ -235,6 +279,36 @@
       <Docs>
         <param name="statusMonitor">To be added.</param>
         <param name="packages">To be added.</param>
+        <param name="toUninstall">To be added.</param>
+        <param name="unresolved">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="ResolveDependencies">
+      <MemberSignature Language="C#" Value="public bool ResolveDependencies (Mono.Addins.IProgressStatus statusMonitor, Mono.Addins.Setup.AddinRepositoryEntry[] addins, out Mono.Addins.Setup.PackageCollection resolved, out Mono.Addins.Setup.PackageCollection toUninstall, out Mono.Addins.Description.DependencyCollection unresolved);" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="statusMonitor" Type="Mono.Addins.IProgressStatus" />
+        <Parameter Name="addins" Type="Mono.Addins.Setup.AddinRepositoryEntry[]" />
+        <Parameter Name="resolved" Type="Mono.Addins.Setup.PackageCollection&amp;" RefType="out" />
+        <Parameter Name="toUninstall" Type="Mono.Addins.Setup.PackageCollection&amp;" RefType="out" />
+        <Parameter Name="unresolved" Type="Mono.Addins.Description.DependencyCollection&amp;" RefType="out" />
+      </Parameters>
+      <Docs>
+        <param name="statusMonitor">To be added.</param>
+        <param name="addins">To be added.</param>
+        <param name="resolved">To be added.</param>
         <param name="toUninstall">To be added.</param>
         <param name="unresolved">To be added.</param>
         <summary>To be added.</summary>
@@ -258,10 +332,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
   </Members>
-  <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
-  </Docs>
 </Type>

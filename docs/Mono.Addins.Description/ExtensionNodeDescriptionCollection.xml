@@ -1,18 +1,22 @@
 <Type Name="ExtensionNodeDescriptionCollection" FullName="Mono.Addins.Description.ExtensionNodeDescriptionCollection">
-  <TypeSignature Language="C#" Value="public class ExtensionNodeDescriptionCollection : Mono.Addins.Description.ObjectDescriptionCollection" />
+  <TypeSignature Language="C#" Value="public class ExtensionNodeDescriptionCollection : Mono.Addins.Description.ObjectDescriptionCollection, Mono.Addins.NodeElementCollection" />
   <AssemblyInfo>
     <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>Mono.Addins.Description.ObjectDescriptionCollection</BaseTypeName>
   </Base>
-  <Interfaces />
-  <Attributes>
-    <Attribute>
-      <AttributeName>System.Reflection.DefaultMember("Item")</AttributeName>
-    </Attribute>
-  </Attributes>
+  <Interfaces>
+    <Interface>
+      <InterfaceName>Mono.Addins.NodeElementCollection</InterfaceName>
+    </Interface>
+  </Interfaces>
+  <Docs>
+    <summary>A collection of extension nodes.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
   <Members>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public ExtensionNodeDescriptionCollection ();" />
@@ -22,9 +26,12 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Item">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeDescription this[int n] { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeDescription this[int n] { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.ExtensionNodeDescription</ReturnType>
@@ -38,10 +45,47 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="Item">
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeDescription this[string id] { get; }" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.Description.ExtensionNodeDescription</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="id" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="id">To be added.</param>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Mono.Addins.NodeElementCollection.Item">
+      <MemberSignature Language="C#" Value="Mono.Addins.NodeElement Mono.Addins.NodeElementCollection.Item[int n] { get; }" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.NodeElement</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="n" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="n">To be added.</param>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
   </Members>
-  <Docs>
-    <summary>A collection of extension nodes.</summary>
-    <remarks>To be added.</remarks>
-  </Docs>
 </Type>

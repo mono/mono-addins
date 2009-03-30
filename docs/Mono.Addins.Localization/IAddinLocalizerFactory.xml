@@ -1,0 +1,35 @@
+<Type Name="IAddinLocalizerFactory" FullName="Mono.Addins.Localization.IAddinLocalizerFactory">
+  <TypeSignature Language="C#" Value="public interface IAddinLocalizerFactory" />
+  <AssemblyInfo>
+    <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Interfaces />
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="CreateLocalizer">
+      <MemberSignature Language="C#" Value="public Mono.Addins.Localization.IAddinLocalizer CreateLocalizer (Mono.Addins.RuntimeAddin addin, Mono.Addins.NodeElement element);" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.Localization.IAddinLocalizer</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="addin" Type="Mono.Addins.RuntimeAddin" />
+        <Parameter Name="element" Type="Mono.Addins.NodeElement" />
+      </Parameters>
+      <Docs>
+        <param name="addin">To be added.</param>
+        <param name="element">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

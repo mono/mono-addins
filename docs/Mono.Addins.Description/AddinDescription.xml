@@ -2,6 +2,7 @@
   <TypeSignature Language="C#" Value="public class AddinDescription : Mono.Addins.Serialization.IBinaryXmlElement" />
   <AssemblyInfo>
     <AssemblyName>Mono.Addins</AssemblyName>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
@@ -12,6 +13,10 @@
       <InterfaceName>Mono.Addins.Serialization.IBinaryXmlElement</InterfaceName>
     </Interface>
   </Interfaces>
+  <Docs>
+    <summary>An add-in add-in description.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
   <Members>
     <Member MemberName=".ctor">
       <MemberSignature Language="C#" Value="public AddinDescription ();" />
@@ -21,6 +26,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="AddExtensionPoint">
       <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionPoint AddExtensionPoint (string path);" />
@@ -37,9 +45,27 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="AddinFile">
+      <MemberSignature Language="C#" Value="public string AddinFile { set; get; }" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="AddinId">
-      <MemberSignature Language="C#" Value="public string AddinId { get; };" />
+      <MemberSignature Language="C#" Value="public string AddinId { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -49,9 +75,12 @@
         <value>To be added.</value>
         <remarks>The full identifier of an add-in is the combination of the <see cref="P:Mono.Addins.Description.AddinDescription.Namespace" /> and the <see cref="P:Mono.Addins.Description.AddinDescription.LocalId" /> properties (it's like the full name of a class).</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="AllFiles">
-      <MemberSignature Language="C#" Value="public System.Collections.Specialized.StringCollection AllFiles { get; };" />
+      <MemberSignature Language="C#" Value="public System.Collections.Specialized.StringCollection AllFiles { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.Collections.Specialized.StringCollection</ReturnType>
@@ -61,9 +90,27 @@
         <value>List of all files that compose this add-in.</value>
         <remarks>Returns the list of all files which belong to this add-in, including assemblies and data files.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="AllIgnorePaths">
+      <MemberSignature Language="C#" Value="public System.Collections.Specialized.StringCollection AllIgnorePaths { get; }" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Specialized.StringCollection</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
     <Member MemberName="AllModules">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ModuleCollection AllModules { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ModuleCollection AllModules { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.ModuleCollection</ReturnType>
@@ -73,9 +120,12 @@
         <value>List of all modules defined in the add-in description.</value>
         <remarks>Returns a list of all modules defined in the add-in description, including the main module and the optional modules.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Author">
-      <MemberSignature Language="C#" Value="public string Author { set; get; };" />
+      <MemberSignature Language="C#" Value="public string Author { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -85,10 +135,16 @@
         <value>Author of the add-in.</value>
         <remarks />
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
-    <Member MemberName="Category">
-      <MemberSignature Language="C#" Value="public string Category { set; get; };" />
+    <Member MemberName="BasePath">
+      <MemberSignature Language="C#" Value="public string BasePath { get; }" />
       <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
@@ -98,23 +154,53 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="Check">
-      <MemberSignature Language="C#" Value="public static void Check (string fileName);" />
-      <MemberType>Method</MemberType>
+    <Member MemberName="CanDisable">
+      <MemberSignature Language="C#" Value="public bool CanDisable { get; }" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
+        <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
-      <Parameters>
-        <Parameter Name="fileName" Type="System.String" />
-      </Parameters>
       <Docs>
-        <param name="fileName">To be added.</param>
         <summary>To be added.</summary>
+        <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+    <Member MemberName="CanUninstall">
+      <MemberSignature Language="C#" Value="public bool CanUninstall { get; }" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Category">
+      <MemberSignature Language="C#" Value="public string Category { set; get; }" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
     <Member MemberName="CompatVersion">
-      <MemberSignature Language="C#" Value="public string CompatVersion { set; get; };" />
+      <MemberSignature Language="C#" Value="public string CompatVersion { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -124,9 +210,12 @@
         <value>Version of the add-in with which this add-in is backwards compatible.</value>
         <remarks>If not specified, the add-in is supposed to be backwards compatible with all versions.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="ConditionTypes">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ConditionTypeDescriptionCollection ConditionTypes { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ConditionTypeDescriptionCollection ConditionTypes { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.ConditionTypeDescriptionCollection</ReturnType>
@@ -136,9 +225,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Copyright">
-      <MemberSignature Language="C#" Value="public string Copyright { set; get; };" />
+      <MemberSignature Language="C#" Value="public string Copyright { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -148,9 +240,12 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Description">
-      <MemberSignature Language="C#" Value="public string Description { set; get; };" />
+      <MemberSignature Language="C#" Value="public string Description { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -160,9 +255,27 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="EnabledByDefault">
+      <MemberSignature Language="C#" Value="public bool EnabledByDefault { set; get; }" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
     <Member MemberName="ExtensionNodeSets">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeSetCollection ExtensionNodeSets { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeSetCollection ExtensionNodeSets { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.ExtensionNodeSetCollection</ReturnType>
@@ -172,9 +285,12 @@
         <value>Node sets defined in this add-in.</value>
         <remarks />
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="ExtensionPoints">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionPointCollection ExtensionPoints { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionPointCollection ExtensionPoints { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.ExtensionPointCollection</ReturnType>
@@ -184,9 +300,12 @@
         <value>Extension points defined in this add-in.</value>
         <remarks />
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="FileName">
-      <MemberSignature Language="C#" Value="public string FileName { set; get; };" />
+      <MemberSignature Language="C#" Value="public string FileName { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -196,9 +315,57 @@
         <value>File name where this add-in description is to be stored.</value>
         <remarks />
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="Flags">
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.AddinFlags Flags { set; get; }" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.Description.AddinFlags</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IsHidden">
+      <MemberSignature Language="C#" Value="public bool IsHidden { get; }" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IsRoot">
+      <MemberSignature Language="C#" Value="public bool IsRoot { set; get; }" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
     <Member MemberName="LocalId">
-      <MemberSignature Language="C#" Value="public string LocalId { set; get; };" />
+      <MemberSignature Language="C#" Value="public string LocalId { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -208,9 +375,27 @@
         <value>Identifier of the add-in.</value>
         <remarks>The full identifier of an add-in is the combination of the <see cref="P:Mono.Addins.Description.AddinDescription.Namespace" /> and the LocalId properties (it's like the full name of a class).</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="Localizer">
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ExtensionNodeDescription Localizer { set; get; }" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.Description.ExtensionNodeDescription</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
     <Member MemberName="MainModule">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ModuleDescription MainModule { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ModuleDescription MainModule { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.ModuleDescription</ReturnType>
@@ -220,9 +405,48 @@
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="Mono.Addins.Serialization.IBinaryXmlElement.Read">
+      <MemberSignature Language="C#" Value="void IBinaryXmlElement.Read (Mono.Addins.Serialization.BinaryXmlReader reader);" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="reader" Type="Mono.Addins.Serialization.BinaryXmlReader" />
+      </Parameters>
+      <Docs>
+        <param name="reader">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Mono.Addins.Serialization.IBinaryXmlElement.Write">
+      <MemberSignature Language="C#" Value="void IBinaryXmlElement.Write (Mono.Addins.Serialization.BinaryXmlWriter writer);" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="writer" Type="Mono.Addins.Serialization.BinaryXmlWriter" />
+      </Parameters>
+      <Docs>
+        <param name="writer">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
     </Member>
     <Member MemberName="Name">
-      <MemberSignature Language="C#" Value="public string Name { set; get; };" />
+      <MemberSignature Language="C#" Value="public string Name { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -232,9 +456,12 @@
         <value>Name of the add-in.</value>
         <remarks>This is the name shown in the add-in setup tools.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Namespace">
-      <MemberSignature Language="C#" Value="public string Namespace { set; get; };" />
+      <MemberSignature Language="C#" Value="public string Namespace { set; get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.String</ReturnType>
@@ -244,9 +471,12 @@
         <value>To be added.</value>
         <remarks>The full identifier of an add-in is the combination of the <see cref="P:Mono.Addins.Description.AddinDescription.Namespace" /> and the <see cref="P:Mono.Addins.Description.AddinDescription.LocalId" /> properties (it's like the full name of a class).</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="OptionalModules">
-      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ModuleCollection OptionalModules { get; };" />
+      <MemberSignature Language="C#" Value="public Mono.Addins.Description.ModuleCollection OptionalModules { get; }" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.ModuleCollection</ReturnType>
@@ -256,6 +486,28 @@
         <value>List of optional modules defined by this add-in.</value>
         <remarks>Optional modules are modules which are loaded only if the specified dependencies can be satisfied, otherwise they are ignored.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="Read">
+      <MemberSignature Language="C#" Value="public static Mono.Addins.Description.AddinDescription Read (string configFile);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.Description.AddinDescription</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="configFile" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="configFile">Name of the file.</param>
+        <summary>Loads a add-in description from an XML file.</summary>
+        <returns>The loaded add-in description.</returns>
+        <remarks>Loads a add-in description from the specified XML file.</remarks>
+      </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Read">
       <MemberSignature Language="C#" Value="public static Mono.Addins.Description.AddinDescription Read (System.IO.Stream stream, string basePath);" />
@@ -274,56 +526,26 @@
         <returns>The loaded add-in description.</returns>
         <remarks>Loads a add-in description from a stream.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Read">
-      <MemberSignature Language="C#" Value="public static Mono.Addins.Description.AddinDescription Read (System.IO.Stream stream, string basePath, bool check);" />
+      <MemberSignature Language="C#" Value="public static Mono.Addins.Description.AddinDescription Read (System.IO.TextReader reader, string basePath);" />
       <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
       <ReturnValue>
         <ReturnType>Mono.Addins.Description.AddinDescription</ReturnType>
       </ReturnValue>
       <Parameters>
-        <Parameter Name="stream" Type="System.IO.Stream" />
+        <Parameter Name="reader" Type="System.IO.TextReader" />
         <Parameter Name="basePath" Type="System.String" />
-        <Parameter Name="check" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="stream">To be added.</param>
+        <param name="reader">To be added.</param>
         <param name="basePath">To be added.</param>
-        <param name="check">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="Read">
-      <MemberSignature Language="C#" Value="public static Mono.Addins.Description.AddinDescription Read (string fileName);" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>Mono.Addins.Description.AddinDescription</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="fileName" Type="System.String" />
-      </Parameters>
-      <Docs>
-        <param name="fileName">Name of the file.</param>
-        <summary>Loads a add-in description from an XML file.</summary>
-        <returns>The loaded add-in description.</returns>
-        <remarks>Loads a add-in description from the specified XML file.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="Read">
-      <MemberSignature Language="C#" Value="public static Mono.Addins.Description.AddinDescription Read (string configFile, bool check);" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>Mono.Addins.Description.AddinDescription</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="configFile" Type="System.String" />
-        <Parameter Name="check" Type="System.Boolean" />
-      </Parameters>
-      <Docs>
-        <param name="configFile">To be added.</param>
-        <param name="check">To be added.</param>
         <summary>To be added.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
@@ -340,6 +562,9 @@
         <summary>Saves the add-in description to an XML file.</summary>
         <remarks>The add-in description is saved to the file specified in <see cref="P:Mono.Addins.Description.AddinDescription.FileName" />.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="Save">
       <MemberSignature Language="C#" Value="public void Save (string fileName);" />
@@ -355,55 +580,9 @@
         <summary>Saves the add-in description to an XML file.</summary>
         <remarks>Saves the add-in description to the specified file. This method also sets the FileName property.</remarks>
       </Docs>
-    </Member>
-    <Member MemberName="Url">
-      <MemberSignature Language="C#" Value="public string Url { set; get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>System.String</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>Url where more information about the add-in can be found.</summary>
-        <value>Url where more information about the add-in can be found.</value>
-        <remarks />
-      </Docs>
-    </Member>
-    <Member MemberName="Verify">
-      <MemberSignature Language="C#" Value="public System.Collections.Specialized.StringCollection Verify ();" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Collections.Specialized.StringCollection</ReturnType>
-      </ReturnValue>
-      <Parameters />
-      <Docs>
-        <summary>Verifies that the add-in description is correct.</summary>
-        <returns>An empty list if the add-in description is valid, or a list of error messages if it is not valid.</returns>
-        <remarks>Verifies the validity of the add-in description, and returns a list with all errors found.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="Version">
-      <MemberSignature Language="C#" Value="public string Version { set; get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>System.String</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>Version of the add-in.</summary>
-        <value>Version of the add-in.</value>
-        <remarks />
-      </Docs>
-    </Member>
-    <Member MemberName="AddinFile">
-      <MemberSignature Language="C#" Value="public string AddinFile { set; get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>System.String</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="SaveToXml">
       <MemberSignature Language="C#" Value="public System.Xml.XmlDocument SaveToXml ();" />
@@ -417,10 +596,55 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="Url">
+      <MemberSignature Language="C#" Value="public string Url { set; get; }" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Url where more information about the add-in can be found.</summary>
+        <value>Url where more information about the add-in can be found.</value>
+        <remarks />
+      </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="Verify">
+      <MemberSignature Language="C#" Value="public System.Collections.Specialized.StringCollection Verify ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Collections.Specialized.StringCollection</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Verifies that the add-in description is correct.</summary>
+        <returns>An empty list if the add-in description is valid, or a list of error messages if it is not valid.</returns>
+        <remarks>Verifies the validity of the add-in description, and returns a list with all errors found.</remarks>
+      </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="Version">
+      <MemberSignature Language="C#" Value="public string Version { set; get; }" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Version of the add-in.</summary>
+        <value>Version of the add-in.</value>
+        <remarks />
+      </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
   </Members>
-  <Docs>
-    <summary>An add-in add-in description.</summary>
-    <remarks>To be added.</remarks>
-  </Docs>
 </Type>

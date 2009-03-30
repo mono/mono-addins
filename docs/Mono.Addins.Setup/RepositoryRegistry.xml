@@ -3,11 +3,16 @@
   <AssemblyInfo>
     <AssemblyName>Mono.Addins.Setup</AssemblyName>
     <AssemblyVersion>0.0.0.0</AssemblyVersion>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Base>
     <BaseTypeName>System.Object</BaseTypeName>
   </Base>
   <Interfaces />
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
   <Members>
     <Member MemberName="ContainsRepository">
       <MemberSignature Language="C#" Value="public bool ContainsRepository (string url);" />
@@ -24,6 +29,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="GetAvailableAddin">
       <MemberSignature Language="C#" Value="public Mono.Addins.Setup.AddinRepositoryEntry[] GetAvailableAddin (string id, string version);" />
@@ -42,6 +50,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="GetAvailableAddin">
       <MemberSignature Language="C#" Value="public Mono.Addins.Setup.AddinRepositoryEntry[] GetAvailableAddin (string repositoryUrl, string id, string version);" />
@@ -62,6 +73,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="GetAvailableAddins">
       <MemberSignature Language="C#" Value="public Mono.Addins.Setup.AddinRepositoryEntry[] GetAvailableAddins ();" />
@@ -75,6 +89,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="GetAvailableAddins">
       <MemberSignature Language="C#" Value="public Mono.Addins.Setup.AddinRepositoryEntry[] GetAvailableAddins (string repositoryUrl);" />
@@ -91,6 +108,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="GetAvailableUpdates">
       <MemberSignature Language="C#" Value="public Mono.Addins.Setup.AddinRepositoryEntry[] GetAvailableUpdates ();" />
@@ -104,6 +124,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="GetAvailableUpdates">
       <MemberSignature Language="C#" Value="public Mono.Addins.Setup.AddinRepositoryEntry[] GetAvailableUpdates (string repositoryUrl);" />
@@ -120,6 +143,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="GetAvailableUpdates">
       <MemberSignature Language="C#" Value="public Mono.Addins.Setup.AddinRepositoryEntry[] GetAvailableUpdates (string id, string version);" />
@@ -138,6 +164,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="GetAvailableUpdates">
       <MemberSignature Language="C#" Value="public Mono.Addins.Setup.AddinRepositoryEntry[] GetAvailableUpdates (string repositoryUrl, string id, string version);" />
@@ -158,6 +187,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="GetRepositories">
       <MemberSignature Language="C#" Value="public Mono.Addins.Setup.AddinRepository[] GetRepositories ();" />
@@ -171,6 +203,9 @@
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="RegisterRepository">
       <MemberSignature Language="C#" Value="public Mono.Addins.Setup.AddinRepository RegisterRepository (Mono.Addins.IProgressStatus monitor, string url);" />
@@ -185,6 +220,32 @@
       <Docs>
         <param name="monitor">To be added.</param>
         <param name="url">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+    </Member>
+    <Member MemberName="RegisterRepository">
+      <MemberSignature Language="C#" Value="public Mono.Addins.Setup.AddinRepository RegisterRepository (Mono.Addins.IProgressStatus monitor, string url, bool updateNow);" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.Setup.AddinRepository</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="monitor" Type="Mono.Addins.IProgressStatus" />
+        <Parameter Name="url" Type="System.String" />
+        <Parameter Name="updateNow" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="monitor">To be added.</param>
+        <param name="url">To be added.</param>
+        <param name="updateNow">To be added.</param>
         <summary>To be added.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
@@ -204,6 +265,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="UpdateAllRepositories">
       <MemberSignature Language="C#" Value="public void UpdateAllRepositories (Mono.Addins.IProgressStatus monitor);" />
@@ -219,6 +283,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
     <Member MemberName="UpdateRepository">
       <MemberSignature Language="C#" Value="public void UpdateRepository (Mono.Addins.IProgressStatus statusMonitor, string url);" />
@@ -236,10 +303,9 @@
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
     </Member>
   </Members>
-  <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
-  </Docs>
 </Type>
