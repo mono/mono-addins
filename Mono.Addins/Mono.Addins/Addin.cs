@@ -146,7 +146,7 @@ namespace Mono.Addins
 				}
 
 				AddinDescription m;
-				database.ReadAddinDescription (null, configFile, out m);
+				database.ReadAddinDescription (new ConsoleProgressStatus (true), configFile, out m);
 				
 				if (m == null)
 					throw new InvalidOperationException ("Could not read add-in description");

@@ -51,7 +51,7 @@ namespace Mono.Addins
 		
 		public AddinRegistry (string registryPath, string startupDirectory)
 		{
-			basePath = Util.GetFullPath (registryPath);
+			basePath = Util.GetFullPath (Util.NormalizePath (registryPath));
 			database = new AddinDatabase (this);
 
 			// Look for add-ins in the hosts directory and in the default
@@ -61,8 +61,8 @@ namespace Mono.Addins
 			
 			// Get the domain corresponding to the startup folder
 			if (startupDirectory != null && startupDirectory.Length > 0) {
-				this.startupDirectory = startupDirectory;
-				currentDomain = database.GetFolderDomain (null, startupDirectory);
+				this.startupDirectory = Util.NormalizePath (startupDirectory);
+				currentDomain = database.GetFolderDomain (null, this.startupDirectory);
 			} else
 				currentDomain = AddinDatabase.GlobalDomain;
 		}
@@ -89,7 +89,7 @@ namespace Mono.Addins
 			get {
 				string customDir = Environment.GetEnvironmentVariable ("MONO_ADDINS_GLOBAL_REGISTRY");
 				if (customDir != null && customDir.Length > 0)
-					return Util.GetFullPath (customDir);
+					return Util.GetFullPath (Util.NormalizePath (customDir));
 				
 				string path = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData); 
 				path = Path.Combine (path, "mono.addins");

@@ -1,3 +1,19 @@
+2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins/RuntimeAddin.cs: New overload for GetFilePath.
+
+	* Mono.Addins/AddinSessionService.cs: Improve error reporting
+	  when the description of an add-in can't be loaded.
+
+	* Mono.Addins.Database/Util.cs:
+	* Mono.Addins/AddinRegistry.cs: Allow using special folder
+	  names in all paths. E.g. [ApplicationData]/MonoDevelop. It
+	  can be used when initializing the add-in engine or in
+	  .addins files.
+
+	* Mono.Addins/Addin.cs: Write errors when loading a
+	  description.
+
 2009-02-16  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins/ExtensionNodeChildAttribute.cs: Make sure the

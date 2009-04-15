@@ -197,6 +197,11 @@ namespace Mono.Addins
 			return Path.Combine (baseDirectory, fileName);
 		}
 		
+		public string GetFilePath (params string[] filePath)
+		{
+			return Path.Combine (baseDirectory, string.Join ("" + Path.DirectorySeparatorChar, filePath));
+		}
+		
 		public string PrivateDataPath {
 			get {
 				if (privatePath == null) {

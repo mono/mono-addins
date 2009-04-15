@@ -113,6 +113,18 @@ namespace Mono.Addins.Database
 		
 		public static string NormalizePath (string path)
 		{
+			if (path.Length > 2 && path [0] == '[') {
+				int i = path.IndexOf (']', 1);
+				if (i != -1) {
+					try {
+						string fname = path.Substring (1, i - 1);
+						Environment.SpecialFolder sf = (Environment.SpecialFolder) Enum.Parse (typeof(Environment.SpecialFolder), fname, true);
+						path = Environment.GetFolderPath (sf) + path.Substring (i + 1);
+					} catch {
+						// Ignore
+					}
+				}
+			}
 			if (IsWindows)
 				return path.Replace ('/','\\');
 			else

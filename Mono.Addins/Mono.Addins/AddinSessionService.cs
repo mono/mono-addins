@@ -47,6 +47,7 @@ namespace Mono.Addins
 		Hashtable autoExtensionTypes = new Hashtable ();
 		Hashtable loadedAssemblies = new Hashtable ();
 		AddinLocalizer defaultLocalizer;
+		IProgressStatus defaultProgressStatus = new ConsoleProgressStatus (false);
 		
 		internal void Initialize ()
 		{
@@ -384,7 +385,13 @@ namespace Mono.Addins
 			string asmFile = new Uri (asm.CodeBase).LocalPath;
 			Addin ainfo = AddinManager.Registry.GetAddinForHostAssembly (asmFile);
 			if (ainfo != null && !IsAddinLoaded (ainfo.Id)) {
-				if (ainfo.Description.FilesChanged ()) {
+				AddinDescription adesc = null;
+				try {
+					adesc = ainfo.Description;
+				} catch (Exception ex) {
+					defaultProgressStatus.ReportError ("Add-in description could not be loaded.", ex);
+				}
+				if (adesc == null || adesc.FilesChanged ()) {
 					// If the add-in has changed, update the add-in database.
 					// We do it here because once loaded, add-in roots can't be
 					// reloaded like regular add-ins.
