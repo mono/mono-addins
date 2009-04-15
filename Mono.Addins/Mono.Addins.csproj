@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <ProjectGuid>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AssemblyName>Mono.Addins</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
@@ -16,9 +16,8 @@
     <OutputPath>..\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <StartupObject>Mono.Addins.Database.SetupProcess</StartupObject>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <AssemblyKeyFile>..\mono-addins.snk</AssemblyKeyFile>
+    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>

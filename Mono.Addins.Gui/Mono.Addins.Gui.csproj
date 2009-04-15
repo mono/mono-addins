@@ -17,7 +17,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <AssemblyKeyFile>..\mono-addins.snk</AssemblyKeyFile>
+    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>

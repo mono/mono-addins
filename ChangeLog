@@ -1,3 +1,7 @@
+2009-04-15  Mike Kestner <mkestner@novell.com>
+
+	* */*.csproj: use correct keyfile element for signing.
+
 2009-03-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* mono-addins-docs.source: Moved to docs.
