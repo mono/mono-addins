@@ -1343,10 +1343,10 @@ namespace Mono.Addins.Database
 		
 		ISetupHandler GetSetupHandler ()
 		{
-/*			if (Util.IsMono)
+			if (Util.IsMono)
 				return new SetupProcess ();
 			else
-*/				return new SetupDomain ();
+				return new SetupDomain ();
 		}
 		
 		public void ResetConfiguration ()

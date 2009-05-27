@@ -89,7 +89,9 @@ namespace Mono.Addins.Gui
 			Log ("Error: " + message);
 			if (exception != null)
 				Log (exception.ToString ());
-			Services.ShowError (exception, message, null, true);
+			Gtk.Application.Invoke (delegate {
+				Services.ShowError (exception, message, null, true);
+			});
 			hadError = true;
 		}
 

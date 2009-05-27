@@ -1,3 +1,12 @@
+2009-05-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Remove startup class option.
+
+	* Mono.Addins.Database/SetupProcess.cs:
+	* Mono.Addins.Database/AddinDatabase.cs: Use a generated
+	  assembly instead of the dll to execute the scanner in a
+	  separate process.
+
 2009-04-15  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins/RuntimeAddin.cs: New overload for GetFilePath.
