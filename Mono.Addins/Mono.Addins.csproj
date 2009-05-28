@@ -20,6 +20,7 @@
     <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <ConsolePause>false</ConsolePause>
+    <AssemblyKeyFile>..\mono-addins.snk</AssemblyKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

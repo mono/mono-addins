@@ -20,6 +20,7 @@
     <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <ConsolePause>false</ConsolePause>
+    <AssemblyKeyFile>..\mono-addins.snk</AssemblyKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>

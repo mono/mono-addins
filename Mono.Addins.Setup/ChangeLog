@@ -1,3 +1,7 @@
+2009-05-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.Setup.csproj: Properly sign assemblies.
+
 2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Setup/SetupTool.cs: Added command for getting
