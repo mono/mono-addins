@@ -1,3 +1,7 @@
+2009-05-29  Jonathan Pobst  <monkey@jpobst.com>
+
+	* Mono.Addins.sln: Don't build the tests under the DebugWin32 configuration.
+
 2009-04-15  Mike Kestner <mkestner@novell.com>
 
 	* */*.csproj: use correct keyfile element for signing.
