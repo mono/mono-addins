@@ -35,7 +35,6 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="ICSharpCode.SharpZipLib" />
-    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj">

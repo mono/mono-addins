@@ -1,3 +1,9 @@
+2009-06-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Addins.Setup.csproj: Remove unnecessary Mono.Posix
+	  reference.
+
 2009-05-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Setup.csproj: Properly sign assemblies.

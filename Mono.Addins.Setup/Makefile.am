@@ -52,7 +52,6 @@ EXTRAS = \
 
 REFERENCES =  \
 	-r:ICSharpCode.SharpZipLib \
-	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml
 
