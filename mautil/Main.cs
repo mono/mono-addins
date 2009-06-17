@@ -1,5 +1,6 @@
 // project created on 16/07/2006 at 13:33
 using System;
+using System.Diagnostics;
 using Mono.Addins;
 using Mono.Addins.Setup;
 
@@ -15,7 +16,8 @@ namespace mautil
 				Console.WriteLine ();
 				Console.WriteLine ("Options:");
 				Console.WriteLine ("  --registry (-reg) Specify add-in registry path");
-				Console.WriteLine ("  --path (-p)       Specify startup path");
+				Console.WriteLine ("  --path (-p)       Specify startup path of the application");
+				Console.WriteLine ("  --package (-pkg)  Specify the package name of the application");
 				Console.WriteLine ("  -v                Verbose output");
 			}
 			
@@ -28,6 +30,7 @@ namespace mautil
 			
 			string path = null;
 			string startupPath = null;
+			string package = null;
 			bool toolParam = true;
 			
 			while (toolParam && ppos < args.Length)
@@ -40,12 +43,20 @@ namespace mautil
 					path = args [ppos + 1];
 					ppos += 2;
 				}
-				if (args [ppos] == "-p" || args [ppos] == "--path") {
+				else if (args [ppos] == "-p" || args [ppos] == "--path") {
 					if (ppos + 1 >= args.Length) {
 						Console.WriteLine ("Startup path not provided.");
 						return 1;
 					}
 					startupPath = args [ppos + 1];
+					ppos += 2;
+				}
+				else if (args [ppos] == "-pkg" || args [ppos] == "--package") {
+					if (ppos + 1 >= args.Length) {
+						Console.WriteLine ("Package name not provided.");
+						return 1;
+					}
+					package = args [ppos + 1];
 					ppos += 2;
 				}
 				else if (args [ppos] == "-v") {
@@ -55,10 +66,25 @@ namespace mautil
 					toolParam = false;
 			}
 			
-			if (startupPath == null)
-				startupPath = Environment.CurrentDirectory;
+			AddinRegistry reg;
 			
-			AddinRegistry reg = path != null ? new AddinRegistry (path, startupPath) : AddinRegistry.GetGlobalRegistry ();
+			if (package != null) {
+				if (startupPath != null || path != null) {
+					Console.WriteLine ("The --registry and --path options can't be used when --package is specified.");
+					return 1;
+				}
+				reg = SetupService.GetRegistryForPackage (package);
+				if (reg == null) {
+					Console.WriteLine ("The package could not be found or does not provide add-in registry information.");
+					return 1;
+				}
+			}
+			else {
+				if (startupPath == null)
+					startupPath = Environment.CurrentDirectory;
+				reg = path != null ? new AddinRegistry (path, startupPath) : AddinRegistry.GetGlobalRegistry ();
+			}
+			
 			try {
 				SetupTool setupTool = new SetupTool (reg);
 				setupTool.VerboseOutput = verbose;

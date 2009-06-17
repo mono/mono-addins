@@ -1,3 +1,8 @@
+2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Main.cs: Added arguments which allows specifying the add-in
+	  registry location using a package name.
+
 2009/02/06  Lluis Sanchez Gual  <lluis@novell.com>
 
  * mautil.csproj: Updated.
