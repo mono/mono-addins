@@ -907,8 +907,13 @@ namespace Mono.Addins.Setup
 			commands.Add (cmd);
 
 			cmd = new SetupCommand (cat, "info", null, new SetupCommandHandler (PrintAddinInfo));
-			cmd.Description = "Prints information about an add-in.";
-			cmd.AppendDesc ("Prints information about an add-in.");
+			cmd.Usage = "[addin-id|addin-file] [--xml] [--all] [--full] [--namespace <namespace>]";
+			cmd.Description = "Prints information about add-ins.";
+			cmd.AppendDesc ("Prints information about add-ins. Options:");
+			cmd.AppendDesc (" --xml: Dump the information using an XML format.");
+			cmd.AppendDesc (" --all: Dump information from all add-ins.");
+			cmd.AppendDesc (" --full: Include add-ins which don't define extension points.");
+			cmd.AppendDesc (" --namespace ns: Include only add-ins from the specified 'ns' namespace.");
 			commands.Add (cmd);
 
 			cat = "Packaging Commands";

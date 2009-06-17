@@ -34,6 +34,8 @@ using System.Collections;
 using ICSharpCode.SharpZipLib.Zip;
 using Mono.Addins.Description;
 using Mono.Addins.Setup.ProgressMonitoring;
+using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace Mono.Addins.Setup
 {
@@ -365,6 +367,48 @@ namespace Mono.Addins.Setup
 		{
 			if (Directory.Exists (RepositoryCachePath))
 				Directory.Delete (RepositoryCachePath, true);
+		}
+		
+		public static AddinRegistry GetRegistryForPackage (string name)
+		{
+			string startupDir;
+			string regDir;
+			try {
+				if (System.IO.Path.DirectorySeparatorChar == '\\') {
+					// On windows, look for packages in the registry
+					RegistryKey fxFolderKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Mono\Mono.Addins\AddinRoots\" + name, false);
+					if (fxFolderKey != null) {
+						startupDir = fxFolderKey.GetValue ("RootPath") as string;
+						regDir = fxFolderKey.GetValue ("RegistryPath") as string;
+						fxFolderKey.Close ();
+					} else
+						return null;
+				}
+				else {
+					// On Unix, look for registry info using pkg-config
+					ProcessStartInfo pinfo = new ProcessStartInfo ("pkg-config","--variable=MonoAddinsRoot " + name);
+					pinfo.UseShellExecute = false;
+					pinfo.RedirectStandardOutput = true;
+					pinfo.RedirectStandardError = true;
+					Process proc = Process.Start (pinfo);
+					startupDir = proc.StandardOutput.ReadLine ();
+					proc.WaitForExit ();
+					if (proc.ExitCode != 0)
+						return null;
+					
+					pinfo = new ProcessStartInfo ("pkg-config","--variable=MonoAddinsRegistry " + name);
+					pinfo.UseShellExecute = false;
+					pinfo.RedirectStandardOutput = true;
+					proc = Process.Start (pinfo);
+					regDir = proc.StandardOutput.ReadLine ();
+					proc.WaitForExit ();
+					if (proc.ExitCode != 0)
+						return null;
+				}
+			} catch {
+				return null;
+			}
+			return new AddinRegistry (regDir, startupDir);
 		}
 	}
 }
