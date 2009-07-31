@@ -762,7 +762,7 @@ namespace Mono.Addins.Database
 						if (eatt.InsertAfter.Length > 0)
 							elem.SetAttribute ("insertafter", eatt.InsertAfter);
 						if (eatt.InsertBefore.Length > 0)
-							elem.SetAttribute ("insertbefore", eatt.InsertAfter);
+							elem.SetAttribute ("insertbefore", eatt.InsertBefore);
 					}
 				}
 				else {
@@ -966,7 +966,7 @@ namespace Mono.Addins.Database
 			if (eatt.InsertAfter.Length > 0)
 				elem.SetAttribute ("insertafter", eatt.InsertAfter);
 			if (eatt.InsertBefore.Length > 0)
-				elem.SetAttribute ("insertbefore", eatt.InsertAfter);
+				elem.SetAttribute ("insertbefore", eatt.InsertBefore);
 		}
 		
 		internal string GetDefaultTypeExtensionPath (AddinDescription desc, string typeFullName)
