@@ -168,11 +168,11 @@ namespace Mono.Addins
 		
 		public AddinDescription ReadAddinManifestFile (string file)
 		{
-			if (currentDomain == AddinDatabase.UnknownDomain)
-				return null;
 			AddinDescription desc = AddinDescription.Read (file);
-			desc.OwnerDatabase = database;
-			desc.Domain = currentDomain;
+			if (currentDomain != AddinDatabase.UnknownDomain) {
+				desc.OwnerDatabase = database;
+				desc.Domain = currentDomain;
+			}
 			return desc;
 		}
 		
