@@ -1,5 +1,9 @@
 2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins/ExtensionContext.cs: Fix potentiall nullref.
+
+2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Addins/AddinRegistry.cs: Allow reading add-in manifests
 	  even if the registry is not fully initialized.
 

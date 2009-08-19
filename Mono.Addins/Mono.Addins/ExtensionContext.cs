@@ -63,8 +63,11 @@ namespace Mono.Addins
 		{
 			tree.ResetCachedData ();
 			if (childContexts != null) {
-				foreach (ExtensionContext ctx in childContexts)
-					ctx.ResetCachedData ();
+				foreach (WeakReference wref in childContexts) {
+					ExtensionContext ctx = wref.Target as ExtensionContext;
+					if (ctx != null)
+						ctx.ResetCachedData ();
+				}
 			}
 		}
 		
