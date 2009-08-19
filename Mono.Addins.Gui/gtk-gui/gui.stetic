@@ -2,7 +2,7 @@
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
-    <target-gtk-version>2.8.5</target-gtk-version>
+    <target-gtk-version>2.8</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="../../bin/Mono.Addins.Gui.dll" internal="true" />
@@ -242,7 +242,6 @@
                           <widget class="Gtk.TreeView" id="addinTree">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
-                            <property name="HeadersClickable">True</property>
                             <signal name="CursorChanged" handler="OnSelectionChanged" />
                           </widget>
                         </child>
@@ -545,7 +544,6 @@
                               <widget class="Gtk.TreeView" id="addinTree">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
-                                <property name="HeadersClickable">True</property>
                                 <signal name="CursorChanged" handler="OnActiveAddinChanged" />
                               </widget>
                             </child>
@@ -751,7 +749,6 @@ asd
                 <child>
                   <widget class="Gtk.Label" id="label1">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -787,7 +784,6 @@ asd
                 <child>
                   <widget class="Gtk.Label" id="label2">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">3</property>
@@ -821,7 +817,6 @@ asd
                         <child>
                           <widget class="Gtk.Label" id="label130">
                             <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes" />
                           </widget>
                           <packing>
                             <property name="Position">0</property>
@@ -899,7 +894,6 @@ asd
                         <child>
                           <widget class="Gtk.Label" id="label131">
                             <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes" />
                           </widget>
                           <packing>
                             <property name="Position">5</property>
@@ -1046,7 +1040,6 @@ asd
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="HeadersVisible">False</property>
-                    <property name="HeadersClickable">True</property>
                   </widget>
                 </child>
               </widget>
@@ -1190,7 +1183,6 @@ asd
                   <widget class="Gtk.Label" id="label122">
                     <property name="MemberName" />
                     <property name="WidthRequest">32</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -1258,7 +1250,6 @@ asd
                   <widget class="Gtk.Label" id="label123">
                     <property name="MemberName" />
                     <property name="WidthRequest">32</property>
-                    <property name="LabelProp" translatable="yes" />
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -1481,7 +1472,6 @@ asd
     <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
@@ -1618,7 +1608,6 @@ asd
     <property name="Modal">True</property>
     <property name="Buttons">1</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
@@ -1632,7 +1621,6 @@ asd
               <widget class="Gtk.Label" id="labelMessage">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes" />
               </widget>
               <packing>
                 <property name="Position">0</property>

@@ -1,3 +1,7 @@
+2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* mautil.csproj: Update target framework to 2.0.
+
 2009-06-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Main.cs: Added arguments which allows specifying the add-in
