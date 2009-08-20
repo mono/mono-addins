@@ -1,0 +1,10 @@
+2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* AssemblyInfo.cs:
+	* Mono.Addins.targets:
+	* mono-addins-msbuild.pc.in:
+	* ResolveAddinReferences.cs:
+	* Mono.Addins.MSBuild.csproj: Added a new project which
+	  Implements an msbuild task for resolving add-in references.
+

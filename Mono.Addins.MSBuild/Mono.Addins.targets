@@ -1,0 +1,17 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<UsingTask TaskName="Mono.Addins.MSBuild.ResolveAddinReferences" AssemblyName="Mono.Addins.MSBuild, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756"/>
+
+	<PropertyGroup>
+		<ResolveReferencesDependsOn>
+			ResolveAddinReferences;
+			$(ResolveReferencesDependsOn)
+		</ResolveReferencesDependsOn>
+	</PropertyGroup>
+	
+	<Target Name="ResolveAddinReferences">
+		<ResolveAddinReferences AddinReferences="@(AddinReference)" ExtensionDomain="@(ExtensionDomain)">
+			<Output TaskParameter="References" ItemName="ReferencePath" />
+		</ResolveAddinReferences>
+	</Target>
+	
+</Project>

@@ -31,11 +31,13 @@ using System;
 using System.Xml;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.SharpZipLib.Zip;
 using Mono.Addins.Description;
 using Mono.Addins.Setup.ProgressMonitoring;
 using Microsoft.Win32;
 using System.Diagnostics;
+using Mono.PkgConfig;
 
 namespace Mono.Addins.Setup
 {
@@ -369,7 +371,7 @@ namespace Mono.Addins.Setup
 				Directory.Delete (RepositoryCachePath, true);
 		}
 		
-		public static AddinRegistry GetRegistryForPackage (string name)
+		public static AddinRegistry GetRegistryForApplication (string name)
 		{
 			string startupDir;
 			string regDir;
@@ -409,6 +411,100 @@ namespace Mono.Addins.Setup
 				return null;
 			}
 			return new AddinRegistry (regDir, startupDir);
+		}
+		
+		static AddinsPcFileCache pcFileCache;
+		
+		public static Application[] GetExtensibleApplications ()
+		{
+			return GetExtensibleApplications (null);
+		}
+		
+		public static Application[] GetExtensibleApplications (IEnumerable<string> searchPaths)
+		{
+			List<Application> list = new List<Application> ();
+			
+			if (pcFileCache == null) {
+				pcFileCache = new AddinsPcFileCache ();
+				if (searchPaths != null)
+					pcFileCache.Update (searchPaths);
+				else
+					pcFileCache.Update ();
+			}
+			foreach (BasePackageInfo pinfo in pcFileCache.AllPackages) {
+				if (pinfo.IsValidPackage)
+					list.Add (new Application (pinfo));
+			}
+			return list.ToArray ();
+		}
+	}
+	
+	class AddinsPcFileCacheContext: IPcFileCacheContext<BasePackageInfo>
+	{
+		public bool IsCustomDataComplete (string pcfile, BasePackageInfo pkg)
+		{
+			return true;
+		}
+		
+		public void StoreCustomData (Mono.PkgConfig.PcFile pcfile, BasePackageInfo pkg)
+		{
+		}
+
+		public void ReportError (string message, System.Exception ex)
+		{
+			Console.WriteLine (message);
+			Console.WriteLine (ex);
+		}
+	}
+	
+	class AddinsPcFileCache: BasePcFileCache<BasePackageInfo>
+	{
+		public AddinsPcFileCache (): base (new AddinsPcFileCacheContext ())
+		{
+		}
+		
+		protected override string CacheDirectory {
+			get {
+				string path = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
+				path = Path.Combine (path, "mono.addins");
+				return path;
+			}
+		}
+		
+		protected override void ParsePackageInfo (PcFile file, BasePackageInfo pinfo)
+		{
+			string rootPath = file.GetVariable ("MonoAddinsRoot");
+			string regPath = file.GetVariable ("MonoAddinsRegistry");
+			if (string.IsNullOrEmpty (rootPath) || string.IsNullOrEmpty (regPath))
+				return;
+			pinfo.SetData ("MonoAddinsRoot", rootPath);
+			pinfo.SetData ("MonoAddinsRegistry", regPath);
+		}
+	}
+	
+	public class Application
+	{
+		AddinRegistry registry;
+		string rootPath;
+		string regPath;
+		
+		internal Application (BasePackageInfo pinfo)
+		{
+			Name = pinfo.Name;
+			Description = pinfo.Description;
+			rootPath = pinfo.GetData ("MonoAddinsRoot");
+			regPath = pinfo.GetData ("MonoAddinsRegistry");
+		}
+		
+		public string Description { get; internal set; }
+		public string Name { get; internal set; }
+		
+		public AddinRegistry Registry {
+			get {
+				if (registry == null)
+					registry = new AddinRegistry (regPath, rootPath);
+				return registry;
+			}
 		}
 	}
 }

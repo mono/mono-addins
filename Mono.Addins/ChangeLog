@@ -1,3 +1,8 @@
+2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am: Added a new project which Implements an msbuild
+	  task for resolving add-in references.
+
 2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins/ExtensionContext.cs: Fix potentiall nullref.

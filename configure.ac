@@ -87,12 +87,14 @@ AC_CONFIG_FILES([
 ./Mono.Addins/mono-addins.pc
 ./Mono.Addins.Gui/mono-addins-gui.pc
 ./Mono.Addins.Setup/mono-addins-setup.pc
+./Mono.Addins.MSBuild/mono-addins-msbuild.pc
 ./Makefile
 ./policy.config
 ./Mono.Addins.Gui/Makefile
 ./Mono.Addins.Setup/Makefile
 ./Mono.Addins/Makefile
 ./Mono.Addins.CecilReflector/Makefile
+./Mono.Addins.MSBuild/Makefile
 ./mautil/Makefile
 ./mautil/mautil
 ./docs/Makefile

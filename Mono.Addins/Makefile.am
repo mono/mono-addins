@@ -1,7 +1,7 @@
 
 KEY_FILE=$(top_srcdir)/mono-addins.snk
-ASSEMBLY_COMPILER_COMMAND = mcs
-ASSEMBLY_COMPILER_FLAGS =  -keyfile:$(KEY_FILE) -langversion:ISO-1 -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG
+ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_FLAGS =  -keyfile:$(KEY_FILE) -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG
 ASSEMBLY = ../bin/Mono.Addins.dll
 ASSEMBLY_NAME=Mono.Addins
 COMPILE_TARGET = exe

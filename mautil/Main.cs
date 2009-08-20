@@ -73,7 +73,7 @@ namespace mautil
 					Console.WriteLine ("The --registry and --path options can't be used when --package is specified.");
 					return 1;
 				}
-				reg = SetupService.GetRegistryForPackage (package);
+				reg = SetupService.GetRegistryForApplication (package);
 				if (reg == null) {
 					Console.WriteLine ("The package could not be found or does not provide add-in registry information.");
 					return 1;

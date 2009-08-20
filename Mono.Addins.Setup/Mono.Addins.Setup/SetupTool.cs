@@ -391,6 +391,16 @@ namespace Mono.Addins.Setup
 			Console.WriteLine (sb);
 		}
 		
+		void PrintApplications (string[] args)
+		{
+			foreach (Application app in SetupService.GetExtensibleApplications ()) {
+				string line = app.Name;
+				if (!string.IsNullOrEmpty (app.Description))
+					line += " - " + app.Description;
+				Console.WriteLine (line);
+			}
+		}
+		
 		void UpdateRegistry (string[] args)
 		{
 			registry.Update (new ConsoleProgressStatus (verbose));
@@ -949,6 +959,11 @@ namespace Mono.Addins.Setup
 			cmd.AppendDesc ("as arguments. This list of assemblies can be used as references for");
 			cmd.AppendDesc ("building add-ins that depend on them. If the -r option is specified,");
 			cmd.AppendDesc ("each assembly is prefixed with '-r:'.");
+			commands.Add (cmd);
+
+			cmd = new SetupCommand (cat, "applications", "apps", new SetupCommandHandler (PrintApplications));
+			cmd.Description = "Lists extensible applications.";
+			cmd.AppendDesc ("Prints a list of registered extensible applications.");
 			commands.Add (cmd);
 			
 			cat = "Debug Commands";

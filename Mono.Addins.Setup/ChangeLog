@@ -1,3 +1,12 @@
+2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Addins.Setup.csproj:
+	* Mono.Addins.Setup/SetupTool.cs:
+	* Mono.Addins.Setup/PcFileCache.cs:
+	* Mono.Addins.Setup/SetupService.cs: Added a new project which
+	  Implements an msbuild task for resolving add-in references.
+
 2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Setup.csproj: Update target framework to 2.0.

@@ -73,6 +73,7 @@
     <Compile Include="Mono.Addins.Setup\SetupService.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Mono.Addins.Setup\ConsoleAddinInstaller.cs" />
+    <Compile Include="Mono.Addins.Setup\PcFileCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
