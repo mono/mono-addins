@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace Mono.PkgConfig
 {
-	internal interface IPcFileCacheContext<TP> where TP:BasePackageInfo, new()
+	internal interface IPcFileCacheContext<TP> where TP:PackageInfo, new()
 	{
 		// In the implementation of this method, the host application can extract
 		// information from the pc file and store it in the PackageInfo object
@@ -46,16 +46,30 @@ namespace Mono.PkgConfig
 		void ReportError (string message, Exception ex);
 	}
 	
-	internal abstract class BasePcFileCache<TP> where TP:BasePackageInfo, new()
+	internal interface IPcFileCacheContext: IPcFileCacheContext<PackageInfo>
+	{
+	}
+	
+	internal abstract class PcFileCache: PcFileCache<PackageInfo>
+	{
+		public PcFileCache (IPcFileCacheContext ctx): base (ctx)
+		{
+		}
+	}
+	
+	internal abstract class PcFileCache<TP> where TP:PackageInfo, new()
 	{
 		const string CACHE_VERSION = "2";
 		
 		Dictionary<string, TP> infos = new Dictionary<string, TP> ();
+		Dictionary<string, List<TP>> filesByFolder = new Dictionary<string, List<TP>> ();
+		
 		string cacheFile;
 		bool hasChanges;
 		IPcFileCacheContext<TP> ctx;
+		IEnumerable<string> defaultPaths;
 		
-		public BasePcFileCache (IPcFileCacheContext<TP> ctx)
+		public PcFileCache (IPcFileCacheContext<TP> ctx)
 		{
 			this.ctx = ctx;
 			try {
@@ -77,9 +91,7 @@ namespace Mono.PkgConfig
 		// Updates the pkg-config index, using the default search directories
 		public void Update ()
 		{
-			string pkgConfigPath = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
-			string pkgConfigDir = Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBDIR");
-			Update (GetPkgconfigPaths (null, pkgConfigPath, pkgConfigDir));
+			Update (GetDefaultPaths ());
 		}
 
 		// Updates the pkg-config index, looking for .pc files in the provided directories
@@ -92,14 +104,42 @@ namespace Mono.PkgConfig
 			Save ();
 		}
 		
-		public IEnumerable<TP> AllPackages {
-			get { return infos.Values; }
+		public IEnumerable<TP> GetPackages ()
+		{
+			return GetPackages (null);
+		}
+		
+		public IEnumerable<TP> GetPackages (IEnumerable<string> pkgConfigDirs)
+		{
+			if (pkgConfigDirs == null)
+				pkgConfigDirs = GetDefaultPaths ();
+
+			foreach (string sp in pkgConfigDirs) {
+				List<TP> list;
+				if (filesByFolder.TryGetValue (Path.GetFullPath (sp), out list)) {
+					foreach (TP p in list)
+						yield return p;
+				}
+			}
+		}
+		
+		public TP GetPackageInfoByName (string name)
+		{
+			return GetPackageInfoByName (name, null);
+		}
+		
+		public TP GetPackageInfoByName (string name, IEnumerable<string> pkgConfigDirs)
+		{
+			foreach (TP p in GetPackages (pkgConfigDirs))
+				if (p.Name == name)
+					return p;
+			return null;
 		}
 		
 		// Returns information about a .pc file
 		public TP GetPackageInfo (string file)
 		{
-			TP info;
+			TP info, oldInfo = null;
 			file = Path.GetFullPath (file);
 			
 			DateTime wtime = File.GetLastWriteTime (file);
@@ -108,6 +148,7 @@ namespace Mono.PkgConfig
 				if (infos.TryGetValue (file, out info)) {
 					if (info.LastWriteTime == wtime)
 						return info;
+					oldInfo = info;
 				}
 			}
 
@@ -122,11 +163,40 @@ namespace Mono.PkgConfig
 				if (!info.IsValidPackage)
 					info = new TP (); // Create a default empty instance
 				info.LastWriteTime = wtime;
-				infos [file] = info;
+				Add (file, info, oldInfo);
 				hasChanges = true;
 			}
 			
 			return info;
+		}
+		
+/*		void Remove (string file, TP pinfo)
+		{
+			infos.Remove (file);
+			string dir = Path.GetFullPath (Path.GetDirectoryName (file));
+			List<TP> list;
+			if (filesByFolder.TryGetValue (dir, out list))
+				list.Remove (pinfo);
+		}
+		*/
+		
+		void Add (string file, TP info, TP replacedInfo)
+		{
+			infos [file] = info;
+			string dir = Path.GetFullPath (Path.GetDirectoryName (file));
+			List<TP> list;
+			if (!filesByFolder.TryGetValue (dir, out list)) {
+				list = new List<TP> ();
+				filesByFolder [dir] = list;
+			}
+			if (replacedInfo != null) {
+				int i = list.IndexOf (replacedInfo);
+				if (i != -1) {
+					list [i] = info;
+					return;
+				}
+			}
+			list.Add (info);
 		}
 		
 		FileStream OpenFile (FileAccess access)
@@ -246,7 +316,7 @@ namespace Mono.PkgConfig
 			tr.MoveToContent ();
 			
 			if (!pinfo.IsValidPackage || ctx.IsCustomDataComplete (file, pinfo))
-				infos [file] = pinfo;
+				Add (file, pinfo, null);
 		}
 		
 		protected virtual void ReadPackageContent (XmlReader tr, TP pinfo)
@@ -279,6 +349,15 @@ namespace Mono.PkgConfig
 		{
 		}
 		
+		IEnumerable<string> GetDefaultPaths ()
+		{
+			if (defaultPaths == null) {
+				string pkgConfigPath = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
+				string pkgConfigDir = Environment.GetEnvironmentVariable ("PKG_CONFIG_LIBDIR");
+				defaultPaths = GetPkgconfigPaths (null, pkgConfigPath, pkgConfigDir);
+			}
+			return defaultPaths;
+		}
 		
 		public IEnumerable<string> GetPkgconfigPaths (string prefix, string pkgConfigPath, string pkgConfigLibdir)
 		{
@@ -454,7 +533,7 @@ namespace Mono.PkgConfig
 		}
 	}
 	
-	internal class BasePackageInfo
+	internal class PackageInfo
 	{
 		Dictionary<string,string> customData;
 

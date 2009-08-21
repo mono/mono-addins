@@ -50,14 +50,14 @@ namespace Mono.Addins.MSBuild
 				return true;
 			}
 			string domain = extensionDomain[0].ItemSpec;
-			AddinRegistry registry = SetupService.GetRegistryForApplication (domain);
-			if (registry == null) {
+			Application app = SetupService.GetExtensibleApplication (domain);
+			if (app == null) {
 				Log.LogError ("Extension domain '{0}' not found", domain);
 				return false;
 			}
 			
 			foreach (ITaskItem item in addinReferences) {
-				Addin addin = registry.GetAddin (item.ItemSpec);
+				Addin addin = app.Registry.GetAddin (item.ItemSpec);
 				if (addin == null) {
 					Log.LogError ("Add-in '{0}' not found", item.ItemSpec);
 					return false;

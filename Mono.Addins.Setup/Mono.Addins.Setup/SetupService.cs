@@ -371,49 +371,20 @@ namespace Mono.Addins.Setup
 				Directory.Delete (RepositoryCachePath, true);
 		}
 		
-		public static AddinRegistry GetRegistryForApplication (string name)
+		public static Application GetExtensibleApplication (string name)
 		{
-			string startupDir;
-			string regDir;
-			try {
-				if (System.IO.Path.DirectorySeparatorChar == '\\') {
-					// On windows, look for packages in the registry
-					RegistryKey fxFolderKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Mono\Mono.Addins\AddinRoots\" + name, false);
-					if (fxFolderKey != null) {
-						startupDir = fxFolderKey.GetValue ("RootPath") as string;
-						regDir = fxFolderKey.GetValue ("RegistryPath") as string;
-						fxFolderKey.Close ();
-					} else
-						return null;
-				}
-				else {
-					// On Unix, look for registry info using pkg-config
-					ProcessStartInfo pinfo = new ProcessStartInfo ("pkg-config","--variable=MonoAddinsRoot " + name);
-					pinfo.UseShellExecute = false;
-					pinfo.RedirectStandardOutput = true;
-					pinfo.RedirectStandardError = true;
-					Process proc = Process.Start (pinfo);
-					startupDir = proc.StandardOutput.ReadLine ();
-					proc.WaitForExit ();
-					if (proc.ExitCode != 0)
-						return null;
-					
-					pinfo = new ProcessStartInfo ("pkg-config","--variable=MonoAddinsRegistry " + name);
-					pinfo.UseShellExecute = false;
-					pinfo.RedirectStandardOutput = true;
-					proc = Process.Start (pinfo);
-					regDir = proc.StandardOutput.ReadLine ();
-					proc.WaitForExit ();
-					if (proc.ExitCode != 0)
-						return null;
-				}
-			} catch {
-				return null;
-			}
-			return new AddinRegistry (regDir, startupDir);
+			return GetExtensibleApplication (name, null);
 		}
 		
-		static AddinsPcFileCache pcFileCache;
+		public static Application GetExtensibleApplication (string name, IEnumerable<string> searchPaths)
+		{
+			AddinsPcFileCache pcc = GetAddinsPcFileCache (searchPaths);
+			PackageInfo pi = pcc.GetPackageInfoByName (name, searchPaths);
+			if (pi != null)
+				return new Application (pi);
+			else
+				return null;
+		}
 		
 		public static Application[] GetExtensibleApplications ()
 		{
@@ -424,6 +395,18 @@ namespace Mono.Addins.Setup
 		{
 			List<Application> list = new List<Application> ();
 			
+			AddinsPcFileCache pcc = GetAddinsPcFileCache (searchPaths);
+			foreach (PackageInfo pinfo in pcc.GetPackages (searchPaths)) {
+				if (pinfo.IsValidPackage)
+					list.Add (new Application (pinfo));
+			}
+			return list.ToArray ();
+		}
+		
+		static AddinsPcFileCache pcFileCache;
+		
+		static AddinsPcFileCache GetAddinsPcFileCache (IEnumerable<string> searchPaths)
+		{
 			if (pcFileCache == null) {
 				pcFileCache = new AddinsPcFileCache ();
 				if (searchPaths != null)
@@ -431,22 +414,18 @@ namespace Mono.Addins.Setup
 				else
 					pcFileCache.Update ();
 			}
-			foreach (BasePackageInfo pinfo in pcFileCache.AllPackages) {
-				if (pinfo.IsValidPackage)
-					list.Add (new Application (pinfo));
-			}
-			return list.ToArray ();
+			return pcFileCache;
 		}
 	}
 	
-	class AddinsPcFileCacheContext: IPcFileCacheContext<BasePackageInfo>
+	class AddinsPcFileCacheContext: IPcFileCacheContext
 	{
-		public bool IsCustomDataComplete (string pcfile, BasePackageInfo pkg)
+		public bool IsCustomDataComplete (string pcfile, PackageInfo pkg)
 		{
 			return true;
 		}
 		
-		public void StoreCustomData (Mono.PkgConfig.PcFile pcfile, BasePackageInfo pkg)
+		public void StoreCustomData (Mono.PkgConfig.PcFile pcfile, PackageInfo pkg)
 		{
 		}
 
@@ -457,7 +436,7 @@ namespace Mono.Addins.Setup
 		}
 	}
 	
-	class AddinsPcFileCache: BasePcFileCache<BasePackageInfo>
+	class AddinsPcFileCache: PcFileCache
 	{
 		public AddinsPcFileCache (): base (new AddinsPcFileCacheContext ())
 		{
@@ -471,38 +450,42 @@ namespace Mono.Addins.Setup
 			}
 		}
 		
-		protected override void ParsePackageInfo (PcFile file, BasePackageInfo pinfo)
+		protected override void ParsePackageInfo (PcFile file, PackageInfo pinfo)
 		{
 			string rootPath = file.GetVariable ("MonoAddinsRoot");
 			string regPath = file.GetVariable ("MonoAddinsRegistry");
+			string testCmd = file.GetVariable ("MonoAddinsTestCommand");
 			if (string.IsNullOrEmpty (rootPath) || string.IsNullOrEmpty (regPath))
 				return;
 			pinfo.SetData ("MonoAddinsRoot", rootPath);
 			pinfo.SetData ("MonoAddinsRegistry", regPath);
+			pinfo.SetData ("MonoAddinsTestCommand", testCmd);
 		}
 	}
 	
 	public class Application
 	{
 		AddinRegistry registry;
-		string rootPath;
-		string regPath;
 		
-		internal Application (BasePackageInfo pinfo)
+		internal Application (PackageInfo pinfo)
 		{
 			Name = pinfo.Name;
 			Description = pinfo.Description;
-			rootPath = pinfo.GetData ("MonoAddinsRoot");
-			regPath = pinfo.GetData ("MonoAddinsRegistry");
+			StartupPath = pinfo.GetData ("MonoAddinsRoot");
+			RegistryPath = pinfo.GetData ("MonoAddinsRegistry");
+			TestCommand = pinfo.GetData ("MonoAddinsTestCommand");
 		}
 		
 		public string Description { get; internal set; }
 		public string Name { get; internal set; }
+		public string TestCommand { get; internal set; }
+		public string StartupPath { get; internal set; }
+		public string RegistryPath { get; internal set; }
 		
 		public AddinRegistry Registry {
 			get {
 				if (registry == null)
-					registry = new AddinRegistry (regPath, rootPath);
+					registry = new AddinRegistry (RegistryPath, StartupPath);
 				return registry;
 			}
 		}

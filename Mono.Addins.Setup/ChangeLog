@@ -1,3 +1,12 @@
+2009-08-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.Setup/SetupService.cs: Applications can now
+	  register a test command to be used for testing add-ins.
+	  Don't use the pkg-config command, use instead the
+	  PcFileCache.
+
+	* Mono.Addins.Setup/PcFileCache.cs: Updated.
+
 2009-08-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:
