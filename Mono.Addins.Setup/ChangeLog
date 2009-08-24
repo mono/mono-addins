@@ -1,3 +1,7 @@
+2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.Setup/PcFileCache.cs: Updated from MD.
+
 2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Setup/PcFileCache.cs:
