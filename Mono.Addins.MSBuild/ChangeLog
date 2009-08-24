@@ -1,3 +1,7 @@
+2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.MSBuild.csproj: Added Default configuration.
+
 2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.MSBuild.csproj: Fix build.
