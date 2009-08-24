@@ -466,27 +466,56 @@ namespace Mono.Addins.Setup
 	public class Application
 	{
 		AddinRegistry registry;
+		string description;
+		string name;
+		string testCommand;
+		string startupPath;
+		string registryPath;
 		
 		internal Application (PackageInfo pinfo)
 		{
-			Name = pinfo.Name;
-			Description = pinfo.Description;
-			StartupPath = pinfo.GetData ("MonoAddinsRoot");
-			RegistryPath = pinfo.GetData ("MonoAddinsRegistry");
-			TestCommand = pinfo.GetData ("MonoAddinsTestCommand");
+			name = pinfo.Name;
+			description = pinfo.Description;
+			startupPath = pinfo.GetData ("MonoAddinsRoot");
+			registryPath = pinfo.GetData ("MonoAddinsRegistry");
+			testCommand = pinfo.GetData ("MonoAddinsTestCommand");
 		}
-		
-		public string Description { get; internal set; }
-		public string Name { get; internal set; }
-		public string TestCommand { get; internal set; }
-		public string StartupPath { get; internal set; }
-		public string RegistryPath { get; internal set; }
 		
 		public AddinRegistry Registry {
 			get {
 				if (registry == null)
 					registry = new AddinRegistry (RegistryPath, StartupPath);
 				return registry;
+			}
+		}
+
+		public string Description {
+			get {
+				return description;
+			}
+		}
+
+		public string Name {
+			get {
+				return name;
+			}
+		}
+
+		public string RegistryPath {
+			get {
+				return registryPath;
+			}
+		}
+
+		public string StartupPath {
+			get {
+				return startupPath;
+			}
+		}
+
+		public string TestCommand {
+			get {
+				return testCommand;
 			}
 		}
 	}
