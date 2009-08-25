@@ -1,5 +1,9 @@
 2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins.sln: Disable some projects on windows.
+
+2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Addins.sln: Fix configuration mapping.
 
 2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
