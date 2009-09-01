@@ -1,3 +1,7 @@
+2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* AssemblyInfo.cs: Bump Mono.Addins version.
+
 2009-08-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.MSBuild.csproj: Added Default configuration.
