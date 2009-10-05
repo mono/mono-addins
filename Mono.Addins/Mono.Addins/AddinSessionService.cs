@@ -53,6 +53,7 @@ namespace Mono.Addins
 		{
 			defaultContext = new ExtensionContext ();
 			ActivateRoots ();
+			OnAssemblyLoaded (null, null);
 			AppDomain.CurrentDomain.AssemblyLoad += new AssemblyLoadEventHandler (OnAssemblyLoaded);
 		}
 		
@@ -369,7 +370,8 @@ namespace Mono.Addins
 
 		void OnAssemblyLoaded (object s, AssemblyLoadEventArgs a)
 		{
-			CheckHostAssembly (a.LoadedAssembly);
+			if (a != null)
+				CheckHostAssembly (a.LoadedAssembly);
 		}
 		
 		internal void ActivateRoots ()

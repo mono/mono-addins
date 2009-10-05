@@ -1,3 +1,8 @@
+2009-10-05  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins/AddinSessionService.cs: Pre-jit the assembly
+	  loader hook.
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs: Bump Mono.Addins version.
