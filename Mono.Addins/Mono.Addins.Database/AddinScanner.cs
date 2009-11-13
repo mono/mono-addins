@@ -354,7 +354,7 @@ namespace Mono.Addins.Database
 						if (database.SaveDescription (monitor, config, replaceFileName)) {
 							// The new dependencies also have to be updated
 							Util.AddDependencies (config, scanResult);
-							scanResult.AddAddinToUpdateRelations (config.AddinId);
+							scanResult.AddAddinToUpdate (config.AddinId);
 							scannedAddinId = config.AddinId;
 							scannedIsRoot = config.IsRoot;
 							return;

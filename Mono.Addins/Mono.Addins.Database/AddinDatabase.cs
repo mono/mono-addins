@@ -471,7 +471,7 @@ namespace Mono.Addins.Database
 				Update (null, domain);
 		}
 		
-		void GenerateAddinExtensionMapsInternal (IProgressStatus monitor, ArrayList addinsToUpdate, ArrayList removedAddins)
+		void GenerateAddinExtensionMapsInternal (IProgressStatus monitor, ArrayList addinsToUpdate, ArrayList addinsToUpdateRelations, ArrayList removedAddins)
 		{
 			AddinUpdateData updateData = new AddinUpdateData (this, monitor);
 			
@@ -496,31 +496,41 @@ namespace Mono.Addins.Database
 			
 			if (partialGeneration) {
 				changedAddins = new Hashtable ();
+				
+				if (monitor.LogLevel > 2)
+					monitor.Log ("Doing a partial registry update.\nAdd-ins to be updated:");
+				// Get the files and ids of all add-ins that have to be updated
 				foreach (string sa in addinsToUpdate) {
 					changedAddins [sa] = sa;
-					
-					// Look for all versions of the add-in, because this id may be the id of a reference,
-					// and the exact reference version may not be installed.
-					string s = sa;
-					int i = s.LastIndexOf (',');
-					if (i != -1)
-						s = s.Substring (0, i);
-					s += ",*";
-					
-					// Look for the add-in in any of the existing folders
-					foreach (string domain in domains) {
-						string mp = GetDescriptionPath (domain, s);
-						string dir = Path.GetDirectoryName (mp);
-						string pat = Path.GetFileName (mp);
-						foreach (string fmp in fileDatabase.GetDirectoryFiles (dir, pat)) {
-							if (files.Contains (fmp))
-								continue;
-							files.Add (fmp);
-							string an = Path.GetFileNameWithoutExtension (fmp);
+					if (monitor.LogLevel > 2)
+						monitor.Log (" - " + sa);
+					foreach (string file in GetAddinFiles (sa, domains)) {
+						if (!files.Contains (file)) {
+							files.Add (file);
+							string an = Path.GetFileNameWithoutExtension (file);
 							changedAddins [an] = an;
+							if (monitor.LogLevel > 2 && an != sa)
+								monitor.Log (" - " + an);
 						}
 					}
 				}
+				
+				if (monitor.LogLevel > 2)
+					monitor.Log ("Add-ins whose relations have to be updated:");
+				
+				// Get the files and ids of all add-ins whose relations have to be updated
+				foreach (string sa in addinsToUpdateRelations) {
+					foreach (string file in GetAddinFiles (sa, domains)) {
+						if (!files.Contains (file)) {
+							if (monitor.LogLevel > 2) {
+								string an = Path.GetFileNameWithoutExtension (file);
+								monitor.Log (" - " + an);
+							}
+							files.Add (file);
+						}
+					}
+				}
+				
 				foreach (string s in removedAddins)
 					changedAddins [s] = s;
 			}
@@ -544,8 +554,8 @@ namespace Mono.Addins.Database
 					continue;
 				}
 				
-				// Remove old data from the description. If changedAddins==null, removes all data.
-				// Otherwise, removes data only from the addins in the table.
+				// Remove old data from the description. Remove the data of the add-ins that
+				// have changed. This data will be re-added later.
 				
 				conf.UnmergeExternalData (changedAddins);
 				descriptionsToSave.Add (conf);
@@ -561,9 +571,17 @@ namespace Mono.Addins.Database
 			foreach (AddinDescription conf in sorted)
 				CollectExtensionPointData (conf, updateData);
 			
+			if (monitor.LogLevel > 2)
+				monitor.Log ("Registering new extensions:");
+			
 			// Register extensions
-			foreach (AddinDescription conf in sorted)
-				CollectExtensionData (conf, updateData);
+			foreach (AddinDescription conf in sorted) {
+				if (changedAddins.ContainsKey (conf.AddinId)) {
+					if (monitor.LogLevel > 2)
+						monitor.Log ("- " + conf.AddinId + " (" + conf.Domain + ")");
+					CollectExtensionData (conf, updateData);
+				}
+			}
 			
 			// Save the maps
 			foreach (AddinDescription conf in descriptionsToSave)
@@ -576,6 +594,26 @@ namespace Mono.Addins.Database
 				monitor.Log ("  Extensions: " + updateData.RelExtensions);
 				monitor.Log ("  Extension nodes: " + updateData.RelExtensionNodes);
 				monitor.Log ("  Node sets: " + updateData.RelNodeSetTypes);
+			}
+		}
+		
+		IEnumerable GetAddinFiles (string fullId, string[] domains)
+		{
+			// Look for all versions of the add-in, because this id may be the id of a reference,
+			// and the exact reference version may not be installed.
+			string s = fullId;
+			int i = s.LastIndexOf (',');
+			if (i != -1)
+				s = s.Substring (0, i);
+			s += ",*";
+			
+			// Look for the add-in in any of the existing folders
+			foreach (string domain in domains) {
+				string mp = GetDescriptionPath (domain, s);
+				string dir = Path.GetDirectoryName (mp);
+				string pat = Path.GetFileName (mp);
+				foreach (string fmp in fileDatabase.GetDirectoryFiles (dir, pat))
+					yield return fmp;
 			}
 		}
 		
@@ -1045,10 +1083,11 @@ namespace Mono.Addins.Database
 				if (scanResult.RegenerateRelationData) {
 					if (monitor.LogLevel > 1)
 						monitor.Log ("Regenerating all add-in relations.");
+					scanResult.AddinsToUpdate = null;
 					scanResult.AddinsToUpdateRelations = null;
 				}
 				
-				GenerateAddinExtensionMapsInternal (monitor, scanResult.AddinsToUpdateRelations, scanResult.RemovedAddins);
+				GenerateAddinExtensionMapsInternal (monitor, scanResult.AddinsToUpdate, scanResult.AddinsToUpdateRelations, scanResult.RemovedAddins);
 			}
 			catch (Exception ex) {
 				fatalDatabseError = true;

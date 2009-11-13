@@ -1,3 +1,23 @@
+2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.Description/Extension.cs: Allow Not condition.
+
+	* Mono.Addins.Database/AddinUpdateData.cs: Added some verbose
+	  logging.
+
+	* Mono.Addins.Database/AddinScanner.cs:
+	* Mono.Addins.Database/AddinDatabase.cs:
+	* Mono.Addins.Database/AddinScanResult.cs: Split the
+	  AddinsToUpdateRelation list in two. AddinsToUpdate contains
+	  addins that have been modified and whose extensions have to
+	  be registered again. AddinsToUpdateRelation now contains
+	  addins which have not been directly modified, but which are
+	  dependencies of modified add-ins. The extensions of those
+	  add-ins won't be processed, they will just include the new
+	  extensions from the updated add-ins.
+
+	* Mono.Addins.Database/SetupDomain.cs: Remove debug messages.
+
 2009-10-05  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins/AddinSessionService.cs: Pre-jit the assembly

@@ -173,6 +173,9 @@ namespace Mono.Addins.Database
 					if (!einfo.ExtensionPoint.Addins.Contains (description.AddinId))
 						einfo.ExtensionPoint.Addins.Add (description.AddinId);
 					found = true;
+					if (monitor.LogLevel > 2) {
+						monitor.Log ("  * " + einfo.Description.AddinId + "(" + einfo.Description.Domain + ") <- " + path);
+					}
 				}
 			}
 			if (!found)

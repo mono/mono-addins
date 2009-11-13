@@ -23,11 +23,7 @@ namespace mautil
 			
 			int ppos = 0;
 			
-			bool verbose = false;
-			foreach (string a in args)
-				if (a == "-v")
-					verbose = true;
-			
+			int verbose = 1;
 			string path = null;
 			string startupPath = null;
 			string package = null;
@@ -60,7 +56,7 @@ namespace mautil
 					ppos += 2;
 				}
 				else if (args [ppos] == "-v") {
-					verbose = true;
+					verbose++;
 					ppos++;
 				} else
 					toolParam = false;
@@ -88,7 +84,7 @@ namespace mautil
 			
 			try {
 				SetupTool setupTool = new SetupTool (reg);
-				setupTool.VerboseOutput = verbose;
+				setupTool.VerboseOutputLevel = verbose;
 				return setupTool.Run (args, ppos);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);

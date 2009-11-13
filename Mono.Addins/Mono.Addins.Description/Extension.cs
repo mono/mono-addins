@@ -138,7 +138,7 @@ namespace Mono.Addins.Description
 		void VerifyConditionNode (string location, ExtensionNodeDescription node, StringCollection errors)
 		{
 			string nodeName = node.NodeName;
-			if (nodeName != "Or" && nodeName != "And" && nodeName != "Condition") {
+			if (nodeName != "Or" && nodeName != "And" && nodeName != "Not" && nodeName != "Condition") {
 				errors.Add (location + "ComplexCondition: Invalid condition element: " + nodeName);
 				return;
 			}

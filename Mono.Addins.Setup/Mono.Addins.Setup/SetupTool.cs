@@ -49,7 +49,7 @@ namespace Mono.Addins.Setup
 		string setupAppName = "";
 		int uniqueId = 0;
 		
-		bool verbose;
+		int verbose = 1;
 		
 		public SetupTool (AddinRegistry registry)
 		{
@@ -69,6 +69,11 @@ namespace Mono.Addins.Setup
 		}
 		
 		public bool VerboseOutput {
+			get { return verbose > 1; }
+			set { verbose = value ? 2 : 1; }
+		}
+		
+		public int VerboseOutputLevel {
 			get { return verbose; }
 			set { verbose = value; }
 		}
@@ -92,7 +97,8 @@ namespace Mono.Addins.Setup
 			
 			try {
 				ReadOptions (parms);
-				verbose = verbose || HasOption ("v");
+				if (HasOption ("v"))
+					verbose++;
 				return RunCommand (args [0], parms);
 			} catch (InstallException ex) {
 				Console.WriteLine (ex.Message);

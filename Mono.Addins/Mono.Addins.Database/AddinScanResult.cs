@@ -40,6 +40,7 @@ namespace Mono.Addins.Database
 	{
 		internal ArrayList AddinsToScan = new ArrayList ();
 		internal ArrayList AddinsToUpdateRelations = new ArrayList ();
+		internal ArrayList AddinsToUpdate = new ArrayList ();
 		internal ArrayList FilesToScan = new ArrayList ();
 		internal ArrayList ModifiedFolderInfos = new ArrayList ();
 		internal ArrayList FilesWithScanFailure = new ArrayList ();
@@ -146,6 +147,12 @@ namespace Mono.Addins.Database
 		{
 			if (!AddinsToUpdateRelations.Contains (addinId))
 				AddinsToUpdateRelations.Add (addinId);
+		}
+		
+		public void AddAddinToUpdate (string addinId)
+		{
+			if (!AddinsToUpdate.Contains (addinId))
+				AddinsToUpdate.Add (addinId);
 		}
 		
 		public void AddAssemblyLocation (string file)

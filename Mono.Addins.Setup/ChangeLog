@@ -1,3 +1,8 @@
+2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.Setup/SetupTool.cs: Allow specifying multiple
+	  levels of verbosity.
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs: Bump Mono.Addins version.

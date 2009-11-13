@@ -95,7 +95,6 @@ namespace Mono.Addins.Database
 		
 		public void Scan (IProgressStatus monitor, string registryPath, string startupDir, string scanFolder, string[] filesToIgnore)
 		{
-			Console.WriteLine ("pp SCAN: " + AppDomain.CurrentDomain.FriendlyName);
 			AddinDatabase.RunningSetupProcess = true;
 			AddinRegistry reg = new AddinRegistry (registryPath, startupDir);
 			StringCollection files = new StringCollection ();
@@ -106,7 +105,6 @@ namespace Mono.Addins.Database
 		
 		public void GetAddinDescription (IProgressStatus monitor, string registryPath, string startupDir, string file, string outFile)
 		{
-			Console.WriteLine ("pp GETDESC: " + AppDomain.CurrentDomain.FriendlyName);
 			AddinDatabase.RunningSetupProcess = true;
 			AddinRegistry reg = new AddinRegistry (registryPath, startupDir);
 			reg.ParseAddin (monitor, file, outFile);
