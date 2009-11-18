@@ -576,7 +576,7 @@ namespace Mono.Addins.Database
 			
 			// Register extensions
 			foreach (AddinDescription conf in sorted) {
-				if (changedAddins.ContainsKey (conf.AddinId)) {
+				if (changedAddins == null || changedAddins.ContainsKey (conf.AddinId)) {
 					if (monitor.LogLevel > 2)
 						monitor.Log ("- " + conf.AddinId + " (" + conf.Domain + ")");
 					CollectExtensionData (conf, updateData);
