@@ -85,6 +85,10 @@ namespace Mono.Addins
 			return reg;
 		}
 		
+		internal bool UnknownDomain {
+			get { return currentDomain == AddinDatabase.UnknownDomain; }
+		}
+		
 		internal static string GlobalRegistryPath {
 			get {
 				string customDir = Environment.GetEnvironmentVariable ("MONO_ADDINS_GLOBAL_REGISTRY");

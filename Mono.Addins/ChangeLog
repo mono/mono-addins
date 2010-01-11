@@ -1,3 +1,10 @@
+2010-01-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins/AddinManager.cs:
+	* Mono.Addins/AddinRegistry.cs: Update the registry when the
+	  domain of a directory can't be retrieved for some reason
+	  (for example, if the registry has been cleaned)
+
 2009-11-18  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Database/AddinDatabase.cs: Add missing null

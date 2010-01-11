@@ -77,7 +77,7 @@ namespace Mono.Addins
 			else
 				registry = new AddinRegistry (configDir, startupDirectory);
 
-			if (registry.CreateHostAddinsFile (asmFile))
+			if (registry.CreateHostAddinsFile (asmFile) || registry.UnknownDomain)
 				registry.Update (new ConsoleProgressStatus (false));
 			
 			initialized = true;
