@@ -139,8 +139,10 @@ namespace Mono.Addins
 			if (addin != null) {
 				addin.UnloadExtensions ();
 				loadedAddins.Remove (Addin.GetIdName (id));
-				foreach (Assembly asm in addin.Assemblies)
-					loadedAssemblies.Remove (asm);
+				if (addin.AssembliesLoaded) {
+					foreach (Assembly asm in addin.Assemblies)
+						loadedAssemblies.Remove (asm);
+				}
 				AddinManager.ReportAddinUnload (id);
 			}
 		}
@@ -196,7 +198,7 @@ namespace Mono.Addins
 
 		internal void ResetCachedData ()
 		{
-			foreach (RuntimeAddin ad in loadedAssemblies.Values)
+			foreach (RuntimeAddin ad in loadedAddins.Values)
 				ad.Addin.ResetCachedData ();
 			if (defaultContext != null)
 				defaultContext.ResetCachedData ();
@@ -229,9 +231,6 @@ namespace Mono.Addins
 				foreach (ExtensionPoint ep in description.ExtensionPoints)
 					InsertExtensionPoint (p, ep);
 				
-				foreach (Assembly asm in p.Assemblies)
-					loadedAssemblies [asm] = p;
-				
 				// Fire loaded event
 				defaultContext.NotifyAddinLoaded (p);
 				AddinManager.ReportAddinLoad (p.Id);
@@ -243,6 +242,12 @@ namespace Mono.Addins
 					statusMonitor.ReportError ("Add-in '" + iad.Id + "' could not be loaded.", ex);
 				return false;
 			}
+		}
+		
+		internal void RegisterAssemblies (RuntimeAddin addin)
+		{
+			foreach (Assembly asm in addin.Assemblies)
+				loadedAssemblies [asm] = addin;
 		}
 		
 		internal void InsertExtensionPoint (RuntimeAddin addin, ExtensionPoint ep)

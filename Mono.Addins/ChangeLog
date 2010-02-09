@@ -1,3 +1,9 @@
+2010-02-09  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins/RuntimeAddin.cs:
+	* Mono.Addins/AddinSessionService.cs: Improve delayed loading
+	  of assemblies.
+
 2010-01-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins/AddinManager.cs:
