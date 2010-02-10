@@ -1,3 +1,7 @@
+2010-02-11  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins/RuntimeAddin.cs: Remove debug spew.
+
 2010-02-09  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins/RuntimeAddin.cs:

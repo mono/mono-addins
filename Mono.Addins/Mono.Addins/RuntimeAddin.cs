@@ -300,8 +300,6 @@ namespace Mono.Addins
 			return description;
 		}
 		
-		static int addds = 0;
-		
 		void GetDepAddins (ModuleDescription module, string ns, ArrayList plugList)
 		{
 			// Collect dependent ids
@@ -339,11 +337,8 @@ namespace Mono.Addins
 					}
 				}
 
-				if (asm == null) {
+				if (asm == null)
 					asm = Assembly.LoadFrom (asmPath);
-					addds++;
-					Console.WriteLine ("ADDS: " + addds);
-				}
 
 				asmList.Add (asm);
 			}
