@@ -273,7 +273,7 @@ namespace Mono.Addins
 			
 			// Get dependencies for the optional modules, if the dependencies are present
 			foreach (ModuleDescription module in description.OptionalModules) {
-				if (CheckAddinDependencies (module))
+				if (CheckAddinDependencies (module, false))
 					GetDepAddins (module, description.Namespace, plugList);
 			}
 			
@@ -337,8 +337,9 @@ namespace Mono.Addins
 					}
 				}
 
-				if (asm == null)
+				if (asm == null) {
 					asm = Assembly.LoadFrom (asmPath);
+				}
 
 				asmList.Add (asm);
 			}
@@ -354,12 +355,16 @@ namespace Mono.Addins
 				AddinManager.SessionService.UnregisterNodeSet (rel);
 		}
 		
-		bool CheckAddinDependencies (ModuleDescription module)
+		bool CheckAddinDependencies (ModuleDescription module, bool forceLoadAssemblies)
 		{
 			foreach (Dependency dep in module.Dependencies) {
 				AddinDependency pdep = dep as AddinDependency;
-				if (pdep != null && !AddinManager.SessionService.IsAddinLoaded (pdep.FullAddinId))
+				if (pdep == null)
+					continue;
+				if (!AddinManager.SessionService.IsAddinLoaded (pdep.FullAddinId))
 					return false;
+				if (forceLoadAssemblies)
+					AddinManager.SessionService.GetAddin (pdep.FullAddinId).EnsureAssembliesLoaded ();
 			}
 			return true;
 		}
@@ -377,11 +382,12 @@ namespace Mono.Addins
 			ArrayList asmList = new ArrayList ();
 			
 			// Load the main modules
+			CheckAddinDependencies (description.MainModule, true);
 			LoadModule (description.MainModule, asmList);
 			
 			// Load the optional modules, if the dependencies are present
 			foreach (ModuleDescription module in description.OptionalModules) {
-				if (CheckAddinDependencies (module))
+				if (CheckAddinDependencies (module, true))
 					LoadModule (module, asmList);
 			}
 			

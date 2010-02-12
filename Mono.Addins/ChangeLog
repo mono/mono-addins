@@ -1,3 +1,9 @@
+2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins/RuntimeAddin.cs: When loading the assemblies of
+	  an add-in, make sure the assemblies of the add-ins on which
+	  it depends are also loaded.
+
 2010-02-11  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins/RuntimeAddin.cs: Remove debug spew.
