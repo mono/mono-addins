@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using Mono.Addins.Description;
 
@@ -212,9 +213,20 @@ namespace Mono.Addins
 				return null;
 		}
 		
+		public T GetExtensionNode<T> (string path) where T: ExtensionNode
+		{
+			return (T) GetExtensionNode (path);
+		}
+		
 		public ExtensionNodeList GetExtensionNodes (string path)
 		{
 			return GetExtensionNodes (path, null);
+		}
+		
+		public ExtensionNodeList<T> GetExtensionNodes<T> (string path) where T: ExtensionNode
+		{
+			ExtensionNodeList nodes = GetExtensionNodes (path, typeof(T));
+			return new ExtensionNodeList<T> (nodes.list);
 		}
 		
 		public ExtensionNodeList GetExtensionNodes (string path, Type expectedNodeType)
@@ -235,7 +247,7 @@ namespace Mono.Addins
 				}
 				if (foundError) {
 					// Create a new list excluding the elements that failed the test
-					ArrayList newList = new ArrayList ();
+					List<ExtensionNode> newList = new List<ExtensionNode> ();
 					foreach (ExtensionNode cnode in list) {
 						if (expectedNodeType.IsInstanceOfType (cnode))
 							newList.Add (cnode);
@@ -251,12 +263,25 @@ namespace Mono.Addins
 			return GetExtensionObjects (instanceType, true);
 		}
 		
+		public T[] GetExtensionObjects<T> ()
+		{
+			return GetExtensionObjects<T> (true);
+		}
+		
 		public object[] GetExtensionObjects (Type instanceType, bool reuseCachedInstance)
 		{
 			string path = AddinManager.SessionService.GetAutoTypeExtensionPoint (instanceType);
 			if (path == null)
 				return (object[]) Array.CreateInstance (instanceType, 0);
 			return GetExtensionObjects (path, instanceType, reuseCachedInstance);
+		}
+		
+		public T[] GetExtensionObjects<T> (bool reuseCachedInstance)
+		{
+			string path = AddinManager.SessionService.GetAutoTypeExtensionPoint (typeof(T));
+			if (path == null)
+				return new T[0];
+			return GetExtensionObjects<T> (path, reuseCachedInstance);
 		}
 		
 		public object[] GetExtensionObjects (string path)
@@ -272,6 +297,19 @@ namespace Mono.Addins
 		public object[] GetExtensionObjects (string path, Type arrayElementType)
 		{
 			return GetExtensionObjects (path, arrayElementType, true);
+		}
+		
+		public T[] GetExtensionObjects<T> (string path)
+		{
+			return GetExtensionObjects<T> (path, true);
+		}
+		
+		public T[] GetExtensionObjects<T> (string path, bool reuseCachedInstance)
+		{
+			ExtensionNode node = GetExtensionNode (path);
+			if (node == null)
+				throw new InvalidOperationException ("Extension node not found in path: " + path);
+			return node.GetChildObjects<T> (reuseCachedInstance);
 		}
 		
 		public object[] GetExtensionObjects (string path, Type arrayElementType, bool reuseCachedInstance)

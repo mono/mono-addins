@@ -60,10 +60,10 @@ namespace Mono.Addins
 			}
 			
 			int curPos = tnode.ChildCount;
-			LoadExtensionElement (tnode, addin, extension.ExtensionNodes, ref curPos, tnode.Condition, false, addedNodes);
+			LoadExtensionElement (tnode, addin, extension.ExtensionNodes, (ModuleDescription) extension.Parent, ref curPos, tnode.Condition, false, addedNodes);
 		}
 
-		void LoadExtensionElement (TreeNode tnode, string addin, ExtensionNodeDescriptionCollection extension, ref int curPos, BaseCondition parentCondition, bool inComplextCondition, ArrayList addedNodes)
+		void LoadExtensionElement (TreeNode tnode, string addin, ExtensionNodeDescriptionCollection extension, ModuleDescription module, ref int curPos, BaseCondition parentCondition, bool inComplextCondition, ArrayList addedNodes)
 		{
 			foreach (ExtensionNodeDescription elem in extension) {
 					
@@ -74,13 +74,13 @@ namespace Mono.Addins
 				}
 
 				if (elem.NodeName == "ComplexCondition") {
-					LoadExtensionElement (tnode, addin, elem.ChildNodes, ref curPos, parentCondition, true, addedNodes);
+					LoadExtensionElement (tnode, addin, elem.ChildNodes, module, ref curPos, parentCondition, true, addedNodes);
 					continue;
 				}
 					
 				if (elem.NodeName == "Condition") {
 					Condition cond = new Condition (elem, parentCondition);
-					LoadExtensionElement (tnode, addin, elem.ChildNodes, ref curPos, cond, false, addedNodes);
+					LoadExtensionElement (tnode, addin, elem.ChildNodes, module, ref curPos, cond, false, addedNodes);
 					continue;
 				}
 					
@@ -111,7 +111,7 @@ namespace Mono.Addins
 
 				TreeNode cnode = new TreeNode (id);
 				
-				ExtensionNode enode = ReadNode (cnode, addin, ntype, elem);
+				ExtensionNode enode = ReadNode (cnode, addin, ntype, elem, module);
 				if (enode == null)
 					continue;
 
@@ -126,7 +126,7 @@ namespace Mono.Addins
 				// Load children
 				if (elem.ChildNodes.Count > 0) {
 					int cp = 0;
-					LoadExtensionElement (cnode, addin, elem.ChildNodes, ref cp, parentCondition, false, addedNodes);
+					LoadExtensionElement (cnode, addin, elem.ChildNodes, module, ref cp, parentCondition, false, addedNodes);
 				}
 				
 				curPos++;
@@ -161,7 +161,7 @@ namespace Mono.Addins
 			return new NullCondition ();
 		}
 		
-		public ExtensionNode ReadNode (TreeNode tnode, string addin, ExtensionNodeType ntype, ExtensionNodeDescription elem)
+		public ExtensionNode ReadNode (TreeNode tnode, string addin, ExtensionNodeType ntype, ExtensionNodeDescription elem, ModuleDescription module)
 		{
 			try {
 				if (ntype.Type == null) {
@@ -177,7 +177,7 @@ namespace Mono.Addins
 				}
 				
 				tnode.AttachExtensionNode (node);
-				node.SetData (addin, ntype);
+				node.SetData (addin, ntype, module);
 				node.Read (elem);
 				return node;
 			}

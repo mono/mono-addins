@@ -44,6 +44,9 @@ namespace Mono.Addins.Description
 		DependencyCollection dependencies;
 		ExtensionCollection extensions;
 		
+		// Used only at run time
+		internal RuntimeAddin RuntimeAddin;
+		
 		internal ModuleDescription (XmlElement element)
 		{
 			Element = element;

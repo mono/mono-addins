@@ -70,7 +70,7 @@ namespace Mono.Addins
 			get {
 				if (extensionNode == null && extensionPoint != null) {
 					extensionNode = new ExtensionNode ();
-					extensionNode.SetData (extensionPoint.RootAddin, null);
+					extensionNode.SetData (extensionPoint.RootAddin, null, null);
 					AttachExtensionNode (extensionNode);
 				}
 				return extensionNode;

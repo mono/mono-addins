@@ -30,6 +30,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -47,14 +48,28 @@ namespace Mono.Addins
 		string baseDirectory;
 		string privatePath;
 		Addin ainfo;
+		RuntimeAddin parentAddin;
 		
 		Assembly[] assemblies;
 		RuntimeAddin[] depAddins;
 		ResourceManager[] resourceManagers;
 		AddinLocalizer localizer;
+		ModuleDescription module;
 		
-		internal RuntimeAddin()
+		internal RuntimeAddin ()
 		{
+		}
+		
+		internal RuntimeAddin (RuntimeAddin parentAddin, ModuleDescription module)
+		{
+			this.parentAddin = parentAddin;
+			this.module = module;
+			id = parentAddin.id;
+			baseDirectory = parentAddin.baseDirectory;
+			privatePath = parentAddin.privatePath;
+			ainfo = parentAddin.ainfo;
+			localizer = parentAddin.localizer;
+			module.RuntimeAddin = this;
 		}
 		
 		internal Assembly[] Assemblies {
@@ -81,8 +96,11 @@ namespace Mono.Addins
 			return ainfo.ToString ();
 		}
 
-		void CreateResourceManagers ()
+		ResourceManager[] GetResourceManagers ()
 		{
+			if (resourceManagers != null)
+				return resourceManagers;
+			
 			EnsureAssembliesLoaded ();
 			ArrayList managersList = new ArrayList ();
 
@@ -95,7 +113,7 @@ namespace Mono.Addins
 				}
 			}
 
-			resourceManagers = (ResourceManager[]) managersList.ToArray (typeof(ResourceManager));
+			return resourceManagers = (ResourceManager[]) managersList.ToArray (typeof(ResourceManager));
 		}
 
 		public string GetResourceString (string name)
@@ -125,20 +143,15 @@ namespace Mono.Addins
 
 		public object GetResourceObject (string name, bool throwIfNotFound, CultureInfo culture)
 		{
-			if (resourceManagers == null)
-				CreateResourceManagers ();
-			
 			// Look in resources of this add-in
-			foreach (ResourceManager manager in resourceManagers)
-			{
+			foreach (ResourceManager manager in GetAllResourceManagers ()) {
 				object t = manager.GetObject (name, culture);
 				if (t != null)
 					return t;
 			}
 
 			// Look in resources of dependent add-ins
-			foreach (RuntimeAddin addin in depAddins)
-			{
+			foreach (RuntimeAddin addin in GetAllDependencies ()) {
 				object t = addin.GetResourceObject (name, false, culture);
 				if (t != null)
 					return t;
@@ -166,14 +179,14 @@ namespace Mono.Addins
 			if (at != null)
 				return at;
 			
-			foreach (Assembly asm in assemblies) {
+			foreach (Assembly asm in GetAllAssemblies ()) {
 				Type t = asm.GetType (typeName, false);
 				if (t != null)
 					return t;
 			}
 			
 			// Look in the dependent add-ins
-			foreach (RuntimeAddin addin in depAddins) {
+			foreach (RuntimeAddin addin in GetAllDependencies ()) {
 				Type t = addin.GetType (typeName, false);
 				if (t != null)
 					return t;
@@ -182,6 +195,43 @@ namespace Mono.Addins
 			if (throwIfNotFound)
 				throw new InvalidOperationException ("Type '" + typeName + "' not found in add-in '" + id + "'");
 			return null;
+		}
+		
+		IEnumerable<ResourceManager> GetAllResourceManagers ()
+		{
+			foreach (ResourceManager rm in GetResourceManagers ())
+				yield return rm;
+			
+			if (parentAddin != null) {
+				foreach (ResourceManager rm in parentAddin.GetResourceManagers ())
+					yield return rm;
+			}
+		}
+		
+		IEnumerable<Assembly> GetAllAssemblies ()
+		{
+			foreach (Assembly asm in Assemblies)
+				yield return asm;
+			
+			// Look in the parent addin assemblies
+			
+			if (parentAddin != null) {
+				foreach (Assembly asm in parentAddin.Assemblies)
+					yield return asm;
+			}
+		}
+		
+		IEnumerable<RuntimeAddin> GetAllDependencies ()
+		{
+			// Look in the dependent add-ins
+			foreach (RuntimeAddin addin in GetDepAddins ())
+				yield return addin;
+			
+			if (parentAddin != null) {
+				// Look in the parent dependent add-ins
+				foreach (RuntimeAddin addin in parentAddin.GetDepAddins ())
+					yield return addin;
+			}
 		}
 		
 		public object CreateInstance (string typeName)
@@ -230,14 +280,14 @@ namespace Mono.Addins
 			
 			// Look in the addin assemblies
 			
-			foreach (Assembly asm in assemblies) {
+			foreach (Assembly asm in GetAllAssemblies ()) {
 				Stream res = asm.GetManifestResourceStream (resourceName);
 				if (res != null)
 					return res;
 			}
 			
 			// Look in the dependent add-ins
-			foreach (RuntimeAddin addin in depAddins) {
+			foreach (RuntimeAddin addin in GetAllDependencies ()) {
 				Stream res = addin.GetResource (resourceName);
 				if (res != null)
 					return res;
@@ -258,26 +308,28 @@ namespace Mono.Addins
 			}
 		}
 		
+		internal RuntimeAddin GetModule (ModuleDescription module)
+		{
+			// If requesting the root module, return this
+			if (module == module.ParentAddinDescription.MainModule)
+				return this;
+			
+			if (module.RuntimeAddin != null)
+				return module.RuntimeAddin;
+			
+			RuntimeAddin addin = new RuntimeAddin (this, module);
+			return addin;
+		}
+		
 		internal AddinDescription Load (Addin iad)
 		{
 			ainfo = iad;
 			
-			ArrayList plugList = new ArrayList ();
-			
 			AddinDescription description = iad.Description;
 			id = description.AddinId;
 			baseDirectory = description.BasePath;
-			
-			// Get dependencies for the main modules
-			GetDepAddins (description.MainModule, description.Namespace, plugList);
-			
-			// Get dependencies for the optional modules, if the dependencies are present
-			foreach (ModuleDescription module in description.OptionalModules) {
-				if (CheckAddinDependencies (module, false))
-					GetDepAddins (module, description.Namespace, plugList);
-			}
-			
-			depAddins = (RuntimeAddin[]) plugList.ToArray (typeof(RuntimeAddin));
+			module = description.MainModule;
+			module.RuntimeAddin = this;
 			
 			if (description.Localizer != null) {
 				string cls = description.Localizer.GetAttribute ("type");
@@ -300,8 +352,14 @@ namespace Mono.Addins
 			return description;
 		}
 		
-		void GetDepAddins (ModuleDescription module, string ns, ArrayList plugList)
+		RuntimeAddin[] GetDepAddins ()
 		{
+			if (depAddins != null)
+				return depAddins;
+			
+			ArrayList plugList = new ArrayList ();
+			string ns = ainfo.Description.Namespace;
+			
 			// Collect dependent ids
 			foreach (Dependency dep in module.Dependencies) {
 				AddinDependency pdep = dep as AddinDependency;
@@ -313,6 +371,7 @@ namespace Mono.Addins
 						AddinManager.ReportError ("Add-in dependency not loaded: " + pdep.FullAddinId, module.ParentAddinDescription.AddinId, null, false);
 				}
 			}
+			return depAddins = (RuntimeAddin[]) plugList.ToArray (typeof(RuntimeAddin));
 		}
 		
 		void LoadModule (ModuleDescription module, ArrayList asmList)
@@ -378,18 +437,11 @@ namespace Mono.Addins
 			if (assemblies != null)
 				return;
 			
-			AddinDescription description = ainfo.Description;
 			ArrayList asmList = new ArrayList ();
 			
-			// Load the main modules
-			CheckAddinDependencies (description.MainModule, true);
-			LoadModule (description.MainModule, asmList);
-			
-			// Load the optional modules, if the dependencies are present
-			foreach (ModuleDescription module in description.OptionalModules) {
-				if (CheckAddinDependencies (module, true))
-					LoadModule (module, asmList);
-			}
+			// Load the assemblies of the module
+			CheckAddinDependencies (module, true);
+			LoadModule (module, asmList);
 			
 			assemblies = (Assembly[]) asmList.ToArray (typeof(Assembly));
 			AddinManager.SessionService.RegisterAssemblies (this);

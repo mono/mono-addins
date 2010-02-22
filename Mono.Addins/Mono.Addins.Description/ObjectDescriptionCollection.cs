@@ -58,6 +58,11 @@ namespace Mono.Addins.Description
 				Add (ob);
 		}
 		
+		public void Insert (int index, ObjectDescription ep)
+		{
+			List.Insert (index, ep);
+		}
+		
 		public void Remove (ObjectDescription ep)
 		{
 			List.Remove (ep);

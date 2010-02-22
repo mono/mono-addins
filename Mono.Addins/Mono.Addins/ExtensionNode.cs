@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using System.Reflection;
 using Mono.Addins.Description;
@@ -43,6 +44,7 @@ namespace Mono.Addins
 		RuntimeAddin addin;
 		string addinId;
 		ExtensionNodeType nodeType;
+		ModuleDescription module;
 		event ExtensionNodeEventHandler extensionNodeChanged;
 		
 		public string Id {
@@ -75,10 +77,11 @@ namespace Mono.Addins
 			treeNode = node;
 		}
 		
-		internal void SetData (string plugid, ExtensionNodeType nodeType)
+		internal void SetData (string plugid, ExtensionNodeType nodeType, ModuleDescription module)
 		{
 			this.addinId = plugid;
 			this.nodeType = nodeType;
+			this.module = module;
 		}
 		
 		internal string AddinId {
@@ -95,6 +98,8 @@ namespace Mono.Addins
 					if (!AddinManager.SessionService.IsAddinLoaded (addinId))
 						AddinManager.SessionService.LoadAddin (null, addinId, true);
 					addin = AddinManager.SessionService.GetAddin (addinId);
+					if (addin != null)
+						addin = addin.GetModule (module);
 				}
 				if (addin == null)
 					throw new InvalidOperationException ("Add-in '" + addinId + "' could not be loaded.");
@@ -137,7 +142,7 @@ namespace Mono.Addins
 					childrenLoaded = true;
 				}
 
-				ArrayList list = new ArrayList ();
+				List<ExtensionNode> list = new List<ExtensionNode> ();
 				foreach (TreeNode cn in treeNode.Children) {
 					
 					// For each node check if it is visible for the current context.
@@ -174,7 +179,22 @@ namespace Mono.Addins
 			return GetChildObjects (arrayElementType, true);
 		}
 		
+		public T[] GetChildObjects<T> ()
+		{
+			return (T[]) GetChildObjectsInternal (typeof(T), true);
+		}
+		
 		public object[] GetChildObjects (Type arrayElementType, bool reuseCachedInstance)
+		{
+			return (object[]) GetChildObjectsInternal (arrayElementType, reuseCachedInstance);
+		}
+		
+		public T[] GetChildObjects<T> (bool reuseCachedInstance)
+		{
+			return (T[]) GetChildObjectsInternal (typeof(T), reuseCachedInstance);
+		}
+		
+		Array GetChildObjectsInternal (Type arrayElementType, bool reuseCachedInstance)
 		{
 			ArrayList list = new ArrayList (ChildNodes.Count);
 			
@@ -195,7 +215,7 @@ namespace Mono.Addins
 					AddinManager.ReportError ("Error while getting object for node in path '" + Path + "'.", node.AddinId, ex, false);
 				}
 			}
-			return (object[]) list.ToArray (arrayElementType);
+			return list.ToArray (arrayElementType);
 		}
 		
 		internal protected virtual void Read (NodeElement elem)

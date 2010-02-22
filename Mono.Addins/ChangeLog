@@ -1,3 +1,25 @@
+2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.csproj: Update.
+
+	* Mono.Addins/TreeNode.cs:
+	* Mono.Addins/RuntimeAddin.cs:
+	* Mono.Addins/ExtensionTree.cs:
+	* Mono.Addins.Description/ModuleDescription.cs: Improved lazy
+	  loading of optional modules.
+
+	* Mono.Addins/AddinManager.cs:
+	* Mono.Addins/ExtensionContext.cs:
+	* Mono.Addins/ExtensionNodeList.cs: Added some generic methods
+	  for querying extension points.
+
+	* Mono.Addins/ExtensionNode.cs: Improved lazy loading of
+	  optional modules. Added some generic methods for querying
+	  extension points.
+
+	* Mono.Addins.Description/ObjectDescriptionCollection.cs:
+	  Added Insert method.
+
 2010-02-12  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins/RuntimeAddin.cs: When loading the assemblies of

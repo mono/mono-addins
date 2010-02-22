@@ -30,6 +30,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Collections;
+using System.Collections.Generic;
 
 using Mono.Addins.Localization;
 
@@ -206,6 +207,12 @@ namespace Mono.Addins
 			return SessionService.DefaultContext.GetExtensionNode (path);
 		}
 		
+		public static ExtensionNode GetExtensionNode<T> (string path) where T:ExtensionNode
+		{
+			CheckInitialized ();
+			return SessionService.DefaultContext.GetExtensionNode<T> (path);
+		}
+		
 		public static ExtensionNodeList GetExtensionNodes (string path)
 		{
 			CheckInitialized ();
@@ -218,16 +225,34 @@ namespace Mono.Addins
 			return SessionService.DefaultContext.GetExtensionNodes (path, type);
 		}
 		
+		public static ExtensionNodeList<T> GetExtensionNodes<T> (string path) where T:ExtensionNode
+		{
+			CheckInitialized ();
+			return SessionService.DefaultContext.GetExtensionNodes<T> (path);
+		}
+		
 		public static object[] GetExtensionObjects (Type instanceType)
 		{
 			CheckInitialized ();
 			return SessionService.DefaultContext.GetExtensionObjects (instanceType);
 		}
 		
+		public static T[] GetExtensionObjects<T> ()
+		{
+			CheckInitialized ();
+			return SessionService.DefaultContext.GetExtensionObjects<T> ();
+		}
+		
 		public static object[] GetExtensionObjects (Type instanceType, bool reuseCachedInstance)
 		{
 			CheckInitialized ();
 			return SessionService.DefaultContext.GetExtensionObjects (instanceType, reuseCachedInstance);
+		}
+		
+		public static T[] GetExtensionObjects<T> (bool reuseCachedInstance)
+		{
+			CheckInitialized ();
+			return SessionService.DefaultContext.GetExtensionObjects<T> (reuseCachedInstance);
 		}
 		
 		public static object[] GetExtensionObjects (string path)
@@ -248,10 +273,22 @@ namespace Mono.Addins
 			return SessionService.DefaultContext.GetExtensionObjects (path, arrayElementType);
 		}
 		
+		public static T[] GetExtensionObjects<T> (string path)
+		{
+			CheckInitialized ();
+			return SessionService.DefaultContext.GetExtensionObjects<T> (path);
+		}
+		
 		public static object[] GetExtensionObjects (string path, Type arrayElementType, bool reuseCachedInstance)
 		{
 			CheckInitialized ();
 			return SessionService.DefaultContext.GetExtensionObjects (path, arrayElementType, reuseCachedInstance);
+		}
+		
+		public static T[] GetExtensionObjects<T> (string path, bool reuseCachedInstance)
+		{
+			CheckInitialized ();
+			return SessionService.DefaultContext.GetExtensionObjects<T> (path, reuseCachedInstance);
 		}
 		
 		public static event ExtensionEventHandler ExtensionChanged {
