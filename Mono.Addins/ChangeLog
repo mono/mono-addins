@@ -1,3 +1,11 @@
+2010-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins/ExtensionContext.cs:
+	* Mono.Addins.Description/ExtensionPoint.cs: Use generics.
+
+	* Mono.Addins.Description/ExtensionNodeDescription.cs: Fix bug
+	  in RemoteAttribute.
+
 2010-02-22  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.csproj: Update.

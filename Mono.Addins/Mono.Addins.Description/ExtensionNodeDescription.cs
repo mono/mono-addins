@@ -202,6 +202,7 @@ namespace Mono.Addins.Description
 					string[] newar = new string [attributes.Length - 2];
 					Array.Copy (attributes, 0, newar, 0, n);
 					Array.Copy (attributes, n+2, newar, n, attributes.Length - n - 2);
+					attributes = newar;
 					break;
 				}
 			}

@@ -556,7 +556,7 @@ namespace Mono.Addins
 				runTimeDisabledAddins.Remove (addinId);
 		}
 		
-		internal ICollection GetAddinsForPath (string path, StringCollection col)
+		internal ICollection GetAddinsForPath (string path, List<string> col)
 		{
 			ArrayList newlist = null;
 			

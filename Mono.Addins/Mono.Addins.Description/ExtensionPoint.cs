@@ -32,6 +32,7 @@ using System.Collections;
 using System.Xml;
 using Mono.Addins.Serialization;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Description
 {
@@ -45,8 +46,8 @@ namespace Mono.Addins.Description
 		
 		// Information gathered from others addins:
 		
-		StringCollection addins;	// Add-ins which extend this extension point
-		string rootAddin;			// Add-in which defines this extension point
+		List<string> addins;  // Add-ins which extend this extension point
+		string rootAddin;     // Add-in which defines this extension point
 		
 		internal ExtensionPoint (XmlElement elem): base (elem)
 		{
@@ -169,10 +170,16 @@ namespace Mono.Addins.Description
 			set { description = value; }
 		}
 		
-		internal StringCollection Addins {
+		public string[] ExtenderAddins {
+			get {
+				return Addins.ToArray ();
+			}
+		}
+		
+		internal List<string> Addins {
 			get {
 				if (addins == null)
-					addins = new StringCollection ();
+					addins = new List<string> ();
 				return addins;
 			}
 		}
@@ -242,7 +249,7 @@ namespace Mono.Addins.Description
 			if (!reader.IgnoreDescriptionData)
 				description = reader.ReadStringValue ("description");
 			rootAddin = reader.ReadStringValue ("rootAddin");
-			addins = (StringCollection) reader.ReadValue ("addins", new StringCollection ());
+			addins = (List<string>) reader.ReadValue ("addins", new List<string> ());
 			nodeSet = (ExtensionNodeSet) reader.ReadValue ("NodeSet");
 			conditions = (ConditionTypeDescriptionCollection) reader.ReadValue ("Conditions", new ConditionTypeDescriptionCollection (this));
 			if (nodeSet != null)
