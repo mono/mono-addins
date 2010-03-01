@@ -9,7 +9,7 @@
 	</PropertyGroup>
 	
 	<Target Name="ResolveAddinReferences">
-		<ResolveAddinReferences AddinReferences="@(AddinReference)" ExtensionDomain="@(ExtensionDomain)">
+		<ResolveAddinReferences AddinReferences="@(AddinReference)" ExtensionDomain="$(ExtensionDomain)">
 			<Output TaskParameter="References" ItemName="ReferencePath" />
 		</ResolveAddinReferences>
 	</Target>

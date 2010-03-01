@@ -1,3 +1,12 @@
+2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.targets:
+	* ResolveAddinReferences.cs: The target application is now
+	  specified using the ExtensionDomain property. Addin
+	  references now use a colon as version separator.
+
+	* Makefile.am: Install the .targets file to the xbuild dir.
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs: Bump Mono.Addins version.

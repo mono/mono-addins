@@ -38,32 +38,33 @@ namespace Mono.Addins.MSBuild
 	{
 		List<TaskItem> references = new List<TaskItem> ();
 		ITaskItem[] addinReferences;
-		ITaskItem[] extensionDomain;
+		string extensionDomain;
 		
 		public override bool Execute ()
 		{
-			if (extensionDomain == null || extensionDomain.Length == 0) {
+			if (string.IsNullOrEmpty (extensionDomain)) {
 				Log.LogError ("ExtensionDomain item not found");
 				return false;
 			}
 			if (addinReferences == null) {
 				return true;
 			}
-			string domain = extensionDomain[0].ItemSpec;
-			Application app = SetupService.GetExtensibleApplication (domain);
+
+			Application app = SetupService.GetExtensibleApplication (extensionDomain);
 			if (app == null) {
-				Log.LogError ("Extension domain '{0}' not found", domain);
+				Log.LogError ("Extension domain '{0}' not found", extensionDomain);
 				return false;
 			}
 			
 			foreach (ITaskItem item in addinReferences) {
-				Addin addin = app.Registry.GetAddin (item.ItemSpec);
+				string addinId = item.ItemSpec.Replace (':',',');
+				Addin addin = app.Registry.GetAddin (addinId);
 				if (addin == null) {
-					Log.LogError ("Add-in '{0}' not found", item.ItemSpec);
+					Log.LogError ("Add-in '{0}' not found", addinId);
 					return false;
 				}
 				if (addin.Description == null) {
-					Log.LogError ("Add-in '{0}' could not be loaded", item.ItemSpec);
+					Log.LogError ("Add-in '{0}' could not be loaded", addinId);
 					return false;
 				}
 				foreach (string asm in addin.Description.MainModule.Assemblies) {
@@ -80,7 +81,7 @@ namespace Mono.Addins.MSBuild
 			set { addinReferences = value; }
 		}
 		
-		public ITaskItem[] ExtensionDomain {
+		public string ExtensionDomain {
 			get { return extensionDomain; }
 			set { extensionDomain = value; }
 		}

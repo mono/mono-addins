@@ -38,6 +38,9 @@ $(ASSEMBLY): $(build_sources) $(build_resources) $(build_datafiles) $(POLICY_ASS
 	mkdir -p $(dir $(ASSEMBLY))		
 	$(ASSEMBLY_COMPILER_COMMAND) $(ASSEMBLY_COMPILER_FLAGS) -out:$@ -target:$(COMPILE_TARGET) $(build_sources) $(build_resources_embed) $(build_references_ref)
 
+xbuilddir = $(libdir)/mono/xbuild
+xbuild_DATA = Mono.Addins.targets
+
 install-data-local: gac-install
 
 uninstall-local: gac-uninstall
