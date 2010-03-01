@@ -1382,9 +1382,9 @@ namespace Mono.Addins.Database
 		
 		ISetupHandler GetSetupHandler ()
 		{
-			if (Util.IsMono)
-				return new SetupProcess ();
-			else
+//			if (Util.IsMono)
+//				return new SetupProcess ();
+//			else
 				return new SetupDomain ();
 		}
 		

@@ -1,3 +1,8 @@
+2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.Database/AddinDatabase.cs: Let's use app domains
+	  for mono too.
+
 2010-02-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins/ExtensionContext.cs:
