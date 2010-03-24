@@ -1,3 +1,25 @@
+2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* HelloWorld/HelloWorld:
+	* HelloWorld/HelloWorld.sln:
+	* HelloWorld/HelloWorldAddin:
+	* HelloWorld/HelloWorld/Main.cs:
+	* HelloWorldWithManifest/HelloWorld:
+	* HelloWorld/HelloWorld/ICommand.cs:
+	* HelloWorldWithManifest/HelloWorldAddin:
+	* HelloWorld/HelloWorld/HelloWorld.csproj:
+	* HelloWorldWithManifest/HelloWorld/Main.cs:
+	* HelloWorld/HelloWorldAddin/HelloCommand.cs:
+	* HelloWorldWithManifest/HelloWorld/ICommand.cs:
+	* HelloWorldWithManifest/HelloWorldWithManifest.sln:
+	* HelloWorld/HelloWorldAddin/HelloWorldAddin.csproj:
+	* HelloWorldWithManifest/HelloWorld/HelloWorld.csproj:
+	* HelloWorldWithManifest/HelloWorldAddin/HelloCommand.cs:
+	* HelloWorldWithManifest/HelloWorld/HelloWorld.addin.xml:
+	* HelloWorldWithManifest/HelloWorldAddin/HelloWorldAddin.csproj:
+	* HelloWorldWithManifest/HelloWorldAddin/HelloWorldAddin.addin.xml:
+	  Added new samples.
+
 2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* TextEditor/Makefile.am:

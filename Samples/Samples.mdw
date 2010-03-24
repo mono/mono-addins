@@ -1,0 +1,8 @@
+<WorkspaceItem name="Mono.Addins" ctype="Workspace">
+  <Items>
+    <Item>HelloWorld/HelloWorld.sln</Item>
+    <Item>TextEditor/TextEditor.sln</Item>
+    <Item>WriterService/WriterService.sln</Item>
+    <Item>HelloWorldWithManifest/HelloWorldWithManifest.sln</Item>
+  </Items>
+</WorkspaceItem>

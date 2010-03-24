@@ -1,0 +1,8 @@
+<Addin id="HelloWorld" version="1.0" isroot="true">
+
+	<!-- Declare a new extension point. This extension points will have elements with the name "Command" -->
+	<ExtensionPoint path = "/Commands">
+		<ExtensionNode name="Command" />
+	</ExtensionPoint>
+	
+</Addin>

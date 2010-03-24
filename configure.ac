@@ -105,15 +105,6 @@ AC_CONFIG_FILES([
 ./Test/SystemInfoExtension/Makefile
 ./Test/FileExtender/Makefile
 ./Test/Makefile
-./Samples/TextEditor.Xml/Makefile
-./Samples/TextEditor/Makefile
-./Samples/TextEditor.CompilerService/Makefile
-./Samples/WriterServiceHost/Makefile
-./Samples/TextEditor.CompilerService.CSharp/Makefile
-./Samples/WriterService.SampleExtender/Makefile
-./Samples/Makefile
-./Samples/TextEditorLib/Makefile
-./Samples/WriterService/Makefile
 
 ])
 

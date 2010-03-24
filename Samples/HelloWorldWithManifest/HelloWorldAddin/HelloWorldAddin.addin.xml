@@ -1,0 +1,13 @@
+<Addin>
+
+	<!-- This add-in depends on the HelloWorld v1.0 add-in root -->
+	<Dependencies>
+		<Addin id="HelloWorld" version="1.0" />
+	</Dependencies>
+	
+	<!-- Register an extension for the /Commands extension point -->
+	<Extension path = "/Commands">
+		<Command class="HelloWorldAddin.HelloCommand" />
+	</Extension>
+	
+</Addin>

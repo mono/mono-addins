@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditor", "TextEditor\TextEditor.csproj", "{3592CAFF-C74F-4036-AC22-F0D9DA31CC09}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditorLib", "TextEditorLib\TextEditorLib.csproj", "{ED5EC705-1905-4FB6-821B-9464D60727EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditor.CompilerService", "TextEditor.CompilerService\TextEditor.CompilerService.csproj", "{613DC3EA-8A4E-4CE1-8836-DEC8ABC684A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditor.CompilerService.CSharp", "TextEditor.CompilerService.CSharp\TextEditor.CompilerService.CSharp.csproj", "{B50C6B48-CA51-4538-B686-40B6F77F8623}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditor.Xml", "TextEditor.Xml\TextEditor.Xml.csproj", "{4EFD5979-4000-4A32-A687-33D140081F1C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3592CAFF-C74F-4036-AC22-F0D9DA31CC09}.Debug|x86.ActiveCfg = Debug|x86
+		{3592CAFF-C74F-4036-AC22-F0D9DA31CC09}.Debug|x86.Build.0 = Debug|x86
+		{3592CAFF-C74F-4036-AC22-F0D9DA31CC09}.Release|x86.ActiveCfg = Release|x86
+		{3592CAFF-C74F-4036-AC22-F0D9DA31CC09}.Release|x86.Build.0 = Release|x86
+		{4EFD5979-4000-4A32-A687-33D140081F1C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4EFD5979-4000-4A32-A687-33D140081F1C}.Debug|x86.Build.0 = Debug|Any CPU
+		{4EFD5979-4000-4A32-A687-33D140081F1C}.Release|x86.ActiveCfg = Release|Any CPU
+		{4EFD5979-4000-4A32-A687-33D140081F1C}.Release|x86.Build.0 = Release|Any CPU
+		{613DC3EA-8A4E-4CE1-8836-DEC8ABC684A8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{613DC3EA-8A4E-4CE1-8836-DEC8ABC684A8}.Debug|x86.Build.0 = Debug|Any CPU
+		{613DC3EA-8A4E-4CE1-8836-DEC8ABC684A8}.Release|x86.ActiveCfg = Release|Any CPU
+		{613DC3EA-8A4E-4CE1-8836-DEC8ABC684A8}.Release|x86.Build.0 = Release|Any CPU
+		{B50C6B48-CA51-4538-B686-40B6F77F8623}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B50C6B48-CA51-4538-B686-40B6F77F8623}.Debug|x86.Build.0 = Debug|Any CPU
+		{B50C6B48-CA51-4538-B686-40B6F77F8623}.Release|x86.ActiveCfg = Release|Any CPU
+		{B50C6B48-CA51-4538-B686-40B6F77F8623}.Release|x86.Build.0 = Release|Any CPU
+		{ED5EC705-1905-4FB6-821B-9464D60727EF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ED5EC705-1905-4FB6-821B-9464D60727EF}.Debug|x86.Build.0 = Debug|Any CPU
+		{ED5EC705-1905-4FB6-821B-9464D60727EF}.Release|x86.ActiveCfg = Release|Any CPU
+		{ED5EC705-1905-4FB6-821B-9464D60727EF}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = TextEditor\TextEditor.csproj
+		Policies = $0
+		$0.ChangeLogPolicy = $1
+		$1.UpdateMode = Nearest
+		$1.inheritsSet = Mono
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,6 @@
+<WorkspaceItem name="Mono.Addins" ctype="Workspace">
+  <Items>
+    <Item>Mono.Addins.sln</Item>
+    <Item>Samples/Samples.mdw</Item>
+  </Items>
+</WorkspaceItem>

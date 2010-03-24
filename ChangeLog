@@ -1,3 +1,89 @@
+2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* configure.ac:
+	* Mono.Addins.sln:
+	* Mono.Addins.mdw:
+	* Samples/Makefile.am:
+	* Samples/Samples.mdw:
+	* Samples/TextEditorLib:
+	* Samples/TextEditor.Xml:
+	* Samples/WriterServiceHost:
+	* Samples/TextEditorLib/gtk-gui:
+	* Samples/TextEditorLib/Commands:
+	* Samples/TextEditorLib/ChangeLog:
+	* Samples/TextEditorLib/Templates:
+	* Samples/TextEditor.Xml/ChangeLog:
+	* Samples/WriterServiceHost/Main.cs:
+	* Samples/TextEditorLib/ICommand.cs:
+	* Samples/TextEditorLib/Makefile.am:
+	* Samples/TextEditor.CompilerService:
+	* Samples/TextEditor.Xml/Makefile.am:
+	* Samples/WriterServiceHost/ChangeLog:
+	* Samples/TextEditorLib/MainWindow.cs:
+	* Samples/TextEditor.Xml/EmptyFile.xml:
+	* Samples/TextEditorLib/ExtensionNodes:
+	* Samples/WriterService.SampleExtender:
+	* Samples/TextEditorLib/AssemblyInfo.cs:
+	* Samples/WriterServiceHost/Makefile.am:
+	* Samples/TextEditorLib/TextEditorApp.cs:
+	* Samples/TextEditor.Xml/AssemblyInfo.cs:
+	* Samples/TextEditorLib/gtk-gui/gui.stetic:
+	* Samples/TextEditor.CompilerService.CSharp:
+	* Samples/WriterServiceHost/AssemblyInfo.cs:
+	* Samples/TextEditorLib/TextEditorLib.csproj:
+	* Samples/TextEditorLib/gtk-gui/generated.cs:
+	* Samples/TextEditor.Xml/FormatXmlCommand.cs:
+	* Samples/TextEditorLib/OpenFileCondition.cs:
+	* Samples/TextEditorLib/gtk-gui/MainWindow.cs:
+	* Samples/TextEditor.CompilerService/ChangeLog:
+	* Samples/TextEditorLib/Commands/CutCommand.cs:
+	* Samples/TextEditorLib/Commands/NewCommand.cs:
+	* Samples/TextEditor.Xml/TextEditor.Xml.csproj:
+	* Samples/TextEditorLib/Commands/SaveCommand.cs:
+	* Samples/TextEditorLib/Commands/OpenCommand.cs:
+	* Samples/TextEditorLib/Commands/ExitCommand.cs:
+	* Samples/TextEditorLib/Commands/CopyCommand.cs:
+	* Samples/TextEditorLib/Commands/PasteCommand.cs:
+	* Samples/TextEditorLib/Templates/WorkReport.txt:
+	* Samples/TextEditor.CompilerService/Makefile.am:
+	* Samples/TextEditorLib/Commands/SetupCommand.cs:
+	* Samples/WriterService.SampleExtender/ChangeLog:
+	* Samples/TextEditor.CompilerService/ICompiler.cs:
+	* Samples/TextEditor.Xml/TextEditor.Xml.addin.xml:
+	* Samples/TextEditorLib/ExtensionNodes/MenuNode.cs:
+	* Samples/TextEditor.CompilerService/RunCommand.cs:
+	* Samples/WriterService.SampleExtender/Makefile.am:
+	* Samples/WriterService.SampleExtender/MyWriter.cs:
+	* Samples/TextEditor.CompilerService/AssemblyInfo.cs:
+	* Samples/WriterServiceHost/WriterServiceHost.csproj:
+	* Samples/TextEditor.CompilerService.CSharp/ChangeLog:
+	* Samples/TextEditorLib/ExtensionNodes/ToolbarNode.cs:
+	* Samples/TextEditorLib/ExtensionNodes/SubmenuNode.cs:
+	* Samples/WriterService.SampleExtender/AssemblyInfo.cs:
+	* Samples/TextEditorLib/Templates/TextEditor.addin.xml:
+	* Samples/TextEditorLib/ExtensionNodes/MenuItemNode.cs:
+	* Samples/TextEditorLib/Templates/DotConfigTemplate.txt:
+	* Samples/TextEditorLib/Templates/ChangeLogTemplate.txt:
+	* Samples/TextEditor.CompilerService/CompilerManager.cs:
+	* Samples/TextEditor.CompilerService.CSharp/Makefile.am:
+	* Samples/TextEditorLib/ExtensionNodes/ToolButtonNode.cs:
+	* Samples/TextEditorLib/ExtensionNodes/FileTemplateNode.cs:
+	* Samples/TextEditorLib/ExtensionNodes/MenuSeparatorNode.cs:
+	* Samples/TextEditor.CompilerService.CSharp/AssemblyInfo.cs:
+	* Samples/TextEditorLib/ExtensionNodes/ToolSeparatorNode.cs:
+	* Samples/TextEditor.CompilerService.CSharp/CSharpCompiler.cs:
+	* Samples/TextEditorLib/ExtensionNodes/TemplateCategoryNode.cs:
+	* Samples/WriterService.SampleExtender/SampleExtender.addin.xml:
+	* Samples/TextEditor.CompilerService/TextEditor.CompilerService.csproj:
+	* Samples/TextEditor.CompilerService/TextEditor.CompilerService.addin.xml:
+	* Samples/WriterService.SampleExtender/WriterService.SampleExtender.csproj:
+	* Samples/TextEditor.CompilerService.CSharp/TextEditor.CompilerService.CSharp.csproj:
+	  Moved samples to its own solution in a Samples workspace.
+
+	* Samples/HelloWorld:
+	* Samples/HelloWorldWithManifest: Added new samples.
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* configure.ac: Bump Mono.Addins version.
