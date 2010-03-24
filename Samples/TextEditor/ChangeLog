@@ -1,5 +1,9 @@
 2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* TextEditor/TextEditor.csproj: More missing files.
+
+2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* gtk-gui:
 	* Main.cs:
 	* Makefile:

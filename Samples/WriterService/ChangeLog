@@ -1,5 +1,9 @@
 2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* WriterService.sln: More missing files.
+
+2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile:
 	* IWriter.cs:
 	* MyClass.cs:
