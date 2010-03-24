@@ -585,7 +585,6 @@ namespace Mono.Addins.Database
 			
 			ArrayList assemblies = new ArrayList ();
 			ArrayList asmFiles = new ArrayList ();
-			ArrayList hostExtensionClasses = new ArrayList ();
 			
 			try {
 				// Add all data files to the ignore file list. It avoids scanning assemblies
@@ -617,15 +616,11 @@ namespace Mono.Addins.Database
 					scanResult.HostIndex.RemoveHostData (config.AddinId, config.AddinFile);
 
 				foreach (object asm in assemblies)
-					ScanAssemblyContents (config, asm, hostExtensionClasses, scanResult);
+					ScanAssemblyContents (config, asm, scanResult);
 				
 			} catch (Exception ex) {
 				ReportReflectionException (monitor, ex, config, scanResult);
 				return false;
-			}
-			
-			foreach (object t in hostExtensionClasses) {
-				RegisterHostTypeNode (config, t, assemblies);
 			}
 			
 			// Extension node types may have child nodes declared as attributes. Find them.
@@ -656,7 +651,7 @@ namespace Mono.Addins.Database
 							scanResult.AddPathToIgnore (Util.GetFullPath (asmFile));
 						}
 						foreach (object asm in assemblies)
-							ScanAssemblyContents (config, asm, null, scanResult);
+							ScanAssemblyContents (config, asm, scanResult);
 						
 					} catch (Exception ex) {
 						ReportReflectionException (monitor, ex, config, scanResult);
@@ -699,7 +694,7 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		void ScanAssemblyContents (AddinDescription config, object asm, ArrayList hostExtensionClasses, AddinScanResult scanResult)
+		void ScanAssemblyContents (AddinDescription config, object asm, AddinScanResult scanResult)
 		{
 			// Get dependencies
 			
@@ -732,21 +727,13 @@ namespace Mono.Addins.Database
 						string nodeName;
 						
 						if (eatt.Path.Length == 0) {
-							if (config.IsRoot) {
-								// The extension point must be one of the defined by the assembly
-								// Look for it later, when the assembly has been fully scanned.
-								hostExtensionClasses.Add (t);
-								continue;
+							path = GetBaseTypeNameList (t);
+							if (path == "$") {
+								// The type does not implement any interface and has no superclass.
+								// Will be reported later as an error.
+								path = "$" + typeFullName;
 							}
-							else {
-								path = GetBaseTypeNameList (t);
-								if (path == "$") {
-									// The type does not implement any interface and has no superclass.
-									// Will be reported later as an error.
-									path = "$" + typeFullName;
-								}
-								nodeName = "Type";
-							}
+							nodeName = "Type";
 						} else {
 							path = eatt.Path;
 							nodeName = eatt.NodeName;
@@ -899,26 +886,6 @@ namespace Mono.Addins.Database
 			if (sb.Length > 0)
 				sb.Remove (sb.Length - 1, 1);
 			return sb.ToString ();
-		}
-		
-		void RegisterHostTypeNode (AddinDescription config, object t, ArrayList assemblies)
-		{
-			foreach (ExtensionAttribute eatt in reflector.GetCustomAttributes (t, typeof(ExtensionAttribute), false)) {
-				if (eatt.Path.Length > 0)
-					continue;
-				
-				foreach (ExtensionPoint ep in config.ExtensionPoints) {
-					foreach (ExtensionNodeType nt in ep.NodeSet.NodeTypes) {
-						if (nt.ObjectTypeName.Length == 0)
-							continue;
-						object etype = FindAddinType (nt.ObjectTypeName, assemblies);
-						if (etype != null && reflector.TypeIsAssignableFrom (etype, t)) {
-							RegisterTypeNode (config, eatt, ep.Path, nt.Id, reflector.GetTypeFullName (t));
-							return;
-						}
-					}
-				}
-			}
 		}
 		
 		object FindAddinType (string typeName, ArrayList assemblies)

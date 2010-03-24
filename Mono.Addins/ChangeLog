@@ -1,3 +1,10 @@
+2010-03-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.Database/AddinScanner.cs: Removed special
+	  handling of type references inside add-in roots. Type
+	  references will now be resolved like in the add-ins, when
+	  mapping the extensions.
+
 2010-03-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Database/AddinDatabase.cs: Let's use app domains
