@@ -1,3 +1,8 @@
+2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.CecilReflector/Reflector.cs: Implement
+	  GetRawCustomAttributes.
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs: Bump Mono.Addins version.

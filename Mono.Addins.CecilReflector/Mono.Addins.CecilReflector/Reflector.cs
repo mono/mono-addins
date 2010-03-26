@@ -31,6 +31,9 @@ using System.Reflection;
 using Mono.Addins;
 using Mono.Addins.Database;
 using Mono.Cecil;
+using CustomAttribute = Mono.Cecil.CustomAttribute;
+using MA = Mono.Addins.Database;
+using System.Collections.Generic;
 
 namespace Mono.Addins.CecilReflector
 {
@@ -134,6 +137,112 @@ namespace Mono.Addins.CecilReflector
 			}
 			return ob;
 		}
+		
+		public List<MA.CustomAttribute> GetRawCustomAttributes (object obj, Type type, bool inherit)
+		{
+			List<MA.CustomAttribute> atts = new List<MA.CustomAttribute> ();
+			Mono.Cecil.ICustomAttributeProvider aprov = obj as Mono.Cecil.ICustomAttributeProvider;
+			if (aprov == null)
+				return atts;
+			
+			foreach (CustomAttribute att in aprov.CustomAttributes) {
+				MA.CustomAttribute catt = ConvertToRawAttribute (att, type.FullName);
+				if (catt != null)
+					atts.Add (catt);
+			}
+			if (inherit && (obj is TypeDefinition)) {
+				TypeDefinition td = (TypeDefinition) obj;
+				if (td.BaseType != null && td.BaseType.FullName != "System.Object") {
+					TypeDefinition bt = FindTypeDefinition (td.Module.Assembly, td.BaseType);
+					if (bt != null)
+						atts.AddRange (GetRawCustomAttributes (bt, type, true));
+				}
+			}
+			return atts;
+		}
+		
+		MA.CustomAttribute ConvertToRawAttribute (CustomAttribute att, string expectedType)
+		{
+			TypeDefinition attType = FindTypeDefinition (att.Constructor.DeclaringType.Module.Assembly, att.Constructor.DeclaringType);
+			if (attType == null || !TypeIsAssignableFrom (expectedType, attType))
+				return null;
+
+			MA.CustomAttribute mat = new MA.CustomAttribute ();
+			mat.TypeName = att.Constructor.DeclaringType.FullName;
+			
+			if (att.ConstructorParameters.Count > 0) {
+				IList cargs = att.ConstructorParameters;
+				
+				MethodReference constructor = FindConstructor (att);
+				if (constructor == null)
+					throw new InvalidOperationException ("Custom attribute constructor not found");
+
+				for (int n=0; n<cargs.Count; n++) {
+					ParameterDefinition par = constructor.Parameters[n];
+					object val = cargs [n];
+					if (val != null) {
+						string name = par.Name;
+						NodeAttributeAttribute bat = (NodeAttributeAttribute) GetCustomAttribute (par, typeof(NodeAttributeAttribute), false);
+						if (bat != null)
+							name = bat.Name;
+						mat.Add (name, Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture));
+					}
+				}
+			}
+			
+			foreach (DictionaryEntry de in att.Properties) {
+				string pname = (string)de.Key;
+				object val = de.Value;
+				if (val == null)
+					continue;
+
+				foreach (PropertyDefinition prop in attType.Properties.GetProperties (pname)) {
+					NodeAttributeAttribute bat = (NodeAttributeAttribute) GetCustomAttribute (prop, typeof(NodeAttributeAttribute), false);
+					if (bat != null) {
+						string name = string.IsNullOrEmpty (bat.Name) ? prop.Name : bat.Name;
+						mat.Add (name, Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture));
+					}
+				}
+			}
+			
+			foreach (DictionaryEntry de in att.Fields) {
+				string pname = (string)de.Key;
+				object val = de.Value;
+				if (val == null)
+					continue;
+
+				FieldDefinition field = attType.Fields.GetField (pname);
+				if (field != null) {
+					NodeAttributeAttribute bat = (NodeAttributeAttribute) GetCustomAttribute (field, typeof(NodeAttributeAttribute), false);
+					if (bat != null) {
+						string name = string.IsNullOrEmpty (bat.Name) ? field.Name : bat.Name;
+						mat.Add (name, Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture));
+					}
+				}
+			}
+			return mat;
+		}
+
+		MethodReference FindConstructor (CustomAttribute att)
+		{
+			// The constructor provided by CustomAttribute.Constructor is lacking some information, such as the parameter
+			// name and custom attributes. Since we need the full info, we have to look it up in the declaring type.
+			
+			TypeDefinition atd = FindTypeDefinition (att.Constructor.DeclaringType.Module.Assembly, att.Constructor.DeclaringType);
+			foreach (MethodReference met in atd.Constructors) {
+				if (met.Parameters.Count == att.Constructor.Parameters.Count) {
+					for (int n = met.Parameters.Count - 1; n >= 0; n--) {
+						if (met.Parameters[n].ParameterType.FullName != att.Constructor.Parameters[n].ParameterType.FullName)
+							break;
+						if (n == 0)
+							return met;
+					}
+				}
+			}
+			return null;
+		}
+			
+
 
 		public object LoadAssembly (string file)
 		{
@@ -176,6 +285,15 @@ namespace Mono.Addins.CecilReflector
 
 		public object GetType (object asm, string typeName)
 		{
+			if (typeName.IndexOf ('`') != -1) {
+				foreach (TypeDefinition td in ((AssemblyDefinition)asm).MainModule.Types) {
+					if (td.FullName == typeName) {
+						IAnnotationProvider at = td;
+						at.Annotations [typeof(AssemblyDefinition)] = asm;
+						return td;
+					}
+				}
+			}
 			IAnnotationProvider t = ((AssemblyDefinition)asm).MainModule.Types [typeName];
 			if (t != null) {
 				t.Annotations [typeof(AssemblyDefinition)] = asm;
@@ -256,6 +374,13 @@ namespace Mono.Addins.CecilReflector
 			TypeDefinition td = GetType (referencer, name) as TypeDefinition;
 			if (td != null)
 				return td;
+			int i = name.IndexOf ('<');
+			if (i != -1) {
+				name = name.Substring (0, i);
+				td = GetType (referencer, name) as TypeDefinition;
+				if (td != null)
+					return td;
+			}
 			
 			foreach (AssemblyNameReference aref in referencer.MainModule.AssemblyReferences) {
 				string loc = locator.GetAssemblyLocation (aref.FullName);
@@ -274,6 +399,14 @@ namespace Mono.Addins.CecilReflector
 			string baseName = ((TypeDefinition)baseType).FullName;
 			foreach (string bt in GetBaseTypeFullNameList (type))
 				if (bt == baseName)
+					return true;
+			return false;
+		}
+
+		public bool TypeIsAssignableFrom (string baseTypeName, object type)
+		{
+			foreach (string bt in GetBaseTypeFullNameList (type))
+				if (bt == baseTypeName)
 					return true;
 			return false;
 		}
