@@ -567,6 +567,9 @@ namespace Mono.Addins.Description
 			}
 			
 			XmlElement elem = config.configDoc.DocumentElement;
+			if (elem.LocalName == "ExtensionModel")
+				return config;
+			
 			config.id = elem.GetAttribute ("id");
 			config.ns = elem.GetAttribute ("namespace");
 			config.name = elem.GetAttribute ("name");
@@ -715,6 +718,29 @@ namespace Mono.Addins.Description
 				if (tns != null)
 					tns.MergeWith (AddinId, ns);
 			}
+		}
+		
+		internal bool IsExtensionModel {
+			get { return RootElement.LocalName == "ExtensionModel"; }
+		}
+		
+		internal static AddinDescription Merge (AddinDescription desc1, AddinDescription desc2)
+		{
+			if (!desc2.IsExtensionModel) {
+				AddinDescription tmp = desc1;
+				desc1 = desc2; desc2 = tmp;
+			}
+			desc1.ExtensionPoints.AddRange (desc2.ExtensionPoints);
+			desc1.ExtensionNodeSets.AddRange (desc2.ExtensionNodeSets);
+			desc1.ConditionTypes.AddRange (desc2.ConditionTypes);
+			desc1.OptionalModules.AddRange (desc2.OptionalModules);
+			foreach (string s in desc2.MainModule.Assemblies)
+				desc1.MainModule.Assemblies.Add (s);
+			foreach (string s in desc2.MainModule.DataFiles)
+				desc1.MainModule.DataFiles.Add (s);
+			desc1.MainModule.Dependencies.AddRange (desc2.MainModule.Dependencies);
+			desc1.MainModule.Extensions.AddRange (desc2.MainModule.Extensions);
+			return desc1;
 		}
 		
 		void IBinaryXmlElement.Write (BinaryXmlWriter writer)

@@ -1,5 +1,11 @@
 2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins.Database/AddinScanner.cs:
+	* Mono.Addins.Description/AddinDescription.cs: Added support
+	  for multiple .addin.xml files in a single assembly.
+
+2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* Mono.Addins.csproj:
 	* Mono.Addins/AddinManager.cs:

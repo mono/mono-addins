@@ -550,27 +550,30 @@ namespace Mono.Addins.Database
 				
 				// Get the config file from the resources, if there is one
 				
-				string configFile = null;
 				foreach (string res in asm.GetManifestResourceNames ()) {
 					if (res.EndsWith (".addin") || res.EndsWith (".addin.xml")) {
-						configFile = res;
-						break;
+						using (Stream s = asm.GetManifestResourceStream (res)) {
+							string asmFile = new Uri (asm.CodeBase).LocalPath;
+							AddinDescription ad = AddinDescription.Read (s, Path.GetDirectoryName (asmFile));
+							if (config != null) {
+								if (!config.IsExtensionModel && !ad.IsExtensionModel) {
+									// There is more than one add-in definition
+									monitor.ReportError ("Duplicate add-in definition found in assembly: " + filePath, null);
+									return false;
+								}
+								config = AddinDescription.Merge (config, ad);
+							} else
+								config = ad;
+						}
 					}
 				}
 				
-				if (configFile != null) {
-					using (Stream s = asm.GetManifestResourceStream (configFile)) {
-						string asmFile = new Uri (asm.CodeBase).LocalPath;
-						config = AddinDescription.Read (s, Path.GetDirectoryName (asmFile));
-					}
-				}
-				else {
-					// On this case, only scan the assembly if it has the Addin attribute.
+				if (config == null) {
+					// In this case, only scan the assembly if it has the Addin attribute.
 					AddinAttribute att = (AddinAttribute) Attribute.GetCustomAttribute (asm, typeof(AddinAttribute), false);
-					if (att == null) {
-						config = null;
+					if (att == null)
 						return true;
-					}
+
 					config = new AddinDescription ();
 				}
 				
