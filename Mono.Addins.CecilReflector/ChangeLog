@@ -1,5 +1,9 @@
 2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins.CecilReflector/Reflector.cs: Fix potential NRE.
+
+2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Addins.CecilReflector.csproj: Flush.
 
 2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>

@@ -329,7 +329,8 @@ namespace Mono.Addins.CecilReflector
 		AssemblyDefinition GetAssemblyDefinition (TypeDefinition t)
 		{
 			IAnnotationProvider aprov = (IAnnotationProvider) t;
-			return (AssemblyDefinition) aprov.Annotations [typeof(AssemblyDefinition)];
+			AssemblyDefinition ad = (AssemblyDefinition) aprov.Annotations [typeof(AssemblyDefinition)];
+			return ad ?? t.Module.Assembly;
 		}
 
 		public System.Collections.IEnumerable GetBaseTypeFullNameList (object type)
