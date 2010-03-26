@@ -2,7 +2,9 @@ ASSEMBLY_COMPILER_COMMAND = mcs
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG
 ASSEMBLY = ./bin/Debug/UnitTests.dll
 COMPILE_TARGET = library
-PROJECT_REFERENCES = ../../bin/Mono.Addins.dll
+PROJECT_REFERENCES =  \
+	../../bin/Mono.Addins.CecilReflector.dll \
+	../../bin/Mono.Addins.dll
 BUILD_DIR = ./bin/Debug
 NOINSTALL=yes
 
@@ -18,6 +20,8 @@ FILES =  \
 	GlobalInfoCondition.cs \
 	ISampleExtender.cs \
 	IWriter.cs \
+	IWriterWithMetadata.cs \
+	NodeWithAttribute.cs \
 	ParameterInfoCondition.cs \
 	TestBase.cs \
 	TestConditions.cs \
@@ -37,6 +41,7 @@ EXTRAS =
 
 REFERENCES =  \
 	-pkg:mono-nunit \
+	-pkg:nunit \
 	-r:System \
 	-r:System.Xml
 

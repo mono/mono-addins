@@ -1,3 +1,7 @@
+2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.Setup.csproj: Flush.
+
 2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Setup/SetupTool.cs: Allow specifying multiple

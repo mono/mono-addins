@@ -44,6 +44,10 @@
 		</ExtensionNode>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/SimpleApp/NodesWithAttribute">
+		<ExtensionNode name="WithAtt" type="UnitTests.NodeWithAttribute" />
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 	
 	<Extension path="/SimpleApp/NodeWithChildren">

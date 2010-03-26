@@ -1,3 +1,7 @@
+2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* mautil.csproj: Flush.
+
 2009-11-13  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Main.cs: Allow specifying multiple levels of verbosity.

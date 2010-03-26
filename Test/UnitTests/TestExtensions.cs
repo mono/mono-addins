@@ -135,5 +135,35 @@ namespace UnitTests
 			
 			Assert.AreEqual ("node2", n2.Id, "t2");
 		}
+		
+		[Test()]
+		public void TestExtensionWithAttribute ()
+		{
+			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/SimpleApp/NodesWithAttribute");
+			Assert.AreEqual (2, nodes.Count, "Node count");
+			NodeWithAttribute n1 = nodes [0] as NodeWithAttribute;
+			NodeWithAttribute n2 = nodes [1] as NodeWithAttribute;
+			Assert.IsNotNull (n1);
+			Assert.IsNotNull (n2);
+			Assert.AreEqual ("test1", n1.Name, "t1");
+			Assert.AreEqual (true, n1.Value, "t2");
+			Assert.AreEqual ("test2", n2.Name, "t1");
+			Assert.AreEqual (true, n2.Value, "t2");
+		}
+		
+		[Test()]
+		public void TestTypeExtensionWithAttribute ()
+		{
+			ExtensionNodeList nodes = AddinManager.GetExtensionNodes (typeof(IWriterWithMetadata));
+			Assert.AreEqual (2, nodes.Count, "Node count");
+			TypeExtensionNode<WriterWithMetadataAttribute> n1 = nodes [0] as TypeExtensionNode<WriterWithMetadataAttribute>;
+			TypeExtensionNode<WriterWithMetadataAttribute> n2 = nodes [1] as TypeExtensionNode<WriterWithMetadataAttribute>;
+			Assert.IsNotNull (n1);
+			Assert.IsNotNull (n2);
+			Assert.AreEqual ("meta1", n1.Data.Name, "t1");
+			Assert.AreEqual (1, n1.Data.Version, "t2");
+			Assert.AreEqual ("meta2", n2.Data.Name, "t3");
+			Assert.AreEqual (2, n2.Data.Version, "t4");
+		}
 	}
 }

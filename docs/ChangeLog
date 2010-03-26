@@ -1,3 +1,7 @@
+2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.Setup/SetupService.xml: Flush.
+
 2009-03-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins/Addin.xml:

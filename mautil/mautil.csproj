@@ -8,6 +8,7 @@
     <OutputType>Exe</OutputType>
     <AssemblyName>mautil</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
+    <RootNamespace>mautil</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Default|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

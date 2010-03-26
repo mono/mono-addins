@@ -1,3 +1,10 @@
+2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WriterServiceHost/WriterServiceHost.csproj:
+	* WriterService.SampleExtender/WriterService.SampleExtender.csproj:
+	  Disable makefile integration since we are not using
+	  makefiles anymore.
+
 2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* WriterService.sln: More missing files.

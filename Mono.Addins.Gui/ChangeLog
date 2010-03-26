@@ -1,3 +1,16 @@
+2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* gtk-gui/generated.cs:
+	* Mono.Addins.Gui.csproj:
+	* gtk-gui/Mono.Addins.Gui.ErrorDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.NewSiteDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.ProgressDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.AddinInfoDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:
+	* gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs: Flush.
+
 2009-09-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* AssemblyInfo.cs: Bump Mono.Addins version.

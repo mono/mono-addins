@@ -13,8 +13,10 @@ all: $(ASSEMBLY)
 endif
 
 FILES =  \
+	AttributeExtensions.cs \
 	HelloSampleExtender.cs \
-	HelloWorldWriter.cs 
+	HelloWorldWriter.cs \
+	HelloWriterWithMetadata.cs 
 
 DATA_FILES = 
 

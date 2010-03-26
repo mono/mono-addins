@@ -8,6 +8,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>FileContentExtension</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
+    <RootNamespace>FileContentExtension</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -26,6 +27,7 @@
     <ProjectReference Include="..\UnitTests\UnitTests.csproj">
       <Project>{1CD51E61-1985-4D22-9BFA-D14C8FC61B46}</Project>
       <Name>UnitTests</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>

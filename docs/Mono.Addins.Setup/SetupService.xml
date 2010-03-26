@@ -144,6 +144,25 @@
         <AssemblyVersion>0.4.0.0</AssemblyVersion>
       </AssemblyInfo>
     </Member>
+    <Member MemberName="GetRegistryForPackage">
+      <MemberSignature Language="C#" Value="public static Mono.Addins.AddinRegistry GetRegistryForPackage (string name);" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>0.4.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Mono.Addins.AddinRegistry</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="name">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="Install">
       <MemberSignature Language="C#" Value="public bool Install (Mono.Addins.IProgressStatus statusMonitor, Mono.Addins.Setup.AddinRepositoryEntry[] addins);" />
       <MemberType>Method</MemberType>

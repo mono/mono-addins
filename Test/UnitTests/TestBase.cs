@@ -9,6 +9,15 @@ namespace UnitTests
 {
 	public class TestBase
 	{
+		static bool firstRun = true;
+		
+		public static string TempDir {
+			get {
+				string dir = new Uri (typeof(TestBase).Assembly.CodeBase).LocalPath;
+				return Path.Combine (Path.GetDirectoryName (dir), "temp");
+			}
+		}
+		
 		[TestFixtureSetUp]
 		public virtual void Setup ()
 		{
@@ -17,9 +26,22 @@ namespace UnitTests
 			AddinManager.AddinUnloaded += OnUnload;
 			
 			string dir = new Uri (GetType().Assembly.CodeBase).LocalPath;
-			AddinManager.Initialize (Path.GetDirectoryName (dir));
-			AddinManager.Registry.ResetConfiguration ();
-			AddinManager.Registry.Update (new ConsoleProgressStatus (true));
+			dir = Path.Combine (Path.GetDirectoryName (dir), "registry");
+			
+			if (firstRun) {
+				if (Directory.Exists (TempDir))
+					Directory.Delete (TempDir, true);
+				Directory.CreateDirectory (TempDir);
+			}
+			
+			AddinManager.Initialize (TempDir);
+			
+			if (firstRun)
+				AddinManager.Registry.Update (new ConsoleProgressStatus (true));
+			else
+				AddinManager.Registry.ResetConfiguration ();
+			
+			firstRun = false;
 		}
 		
 		[TestFixtureTearDown]

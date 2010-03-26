@@ -8,6 +8,9 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Addins.Setup</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
+    <RootNamespace>Mono.Addins.Setup</RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -17,10 +20,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <SignAssembly>true</SignAssembly>
     <ConsolePause>false</ConsolePause>
-    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
-    <AssemblyKeyFile>..\mono-addins.snk</AssemblyKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>

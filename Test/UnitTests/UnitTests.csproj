@@ -8,6 +8,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>UnitTests</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
+    <RootNamespace>UnitTests</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -19,10 +20,7 @@
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.core, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
-    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
     <Reference Include="nunit.util, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
-    <Reference Include="nunit.core.interfaces, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
     <Reference Include="nunit.core.extensions, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
     <Reference Include="nunit.framework.extensions, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
     <Reference Include="nunit.mocks, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
@@ -32,11 +30,18 @@
     <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="nunit.core, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
+    <Reference Include="nunit.core.interfaces, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
+    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Mono.Addins.CecilReflector\Mono.Addins.CecilReflector.csproj">
+      <Project>{42D1CE65-A14B-4218-B787-58AD7AA68513}</Project>
+      <Name>Mono.Addins.CecilReflector</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -53,6 +58,8 @@
     <Compile Include="IWriter.cs" />
     <Compile Include="TestLocalization.cs" />
     <Compile Include="AddinInformationTests.cs" />
+    <Compile Include="NodeWithAttribute.cs" />
+    <Compile Include="IWriterWithMetadata.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SimpleApp.addin.xml">

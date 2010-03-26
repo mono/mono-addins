@@ -4,7 +4,8 @@ ASSEMBLY = ../lib/extras/FileExtender.dll
 COMPILE_TARGET = library
 PROJECT_REFERENCES =  \
 	../../bin/Mono.Addins.dll \
-	../lib/FileContentExtension.dll
+	../lib/FileContentExtension.dll \
+	../UnitTests/bin/Debug/UnitTests.dll
 BUILD_DIR = ../lib/extras
 
 	
@@ -16,7 +17,9 @@ FILES = FileExtender.cs
 
 DATA_FILES = ExtraExtender.addin.xml 
 
-RESOURCES = FileExtender.addin.xml 
+RESOURCES =  \
+	FileExtender.addin.xml \
+	FileExtender.Bis.addin.xml 
 
 EXTRAS = 
 

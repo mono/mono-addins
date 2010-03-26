@@ -1,1 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?><Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  <PropertyGroup>    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>    <ProductVersion>9.0.21022</ProductVersion>    <SchemaVersion>2.0</SchemaVersion>    <ProjectGuid>{26C85FBC-0A97-4650-807F-E889C6D1F32F}</ProjectGuid>    <OutputType>Library</OutputType>    <RootNamespace>HelloWorldAddin</RootNamespace>    <AssemblyName>HelloWorldAddin</AssemblyName>    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>  </PropertyGroup>  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">    <DebugSymbols>true</DebugSymbols>    <DebugType>full</DebugType>    <Optimize>false</Optimize>    <OutputPath>..\bin</OutputPath>    <DefineConstants>DEBUG</DefineConstants>    <ErrorReport>prompt</ErrorReport>    <WarningLevel>4</WarningLevel>    <ConsolePause>false</ConsolePause>  </PropertyGroup>  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">    <DebugType>none</DebugType>    <Optimize>false</Optimize>    <OutputPath>..\bin</OutputPath>    <ErrorReport>prompt</ErrorReport>    <WarningLevel>4</WarningLevel>    <ConsolePause>false</ConsolePause>  </PropertyGroup>  <ItemGroup>    <Reference Include="System" />  </ItemGroup>  <ItemGroup>    <EmbeddedResource Include="HelloWorldAddin.addin.xml">      <LogicalName>HelloWorldAddin.addin.xml</LogicalName>    </EmbeddedResource>  </ItemGroup>  <ItemGroup>    <Compile Include="HelloCommand.cs" />  </ItemGroup>  <ItemGroup>    <ProjectReference Include="..\HelloWorld\HelloWorld.csproj">      <Project>{5F813963-DE40-433A-ABE3-71EACDF19412}</Project>      <Name>HelloWorld</Name>    </ProjectReference>  </ItemGroup>  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" /></Project>
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{26C85FBC-0A97-4650-807F-E889C6D1F32F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>HelloWorldAddin</RootNamespace>
+    <AssemblyName>HelloWorldAddin</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="HelloWorldAddin.addin.xml">
+      <LogicalName>HelloWorldAddin.addin.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="HelloCommand.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HelloWorld\HelloWorld.csproj">
+      <Project>{5F813963-DE40-433A-ABE3-71EACDF19412}</Project>
+      <Name>HelloWorld</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

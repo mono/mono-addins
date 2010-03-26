@@ -8,6 +8,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>SystemInfoExtension</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
+    <RootNamespace>SystemInfoExtension</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -26,10 +27,15 @@
     <ProjectReference Include="..\UnitTests\UnitTests.csproj">
       <Project>{1CD51E61-1985-4D22-9BFA-D14C8FC61B46}</Project>
       <Name>UnitTests</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommandExtension\CommandExtension.csproj">
+      <Project>{F109148D-849E-4044-8700-5E8EA0AB2476}</Project>
+      <Name>CommandExtension</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -50,10 +56,10 @@
     <MonoDevelop>
       <Properties>
         <Deployment.LinuxDeployData scriptName="systeminfoextension" generatePcFile="false" />
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true">
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar Sync="true" Name="DATA_FILES" />
-          <ResourcesVar Sync="true" Name="RESOURCES" />
+          <ResourcesVar Name="RESOURCES" />
           <OthersVar />
           <GacRefVar Sync="true" Name="REFERENCES" Prefix="-r:" />
           <AsmRefVar Sync="true" Name="DLL_REFERENCES" />
@@ -62,4 +68,12 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <LogicalName>Resources.resources</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources.ca.resx">
+      <LogicalName>Resources.ca.resources</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

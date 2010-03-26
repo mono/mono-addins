@@ -8,6 +8,7 @@ namespace SimpleApp
 {
 	public interface IWriter
 	{
+		string Id { get; }
 		string Title { get; }
 		string Write ();
 		string Test (string test);

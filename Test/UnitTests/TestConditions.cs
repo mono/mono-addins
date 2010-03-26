@@ -48,14 +48,14 @@ namespace UnitTests
 			
 			Hashtable newwriters = new Hashtable ();
 			for (int n=0; n<writers.Length; n++) {
-				string nwrit = writers[n].Write ();
+				string nwrit = writers[n].Id;
 				
 				// Check added events
 				if (oldwriters.Contains (nwrit)) {
-					Assert.IsFalse (added.Contains (nwrit), tid + ": incorrect Add event for node: " + nwrit);
-					Assert.IsFalse (removed.Contains (nwrit), tid + ": incorrect Remove event for node: " + nwrit);
+					Assert.IsFalse (added.Contains (nwrit), tid + ": incorrect Add event for node: " + writers[n].Write ());
+					Assert.IsFalse (removed.Contains (nwrit), tid + ": incorrect Remove event for node: " + writers[n].Write ());
 				} else {
-					Assert.IsTrue (added.Contains (nwrit), tid + ": Add event not sent for node: " + nwrit);
+					Assert.IsTrue (added.Contains (nwrit), tid + ": Add event not sent for node: " + writers[n].Write ());
 				}
 				newwriters [nwrit] = nwrit;
 			}
@@ -96,9 +96,9 @@ namespace UnitTests
 		{
 			IWriter w = (IWriter) ((TypeExtensionNode)args.ExtensionNode).CreateInstance ();
 			if (args.Change == ExtensionChange.Add)
-				added [w.Write ()] = w;
+				added [w.Id] = w;
 			else
-				removed [w.Write ()] = w;
+				removed [w.Id] = w;
 		}
 		
 		[Test()]

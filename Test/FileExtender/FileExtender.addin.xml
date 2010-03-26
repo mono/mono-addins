@@ -1,6 +1,4 @@
-<Addin 
-       namespace   = "SimpleApp"
-       >
+<Addin namespace = "SimpleApp">
 
 	<Runtime>
 		<Import assembly="FileExtender.dll"/>
@@ -16,13 +14,6 @@
 	
 	<Extension path = "/SimpleApp/Writers/SomeFile">
 		<Content xpath="some/path1" />
-		<Content xpath="some/path2" />
-	</Extension>
-	
-	<Extension path = "/SimpleApp/ExtraWriters/SomeParentFile">
-		<Condition id="InputParameter" value="tc2">
-			<Content xpath="child3" />
-		</Condition>
 	</Extension>
 	
 </Addin>

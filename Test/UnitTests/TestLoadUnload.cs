@@ -10,6 +10,19 @@ namespace UnitTests
 	[TestFixture()]
 	public class TestLoadUnload: TestBase
 	{
+		void ResetStatus (bool enable)
+		{
+			Addin ainfo;
+			ainfo = AddinManager.Registry.GetAddin ("SimpleApp.HelloWorldExtension");
+			ainfo.Enabled = enable;
+			ainfo = AddinManager.Registry.GetAddin ("SimpleApp.FileContentExtension");
+			ainfo.Enabled = enable;
+			ainfo = AddinManager.Registry.GetAddin ("SimpleApp.SystemInfoExtension");
+			ainfo.Enabled = enable;
+			ainfo = AddinManager.Registry.GetAddin ("SimpleApp.CommandExtension");
+			ainfo.Enabled = enable;
+		}
+		
 		[Test()]
 		public void TestDisable ()
 		{
@@ -48,11 +61,15 @@ namespace UnitTests
 			Assert.IsFalse (ainfo.Enabled, "t2.2");
 			
 			Assert.AreEqual (0, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 5");
+			
+			ResetStatus (true);
 		}
 		
 		[Test()]
 		public void TestEnable ()
 		{
+			ResetStatus (false);
+			
 			Assert.AreEqual (0, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 1");
 			
 			Assert.IsFalse (AddinManager.Registry.IsAddinEnabled ("SimpleApp.HelloWorldExtension"), "t1");
@@ -78,6 +95,8 @@ namespace UnitTests
 			Assert.IsTrue (AddinManager.Registry.IsAddinEnabled ("SimpleApp.FileContentExtension"), "t4.1");
 			
 			Assert.AreEqual (4, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 5");
+			
+			ResetStatus (true);
 		}
 		
 		[Test()]
@@ -118,11 +137,15 @@ namespace UnitTests
 			Assert.IsFalse (ainfo.Enabled, "t5.2");
 			
 			Assert.AreEqual (0, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 4");
+			
+			ResetStatus (true);
 		}
 		
 		[Test()]
 		public void TestEnableWithDeps ()
 		{
+			ResetStatus (false);
+			
 			Addin ainfo;
 			
 			Assert.AreEqual (0, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 1");
@@ -154,6 +177,8 @@ namespace UnitTests
 			ainfo = AddinManager.Registry.GetAddin ("SimpleApp.CommandExtension");
 			Assert.IsNotNull (ainfo, "t2");
 			Assert.IsTrue (ainfo.Enabled, "t2.1");
+			
+			ResetStatus (true);
 		}
 		
 		[Test()]

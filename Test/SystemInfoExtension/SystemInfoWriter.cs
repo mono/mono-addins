@@ -7,6 +7,13 @@ namespace SystemInfoExtension
 {
 	public class SystemInfoWriter: IWriter
 	{
+		public SystemInfoWriter ()
+		{
+			Id = Guid.NewGuid ().ToString ();
+		}
+		
+		public string Id { get; set; }
+		
 		public string Title {
 			get { return AddinManager.CurrentLocalizer.GetString ("Modules"); }
 		}

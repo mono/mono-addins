@@ -1,3 +1,10 @@
+2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* SystemInfoWriter.cs:
+	* SystemInfoExtension.csproj: Updated and created new tests
+	  for testing extension definition using the new features.
+
 2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* SystemInfoExtension.csproj: Update target framework to 2.0.

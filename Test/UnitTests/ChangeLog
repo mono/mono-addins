@@ -1,3 +1,19 @@
+2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* IWriter.cs:
+	* Makefile.am:
+	* TestBase.cs:
+	* TestSetup.cs:
+	* TestEvents.cs:
+	* UnitTests.csproj:
+	* TestLoadUnload.cs:
+	* TestConditions.cs:
+	* TestExtensions.cs:
+	* SimpleApp.addin.xml:
+	* NodeWithAttribute.cs:
+	* IWriterWithMetadata.cs: Updated and created new tests for
+	  testing extension definition using the new features.
+
 2009-08-19  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* UnitTests.csproj: Update target framework to 2.0.

@@ -71,8 +71,14 @@ namespace UnitTests
 
 			Assert.AreEqual (2, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 2");
 			
-			InitChangedExtensionEvent ("/SimpleApp/Writers",
-			                           "/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender");
+			string[] addinExtensions = new string[] {
+				"/SimpleApp/Writers",
+				"/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender",
+				"/SimpleApp.Core/TypeExtensions/SimpleApp.IWriterWithMetadata",
+				"/SimpleApp/NodesWithAttribute"
+			};
+
+			InitChangedExtensionEvent (addinExtensions);
 			
 			AddinManager.ExtensionChanged += OnExtensionChangedHandler;
 			AddinManager.AddExtensionNodeHandler ("/SimpleApp/Writers", OnExtensionChange);
@@ -93,7 +99,7 @@ namespace UnitTests
 			Assert.AreEqual (1, notifyCount, "notifyCount 2");
 			Assert.AreEqual (1, addCount, "addCount 2");
 			Assert.AreEqual (0, removeCount, "removeCount 2");
-			Assert.AreEqual (2, eventCount, "eventCount 2"); // 1 for each extension of HelloWorldExtension, not only /SimpleApp/Writers
+			Assert.AreEqual (addinExtensions.Length, eventCount, "eventCount 2"); // 1 for each extension of HelloWorldExtension, not only /SimpleApp/Writers
 			
 			// Now unregister
 			
@@ -164,8 +170,14 @@ namespace UnitTests
 			
 			Assert.AreEqual (4, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 1");
 			
-			InitChangedExtensionEvent ("/SimpleApp/Writers",
-			                           "/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender");
+			string[] addinExtensions = new string[] {
+				"/SimpleApp/Writers",
+				"/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender",
+				"/SimpleApp.Core/TypeExtensions/SimpleApp.IWriterWithMetadata",
+				"/SimpleApp/NodesWithAttribute"
+			};
+
+			InitChangedExtensionEvent (addinExtensions);
 			
 			AddinManager.ExtensionChanged += OnExtensionChangedHandler;
 			AddinManager.AddExtensionNodeHandler ("/SimpleApp/Writers", OnExtensionChange);
@@ -186,7 +198,7 @@ namespace UnitTests
 			Assert.AreEqual (1, notifyCount, "notifyCount 2");
 			Assert.AreEqual (0, addCount, "addCount 2");
 			Assert.AreEqual (1, removeCount, "removeCount 2");
-			Assert.AreEqual (2, eventCount, "eventCount 2"); // 1 for each extension of HelloWorldExtension, not only /SimpleApp/Writers
+			Assert.AreEqual (addinExtensions.Length, eventCount, "eventCount 2"); // 1 for each extension of HelloWorldExtension, not only /SimpleApp/Writers
 			
 			InitChangedExtensionEvent ("/SimpleApp/Writers",
 			                           "/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender",

@@ -8,6 +8,7 @@
     <ProjectGuid>{B4B44F14-32C3-4D50-8C6A-06AA30E56CA3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Addins.MSBuild</AssemblyName>
+    <RootNamespace>Mono.Addins.MSBuild</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

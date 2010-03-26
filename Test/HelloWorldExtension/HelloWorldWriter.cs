@@ -11,6 +11,13 @@ namespace HelloWorldExtension
 	[Extension ("/SimpleApp/Writers")]
 	public class HelloWorldWriter: IWriter
 	{
+		public HelloWorldWriter ()
+		{
+			Id = Guid.NewGuid ().ToString ();
+		}
+		
+		public string Id { get; set; }
+		
 		public string Title {
 			get { return "Hello world message"; }
 		}
