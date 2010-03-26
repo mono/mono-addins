@@ -30,6 +30,7 @@
 using System;
 using System.Xml;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Reflection;
 using Mono.Addins.Serialization;
@@ -43,6 +44,7 @@ namespace Mono.Addins.Description
 		string description;
 		string addinId;
 		NodeTypeAttributeCollection attributes;
+		string customAttributeTypeName;
 		
 		// Cached clr type
 		[NonSerialized]
@@ -50,12 +52,33 @@ namespace Mono.Addins.Description
 		
 		// Cached serializable fields
 		[NonSerialized]
-		internal Hashtable Fields;
+		internal Dictionary<string,FieldData> Fields;
+		
+		// Cached serializable fields for the custom attribute
+		[NonSerialized]
+		internal Dictionary<string,FieldData> CustomAttributeFields;
+		
+		[NonSerialized]
+		internal FieldData CustomAttributeMember;
 		
 		internal class FieldData {
-			public FieldInfo Field;
+			public MemberInfo Member;
 			public bool Required;
 			public bool Localizable;
+			
+			public void SetValue (object target, object val)
+			{
+				if (Member is FieldInfo)
+					((FieldInfo)Member).SetValue (target, val);
+				else
+					((PropertyInfo)Member).SetValue (target, val, null);
+			}
+			
+			public Type MemberType {
+				get {
+					return (Member is FieldInfo) ? ((FieldInfo)Member).FieldType : ((PropertyInfo)Member).PropertyType;
+				}
+			}
 		}
 		
 		// Addin where this extension type is implemented
@@ -79,6 +102,12 @@ namespace Mono.Addins.Description
 		public string ObjectTypeName {
 			get { return objectTypeName != null ? objectTypeName : string.Empty; }
 			set { objectTypeName = value; }
+		}
+		
+		// Name of the custom attribute that can be used to declare nodes of this type
+		public string CustomAttributeTypeName {
+			get { return customAttributeTypeName ?? string.Empty; }
+			set { customAttributeTypeName = value; }
 		}
 		
 		// The description
@@ -114,6 +143,9 @@ namespace Mono.Addins.Description
 			at = element.Attributes ["objectType"];
 			if (at != null)
 				objectTypeName = at.Value;
+			at = element.Attributes ["customAttributeType"];
+			if (at != null)
+				customAttributeTypeName = at.Value;
 			XmlElement de = element ["Description"];
 			if (de != null)
 				description = de.InnerText;
@@ -172,6 +204,11 @@ namespace Mono.Addins.Description
 				Element.SetAttribute ("objectType", ObjectTypeName);
 			else
 				Element.RemoveAttribute ("objectType");
+			
+			if (CustomAttributeTypeName.Length > 0)
+				Element.SetAttribute ("customAttributeType", CustomAttributeTypeName);
+			else
+				Element.RemoveAttribute ("customAttributeType");
 
 			SaveXmlDescription (Description);
 		}
@@ -188,6 +225,7 @@ namespace Mono.Addins.Description
 			writer.WriteValue ("description", description);
 			writer.WriteValue ("addinId", addinId);
 			writer.WriteValue ("Attributes", attributes);
+			writer.WriteValue ("customAttributeType", customAttributeTypeName);
 		}
 		
 		internal override void Read (BinaryXmlReader reader)
@@ -200,6 +238,7 @@ namespace Mono.Addins.Description
 			addinId = reader.ReadStringValue ("addinId");
 			if (!reader.IgnoreDescriptionData)
 				attributes = (NodeTypeAttributeCollection) reader.ReadValue ("Attributes", new NodeTypeAttributeCollection (this));
+			customAttributeTypeName = reader.ReadStringValue ("customAttributeType");
 		}
 	}
 }

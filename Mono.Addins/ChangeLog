@@ -1,3 +1,34 @@
+2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Addins.csproj:
+	* Mono.Addins/AddinManager.cs:
+	* Mono.Addins/ExtensionNode.cs:
+	* Mono.Addins/ExtensionTree.cs:
+	* Mono.Addins/ExtensionContext.cs:
+	* Mono.Addins/TypeExtensionNode.cs:
+	* Mono.Addins/ExtensionNodeList.cs:
+	* Mono.Addins/ExtensionAttribute.cs:
+	* Mono.Addins.Database/AddinScanner.cs:
+	* Mono.Addins/ExtensionNodeAttribute.cs:
+	* Mono.Addins/NodeAttributeAttribute.cs:
+	* Mono.Addins/ExtensionPointAttribute.cs:
+	* Mono.Addins.Database/AddinUpdateData.cs:
+	* Mono.Addins/CustomExtensionAttribute.cs:
+	* Mono.Addins/ExtensionAttributeAttribute.cs:
+	* Mono.Addins.Database/IAssemblyReflector.cs:
+	* Mono.Addins/TypeExtensionPointAttribute.cs:
+	* Mono.Addins.Description/ExtensionNodeType.cs:
+	* Mono.Addins.Database/DefaultAssemblyReflector.cs:
+	* Mono.Addins.Description/ExtensionNodeDescription.cs: Allow
+	  using custom attributes for specifying extension node
+	  metadata.
+
+	* Mono.Addins.Database/AddinDatabase.cs: Consolidate
+	  extensions before saving the final add-in descriptions. That
+	  means merging extensions with the same path and making sure
+	  the extension nodes have a correct ordering.
+
 2010-03-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Database/AddinScanner.cs: Removed special

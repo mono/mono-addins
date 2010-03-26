@@ -65,4 +65,10 @@ namespace Mono.Addins
 			}
 		}
 	}
+	
+	public class TypeExtensionNode<T>: TypeExtensionNode where T:CustomExtensionAttribute
+	{
+		[NodeAttribute]
+		public T Data { get; internal set; }
+	}
 }

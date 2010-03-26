@@ -79,7 +79,9 @@ FILES =  \
 	Mono.Addins/AddinSessionService.cs \
 	Mono.Addins/ConditionType.cs \
 	Mono.Addins/ConsoleProgressStatus.cs \
+	Mono.Addins/CustomExtensionAttribute.cs \
 	Mono.Addins/ExtensionAttribute.cs \
+	Mono.Addins/ExtensionAttributeAttribute.cs \
 	Mono.Addins/ExtensionContext.cs \
 	Mono.Addins/ExtensionNode.cs \
 	Mono.Addins/ExtensionNodeAttribute.cs \

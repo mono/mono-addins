@@ -31,7 +31,7 @@ using System;
 
 namespace Mono.Addins
 {
-	[AttributeUsage (AttributeTargets.Class | AttributeTargets.Field, AllowMultiple=true)]
+	[AttributeUsage (AttributeTargets.Class | AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple=true)]
 	public class NodeAttributeAttribute: Attribute
 	{
 		string name;

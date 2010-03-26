@@ -231,6 +231,24 @@ namespace Mono.Addins
 			return SessionService.DefaultContext.GetExtensionNodes<T> (path);
 		}
 		
+		public static ExtensionNodeList GetExtensionNodes (Type instanceType)
+		{
+			CheckInitialized ();
+			return SessionService.DefaultContext.GetExtensionNodes (instanceType);
+		}
+		
+		public static ExtensionNodeList GetExtensionNodes (Type instanceType, Type expectedNodeType)
+		{
+			CheckInitialized ();
+			return SessionService.DefaultContext.GetExtensionNodes (instanceType, expectedNodeType);
+		}
+		
+		public static ExtensionNodeList<T> GetExtensionNodes<T> (Type instanceType) where T: ExtensionNode
+		{
+			CheckInitialized ();
+			return SessionService.DefaultContext.GetExtensionNodes<T> (instanceType);
+		}
+		
 		public static object[] GetExtensionObjects (Type instanceType)
 		{
 			CheckInitialized ();

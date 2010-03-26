@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Database
 {
@@ -35,6 +36,7 @@ namespace Mono.Addins.Database
 		void Initialize (IAssemblyLocator locator);
 		
 		object[] GetCustomAttributes (object obj, Type type, bool inherit);
+		List<CustomAttribute> GetRawCustomAttributes (object obj, Type type, bool inherit);
 		
 		object LoadAssembly (string file);
 		object LoadAssemblyFromReference (object asmReference);
@@ -57,5 +59,10 @@ namespace Mono.Addins.Database
 	public interface IAssemblyLocator
 	{
 		string GetAssemblyLocation (string fullName);
+	}
+	
+	public class CustomAttribute: Dictionary<string,string>
+	{
+		public string TypeName { get; set; }
 	}
 }

@@ -28,6 +28,7 @@
 using System;
 using System.Reflection;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Database
 {
@@ -60,7 +61,49 @@ namespace Mono.Addins.Database
 					return att;
 			return null;
 		}
+		
+		public List<CustomAttribute> GetRawCustomAttributes (object obj, Type type, bool inherit)
+		{
+			ICustomAttributeProvider aprov = obj as ICustomAttributeProvider;
+			List<CustomAttribute> atts = new List<CustomAttribute> ();
+			if (aprov == null)
+				return atts;
+			
+			foreach (object at in aprov.GetCustomAttributes (type, inherit))
+				atts.Add (ConvertAttribute (at));
 
+			return atts;
+		}
+
+		CustomAttribute ConvertAttribute (object ob)
+		{
+			CustomAttribute at = new CustomAttribute ();
+			Type type = ob.GetType ();
+			at.TypeName = type.FullName;
+			
+			foreach (PropertyInfo prop in type.GetProperties (BindingFlags.Public | BindingFlags.Instance)) {
+				object val = prop.GetValue (ob, null);
+				if (val != null) {
+					NodeAttributeAttribute bt = (NodeAttributeAttribute) Attribute.GetCustomAttribute (prop, typeof(NodeAttributeAttribute), true);
+					if (bt != null) {
+						string name = string.IsNullOrEmpty (bt.Name) ? prop.Name : bt.Name;
+						at [name] = Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture);
+					}
+				}
+			}
+			foreach (FieldInfo field in type.GetFields (BindingFlags.Public | BindingFlags.Instance)) {
+				object val = field.GetValue (ob);
+				if (val != null) {
+					NodeAttributeAttribute bt = (NodeAttributeAttribute) Attribute.GetCustomAttribute (field, typeof(NodeAttributeAttribute), true);
+					if (bt != null) {
+						string name = string.IsNullOrEmpty (bt.Name) ? field.Name : bt.Name;
+						at [name] = Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture);
+					}
+				}
+			}
+			return at;
+		}
+		
 		public string GetTypeName (object type)
 		{
 			return ((Type)type).Name;

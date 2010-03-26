@@ -39,6 +39,8 @@ namespace Mono.Addins
 		string id;
 		string insertBefore;
 		string insertAfter;
+		string typeName;
+		Type type;
 		
 		public ExtensionAttribute ()
 		{
@@ -49,29 +51,44 @@ namespace Mono.Addins
 			this.path = path;
 		}
 		
+		public ExtensionAttribute (Type type)
+		{
+			Type = type;
+		}
+		
 		public string Path {
-			get { return path != null ? path : string.Empty; }
+			get { return path ?? string.Empty; }
 			set { path = value; }
 		}
 		
 		public string NodeName {
-			get { return nodeName != null && nodeName.Length > 0 ? nodeName : "Type"; }
+			get { return !string.IsNullOrEmpty (nodeName) ? nodeName : "Type"; }
 			set { nodeName = value; }
 		}
 		
 		public string Id {
-			get { return id != null ? id : string.Empty; }
+			get { return id ?? string.Empty; }
 			set { id = value; }
 		}
 		
 		public string InsertBefore {
-			get { return insertBefore != null ? insertBefore : string.Empty; }
+			get { return insertBefore ?? string.Empty; }
 			set { insertBefore = value; }
 		}
 		
 		public string InsertAfter {
-			get { return insertAfter != null ? insertAfter : string.Empty; }
+			get { return insertAfter ?? string.Empty; }
 			set { insertAfter = value; }
+		}
+		
+		public Type Type {
+			get { return type; }
+			set { type = value; typeName = type.FullName; }
+		}
+		
+		internal string TypeName {
+			get { return typeName ?? string.Empty; }
+			set { typeName = value; }
 		}
 	}
 }

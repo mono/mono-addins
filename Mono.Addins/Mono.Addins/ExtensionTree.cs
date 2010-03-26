@@ -32,6 +32,7 @@ using System.Collections;
 using System.Reflection;
 using System.Xml;
 using Mono.Addins.Description;
+using System.Collections.Generic;
 
 namespace Mono.Addins
 {
@@ -203,45 +204,100 @@ namespace Mono.Addins
 			}
 			
 			// If no type name is provided, use TypeExtensionNode by default
-			if (ntype.TypeName == null || ntype.TypeName.Length == 0) {
-				ntype.Type = typeof(TypeExtensionNode);
-				return true;
+			if (ntype.TypeName == null || ntype.TypeName.Length == 0 || ntype.TypeName == typeof(TypeExtensionNode).FullName) {
+				// If it has a custom attribute, use the generic version of TypeExtensionNode
+				if (ntype.CustomAttributeTypeName.Length > 0) {
+					Type attType = p.GetType (ntype.CustomAttributeTypeName, false);
+					if (attType == null) {
+						AddinManager.ReportError ("Custom attribute type '" + ntype.CustomAttributeTypeName + "' not found.", ntype.AddinId, null, false);
+						return false;
+					}
+					ntype.Type = typeof(TypeExtensionNode<>).MakeGenericType (attType);
+				} else {
+					ntype.Type = typeof(TypeExtensionNode);
+					return true;
+				}
 			}
-			
-			ntype.Type = p.GetType (ntype.TypeName, false);
-			if (ntype.Type == null) {
-				AddinManager.ReportError ("Extension node type '" + ntype.TypeName + "' not found.", ntype.AddinId, null, false);
-				return false;
+			else {
+				ntype.Type = p.GetType (ntype.TypeName, false);
+				if (ntype.Type == null) {
+					AddinManager.ReportError ("Extension node type '" + ntype.TypeName + "' not found.", ntype.AddinId, null, false);
+					return false;
+				}
 			}
-			
-			Hashtable fields = new Hashtable ();
 			
 			// Check if the type has NodeAttribute attributes applied to fields.
-			Type type = ntype.Type;
+			ExtensionNodeType.FieldData boundAttributeType = null;
+			Dictionary<string,ExtensionNodeType.FieldData> fields = GetMembersMap (ntype.Type, out boundAttributeType);
+			ntype.CustomAttributeMember = boundAttributeType;
+			if (fields.Count > 0)
+				ntype.Fields = fields;
+			
+			// If the node type is bound to a custom attribute and there is a member bound to that attribute,
+			// get the member map for the attribute.
+				
+			if (boundAttributeType != null) {
+				if (ntype.CustomAttributeTypeName.Length == 0)
+					throw new InvalidOperationException ("Extension node not bound to a custom attribute.");
+				if (ntype.CustomAttributeTypeName != boundAttributeType.MemberType.FullName)
+					throw new InvalidOperationException ("Incorrect custom attribute type declaration in " + ntype.Type + ". Expected '" + ntype.CustomAttributeTypeName + "' found '" + boundAttributeType.MemberType.FullName + "'");
+				
+				fields = GetMembersMap (boundAttributeType.MemberType, out boundAttributeType);
+				if (fields.Count > 0)
+					ntype.CustomAttributeFields = fields;
+			}
+			
+			return true;
+		}
+		
+		Dictionary<string,ExtensionNodeType.FieldData> GetMembersMap (Type type, out ExtensionNodeType.FieldData boundAttributeType)
+		{
+			string fname;
+			Dictionary<string,ExtensionNodeType.FieldData> fields = new Dictionary<string, ExtensionNodeType.FieldData> ();
+			boundAttributeType = null;
+			
 			while (type != typeof(object) && type != null) {
 				foreach (FieldInfo field in type.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)) {
 					NodeAttributeAttribute at = (NodeAttributeAttribute) Attribute.GetCustomAttribute (field, typeof(NodeAttributeAttribute), true);
 					if (at != null) {
-						ExtensionNodeType.FieldData fdata = new ExtensionNodeType.FieldData ();
-						fdata.Field = field;
-						fdata.Required = at.Required;
-						fdata.Localizable = at.Localizable;
-						
-						string name;
-						if (at.Name != null && at.Name.Length > 0)
-							name = at.Name;
-						else
-							name = field.Name;
-						
-						fields [name] = fdata;
+						ExtensionNodeType.FieldData fd = CreateFieldData (field, at, out fname, ref boundAttributeType);
+						if (fd != null)
+							fields [fname] = fd;
+					}
+				}
+				foreach (PropertyInfo prop in type.GetProperties (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)) {
+					NodeAttributeAttribute at = (NodeAttributeAttribute) Attribute.GetCustomAttribute (prop, typeof(NodeAttributeAttribute), true);
+					if (at != null) {
+						ExtensionNodeType.FieldData fd = CreateFieldData (prop, at, out fname, ref boundAttributeType);
+						if (fd != null)
+							fields [fname] = fd;
 					}
 				}
 				type = type.BaseType;
 			}
-			if (fields.Count > 0)
-				ntype.Fields = fields;
-				
-			return true;
+			return fields;
+		}
+		
+		ExtensionNodeType.FieldData CreateFieldData (MemberInfo member, NodeAttributeAttribute at, out string name, ref ExtensionNodeType.FieldData boundAttributeType)
+		{
+			ExtensionNodeType.FieldData fdata = new ExtensionNodeType.FieldData ();
+			fdata.Member = member;
+			fdata.Required = at.Required;
+			fdata.Localizable = at.Localizable;
+			
+			if (at.Name != null && at.Name.Length > 0)
+				name = at.Name;
+			else
+				name = member.Name;
+			
+			if (typeof(CustomExtensionAttribute).IsAssignableFrom (fdata.MemberType)) {
+				if (boundAttributeType != null)
+					throw new InvalidOperationException ("Type '" + member.DeclaringType + "' has two members bound to a custom attribute. There can be only one.");
+				boundAttributeType = fdata;
+				return null;
+			}
+			
+			return fdata;
 		}
 	}
 }

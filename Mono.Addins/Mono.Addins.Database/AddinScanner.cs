@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Reflection;
@@ -50,10 +51,20 @@ namespace Mono.Addins.Database
 		{
 			this.database = database;
 			if (!scanResult.CheckOnly) {
-				string refName = GetType().Assembly.FullName;
-				int i = refName.IndexOf (',');
-				refName = "Mono.Addins.CecilReflector.Reflector, Mono.Addins.CecilReflector" + refName.Substring (i);
-				Type t = Type.GetType (refName, false);
+				
+				// If there is a local copy of the cecil reflector, use it instead of the one in the gac
+				Type t;
+				string asmFile = Path.Combine (Path.GetDirectoryName (GetType().Assembly.Location), "Mono.Addins.CecilReflector.dll");
+				if (File.Exists (asmFile)) {
+					Assembly asm = Assembly.LoadFrom (asmFile);
+					t = asm.GetType ("Mono.Addins.CecilReflector.Reflector");
+				}
+				else {
+					string refName = GetType().Assembly.FullName;
+					int i = refName.IndexOf (',');
+					refName = "Mono.Addins.CecilReflector.Reflector, Mono.Addins.CecilReflector" + refName.Substring (i);
+					t = Type.GetType (refName, false);
+				}
 				if (t != null)
 					reflector = (IAssemblyReflector) Activator.CreateInstance (t);
 				else
@@ -713,33 +724,52 @@ namespace Mono.Addins.Database
 				ExtensionPoint ep = config.AddExtensionPoint (ext.Path);
 				ep.Description = ext.Description;
 				ep.Name = ext.Name;
-				ep.AddExtensionNode (ext.NodeName, ext.NodeTypeName);
+				ExtensionNodeType nt = ep.AddExtensionNode (ext.NodeName, ext.NodeTypeName);
+				nt.CustomAttributeTypeName = ext.CustomAttributeTypeName;
 			}
+			
+			// Look for extension nodes declared using assembly attributes
+			
+			foreach (CustomAttribute att in reflector.GetRawCustomAttributes (asm, typeof(CustomExtensionAttribute), true)) {
+				ExtensionNodeDescription elem = config.MainModule.AddExtensionNode ("%" + att.TypeName, "Type");
+				foreach (var prop in att)
+					elem.SetAttribute (prop.Key, prop.Value);
+			}
+			
+			// Get extensions or extension points applied to types
 			
 			foreach (object t in reflector.GetAssemblyTypes (asm)) {
 				
 				string typeFullName = reflector.GetTypeFullName (t);
 				
+				// Look for extensions
+				
 				object[] extensionAtts = reflector.GetCustomAttributes (t, typeof(ExtensionAttribute), false);
 				if (extensionAtts.Length > 0) {
+					Dictionary<string,ExtensionNodeDescription> nodes = new Dictionary<string, ExtensionNodeDescription> ();
+					ExtensionNodeDescription uniqueNode = null;
 					foreach (ExtensionAttribute eatt in extensionAtts) {
 						string path;
-						string nodeName;
+						string nodeName = eatt.NodeName;
 						
-						if (eatt.Path.Length == 0) {
+						if (eatt.TypeName.Length > 0) {
+							path = "$" + eatt.TypeName;
+						}
+						else if (eatt.Path.Length == 0) {
 							path = GetBaseTypeNameList (t);
 							if (path == "$") {
 								// The type does not implement any interface and has no superclass.
 								// Will be reported later as an error.
 								path = "$" + typeFullName;
 							}
-							nodeName = "Type";
 						} else {
 							path = eatt.Path;
-							nodeName = eatt.NodeName;
 						}
-							
+
 						ExtensionNodeDescription elem = config.MainModule.AddExtensionNode (path, nodeName);
+						nodes [path] = elem;
+						uniqueNode = elem;
+						
 						if (eatt.Id.Length > 0) {
 							elem.SetAttribute ("id", eatt.Id);
 							elem.SetAttribute ("type", typeFullName);
@@ -751,27 +781,60 @@ namespace Mono.Addins.Database
 						if (eatt.InsertBefore.Length > 0)
 							elem.SetAttribute ("insertbefore", eatt.InsertBefore);
 					}
+					
+					// Get the node attributes
+					
+					foreach (ExtensionAttributeAttribute eat in reflector.GetCustomAttributes (t, typeof(ExtensionAttributeAttribute), false)) {
+						ExtensionNodeDescription node;
+						if (!string.IsNullOrEmpty (eat.Path))
+							nodes.TryGetValue (eat.Path, out node);
+						else if (eat.TypeName.Length > 0)
+							nodes.TryGetValue ("$" + eat.TypeName, out node);
+						else {
+							if (nodes.Count > 1)
+								throw new Exception ("Missing type or extension path value in ExtensionAttribute for type '" + typeFullName + "'.");
+							node = uniqueNode;
+						}
+						if (node == null)
+							throw new Exception ("Invalid type or path value in ExtensionAttribute for type '" + typeFullName + "'.");
+							
+						node.SetAttribute (eat.Name ?? string.Empty, eat.Value ?? string.Empty);
+					}
 				}
 				else {
-					foreach (TypeExtensionPointAttribute epa in reflector.GetCustomAttributes (t, typeof(TypeExtensionPointAttribute), false)) {
-						ExtensionPoint ep;
-						
-						ExtensionNodeType nt = new ExtensionNodeType ();
-						
-						if (epa.Path.Length > 0) {
-							ep = config.AddExtensionPoint (epa.Path);
+					// Look for extension points
+					
+					extensionAtts = reflector.GetCustomAttributes (t, typeof(TypeExtensionPointAttribute), false);
+					if (extensionAtts.Length > 0) {
+						foreach (TypeExtensionPointAttribute epa in extensionAtts) {
+							ExtensionPoint ep;
+							
+							ExtensionNodeType nt = new ExtensionNodeType ();
+							
+							if (epa.Path.Length > 0) {
+								ep = config.AddExtensionPoint (epa.Path);
+							}
+							else {
+								ep = config.AddExtensionPoint (GetDefaultTypeExtensionPath (config, typeFullName));
+								nt.ObjectTypeName = typeFullName;
+							}
+							nt.Id = epa.NodeName;
+							nt.TypeName = epa.NodeType.FullName;
+							nt.CustomAttributeTypeName = epa.CustomAttributeTypeName;
+							ep.NodeSet.NodeTypes.Add (nt);
+							ep.Description = epa.Description;
+							ep.Name = epa.Name;
+							ep.RootAddin = config.AddinId;
+							ep.SetExtensionsAddinId (config.AddinId);
 						}
-						else {
-							ep = config.AddExtensionPoint (GetDefaultTypeExtensionPath (config, typeFullName));
-							nt.ObjectTypeName = typeFullName;
+					}
+					else {
+						// Look for custom extension attribtues
+						foreach (CustomAttribute att in reflector.GetRawCustomAttributes (t, typeof(CustomExtensionAttribute), true)) {
+							ExtensionNodeDescription elem = config.MainModule.AddExtensionNode ("%" + att.TypeName, "Type");
+							foreach (var prop in att)
+								elem.SetAttribute (prop.Key, prop.Value);
 						}
-						nt.Id = epa.NodeName;
-						nt.TypeName = epa.NodeType.FullName;
-						ep.NodeSet.NodeTypes.Add (nt);
-						ep.Description = epa.Description;
-						ep.Name = epa.Name;
-						ep.RootAddin = config.AddinId;
-						ep.SetExtensionsAddinId (config.AddinId);
 					}
 				}
 			}
@@ -799,6 +862,8 @@ namespace Mono.Addins.Database
 					nt.Id = nodeAtt.NodeName;
 				if (nt.Description.Length == 0 && nodeAtt.Description.Length > 0)
 					nt.Description = nodeAtt.Description;
+				if (nt.CustomAttributeTypeName.Length == 0 && nodeAtt.CustomAttributeTypeName.Length > 0)
+					nt.CustomAttributeTypeName = nodeAtt.CustomAttributeTypeName;
 			} else {
 				// Use the node type name as default name
 				if (nt.Id.Length == 0)

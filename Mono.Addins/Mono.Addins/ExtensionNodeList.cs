@@ -68,6 +68,8 @@ namespace Mono.Addins
 		
 		public IEnumerator GetEnumerator () 
 		{
+			if (list == null)
+				return ((IList)Type.EmptyTypes).GetEnumerator ();
 			return list.GetEnumerator ();
 		}
 		
@@ -77,7 +79,8 @@ namespace Mono.Addins
 		
 		public void CopyTo (ExtensionNode[] array, int index)
 		{
-			list.CopyTo (array, index);
+			if (list != null)
+				list.CopyTo (array, index);
 		}
 	}
 
@@ -116,12 +119,16 @@ namespace Mono.Addins
 		
 		public IEnumerator<T> GetEnumerator () 
 		{
+			if (list == null)
+				yield break;
 			foreach (ExtensionNode n in list)
 				yield return (T) n;
 		}
 		
 		IEnumerator IEnumerable.GetEnumerator () 
 		{
+			if (list == null)
+				return ((IList)Type.EmptyTypes).GetEnumerator ();
 			return list.GetEnumerator ();
 		}
 		
@@ -131,7 +138,8 @@ namespace Mono.Addins
 		
 		public void CopyTo (T[] array, int index)
 		{
-			list.CopyTo (array, index);
+			if (list != null)
+				list.CopyTo (array, index);
 		}
 	}
 }

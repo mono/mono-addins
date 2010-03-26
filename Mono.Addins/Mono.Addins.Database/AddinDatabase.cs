@@ -35,6 +35,7 @@ using System.IO;
 using System.Xml;
 using System.Reflection;
 using Mono.Addins.Description;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Database
 {
@@ -584,8 +585,10 @@ namespace Mono.Addins.Database
 			}
 			
 			// Save the maps
-			foreach (AddinDescription conf in descriptionsToSave)
+			foreach (AddinDescription conf in descriptionsToSave) {
+				ConsolidateExtensions (conf);
 				conf.SaveBinary (fileDatabase);
+			}
 			
 			if (monitor.LogLevel > 1) {
 				monitor.Log ("Addin relation map generated.");
@@ -596,6 +599,115 @@ namespace Mono.Addins.Database
 				monitor.Log ("  Node sets: " + updateData.RelNodeSetTypes);
 			}
 		}
+
+		void ConsolidateExtensions (AddinDescription conf)
+		{
+			// Merges extensions with the same path
+			
+			foreach (ModuleDescription module in conf.AllModules) {
+				Dictionary<string,Extension> extensions = new Dictionary<string, Extension> ();
+				foreach (Extension ext in module.Extensions) {
+					Extension mainExt;
+					if (extensions.TryGetValue (ext.Path, out mainExt)) {
+						ArrayList list = new ArrayList ();
+						EnsureInsertionsSorted (ext.ExtensionNodes);
+						list.AddRange (ext.ExtensionNodes);
+						int pos = -1;
+						foreach (ExtensionNodeDescription node in list) {
+							ext.ExtensionNodes.Remove (node);
+							AddNodeSorted (mainExt.ExtensionNodes, node, ref pos);
+						}
+					} else {
+						extensions [ext.Path] = ext;
+						EnsureInsertionsSorted (ext.ExtensionNodes);
+					}
+				}
+				
+				// Sort the nodes
+			}
+		}
+		
+		void EnsureInsertionsSorted (ExtensionNodeDescriptionCollection list)
+		{
+			// Makes sure that the nodes in the collections are properly sorted wrt insertafter and insertbefore attributes
+			Dictionary<string,ExtensionNodeDescription> added = new Dictionary<string, ExtensionNodeDescription> ();
+			List<ExtensionNodeDescription> halfSorted = new List<ExtensionNodeDescription> ();
+			bool orderChanged = false;
+			
+			for (int n = list.Count - 1; n >= 0; n--) {
+				ExtensionNodeDescription node = list [n];
+				if (node.Id.Length > 0)
+					added [node.Id] = node;
+				if (node.InsertAfter.Length > 0) {
+					ExtensionNodeDescription relNode;
+					if (added.TryGetValue (node.InsertAfter, out relNode)) {
+						// Out of order. Move it before the referenced node
+						int i = halfSorted.IndexOf (relNode);
+						halfSorted.Insert (i, node);
+						orderChanged = true;
+					} else {
+						halfSorted.Add (node);
+					}
+				} else
+					halfSorted.Add (node);
+			}
+			halfSorted.Reverse ();
+			List<ExtensionNodeDescription> fullSorted = new List<ExtensionNodeDescription> ();
+			added.Clear ();
+			
+			foreach (ExtensionNodeDescription node in halfSorted) {
+				if (node.Id.Length > 0)
+					added [node.Id] = node;
+				if (node.InsertBefore.Length > 0) {
+					ExtensionNodeDescription relNode;
+					if (added.TryGetValue (node.InsertBefore, out relNode)) {
+						// Out of order. Move it before the referenced node
+						int i = fullSorted.IndexOf (relNode);
+						fullSorted.Insert (i, node);
+						orderChanged = true;
+					} else {
+						fullSorted.Add (node);
+					}
+				} else
+					fullSorted.Add (node);
+			}
+			if (orderChanged) {
+				list.Clear ();
+				foreach (ExtensionNodeDescription node in fullSorted)
+					list.Add (node);
+			}
+		}
+		
+		void AddNodeSorted (ExtensionNodeDescriptionCollection list, ExtensionNodeDescription node, ref int curPos)
+		{
+			// Adds the node at the correct position, taking into account insertbefore and insertafter
+			
+			if (node.InsertAfter.Length > 0) {
+				string afterId = node.InsertAfter;
+				for (int n=0; n<list.Count; n++) {
+					if (list[n].Id == afterId) {
+						list.Insert (n + 1, node);
+						curPos = n + 2;
+						return;
+					}
+				}
+			}
+			else if (node.InsertBefore.Length > 0) {
+				string beforeId = node.InsertBefore;
+				for (int n=0; n<list.Count; n++) {
+					if (list[n].Id == beforeId) {
+						list.Insert (n, node);
+						curPos = n + 1;
+						return;
+					}
+				}
+			}
+			if (curPos == -1)
+				list.Add (node);
+			else
+				list.Insert (curPos++, node);
+		}
+
 		
 		IEnumerable GetAddinFiles (string fullId, string[] domains)
 		{

@@ -229,6 +229,27 @@ namespace Mono.Addins
 			return new ExtensionNodeList<T> (nodes.list);
 		}
 		
+		public ExtensionNodeList GetExtensionNodes (Type instanceType)
+		{
+			return GetExtensionNodes (instanceType, typeof(ExtensionNode));
+		}
+		
+		public ExtensionNodeList GetExtensionNodes (Type instanceType, Type expectedNodeType)
+		{
+			string path = AddinManager.SessionService.GetAutoTypeExtensionPoint (instanceType);
+			if (path == null)
+				return new ExtensionNodeList (null);
+			return GetExtensionNodes (path, expectedNodeType);
+		}
+		
+		public ExtensionNodeList<T> GetExtensionNodes<T> (Type instanceType) where T: ExtensionNode
+		{
+			string path = AddinManager.SessionService.GetAutoTypeExtensionPoint (instanceType);
+			if (path == null)
+				return new ExtensionNodeList<T> (null);
+			return new ExtensionNodeList<T> (GetExtensionNodes (path, typeof (T)).list);
+		}
+		
 		public ExtensionNodeList GetExtensionNodes (string path, Type expectedNodeType)
 		{
 			TreeNode node = GetNode (path);

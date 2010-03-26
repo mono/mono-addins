@@ -99,6 +99,11 @@ namespace Mono.Addins.Description
 		
 		public string NodeName {
 			get { return nodeName; }
+			internal set {
+				if (Element != null)
+					throw new InvalidOperationException ("Can't change node name of xml element");
+				nodeName = value;
+			}
 		}
 		
 		public string Id {

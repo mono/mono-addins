@@ -30,21 +30,24 @@
 using System;
 using System.Collections;
 using Mono.Addins.Description;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Database
 {
 	class AddinUpdateData
 	{
-		// This table collects information about extensions. For each path (key)
-		// has a ExtensionInfo object with information about the addin that
+		// This table collects information about extensions. Each path (key)
+		// has a RootExtensionPoint object with information about the addin that
 		// defines the extension point and the addins which extend it
-		Hashtable pathHash = new Hashtable ();
+		Dictionary<string,List<RootExtensionPoint>> pathHash = new Dictionary<string,List<RootExtensionPoint>> ();
 		
 		// Collects globally defined node sets. Key is node set name. Value is
-		// a ExtensionInfo
-		Hashtable nodeSetHash = new Hashtable ();
+		// a RootExtensionPoint
+		Dictionary<string,List<RootExtensionPoint>> nodeSetHash = new Dictionary<string,List<RootExtensionPoint>> ();
 		
-		Hashtable objectTypeExtensions = new Hashtable ();
+		Dictionary<string,List<ExtensionPoint>> objectTypeExtensions = new Dictionary<string,List<ExtensionPoint>> ();
+		
+		Dictionary<string,List<ExtensionNodeType>> customAttributeTypeExtensions = new Dictionary<string,List<ExtensionNodeType>> ();
 		
 		internal int RelExtensionPoints;
 		internal int RelExtensions;
@@ -66,10 +69,10 @@ namespace Mono.Addins.Database
 		
 		public void RegisterNodeSet (AddinDescription description, ExtensionNodeSet nset)
 		{
-			ArrayList extensions = (ArrayList) nodeSetHash [nset.Id];
-			if (extensions != null) {
+			List<RootExtensionPoint> extensions;
+			if (nodeSetHash.TryGetValue (nset.Id, out extensions)) {
 				// Extension point already registered
-				ArrayList compatExtensions = GetCompatibleExtensionPoints (nset.Id, description, description.MainModule, extensions);
+				List<ExtensionPoint> compatExtensions = GetCompatibleExtensionPoints (nset.Id, description, description.MainModule, extensions);
 				if (compatExtensions.Count > 0) {
 					foreach (ExtensionPoint einfo in compatExtensions)
 						einfo.NodeSet.MergeWith (null, nset);
@@ -84,7 +87,7 @@ namespace Mono.Addins.Database
 			rep.ExtensionPoint.Path = nset.Id;
 			rep.Description = description;
 			if (extensions == null) {
-				extensions = new ArrayList ();
+				extensions = new List<RootExtensionPoint> ();
 				nodeSetHash [nset.Id] = extensions;
 			}
 			extensions.Add (rep);
@@ -92,10 +95,10 @@ namespace Mono.Addins.Database
 		
 		public void RegisterExtensionPoint (AddinDescription description, ExtensionPoint ep)
 		{
-			ArrayList extensions = (ArrayList) pathHash [ep.Path];
-			if (extensions != null) {
+			List<RootExtensionPoint> extensions;
+			if (pathHash.TryGetValue (ep.Path, out extensions)) {
 				// Extension point already registered
-				ArrayList compatExtensions = GetCompatibleExtensionPoints (ep.Path, description, description.MainModule, extensions);
+				List<ExtensionPoint> compatExtensions = GetCompatibleExtensionPoints (ep.Path, description, description.MainModule, extensions);
 				if (compatExtensions.Count > 0) {
 					foreach (ExtensionPoint einfo in compatExtensions)
 						einfo.MergeWith (null, ep);
@@ -109,7 +112,7 @@ namespace Mono.Addins.Database
 			rep.ExtensionPoint.RootAddin = description.AddinId;
 			rep.Description = description;
 			if (extensions == null) {
-				extensions = new ArrayList ();
+				extensions = new List<RootExtensionPoint> ();
 				pathHash [ep.Path] = extensions;
 			}
 			extensions.Add (rep);
@@ -122,12 +125,20 @@ namespace Mono.Addins.Database
 			
 			foreach (ExtensionNodeType nt in ep.NodeSet.NodeTypes) {
 				if (nt.ObjectTypeName.Length > 0) {
-					ArrayList list = (ArrayList) objectTypeExtensions [nt.ObjectTypeName];
-					if (list == null) {
-						list = new ArrayList ();
+					List<ExtensionPoint> list;
+					if (!objectTypeExtensions.TryGetValue (nt.ObjectTypeName, out list)) {
+						list = new List<ExtensionPoint> ();
 						objectTypeExtensions [nt.ObjectTypeName] = list;
 					}
 					list.Add (ep);
+				}
+				if (nt.CustomAttributeTypeName.Length > 0) {
+					List<ExtensionNodeType> list;
+					if (!customAttributeTypeExtensions.TryGetValue (nt.CustomAttributeTypeName, out list)) {
+						list = new List<ExtensionNodeType> ();
+						customAttributeTypeExtensions [nt.CustomAttributeTypeName] = list;
+					}
+					list.Add (nt);
 				}
 			}
 		}
@@ -138,8 +149,8 @@ namespace Mono.Addins.Database
 				string[] objectTypes = extension.Path.Substring (1).Split (',');
 				bool found = false;
 				foreach (string s in objectTypes) {
-					ArrayList list = (ArrayList) objectTypeExtensions [s];
-					if (list != null) {
+					List<ExtensionPoint> list;
+					if (objectTypeExtensions.TryGetValue (s, out list)) {
 						found = true;
 						foreach (ExtensionPoint ep in list) {
 							if (IsAddinCompatible (ep.ParentAddinDescription, description, module)) {
@@ -152,12 +163,33 @@ namespace Mono.Addins.Database
 				if (!found)
 					monitor.ReportWarning ("The add-in '" + description.AddinId + "' is trying to register the class '" + extension.Path.Substring (1) + "', but there isn't any add-in defining a suitable extension point");
 			}
+			else if (extension.Path.StartsWith ("%")) {
+				string[] objectTypes = extension.Path.Substring (1).Split (',');
+				bool found = false;
+				foreach (string s in objectTypes) {
+					List<ExtensionNodeType> list;
+					if (customAttributeTypeExtensions.TryGetValue (s, out list)) {
+						found = true;
+						foreach (ExtensionNodeType nt in list) {
+							ExtensionPoint ep = (ExtensionPoint) ((ExtensionNodeSet)nt.Parent).Parent;
+							if (IsAddinCompatible (ep.ParentAddinDescription, description, module)) {
+								extension.Path = ep.Path;
+								foreach (ExtensionNodeDescription node in extension.ExtensionNodes)
+									node.NodeName = nt.NodeName;
+								RegisterExtension (description, module, ep.Path);
+							}
+						}
+					}
+				}
+				if (!found)
+					monitor.ReportWarning ("The add-in '" + description.AddinId + "' is trying to register the class '" + extension.Path.Substring (1) + "', but there isn't any add-in defining a suitable extension point");
+			}
 		}
 		
 		public void RegisterExtension (AddinDescription description, ModuleDescription module, string path)
 		{
-			ArrayList extensions = (ArrayList) pathHash [path];
-			if (extensions == null) {
+			List<RootExtensionPoint> extensions;
+			if (!pathHash.TryGetValue (path, out extensions)) {
 				// Root add-in extension points are registered before any other kind of extension,
 				// so we should find it now.
 				extensions = GetParentExtensionInfo (path);
@@ -182,9 +214,9 @@ namespace Mono.Addins.Database
 				monitor.ReportWarning ("The add-in '" + description.AddinId + "' is trying to extend '" + path + "', but there isn't any compatible add-in defining this extension point");
 		}
 		
-		ArrayList GetCompatibleExtensionPoints (string path, AddinDescription description, ModuleDescription module, ArrayList rootExtensionPoints)
+		List<ExtensionPoint> GetCompatibleExtensionPoints (string path, AddinDescription description, ModuleDescription module, List<RootExtensionPoint> rootExtensionPoints)
 		{
-			ArrayList list = new ArrayList ();
+			List<ExtensionPoint> list = new List<ExtensionPoint> ();
 			foreach (RootExtensionPoint rep in rootExtensionPoints) {
 				
 				// Find an extension point defined in a root add-in which is compatible with the version of the extender dependency
@@ -194,14 +226,14 @@ namespace Mono.Addins.Database
 			return list;
 		}
 		
-		ArrayList GetParentExtensionInfo (string path)
+		List<RootExtensionPoint> GetParentExtensionInfo (string path)
 		{
 			int i = path.LastIndexOf ('/');
 			if (i == -1)
 				return null;
 			string np = path.Substring (0, i);
-			ArrayList ep = (ArrayList) pathHash [np];
-			if (ep != null)
+			List<RootExtensionPoint> ep;
+			if (pathHash.TryGetValue (np, out ep))
 				return ep;
 			else
 				return GetParentExtensionInfo (np);

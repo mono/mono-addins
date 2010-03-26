@@ -220,29 +220,45 @@ namespace Mono.Addins
 		
 		internal protected virtual void Read (NodeElement elem)
 		{
-			if (nodeType == null || nodeType.Fields == null)
+			if (nodeType == null)
 				return;
 
 			NodeAttribute[] attributes = elem.Attributes;
-			Hashtable fields = (Hashtable) nodeType.Fields.Clone ();
+			ReadObject (this, attributes, nodeType.Fields);
+			
+			if (nodeType.CustomAttributeMember != null) {
+				object att = Activator.CreateInstance (nodeType.CustomAttributeMember.MemberType);
+				ReadObject (att, attributes, nodeType.CustomAttributeFields);
+				nodeType.CustomAttributeMember.SetValue (this, att);
+			}
+		}
+		
+		void ReadObject (object ob, NodeAttribute[] attributes, Dictionary<string,ExtensionNodeType.FieldData> fields)
+		{
+			if (fields == null)
+				return;
+			
+			// Make a copy because we are going to remove fields that have been used
+			fields = new Dictionary<string,ExtensionNodeType.FieldData> (fields);
 			
 			foreach (NodeAttribute at in attributes) {
 				
-				ExtensionNodeType.FieldData f = (ExtensionNodeType.FieldData) fields [at.name];
-				if (f == null)
+				ExtensionNodeType.FieldData f;
+				if (!fields.TryGetValue (at.name, out f))
 					continue;
 				
 				fields.Remove (at.name);
 					
 				object val;
+				Type memberType = f.MemberType;
 
-				if (f.Field.FieldType == typeof(string)) {
+				if (memberType == typeof(string)) {
 					if (f.Localizable)
 						val = Addin.Localizer.GetString (at.value);
 					else
 						val = at.value;
 				}
-				else if (f.Field.FieldType == typeof(string[])) {
+				else if (memberType == typeof(string[])) {
 					string[] ss = at.value.Split (',');
 					if (ss.Length == 0 && ss[0].Length == 0)
 						val = new string [0];
@@ -252,24 +268,24 @@ namespace Mono.Addins
 						val = ss;
 					}
 				}
-				else if (f.Field.FieldType.IsEnum) {
-					val = Enum.Parse (f.Field.FieldType, at.value);
+				else if (memberType.IsEnum) {
+					val = Enum.Parse (memberType, at.value);
 				}
 				else {
 					try {
-						val = Convert.ChangeType (at.Value, f.Field.FieldType);
+						val = Convert.ChangeType (at.Value, memberType);
 					} catch (InvalidCastException) {
-						throw new InvalidOperationException ("Property type not supported by [NodeAttribute]: " + f.Field.DeclaringType + "." + f.Field.Name);
+						throw new InvalidOperationException ("Property type not supported by [NodeAttribute]: " + f.Member.DeclaringType + "." + f.Member.Name);
 					}
 				}
-					
-				f.Field.SetValue (this, val);
+				
+				f.SetValue (ob, val);
 			}
 			
 			if (fields.Count > 0) {
 				// Check if one of the remaining fields is mandatory
-				foreach (DictionaryEntry e in fields) {
-					ExtensionNodeType.FieldData f = (ExtensionNodeType.FieldData) e.Value;
+				foreach (KeyValuePair<string,ExtensionNodeType.FieldData> e in fields) {
+					ExtensionNodeType.FieldData f = e.Value;
 					if (f.Required)
 						throw new InvalidOperationException ("Required attribute '" + e.Key + "' not found.");
 				}
@@ -333,4 +349,9 @@ namespace Mono.Addins
 				extensionNodeChanged (this, new ExtensionNodeEventArgs (ExtensionChange.Remove, node));
 		}
 	}
+	
+/*	public class ExtensionNode<T>: ExtensionNode where T:CustomExtensionAttribute
+	{
+		public T Data { get; internal set; }
+	}*/
 }

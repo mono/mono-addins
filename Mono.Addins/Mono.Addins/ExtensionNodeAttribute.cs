@@ -36,6 +36,8 @@ namespace Mono.Addins
 	{
 		string nodeName;
 		string description;
+		string customAttributeTypeName;
+		Type customAttributeType;
 		
 		public ExtensionNodeAttribute ()
 		{
@@ -60,6 +62,16 @@ namespace Mono.Addins
 		public string Description {
 			get { return description != null ? description : string.Empty; }
 			set { description = value; }
+		}
+		
+		public Type CustomAttributeType {
+			get { return customAttributeType; }
+			set { customAttributeType = value; customAttributeTypeName = value.FullName; }
+		}
+		
+		internal string CustomAttributeTypeName {
+			get { return customAttributeTypeName ?? string.Empty; }
+			set { customAttributeTypeName = value; }
 		}
 	}
 }

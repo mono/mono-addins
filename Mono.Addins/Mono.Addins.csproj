@@ -113,6 +113,8 @@
     <Compile Include="Mono.Addins.Description\AddinFlags.cs" />
     <Compile Include="Mono.Addins.Database\SetupDomain.cs" />
     <Compile Include="Mono.Addins.Database\ISetupHandler.cs" />
+    <Compile Include="Mono.Addins\ExtensionAttributeAttribute.cs" />
+    <Compile Include="Mono.Addins\CustomExtensionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Mono.Addins.dll.config">
