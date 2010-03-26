@@ -266,7 +266,7 @@ namespace Mono.Addins.Database
 			AddinDescription config = null;
 			
 			try {
-				string ext = Path.GetExtension (file);
+				string ext = Path.GetExtension (file).ToLower ();
 				
 				if (ext == ".dll" || ext == ".exe")
 					scanSuccessful = ScanAssembly (monitor, file, scanResult, out config);
@@ -401,7 +401,7 @@ namespace Mono.Addins.Database
 			monitor.Log ("plog:scan:" + file);
 			
 			try {
-				string ext = Path.GetExtension (file);
+				string ext = Path.GetExtension (file).ToLower ();
 				bool scanSuccessful;
 				
 				if (ext == ".dll" || ext == ".exe")

@@ -1,5 +1,10 @@
 2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins.Database/AddinScanner.cs: Fix bug #541661 -
+	  Assemblies with capital .DLL cannot be loaded.
+
+2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* Mono.Addins.csproj:
 	* Mono.Addins/AddinAttribute.cs:
