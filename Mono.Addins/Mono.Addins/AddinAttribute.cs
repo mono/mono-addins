@@ -28,6 +28,7 @@
 
 
 using System;
+using Mono.Addins.Description;
 
 namespace Mono.Addins
 {
@@ -38,6 +39,8 @@ namespace Mono.Addins
 		string version;
 		string ns;
 		string category;
+		bool enabledByDefault = true;
+		AddinFlags flags;
 		
 		public AddinAttribute ()
 		{
@@ -72,6 +75,16 @@ namespace Mono.Addins
 		public string Category {
 			get { return category != null ? category : string.Empty; }
 			set { category = value; }
+		}
+		
+		public bool EnabledByDefault {
+			get { return this.enabledByDefault; }
+			set { this.enabledByDefault = value; }
+		}
+		
+		public AddinFlags Flags {
+			get { return this.flags; }
+			set { this.flags = value; }
 		}
 	}
 }

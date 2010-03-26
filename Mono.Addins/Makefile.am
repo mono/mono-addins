@@ -68,11 +68,14 @@ FILES =  \
 	Mono.Addins.Serialization/IBinaryXmlElement.cs \
 	Mono.Addins/Addin.cs \
 	Mono.Addins/AddinAttribute.cs \
+	Mono.Addins/AddinAuthorAttribute.cs \
+	Mono.Addins/AddinCategoryAttribute.cs \
 	Mono.Addins/AddinDependencyAttribute.cs \
 	Mono.Addins/AddinErrorEventArgs.cs \
 	Mono.Addins/AddinEventArgs.cs \
 	Mono.Addins/AddinInfo.cs \
 	Mono.Addins/AddinLocalizer.cs \
+	Mono.Addins/AddinLocalizerGettextAttribute.cs \
 	Mono.Addins/AddinManager.cs \
 	Mono.Addins/AddinRegistry.cs \
 	Mono.Addins/AddinRootAttribute.cs \

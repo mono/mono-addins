@@ -705,6 +705,48 @@ namespace Mono.Addins.Database
 				if (att.Category.Length > 0)
 					config.Category = att.Category;
 				config.IsRoot = att is AddinRootAttribute;
+				config.EnabledByDefault = att.EnabledByDefault;
+				config.Flags = att.Flags;
+			}
+			
+			// Category
+			
+			object catt = reflector.GetCustomAttribute (asm, typeof(AddinCategoryAttribute), false);
+			if (catt != null && config.Category.Length == 0)
+				config.Category = ((AddinCategoryAttribute)catt).Name;
+			
+			// Author attributes
+			
+			object[] atts = reflector.GetCustomAttributes (asm, typeof(AddinAuthorAttribute), false);
+			foreach (AddinAuthorAttribute author in atts) {
+				if (config.Author.Length == 0)
+					config.Author = author.Name;
+				else
+					config.Author += ", " + author.Name;
+			}
+			
+			// Description
+			
+			catt = reflector.GetCustomAttribute (asm, typeof(AssemblyDescriptionAttribute), false);
+			if (catt != null && config.Description.Length == 0)
+				config.Description = ((AssemblyDescriptionAttribute)catt).Description;
+			
+			// Copyright
+			
+			catt = reflector.GetCustomAttribute (asm, typeof(AssemblyCopyrightAttribute), false);
+			if (catt != null && config.Copyright.Length == 0)
+				config.Copyright = ((AssemblyCopyrightAttribute)catt).Copyright;
+			
+			// Localizer
+			
+			AddinLocalizerGettextAttribute locat = (AddinLocalizerGettextAttribute) reflector.GetCustomAttribute (asm, typeof(AddinLocalizerGettextAttribute), false);
+			if (locat != null) {
+				ExtensionNodeDescription node = new ExtensionNodeDescription ();
+				if (!string.IsNullOrEmpty (locat.Catalog))
+					node.SetAttribute ("catalog", locat.Catalog);
+				if (!string.IsNullOrEmpty (locat.Location))
+					node.SetAttribute ("location", locat.Catalog);
+				config.Localizer = node;
 			}
 		}
 		
