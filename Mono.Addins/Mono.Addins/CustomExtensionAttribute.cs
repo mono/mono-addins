@@ -30,14 +30,27 @@ namespace Mono.Addins
 {
 	public class CustomExtensionAttribute: Attribute
 	{
+		string id;
+		string insertBefore;
+		string insertAfter;
+		
 		[NodeAttributeAttribute ("id")]
-		public string Id { get; set; }
+		public string Id {
+			get { return id; }
+			set { id = value; }
+		}
 		
 		[NodeAttributeAttribute ("insertbefore")]
-		public string InsertBefore { get; set; }
+		public string InsertBefore {
+			get { return insertBefore; }
+			set { insertBefore = value; }
+		}
 		
 		[NodeAttributeAttribute ("insertafter")]
-		public string InsertAfter { get; set; }
+		public string InsertAfter {
+			get { return insertAfter; }
+			set { insertAfter = value; }
+		}
 		
 	}
 }

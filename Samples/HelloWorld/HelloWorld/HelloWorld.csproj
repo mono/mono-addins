@@ -35,6 +35,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\Mono.Addins.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Addins.CecilReflector, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bin\Mono.Addins.CecilReflector.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />

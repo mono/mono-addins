@@ -32,6 +32,9 @@ namespace Mono.Addins
 	{
 		Type targetType;
 		string targetTypeName;
+		string name;
+		string val;
+		string path;
 		
 		public ExtensionAttributeAttribute (string name, string value)
 		{
@@ -53,11 +56,20 @@ namespace Mono.Addins
 			Path = path;
 		}
 		
-		public string Name { get; set; }
-		
-		public string Value { get; set; }
-		
-		public string Path { get; set; }
+		public string Name {
+			get { return this.name; }
+			set { this.name = value; }
+		}
+
+		public string Value {
+			get { return this.val; }
+			set { this.val = value; }
+		}
+
+		public string Path {
+			get { return this.path; }
+			set { this.path = value; }
+		}
 		
 		public Type Type {
 			get { return targetType; }

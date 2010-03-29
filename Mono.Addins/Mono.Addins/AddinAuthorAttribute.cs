@@ -31,12 +31,17 @@ namespace Mono.Addins
 	[AttributeUsage (AttributeTargets.Assembly, AllowMultiple=true)]
 	public class AddinAuthorAttribute: Attribute
 	{
+		string name;
+		
 		public AddinAuthorAttribute (string name)
 		{
-			Name = name;
+			this.name = name;
 		}
-		
-		public string Name { get; set; }
+
+		public string Name {
+			get { return this.name; }
+			set { this.name = value; }
+		}
 	}
 }
 

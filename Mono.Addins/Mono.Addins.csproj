@@ -21,6 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <ConsolePause>false</ConsolePause>
+    <LangVersion>ISO-2</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

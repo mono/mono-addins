@@ -777,7 +777,7 @@ namespace Mono.Addins.Database
 			
 			foreach (CustomAttribute att in reflector.GetRawCustomAttributes (asm, typeof(CustomExtensionAttribute), true)) {
 				ExtensionNodeDescription elem = config.MainModule.AddExtensionNode ("%" + att.TypeName, "Type");
-				foreach (var prop in att)
+				foreach (KeyValuePair<string,string> prop in att)
 					elem.SetAttribute (prop.Key, prop.Value);
 			}
 			
@@ -877,7 +877,7 @@ namespace Mono.Addins.Database
 						// Look for custom extension attribtues
 						foreach (CustomAttribute att in reflector.GetRawCustomAttributes (t, typeof(CustomExtensionAttribute), true)) {
 							ExtensionNodeDescription elem = config.MainModule.AddExtensionNode ("%" + att.TypeName, "Type");
-							foreach (var prop in att)
+							foreach (KeyValuePair<string,string> prop in att)
 								elem.SetAttribute (prop.Key, prop.Value);
 						}
 					}

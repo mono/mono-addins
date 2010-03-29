@@ -63,6 +63,11 @@ namespace Mono.Addins.Database
 	
 	public class CustomAttribute: Dictionary<string,string>
 	{
-		public string TypeName { get; set; }
+		string typeName;
+
+		public string TypeName {
+			get { return typeName; }
+			set { typeName = value; }
+		}
 	}
 }

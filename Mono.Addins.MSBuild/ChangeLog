@@ -1,3 +1,8 @@
+2010-03-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.MSBuild.csproj: Make sure the solution builds on
+	  MS.NET 2.0.
+
 2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.MSBuild.csproj: Flush.
