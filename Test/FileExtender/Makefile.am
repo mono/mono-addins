@@ -1,4 +1,4 @@
-ASSEMBLY_COMPILER_COMMAND = mcs
+ASSEMBLY_COMPILER_COMMAND = @MCS@
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG
 ASSEMBLY = ../lib/extras/FileExtender.dll
 COMPILE_TARGET = library
