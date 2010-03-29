@@ -1,3 +1,7 @@
+2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.csproj: csc doesn't like iso-2.
+
 2010-03-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.csproj:
