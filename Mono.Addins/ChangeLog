@@ -1,5 +1,13 @@
 2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins.Serialization/BinaryXmlReader.cs: Properly
+	  detect EOF.
+
+	* Mono.Addins/Addin.cs: If a file is corrupted and can't be
+	  read, delete it so that it can be properly regenerated.
+
+2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Addins.csproj: csc doesn't like iso-2.
 
 2010-03-29  Lluis Sanchez Gual  <lluis@novell.com>

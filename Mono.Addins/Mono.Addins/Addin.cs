@@ -148,8 +148,17 @@ namespace Mono.Addins
 				AddinDescription m;
 				database.ReadAddinDescription (new ConsoleProgressStatus (true), configFile, out m);
 				
-				if (m == null)
+				if (m == null) {
+					try {
+						if (File.Exists (configFile)) {
+							// The file is corrupted. Remove it.
+							File.Delete (configFile);
+						}
+					} catch {
+						// Ignore
+					}
 					throw new InvalidOperationException ("Could not read add-in description");
+				}
 				if (addin == null) {
 					addin = AddinInfo.ReadFromDescription (m);
 					sourceFile = m.AddinFile;

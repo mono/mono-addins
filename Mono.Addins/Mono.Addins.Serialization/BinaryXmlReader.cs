@@ -38,6 +38,7 @@ namespace Mono.Addins.Serialization
 	{
 		BinaryReader reader;
 		
+		internal const byte TagEndOfFile = 0;
 		internal const byte TagBeginElement = 1;
 		internal const byte TagEndElement = 2;
 		internal const byte TagValue = 4;
@@ -81,7 +82,7 @@ namespace Mono.Addins.Serialization
 		{
 			int b = reader.BaseStream.ReadByte ();
 			if (b == -1) {
-				currentType = TagBeginElement;
+				currentType = TagEndOfFile;
 				return;
 			}
 			currentType = (byte) b;
