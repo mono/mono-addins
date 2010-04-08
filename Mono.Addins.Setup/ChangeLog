@@ -1,5 +1,10 @@
 2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins.Setup/AddinStore.cs: Properly get the url path
+	  (old way didn't work on windows).
+
+2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Addins.Setup/RepositoryRegistry.cs: GetAvailableUpdates
 	  (id,version) doesn't work. It makes no sense to ask for
 	  updates for a specific add-in version. Added
