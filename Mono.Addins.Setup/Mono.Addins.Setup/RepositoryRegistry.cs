@@ -249,14 +249,26 @@ namespace Mono.Addins.Setup
 			return GetAvailableAddin (repositoryUrl, null, null, true);
 		}
 		
+		[Obsolete ("Use GetAvailableAddinUpdates (id) instead")]
 		public AddinRepositoryEntry[] GetAvailableUpdates (string id, string version)
 		{
 			return GetAvailableAddin (null, id, version, true);
 		}
 		
+		[Obsolete ("Use GetAvailableAddinUpdates (repositoryUrl, id) instead")]
 		public AddinRepositoryEntry[] GetAvailableUpdates (string repositoryUrl, string id, string version)
 		{
 			return GetAvailableAddin (repositoryUrl, id, version, true);
+		}
+		
+		public AddinRepositoryEntry[] GetAvailableAddinUpdates (string id)
+		{
+			return GetAvailableAddin (null, id, null, true);
+		}
+		
+		public AddinRepositoryEntry[] GetAvailableAddinUpdates (string repositoryUrl, string id)
+		{
+			return GetAvailableAddin (repositoryUrl, id, null, true);
 		}
 		
 		public AddinRepositoryEntry[] GetAvailableAddins ()

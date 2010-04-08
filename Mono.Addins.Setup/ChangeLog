@@ -1,3 +1,11 @@
+2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.Setup/RepositoryRegistry.cs: GetAvailableUpdates
+	  (id,version) doesn't work. It makes no sense to ask for
+	  updates for a specific add-in version. Added
+	  GetAvaliableAddinUpdates methods which take only an id and
+	  no version.
+
 2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Setup.csproj: csc doesn't like iso-2.
