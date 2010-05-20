@@ -59,9 +59,11 @@ namespace Mono.Addins.Database
 		DatabaseConfiguration config = null;
 		AddinRegistry registry;
 		int lastDomainId;
+		AddinEngine addinEngine;
 		
-		public AddinDatabase (AddinRegistry registry)
+		public AddinDatabase (AddinEngine addinEngine, AddinRegistry registry)
 		{
+			this.addinEngine = addinEngine;
 			this.registry = registry;
 			addinDbDir = Path.Combine (registry.RegistryPath, "addin-db-" + VersionTag);
 			fileDatabase = new FileDatabase (AddinDbDir);
@@ -396,8 +398,8 @@ namespace Mono.Addins.Database
 			Configuration.SetStatus (id, true, ainfo.AddinInfo.EnabledByDefault);
 			SaveConfiguration ();
 
-			if (AddinManager.IsInitialized && AddinManager.Registry.RegistryPath == registry.RegistryPath)
-				AddinManager.SessionService.ActivateAddin (id);
+			if (addinEngine != null && addinEngine.IsInitialized)
+				addinEngine.ActivateAddin (id);
 		}
 		
 		public void DisableAddin (string domain, string id)
@@ -447,8 +449,8 @@ namespace Mono.Addins.Database
 				throw;
 			}
 
-			if (AddinManager.IsInitialized && AddinManager.Registry.RegistryPath == registry.RegistryPath)
-				AddinManager.SessionService.UnloadAddin (id);
+			if (addinEngine != null && addinEngine.IsInitialized)
+				addinEngine.UnloadAddin (id);
 		}		
 
 		internal string GetDescriptionPath (string domain, string id)
@@ -817,7 +819,8 @@ namespace Mono.Addins.Database
 			rootSetupInfos = null;
 			hostIndex = null;
 			cachedAddinSetupInfos.Clear ();
-			AddinManager.SessionService.ResetCachedData ();
+			if (addinEngine != null)
+				addinEngine.ResetCachedData ();
 		}
 		
 		
@@ -917,7 +920,7 @@ namespace Mono.Addins.Database
 				monitor.ReportError ("The add-in database could not be updated. It may be due to file corruption. Try running the setup repair utility", null);
 			
 			// Update the currently loaded add-ins
-			if (changesFound && domain != null && AddinManager.IsInitialized && AddinManager.Registry.RegistryPath == registry.RegistryPath) {
+			if (changesFound && domain != null && addinEngine != null && addinEngine.IsInitialized) {
 				Hashtable newInstalled = new Hashtable ();
 				foreach (Addin ainfo in GetInstalledAddins (domain, AddinType.All)) {
 					newInstalled [ainfo.Id] = ainfo.Id;
@@ -925,19 +928,19 @@ namespace Mono.Addins.Database
 				
 				foreach (string aid in installed.Keys) {
 					if (!newInstalled.Contains (aid)) {
-						if (AddinManager.SessionService.IsAddinLoaded (aid)) {
-							RuntimeAddin ra = AddinManager.SessionService.GetAddin (aid);
+						if (addinEngine.IsAddinLoaded (aid)) {
+							RuntimeAddin ra = addinEngine.GetAddin (aid);
 							if (!ra.Addin.Description.IsRoot)
-								AddinManager.SessionService.UnloadAddin (aid);
+								addinEngine.UnloadAddin (aid);
 						}
 					}
 				}
 				
 				foreach (string aid in newInstalled.Keys) {
 					if (!installed.Contains (aid)) {
-						Addin addin = AddinManager.Registry.GetAddin (aid);
+						Addin addin = addinEngine.Registry.GetAddin (aid);
 						if (addin != null && !addin.Description.IsRoot)
-							AddinManager.SessionService.ActivateAddin (aid);
+							addinEngine.ActivateAddin (aid);
 					}
 				}
 			}

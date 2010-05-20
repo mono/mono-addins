@@ -42,7 +42,7 @@ namespace Mono.Addins
 		internal const string AutoIdPrefix = "__nid_";
 		ExtensionContext context;
 		
-		public ExtensionTree (ExtensionContext context): base ("")
+		public ExtensionTree (AddinEngine addinEngine, ExtensionContext context): base (addinEngine, "")
 		{
 			this.context = context;
 		}
@@ -56,7 +56,7 @@ namespace Mono.Addins
 		{
 			TreeNode tnode = GetNode (extension.Path);
 			if (tnode == null) {
-				AddinManager.ReportError ("Can't load extensions for path '" + extension.Path + "'. Extension point not defined.", addin, null, false);
+				addinEngine.ReportError ("Can't load extensions for path '" + extension.Path + "'. Extension point not defined.", addin, null, false);
 				return;
 			}
 			
@@ -80,7 +80,7 @@ namespace Mono.Addins
 				}
 					
 				if (elem.NodeName == "Condition") {
-					Condition cond = new Condition (elem, parentCondition);
+					Condition cond = new Condition (AddinEngine, elem, parentCondition);
 					LoadExtensionElement (tnode, addin, elem.ChildNodes, module, ref curPos, cond, false, addedNodes);
 					continue;
 				}
@@ -99,10 +99,10 @@ namespace Mono.Addins
 				}
 				
 				// Find the type of the node in this extension
-				ExtensionNodeType ntype = AddinManager.SessionService.FindType (tnode.ExtensionNodeSet, elem.NodeName, addin);
+				ExtensionNodeType ntype = addinEngine.FindType (tnode.ExtensionNodeSet, elem.NodeName, addin);
 				
 				if (ntype == null) {
-					AddinManager.ReportError ("Node '" + elem.NodeName + "' not allowed in extension: " + tnode.GetPath (), addin, null, false);
+					addinEngine.ReportError ("Node '" + elem.NodeName + "' not allowed in extension: " + tnode.GetPath (), addin, null, false);
 					continue;
 				}
 				
@@ -110,7 +110,7 @@ namespace Mono.Addins
 				if (id.Length == 0)
 					id = AutoIdPrefix + (++internalId);
 
-				TreeNode cnode = new TreeNode (id);
+				TreeNode cnode = new TreeNode (addinEngine, id);
 				
 				ExtensionNode enode = ReadNode (cnode, addin, ntype, elem, module);
 				if (enode == null)
@@ -149,16 +149,16 @@ namespace Mono.Addins
 					return new AndCondition ((BaseCondition[]) conds.ToArray (typeof(BaseCondition)), parentCondition);
 				else {
 					if (conds.Count != 1) {
-						AddinManager.ReportError ("Invalid complex condition element '" + elem.NodeName + "'. 'Not' condition can only have one parameter.", null, null, false);
+						addinEngine.ReportError ("Invalid complex condition element '" + elem.NodeName + "'. 'Not' condition can only have one parameter.", null, null, false);
 						return new NullCondition ();
 					}
 					return new NotCondition ((BaseCondition) conds [0], parentCondition);
 				}
 			}
 			if (elem.NodeName == "Condition") {
-				return new Condition (elem, parentCondition);
+				return new Condition (AddinEngine, elem, parentCondition);
 			}
-			AddinManager.ReportError ("Invalid complex condition element '" + elem.NodeName + "'.", null, null, false);
+			addinEngine.ReportError ("Invalid complex condition element '" + elem.NodeName + "'.", null, null, false);
 			return new NullCondition ();
 		}
 		
@@ -173,31 +173,31 @@ namespace Mono.Addins
 				ExtensionNode node;
 				node = Activator.CreateInstance (ntype.Type) as ExtensionNode;
 				if (node == null) {
-					AddinManager.ReportError ("Extension node type '" + ntype.Type + "' must be a subclass of ExtensionNode", addin, null, false);
+					addinEngine.ReportError ("Extension node type '" + ntype.Type + "' must be a subclass of ExtensionNode", addin, null, false);
 					return null;
 				}
 				
 				tnode.AttachExtensionNode (node);
-				node.SetData (addin, ntype, module);
+				node.SetData (addinEngine, addin, ntype, module);
 				node.Read (elem);
 				return node;
 			}
 			catch (Exception ex) {
-				AddinManager.ReportError ("Could not read extension node of type '" + ntype.Type + "' from extension path '" + tnode.GetPath() + "'", addin, ex, false);
+				addinEngine.ReportError ("Could not read extension node of type '" + ntype.Type + "' from extension path '" + tnode.GetPath() + "'", addin, ex, false);
 				return null;
 			}
 		}
 		
 		bool InitializeNodeType (ExtensionNodeType ntype)
 		{
-			RuntimeAddin p = AddinManager.SessionService.GetAddin (ntype.AddinId);
+			RuntimeAddin p = addinEngine.GetAddin (ntype.AddinId);
 			if (p == null) {
-				if (!AddinManager.SessionService.IsAddinLoaded (ntype.AddinId)) {
-					if (!AddinManager.SessionService.LoadAddin (null, ntype.AddinId, false))
+				if (!addinEngine.IsAddinLoaded (ntype.AddinId)) {
+					if (!addinEngine.LoadAddin (null, ntype.AddinId, false))
 						return false;
-					p = AddinManager.SessionService.GetAddin (ntype.AddinId);
+					p = addinEngine.GetAddin (ntype.AddinId);
 					if (p == null) {
-						AddinManager.ReportError ("Add-in not found", ntype.AddinId, null, false);
+						addinEngine.ReportError ("Add-in not found", ntype.AddinId, null, false);
 						return false;
 					}
 				}
@@ -209,7 +209,7 @@ namespace Mono.Addins
 				if (ntype.CustomAttributeTypeName.Length > 0) {
 					Type attType = p.GetType (ntype.CustomAttributeTypeName, false);
 					if (attType == null) {
-						AddinManager.ReportError ("Custom attribute type '" + ntype.CustomAttributeTypeName + "' not found.", ntype.AddinId, null, false);
+						addinEngine.ReportError ("Custom attribute type '" + ntype.CustomAttributeTypeName + "' not found.", ntype.AddinId, null, false);
 						return false;
 					}
 					ntype.Type = typeof(TypeExtensionNode<>).MakeGenericType (attType);
@@ -221,7 +221,7 @@ namespace Mono.Addins
 			else {
 				ntype.Type = p.GetType (ntype.TypeName, false);
 				if (ntype.Type == null) {
-					AddinManager.ReportError ("Extension node type '" + ntype.TypeName + "' not found.", ntype.AddinId, null, false);
+					addinEngine.ReportError ("Extension node type '" + ntype.TypeName + "' not found.", ntype.AddinId, null, false);
 					return false;
 				}
 			}

@@ -259,6 +259,28 @@ namespace Mono.Addins.CecilReflector
 				cachedAssemblies [file] = adef;
 			return adef;
 		}
+		
+		public string[] GetResourceNames (object asm)
+		{
+			AssemblyDefinition adef = (AssemblyDefinition) asm;
+			List<string> names = new List<string> (adef.MainModule.Resources.Count);
+			foreach (Resource res in adef.MainModule.Resources) {
+				if (res is EmbeddedResource)
+					names.Add (res.Name);
+			}
+			return names.ToArray ();
+		}
+		
+		public System.IO.Stream GetResourceStream (object asm, string resourceName)
+		{
+			AssemblyDefinition adef = (AssemblyDefinition) asm;
+			foreach (Resource res in adef.MainModule.Resources) {
+				EmbeddedResource r = res as EmbeddedResource;
+				if (r != null && r.Name == resourceName)
+					return new System.IO.MemoryStream (r.Data);
+			}
+			throw new InvalidOperationException ("Resource not found: " + resourceName);
+		}
 
 		public object LoadAssemblyFromReference (object asmReference)
 		{

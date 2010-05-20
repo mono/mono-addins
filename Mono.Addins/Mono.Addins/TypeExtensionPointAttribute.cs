@@ -82,12 +82,12 @@ namespace Mono.Addins
 			set { nodeTypeName = value; nodeType = null; }
 		}
 		
-		public Type CustomAttributeType {
+		public Type ExtensionAttributeType {
 			get { return this.customAttributeType; }
 			set { this.customAttributeType = value; customAttributeTypeName = value.FullName; }
 		}
 
-		internal string CustomAttributeTypeName {
+		internal string ExtensionAttributeTypeName {
 			get { return this.customAttributeTypeName; }
 			set { this.customAttributeTypeName = value; }
 		}

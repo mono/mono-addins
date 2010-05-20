@@ -1,3 +1,8 @@
+2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.CecilReflector/Reflector.cs: Added methods for
+	  getting resources from an assembly.
+
 2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.CecilReflector.csproj: csc doesn't like iso-2.

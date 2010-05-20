@@ -44,6 +44,16 @@ namespace Mono.Addins.Database
 		{
 			return Util.LoadAssemblyForReflection (file);
 		}
+		
+		public string[] GetResourceNames (object asm)
+		{
+			return ((Assembly)asm).GetManifestResourceNames ();
+		}
+		
+		public System.IO.Stream GetResourceStream (object asm, string resourceName)
+		{
+			return ((Assembly)asm).GetManifestResourceStream (resourceName);
+		}
 
 		public object[] GetCustomAttributes (object obj, Type type, bool inherit)
 		{

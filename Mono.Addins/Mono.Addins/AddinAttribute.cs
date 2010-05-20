@@ -41,6 +41,8 @@ namespace Mono.Addins
 		string category;
 		bool enabledByDefault = true;
 		AddinFlags flags;
+		string compatVersion;
+		string url;
 		
 		public AddinAttribute ()
 		{
@@ -67,6 +69,11 @@ namespace Mono.Addins
 			set { version = value; }
 		}
 		
+		public string CompatVersion {
+			get { return compatVersion != null ? compatVersion : string.Empty; }
+			set { compatVersion = value; }
+		}
+		
 		public string Namespace {
 			get { return ns != null ? ns : string.Empty; }
 			set { ns = value; }
@@ -75,6 +82,11 @@ namespace Mono.Addins
 		public string Category {
 			get { return category != null ? category : string.Empty; }
 			set { category = value; }
+		}
+		
+		public string Url {
+			get { return url != null ? url : string.Empty; }
+			set { url = value; }
 		}
 		
 		public bool EnabledByDefault {

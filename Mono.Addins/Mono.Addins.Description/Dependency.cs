@@ -45,6 +45,6 @@ namespace Mono.Addins.Description
 		}
 		
 		public abstract string Name { get; }
-		internal abstract bool CheckInstalled ();
+		internal abstract bool CheckInstalled (AddinRegistry registry);
 	}
 }

@@ -38,16 +38,7 @@ namespace Mono.Addins
 {
 	public class AddinManager
 	{
-		static AddinSessionService sessionService;
-		static AddinRegistry registry;
-		
-		static string startupDirectory;
-		static bool initialized;
-		static IAddinInstaller installer;
-
-		public static event AddinErrorEventHandler AddinLoadError;
-		public static event AddinEventHandler AddinLoaded;
-		public static event AddinEventHandler AddinUnloaded;
+		static AddinEngine sessionService;
 
 		private AddinManager ()
 		{
@@ -55,94 +46,70 @@ namespace Mono.Addins
 		
 		public static void Initialize ()
 		{
-			Initialize (null);
+			// Code not shared with the other Initialize since I need to get the calling assembly
+			Assembly asm = Assembly.GetEntryAssembly ();
+			if (asm == null) asm = Assembly.GetCallingAssembly ();
+			AddinEngine.Initialize (null, asm);
 		}
 		
 		public static void Initialize (string configDir)
 		{
-			if (initialized)
-				return;
-			
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			string asmFile = new Uri (asm.CodeBase).LocalPath;
-			
-			startupDirectory = Path.GetDirectoryName (asmFile);
-			
-			string customDir = Environment.GetEnvironmentVariable ("MONO_ADDINS_REGISTRY");
-			if (customDir != null && customDir.Length > 0)
-				configDir = customDir;
-
-			if (configDir == null || configDir.Length == 0)
-				registry = AddinRegistry.GetGlobalRegistry (startupDirectory);
-			else
-				registry = new AddinRegistry (configDir, startupDirectory);
-
-			if (registry.CreateHostAddinsFile (asmFile) || registry.UnknownDomain)
-				registry.Update (new ConsoleProgressStatus (false));
-			
-			initialized = true;
-			
-			SessionService.Initialize ();
+			AddinEngine.Initialize (configDir, asm);
 		}
 		
 		public static void Shutdown ()
 		{
-			SessionService.Shutdown ();
-			registry.Dispose ();
-			registry = null;
-			startupDirectory = null;
-			initialized = false;
+			AddinEngine.Shutdown ();
 		}
 		
 		public static void InitializeDefaultLocalizer (IAddinLocalizer localizer)
 		{
-			CheckInitialized ();
-			SessionService.InitializeDefaultLocalizer (localizer);
+			AddinEngine.InitializeDefaultLocalizer (localizer);
 		}
 		
 		internal static string StartupDirectory {
-			get { return startupDirectory; }
+			get { return AddinEngine.StartupDirectory; }
 		}
 		
 		public static bool IsInitialized {
-			get { return initialized; }
+			get { return AddinEngine.IsInitialized; }
 		}
 		
 		public static IAddinInstaller DefaultInstaller {
-			get { return installer; }
-			set { installer = value; }
+			get { return AddinEngine.DefaultInstaller; }
+			set { AddinEngine.DefaultInstaller = value; }
 		}
 		
 		public static AddinLocalizer DefaultLocalizer {
 			get {
-				CheckInitialized ();
-				return SessionService.DefaultLocalizer;
+				return AddinEngine.DefaultLocalizer;
 			}
 		}
 		
 		public static AddinLocalizer CurrentLocalizer {
 			get {
-				CheckInitialized ();
-				RuntimeAddin addin = SessionService.GetAddinForAssembly (Assembly.GetCallingAssembly ());
+				AddinEngine.CheckInitialized ();
+				RuntimeAddin addin = AddinEngine.GetAddinForAssembly (Assembly.GetCallingAssembly ());
 				if (addin != null)
 					return addin.Localizer;
 				else
-					return SessionService.DefaultLocalizer;
+					return AddinEngine.DefaultLocalizer;
 			}
 		}
 		
 		public static RuntimeAddin CurrentAddin {
 			get {
-				CheckInitialized ();
-				return SessionService.GetAddinForAssembly (Assembly.GetCallingAssembly ());
+				AddinEngine.CheckInitialized ();
+				return AddinEngine.GetAddinForAssembly (Assembly.GetCallingAssembly ());
 			}
 		}
 		
-		internal static AddinSessionService SessionService {
+		public static AddinEngine AddinEngine {
 			get {
 				if (sessionService == null)
-					sessionService = new AddinSessionService();
+					sessionService = new AddinEngine();
 				
 				return sessionService;
 			}
@@ -150,8 +117,7 @@ namespace Mono.Addins
 	
 		public static AddinRegistry Registry {
 			get {
-				CheckInitialized ();
-				return registry;
+				return AddinEngine.Registry;
 			}
 		}
 		
@@ -162,207 +128,162 @@ namespace Mono.Addins
 		// is not set, an exception will be thrown.
 		public static void CheckInstalled (string message, params string[] addinIds)
 		{
-			ArrayList notInstalled = new ArrayList ();
-			foreach (string id in addinIds) {
-				Addin addin = Registry.GetAddin (id, false);
-				if (addin != null) {
-					// The add-in is already installed
-					// If the add-in is disabled, enable it now
-					if (!addin.Enabled)
-						addin.Enabled = true;
-				} else {
-					notInstalled.Add (id);
-				}
-			}
-			if (notInstalled.Count == 0)
-				return;
-			if (installer == null)
-				throw new InvalidOperationException ("Add-in installer not set");
-			
-			// Install the add-ins
-			installer.InstallAddins (Registry, message, (string[]) notInstalled.ToArray (typeof(string)));
+			AddinEngine.CheckInstalled (message, addinIds);
 		}
 	
 		public static bool IsAddinLoaded (string id)
 		{
-			CheckInitialized ();
-			return SessionService.IsAddinLoaded (id);
+			return AddinEngine.IsAddinLoaded (id);
 		}
 		
 		public static void LoadAddin (IProgressStatus statusMonitor, string id)
 		{
-			CheckInitialized ();
-			SessionService.LoadAddin (statusMonitor, id, true);
+			AddinEngine.LoadAddin (statusMonitor, id);
 		}
 		
 		public static ExtensionContext CreateExtensionContext ()
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.CreateChildContext ();
+			return AddinEngine.CreateExtensionContext ();
 		}
 		
 		public static ExtensionNode GetExtensionNode (string path)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionNode (path);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionNode (path);
 		}
 		
 		public static ExtensionNode GetExtensionNode<T> (string path) where T:ExtensionNode
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionNode<T> (path);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionNode<T> (path);
 		}
 		
 		public static ExtensionNodeList GetExtensionNodes (string path)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionNodes (path);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionNodes (path);
 		}
 		
 		public static ExtensionNodeList GetExtensionNodes (string path, Type type)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionNodes (path, type);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionNodes (path, type);
 		}
 		
 		public static ExtensionNodeList<T> GetExtensionNodes<T> (string path) where T:ExtensionNode
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionNodes<T> (path);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionNodes<T> (path);
 		}
 		
 		public static ExtensionNodeList GetExtensionNodes (Type instanceType)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionNodes (instanceType);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionNodes (instanceType);
 		}
 		
 		public static ExtensionNodeList GetExtensionNodes (Type instanceType, Type expectedNodeType)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionNodes (instanceType, expectedNodeType);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionNodes (instanceType, expectedNodeType);
 		}
 		
 		public static ExtensionNodeList<T> GetExtensionNodes<T> (Type instanceType) where T: ExtensionNode
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionNodes<T> (instanceType);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionNodes<T> (instanceType);
 		}
 		
 		public static object[] GetExtensionObjects (Type instanceType)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionObjects (instanceType);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionObjects (instanceType);
 		}
 		
 		public static T[] GetExtensionObjects<T> ()
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionObjects<T> ();
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionObjects<T> ();
 		}
 		
 		public static object[] GetExtensionObjects (Type instanceType, bool reuseCachedInstance)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionObjects (instanceType, reuseCachedInstance);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionObjects (instanceType, reuseCachedInstance);
 		}
 		
 		public static T[] GetExtensionObjects<T> (bool reuseCachedInstance)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionObjects<T> (reuseCachedInstance);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionObjects<T> (reuseCachedInstance);
 		}
 		
 		public static object[] GetExtensionObjects (string path)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionObjects (path);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionObjects (path);
 		}
 		
 		public static object[] GetExtensionObjects (string path, bool reuseCachedInstance)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionObjects (path, reuseCachedInstance);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionObjects (path, reuseCachedInstance);
 		}
 		
 		public static object[] GetExtensionObjects (string path, Type arrayElementType)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionObjects (path, arrayElementType);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionObjects (path, arrayElementType);
 		}
 		
 		public static T[] GetExtensionObjects<T> (string path)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionObjects<T> (path);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionObjects<T> (path);
 		}
 		
 		public static object[] GetExtensionObjects (string path, Type arrayElementType, bool reuseCachedInstance)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionObjects (path, arrayElementType, reuseCachedInstance);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionObjects (path, arrayElementType, reuseCachedInstance);
 		}
 		
 		public static T[] GetExtensionObjects<T> (string path, bool reuseCachedInstance)
 		{
-			CheckInitialized ();
-			return SessionService.DefaultContext.GetExtensionObjects<T> (path, reuseCachedInstance);
+			AddinEngine.CheckInitialized ();
+			return AddinEngine.GetExtensionObjects<T> (path, reuseCachedInstance);
 		}
 		
 		public static event ExtensionEventHandler ExtensionChanged {
-			add { CheckInitialized(); SessionService.DefaultContext.ExtensionChanged += value; }
-			remove { CheckInitialized(); SessionService.DefaultContext.ExtensionChanged -= value; }
+			add { AddinEngine.CheckInitialized(); AddinEngine.ExtensionChanged += value; }
+			remove { AddinEngine.CheckInitialized(); AddinEngine.ExtensionChanged -= value; }
 		}
 		
 		public static void AddExtensionNodeHandler (string path, ExtensionNodeEventHandler handler)
 		{
-			CheckInitialized ();
-			SessionService.DefaultContext.AddExtensionNodeHandler (path, handler);
+			AddinEngine.CheckInitialized ();
+			AddinEngine.AddExtensionNodeHandler (path, handler);
 		}
 		
 		public static void RemoveExtensionNodeHandler (string path, ExtensionNodeEventHandler handler)
 		{
-			CheckInitialized ();
-			SessionService.DefaultContext.RemoveExtensionNodeHandler (path, handler);
+			AddinEngine.CheckInitialized ();
+			AddinEngine.RemoveExtensionNodeHandler (path, handler);
 		}
 		
-		static void CheckInitialized ()
-		{
-			if (!initialized)
-				throw new InvalidOperationException ("Add-in manager not initialized.");
+		public static event AddinErrorEventHandler AddinLoadError {
+			add { AddinEngine.AddinLoadError += value; }
+			remove { AddinEngine.AddinLoadError -= value; }
 		}
 		
-		internal static void ReportError (string message, string addinId, Exception exception, bool fatal)
-		{
-			if (AddinLoadError != null)
-				AddinLoadError (null, new AddinErrorEventArgs (message, addinId, exception));
-			else {
-				Console.WriteLine (message);
-				if (exception != null)
-					Console.WriteLine (exception);
-			}
+		public static event AddinEventHandler AddinLoaded {
+			add { AddinEngine.AddinLoaded += value; }
+			remove { AddinEngine.AddinLoaded -= value; }
 		}
 		
-		internal static void ReportAddinLoad (string id)
-		{
-			if (AddinLoaded != null) {
-				try {
-					AddinLoaded (null, new AddinEventArgs (id));
-				} catch {
-					// Ignore subscriber exceptions
-				}
-			}
-		}
-		
-		internal static void ReportAddinUnload (string id)
-		{
-			if (AddinUnloaded != null) {
-				try {
-					AddinUnloaded (null, new AddinEventArgs (id));
-				} catch {
-					// Ignore subscriber exceptions
-				}
-			}
+		public static event AddinEventHandler AddinUnloaded {
+			add { AddinEngine.AddinUnloaded += value; }
+			remove { AddinEngine.AddinUnloaded -= value; }
 		}
 	}
 

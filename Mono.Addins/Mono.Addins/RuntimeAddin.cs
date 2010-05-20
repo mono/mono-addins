@@ -55,13 +55,16 @@ namespace Mono.Addins
 		ResourceManager[] resourceManagers;
 		AddinLocalizer localizer;
 		ModuleDescription module;
+		AddinEngine addinEngine;
 		
-		internal RuntimeAddin ()
+		internal RuntimeAddin (AddinEngine addinEngine)
 		{
+			this.addinEngine = addinEngine;
 		}
 		
-		internal RuntimeAddin (RuntimeAddin parentAddin, ModuleDescription module)
+		internal RuntimeAddin (AddinEngine addinEngine, RuntimeAddin parentAddin, ModuleDescription module)
 		{
+			this.addinEngine = addinEngine;
 			this.parentAddin = parentAddin;
 			this.module = module;
 			id = parentAddin.id;
@@ -304,7 +307,7 @@ namespace Mono.Addins
 				if (localizer != null)
 					return localizer;
 				else
-					return AddinManager.DefaultLocalizer;
+					return addinEngine.DefaultLocalizer;
 			}
 		}
 		
@@ -317,7 +320,7 @@ namespace Mono.Addins
 			if (module.RuntimeAddin != null)
 				return module.RuntimeAddin;
 			
-			RuntimeAddin addin = new RuntimeAddin (this, module);
+			RuntimeAddin addin = new RuntimeAddin (addinEngine, this, module);
 			return addin;
 		}
 		
@@ -364,11 +367,11 @@ namespace Mono.Addins
 			foreach (Dependency dep in module.Dependencies) {
 				AddinDependency pdep = dep as AddinDependency;
 				if (pdep != null) {
-					RuntimeAddin adn = AddinManager.SessionService.GetAddin (Addin.GetFullId (ns, pdep.AddinId, pdep.Version));
+					RuntimeAddin adn = addinEngine.GetAddin (Addin.GetFullId (ns, pdep.AddinId, pdep.Version));
 					if (adn != null)
 						plugList.Add (adn);
 					else
-						AddinManager.ReportError ("Add-in dependency not loaded: " + pdep.FullAddinId, module.ParentAddinDescription.AddinId, null, false);
+						addinEngine.ReportError ("Add-in dependency not loaded: " + pdep.FullAddinId, module.ParentAddinDescription.AddinId, null, false);
 				}
 			}
 			return depAddins = (RuntimeAddin[]) plugList.ToArray (typeof(RuntimeAddin));
@@ -411,7 +414,7 @@ namespace Mono.Addins
 			if (emap == null) return;
 				
 			foreach (ExtensionNodeSet rel in emap.ExtensionNodeSets)
-				AddinManager.SessionService.UnregisterNodeSet (rel);
+				addinEngine.UnregisterNodeSet (rel);
 		}
 		
 		bool CheckAddinDependencies (ModuleDescription module, bool forceLoadAssemblies)
@@ -420,10 +423,10 @@ namespace Mono.Addins
 				AddinDependency pdep = dep as AddinDependency;
 				if (pdep == null)
 					continue;
-				if (!AddinManager.SessionService.IsAddinLoaded (pdep.FullAddinId))
+				if (!addinEngine.IsAddinLoaded (pdep.FullAddinId))
 					return false;
 				if (forceLoadAssemblies)
-					AddinManager.SessionService.GetAddin (pdep.FullAddinId).EnsureAssembliesLoaded ();
+					addinEngine.GetAddin (pdep.FullAddinId).EnsureAssembliesLoaded ();
 			}
 			return true;
 		}
@@ -444,7 +447,7 @@ namespace Mono.Addins
 			LoadModule (module, asmList);
 			
 			assemblies = (Assembly[]) asmList.ToArray (typeof(Assembly));
-			AddinManager.SessionService.RegisterAssemblies (this);
+			addinEngine.RegisterAssemblies (this);
 		}
 	}
 }

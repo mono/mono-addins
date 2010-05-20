@@ -45,14 +45,18 @@ namespace Mono.Addins
 		string currentDomain;
 		string startupDirectory;
 		
-		public AddinRegistry (string registryPath): this (registryPath, null)
+		public AddinRegistry (string registryPath): this (null, registryPath, null)
 		{
 		}
 		
-		public AddinRegistry (string registryPath, string startupDirectory)
+		public AddinRegistry (string registryPath, string startupDirectory): this (null, registryPath, startupDirectory)
+		{
+		}
+		
+		internal AddinRegistry (AddinEngine engine, string registryPath, string startupDirectory)
 		{
 			basePath = Util.GetFullPath (Util.NormalizePath (registryPath));
-			database = new AddinDatabase (this);
+			database = new AddinDatabase (engine, this);
 
 			// Look for add-ins in the hosts directory and in the default
 			// addins directory
@@ -69,12 +73,12 @@ namespace Mono.Addins
 		
 		public static AddinRegistry GetGlobalRegistry ()
 		{
-			return GetGlobalRegistry (null);
+			return GetGlobalRegistry (null, null);
 		}
 		
-		internal static AddinRegistry GetGlobalRegistry (string startupDirectory)
+		internal static AddinRegistry GetGlobalRegistry (AddinEngine engine, string startupDirectory)
 		{
-			AddinRegistry reg = new AddinRegistry (GlobalRegistryPath, startupDirectory);
+			AddinRegistry reg = new AddinRegistry (engine, GlobalRegistryPath, startupDirectory);
 			string baseDir;
 			if (Util.IsWindows)
 				baseDir = Environment.GetFolderPath (Environment.SpecialFolder.CommonProgramFiles); 
@@ -225,6 +229,11 @@ namespace Mono.Addins
 		{
 			if (startupDirectory != null)
 				currentDomain = database.GetFolderDomain (null, startupDirectory);
+		}
+
+		public void Update ()
+		{
+			Update (new ConsoleProgressStatus (false));
 		}
 
 		public void Update (IProgressStatus monitor)

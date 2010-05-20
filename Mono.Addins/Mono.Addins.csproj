@@ -31,7 +31,6 @@
     <Compile Include="Mono.Addins\ExtensionNode.cs" />
     <Compile Include="Mono.Addins\ExtensionTree.cs" />
     <Compile Include="Mono.Addins\TreeNode.cs" />
-    <Compile Include="Mono.Addins\AddinSessionService.cs" />
     <Compile Include="Mono.Addins\RuntimeAddin.cs" />
     <Compile Include="Mono.Addins\TreeNodeCollection.cs" />
     <Compile Include="Mono.Addins\TypeExtensionNode.cs" />
@@ -117,7 +116,10 @@
     <Compile Include="Mono.Addins\CustomExtensionAttribute.cs" />
     <Compile Include="Mono.Addins\AddinAuthorAttribute.cs" />
     <Compile Include="Mono.Addins\AddinLocalizerGettextAttribute.cs" />
-    <Compile Include="Mono.Addins\AddinCategoryAttribute.cs" />
+    <Compile Include="Mono.Addins\ImportAddinFileAttribute.cs" />
+    <Compile Include="Mono.Addins\ImportAddinAssemblyAttribute.cs" />
+    <Compile Include="Mono.Addins\AddinModuleAttribute.cs" />
+    <Compile Include="Mono.Addins\AddinEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Mono.Addins.dll.config">

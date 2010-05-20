@@ -1,3 +1,43 @@
+2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* Mono.Addins.csproj: Updated.
+
+	* Mono.Addins/TreeNode.cs:
+	* Mono.Addins/AddinEngine.cs:
+	* Mono.Addins/RuntimeAddin.cs:
+	* Mono.Addins/AddinManager.cs:
+	* Mono.Addins/ExtensionTree.cs:
+	* Mono.Addins/ExtensionNode.cs:
+	* Mono.Addins/ConditionType.cs:
+	* Mono.Addins/AddinRegistry.cs:
+	* Mono.Addins/ExtensionContext.cs:
+	* Mono.Addins/AddinSessionService.cs:
+	* Mono.Addins.Database/AddinDatabase.cs:
+	* Mono.Addins.Description/Dependency.cs:
+	* Mono.Addins.Description/AddinDependency.cs:
+	* Mono.Addins.Description/NativeDependency.cs:
+	* Mono.Addins.Description/AssemblyDependency.cs: New
+	  AddinEngine class, which can be used to support several
+	  engines in a single domain.
+
+	* Mono.Addins/AddinAttribute.cs:
+	* Mono.Addins/AddinModuleAttribute.cs:
+	* Mono.Addins.Database/AddinScanner.cs:
+	* Mono.Addins/ImportAddinFileAttribute.cs:
+	* Mono.Addins/ImportAddinAssemblyAttribute.cs: Added support
+	  for new add-in declaration attributes.
+
+	* Mono.Addins/AddinCategoryAttribute.cs: Removed.
+
+	* Mono.Addins/ExtensionPointAttribute.cs:
+	* Mono.Addins/TypeExtensionPointAttribute.cs: Use a better
+	  name for the custom attribute type property.
+
+	* Mono.Addins.Database/IAssemblyReflector.cs:
+	* Mono.Addins.Database/DefaultAssemblyReflector.cs: Added
+	  methods for getting resources from an assembly.
+
 2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Serialization/BinaryXmlReader.cs: Properly

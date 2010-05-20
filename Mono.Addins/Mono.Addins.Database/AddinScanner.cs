@@ -546,15 +546,14 @@ namespace Mono.Addins.Database
 			config = null;
 				
 			try {
-				Assembly asm = Util.LoadAssemblyForReflection (filePath);
+				object asm = reflector.LoadAssembly (filePath);
 				
 				// Get the config file from the resources, if there is one
 				
-				foreach (string res in asm.GetManifestResourceNames ()) {
+				foreach (string res in reflector.GetResourceNames (asm)) {
 					if (res.EndsWith (".addin") || res.EndsWith (".addin.xml")) {
-						using (Stream s = asm.GetManifestResourceStream (res)) {
-							string asmFile = new Uri (asm.CodeBase).LocalPath;
-							AddinDescription ad = AddinDescription.Read (s, Path.GetDirectoryName (asmFile));
+						using (Stream s = reflector.GetResourceStream (asm, res)) {
+							AddinDescription ad = AddinDescription.Read (s, Path.GetDirectoryName (filePath));
 							if (config != null) {
 								if (!config.IsExtensionModel && !ad.IsExtensionModel) {
 									// There is more than one add-in definition
@@ -570,7 +569,7 @@ namespace Mono.Addins.Database
 				
 				if (config == null) {
 					// In this case, only scan the assembly if it has the Addin attribute.
-					AddinAttribute att = (AddinAttribute) Attribute.GetCustomAttribute (asm, typeof(AddinAttribute), false);
+					AddinAttribute att = (AddinAttribute) reflector.GetCustomAttribute (asm, typeof(AddinAttribute), false);
 					if (att == null)
 						return true;
 
@@ -593,35 +592,45 @@ namespace Mono.Addins.Database
 			}
 		}
 
-		bool ScanDescription (IProgressStatus monitor, AddinDescription config, Assembly rootAssembly, AddinScanResult scanResult)
+		bool ScanDescription (IProgressStatus monitor, AddinDescription config, object rootAssembly, AddinScanResult scanResult)
 		{
 			// First of all scan the main module
 			
 			ArrayList assemblies = new ArrayList ();
-			ArrayList asmFiles = new ArrayList ();
 			
 			try {
+				string rootAsmFile = null;
+				
+				if (rootAssembly != null) {
+					ScanAssemblyAddinHeaders (config, rootAssembly, scanResult);
+					assemblies.Add (rootAssembly);
+					rootAsmFile = Path.GetFileName (config.AddinFile);
+				}
+				
+				// The assembly list may be modified while scanning the headears, so
+				// we use a for loop instead of a foreach
+				for (int n=0; n<config.MainModule.Assemblies.Count; n++) {
+					string s = config.MainModule.Assemblies [n];
+					string asmFile = Util.GetFullPath (Path.Combine (config.BasePath, s));
+					scanResult.AddPathToIgnore (asmFile);
+					if (s == rootAsmFile || config.MainModule.IgnorePaths.Contains (s))
+						continue;
+					object asm = reflector.LoadAssembly (asmFile);
+					assemblies.Add (asm);
+					ScanAssemblyAddinHeaders (config, asm, scanResult);
+					ScanAssemblyImports (config.MainModule, asm);
+				}
+				
 				// Add all data files to the ignore file list. It avoids scanning assemblies
 				// which are included as 'data' in an add-in.
-				foreach (string df in config.AllFiles) {
+				foreach (string df in config.MainModule.DataFiles) {
 					string file = Path.Combine (config.BasePath, df);
 					scanResult.AddPathToIgnore (Util.GetFullPath (file));
 				}
-				foreach (string df in config.AllIgnorePaths) {
+				foreach (string df in config.MainModule.IgnorePaths) {
 					string path = Path.Combine (config.BasePath, df);
 					scanResult.AddPathToIgnore (Util.GetFullPath (path));
 				}
-				
-				foreach (string s in config.MainModule.Assemblies) {
-					string asmFile = Path.Combine (config.BasePath, s);
-					asmFiles.Add (asmFile);
-					object asm = reflector.LoadAssembly (asmFile);
-					assemblies.Add (asm);
-					scanResult.AddPathToIgnore (Util.GetFullPath (asmFile));
-				}
-				
-				foreach (object asm in assemblies)
-					ScanAssemblyAddinHeaders (config, asm, scanResult);
 				
 				// The add-in id and version must be already assigned at this point
 				
@@ -630,7 +639,7 @@ namespace Mono.Addins.Database
 					scanResult.HostIndex.RemoveHostData (config.AddinId, config.AddinFile);
 
 				foreach (object asm in assemblies)
-					ScanAssemblyContents (config, asm, scanResult);
+					ScanAssemblyContents (config, config.MainModule, asm, scanResult);
 				
 			} catch (Exception ex) {
 				ReportReflectionException (monitor, ex, config, scanResult);
@@ -656,16 +665,29 @@ namespace Mono.Addins.Database
 				foreach (ModuleDescription mod in config.OptionalModules) {
 					try {
 						assemblies.Clear ();
-						asmFiles.Clear ();
-						foreach (string s in mod.Assemblies) {
+						for (int n=0; n<mod.Assemblies.Count; n++) {
+							string s = mod.Assemblies [n];
+							if (mod.IgnorePaths.Contains (s))
+								continue;
 							string asmFile = Path.Combine (config.BasePath, s);
-							asmFiles.Add (asmFile);
 							object asm = reflector.LoadAssembly (asmFile);
 							assemblies.Add (asm);
 							scanResult.AddPathToIgnore (Util.GetFullPath (asmFile));
+							ScanAssemblyImports (mod, asm);
 						}
+						// Add all data files to the ignore file list. It avoids scanning assemblies
+						// which are included as 'data' in an add-in.
+						foreach (string df in mod.DataFiles) {
+							string file = Path.Combine (config.BasePath, df);
+							scanResult.AddPathToIgnore (Util.GetFullPath (file));
+						}
+						foreach (string df in mod.IgnorePaths) {
+							string path = Path.Combine (config.BasePath, df);
+							scanResult.AddPathToIgnore (Util.GetFullPath (path));
+						}
+						
 						foreach (object asm in assemblies)
-							ScanAssemblyContents (config, asm, scanResult);
+							ScanAssemblyContents (config, mod, asm, scanResult);
 						
 					} catch (Exception ex) {
 						ReportReflectionException (monitor, ex, config, scanResult);
@@ -704,16 +726,14 @@ namespace Mono.Addins.Database
 					config.Namespace = att.Namespace;
 				if (att.Category.Length > 0)
 					config.Category = att.Category;
+				if (att.CompatVersion.Length > 0)
+					config.CompatVersion = att.CompatVersion;
+				if (att.Url.Length > 0)
+					config.Url = att.Url;
 				config.IsRoot = att is AddinRootAttribute;
 				config.EnabledByDefault = att.EnabledByDefault;
 				config.Flags = att.Flags;
 			}
-			
-			// Category
-			
-			object catt = reflector.GetCustomAttribute (asm, typeof(AddinCategoryAttribute), false);
-			if (catt != null && config.Category.Length == 0)
-				config.Category = ((AddinCategoryAttribute)catt).Name;
 			
 			// Author attributes
 			
@@ -727,7 +747,7 @@ namespace Mono.Addins.Database
 			
 			// Description
 			
-			catt = reflector.GetCustomAttribute (asm, typeof(AssemblyDescriptionAttribute), false);
+			object catt = reflector.GetCustomAttribute (asm, typeof(AssemblyDescriptionAttribute), false);
 			if (catt != null && config.Description.Length == 0)
 				config.Description = ((AssemblyDescriptionAttribute)catt).Description;
 			
@@ -748,10 +768,40 @@ namespace Mono.Addins.Database
 					node.SetAttribute ("location", locat.Catalog);
 				config.Localizer = node;
 			}
+			
+			// Optional modules
+			
+			atts = reflector.GetCustomAttributes (asm, typeof(AddinModuleAttribute), false);
+			foreach (AddinModuleAttribute mod in atts) {
+				if (mod.AssemblyFile.Length > 0) {
+					ModuleDescription module = new ModuleDescription ();
+					module.Assemblies.Add (mod.AssemblyFile);
+					config.OptionalModules.Add (module);
+				}
+			}
 		}
 		
-		void ScanAssemblyContents (AddinDescription config, object asm, AddinScanResult scanResult)
+		void ScanAssemblyImports (ModuleDescription module, object asm)
 		{
+			object[] atts = reflector.GetCustomAttributes (asm, typeof(ImportAddinAssemblyAttribute), false);
+			foreach (ImportAddinAssemblyAttribute import in atts) {
+				if (!string.IsNullOrEmpty (import.FilePath)) {
+					module.Assemblies.Add (import.FilePath);
+					if (!import.Scan)
+						module.IgnorePaths.Add (import.FilePath);
+				}
+			}
+			atts = reflector.GetCustomAttributes (asm, typeof(ImportAddinFileAttribute), false);
+			foreach (ImportAddinFileAttribute import in atts) {
+				if (!string.IsNullOrEmpty (import.FilePath))
+					module.DataFiles.Add (import.FilePath);
+			}
+		}
+		
+		void ScanAssemblyContents (AddinDescription config, ModuleDescription module, object asm, AddinScanResult scanResult)
+		{
+			bool isMainModule = module == config.MainModule;
+			
 			// Get dependencies
 			
 			object[] deps = reflector.GetCustomAttributes (asm, typeof(AddinDependencyAttribute), false);
@@ -759,24 +809,26 @@ namespace Mono.Addins.Database
 				AddinDependency adep = new AddinDependency ();
 				adep.AddinId = dep.Id;
 				adep.Version = dep.Version;
-				config.MainModule.Dependencies.Add (adep);
+				module.Dependencies.Add (adep);
 			}
 			
 			// Get extension points
 			
-			object[] extPoints = reflector.GetCustomAttributes (asm, typeof(ExtensionPointAttribute), false);
-			foreach (ExtensionPointAttribute ext in extPoints) {
-				ExtensionPoint ep = config.AddExtensionPoint (ext.Path);
-				ep.Description = ext.Description;
-				ep.Name = ext.Name;
-				ExtensionNodeType nt = ep.AddExtensionNode (ext.NodeName, ext.NodeTypeName);
-				nt.CustomAttributeTypeName = ext.CustomAttributeTypeName;
+			if (isMainModule) {
+				object[] extPoints = reflector.GetCustomAttributes (asm, typeof(ExtensionPointAttribute), false);
+				foreach (ExtensionPointAttribute ext in extPoints) {
+					ExtensionPoint ep = config.AddExtensionPoint (ext.Path);
+					ep.Description = ext.Description;
+					ep.Name = ext.Name;
+					ExtensionNodeType nt = ep.AddExtensionNode (ext.NodeName, ext.NodeTypeName);
+					nt.CustomAttributeTypeName = ext.ExtensionAttributeTypeName;
+				}
 			}
 			
 			// Look for extension nodes declared using assembly attributes
 			
 			foreach (CustomAttribute att in reflector.GetRawCustomAttributes (asm, typeof(CustomExtensionAttribute), true)) {
-				ExtensionNodeDescription elem = config.MainModule.AddExtensionNode ("%" + att.TypeName, "Type");
+				ExtensionNodeDescription elem = module.AddExtensionNode ("%" + att.TypeName, "Type");
 				foreach (KeyValuePair<string,string> prop in att)
 					elem.SetAttribute (prop.Key, prop.Value);
 			}
@@ -811,7 +863,7 @@ namespace Mono.Addins.Database
 							path = eatt.Path;
 						}
 
-						ExtensionNodeDescription elem = config.MainModule.AddExtensionNode (path, nodeName);
+						ExtensionNodeDescription elem = module.AddExtensionNode (path, nodeName);
 						nodes [path] = elem;
 						uniqueNode = elem;
 						
@@ -850,7 +902,7 @@ namespace Mono.Addins.Database
 					// Look for extension points
 					
 					extensionAtts = reflector.GetCustomAttributes (t, typeof(TypeExtensionPointAttribute), false);
-					if (extensionAtts.Length > 0) {
+					if (extensionAtts.Length > 0 && isMainModule) {
 						foreach (TypeExtensionPointAttribute epa in extensionAtts) {
 							ExtensionPoint ep;
 							
@@ -865,7 +917,7 @@ namespace Mono.Addins.Database
 							}
 							nt.Id = epa.NodeName;
 							nt.TypeName = epa.NodeType.FullName;
-							nt.CustomAttributeTypeName = epa.CustomAttributeTypeName;
+							nt.CustomAttributeTypeName = epa.ExtensionAttributeTypeName;
 							ep.NodeSet.NodeTypes.Add (nt);
 							ep.Description = epa.Description;
 							ep.Name = epa.Name;
@@ -876,7 +928,7 @@ namespace Mono.Addins.Database
 					else {
 						// Look for custom extension attribtues
 						foreach (CustomAttribute att in reflector.GetRawCustomAttributes (t, typeof(CustomExtensionAttribute), true)) {
-							ExtensionNodeDescription elem = config.MainModule.AddExtensionNode ("%" + att.TypeName, "Type");
+							ExtensionNodeDescription elem = module.AddExtensionNode ("%" + att.TypeName, "Type");
 							foreach (KeyValuePair<string,string> prop in att)
 								elem.SetAttribute (prop.Key, prop.Value);
 						}

@@ -100,9 +100,9 @@ namespace Mono.Addins.Description
 			get { return AddinId + " v" + version; }
 		}
 		
-		internal override bool CheckInstalled ()
+		internal override bool CheckInstalled (AddinRegistry registry)
 		{
-			Addin[] addins = AddinManager.Registry.GetAddins ();
+			Addin[] addins = registry.GetAddins ();
 			foreach (Addin addin in addins) {
 				if (addin.Id == id && addin.SupportsVersion (version)) {
 					return true;

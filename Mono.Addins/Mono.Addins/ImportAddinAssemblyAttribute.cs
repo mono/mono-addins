@@ -1,5 +1,5 @@
 // 
-// AddinCategoryAttribute.cs
+// ImportAddinAssemblyAttribute.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -23,24 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-
 namespace Mono.Addins
 {
-	[AttributeUsage (AttributeTargets.Assembly)]
-	public class AddinCategoryAttribute: Attribute
+	public class ImportAddinAssemblyAttribute: Attribute
 	{
-		string name;
+		string filePath;
+		bool scan = true;
 		
-		public AddinCategoryAttribute (string name)
+		public ImportAddinAssemblyAttribute (string filePath)
 		{
-			this.name = name;
+			this.filePath = filePath;
 		}
 		
-		public string Name {
-			get { return this.name; }
-			set { this.name = value; }
+		public string FilePath {
+			get { return filePath; }
+			set { filePath = value; }
+		}
+		
+		public bool Scan {
+			get { return this.scan; }
+			set { this.scan = value; }
 		}
 	}
 }

@@ -41,7 +41,7 @@ namespace Mono.Addins.Description
 			get { return "Native dependency"; }
 		}
 		
-		internal override bool CheckInstalled ()
+		internal override bool CheckInstalled (AddinRegistry registry)
 		{
 			return false;
 		}

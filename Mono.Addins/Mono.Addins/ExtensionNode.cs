@@ -45,6 +45,7 @@ namespace Mono.Addins
 		string addinId;
 		ExtensionNodeType nodeType;
 		ModuleDescription module;
+		AddinEngine addinEngine;
 		event ExtensionNodeEventHandler extensionNodeChanged;
 		
 		public string Id {
@@ -77,8 +78,9 @@ namespace Mono.Addins
 			treeNode = node;
 		}
 		
-		internal void SetData (string plugid, ExtensionNodeType nodeType, ModuleDescription module)
+		internal void SetData (AddinEngine addinEngine, string plugid, ExtensionNodeType nodeType, ModuleDescription module)
 		{
+			this.addinEngine = addinEngine;
 			this.addinId = plugid;
 			this.nodeType = nodeType;
 			this.module = module;
@@ -95,9 +97,9 @@ namespace Mono.Addins
 		public RuntimeAddin Addin {
 			get {
 				if (addin == null && addinId != null) {
-					if (!AddinManager.SessionService.IsAddinLoaded (addinId))
-						AddinManager.SessionService.LoadAddin (null, addinId, true);
-					addin = AddinManager.SessionService.GetAddin (addinId);
+					if (!addinEngine.IsAddinLoaded (addinId))
+						addinEngine.LoadAddin (null, addinId, true);
+					addin = addinEngine.GetAddin (addinId);
 					if (addin != null)
 						addin = addin.GetModule (module);
 				}
@@ -114,7 +116,7 @@ namespace Mono.Addins
 					try {
 						value (this, new ExtensionNodeEventArgs (ExtensionChange.Add, node));
 					} catch (Exception ex) {
-						AddinManager.ReportError (null, node.Addin != null ? node.Addin.Id : null, ex, false);
+						addinEngine.ReportError (null, node.Addin != null ? node.Addin.Id : null, ex, false);
 					}
 				}
 			}
@@ -135,7 +137,7 @@ namespace Mono.Addins
 					}
 				}
 				catch (Exception ex) {
-					AddinManager.ReportError (null, null, ex, false);
+					addinEngine.ReportError (null, null, ex, false);
 					childNodes = ExtensionNodeList.Empty;
 					return childNodes;
 				} finally {
@@ -152,7 +154,7 @@ namespace Mono.Addins
 						if (cn.ExtensionNode != null && cn.IsEnabled)
 							list.Add (cn.ExtensionNode);
 					} catch (Exception ex) {
-						AddinManager.ReportError (null, null, ex, false);
+						addinEngine.ReportError (null, null, ex, false);
 					}
 				}
 				if (list.Count > 0)
@@ -201,7 +203,7 @@ namespace Mono.Addins
 			for (int n=0; n<ChildNodes.Count; n++) {
 				InstanceExtensionNode node = ChildNodes [n] as InstanceExtensionNode;
 				if (node == null) {
-					AddinManager.ReportError ("Error while getting object for node in path '" + Path + "'. Extension node is not a subclass of InstanceExtensionNode.", null, null, false);
+					addinEngine.ReportError ("Error while getting object for node in path '" + Path + "'. Extension node is not a subclass of InstanceExtensionNode.", null, null, false);
 					continue;
 				}
 				
@@ -212,7 +214,7 @@ namespace Mono.Addins
 						list.Add (node.CreateInstance (arrayElementType));
 				}
 				catch (Exception ex) {
-					AddinManager.ReportError ("Error while getting object for node in path '" + Path + "'.", node.AddinId, ex, false);
+					addinEngine.ReportError ("Error while getting object for node in path '" + Path + "'.", node.AddinId, ex, false);
 				}
 			}
 			return list.ToArray (arrayElementType);

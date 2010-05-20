@@ -69,17 +69,17 @@ FILES =  \
 	Mono.Addins/Addin.cs \
 	Mono.Addins/AddinAttribute.cs \
 	Mono.Addins/AddinAuthorAttribute.cs \
-	Mono.Addins/AddinCategoryAttribute.cs \
 	Mono.Addins/AddinDependencyAttribute.cs \
+	Mono.Addins/AddinEngine.cs \
 	Mono.Addins/AddinErrorEventArgs.cs \
 	Mono.Addins/AddinEventArgs.cs \
 	Mono.Addins/AddinInfo.cs \
 	Mono.Addins/AddinLocalizer.cs \
 	Mono.Addins/AddinLocalizerGettextAttribute.cs \
 	Mono.Addins/AddinManager.cs \
+	Mono.Addins/AddinModuleAttribute.cs \
 	Mono.Addins/AddinRegistry.cs \
 	Mono.Addins/AddinRootAttribute.cs \
-	Mono.Addins/AddinSessionService.cs \
 	Mono.Addins/ConditionType.cs \
 	Mono.Addins/ConsoleProgressStatus.cs \
 	Mono.Addins/CustomExtensionAttribute.cs \
@@ -94,6 +94,8 @@ FILES =  \
 	Mono.Addins/ExtensionTree.cs \
 	Mono.Addins/GettextCatalog.cs \
 	Mono.Addins/IAddinInstaller.cs \
+	Mono.Addins/ImportAddinAssemblyAttribute.cs \
+	Mono.Addins/ImportAddinFileAttribute.cs \
 	Mono.Addins/InstanceExtensionNode.cs \
 	Mono.Addins/IProgressStatus.cs \
 	Mono.Addins/MissingDependencyException.cs \

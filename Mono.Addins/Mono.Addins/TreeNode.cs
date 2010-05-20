@@ -45,14 +45,20 @@ namespace Mono.Addins
 		ExtensionNodeSet nodeTypes;
 		ExtensionPoint extensionPoint;
 		BaseCondition condition;
+		protected AddinEngine addinEngine;
 
-		public TreeNode (string id)
+		public TreeNode (AddinEngine addinEngine, string id)
 		{
 			this.id = id;
+			this.addinEngine = addinEngine;
 				
 			// Root node
 			if (id.Length == 0)
 				childrenLoaded = true;
+		}
+		
+		public AddinEngine AddinEngine {
+			get { return addinEngine; }
 		}
 		
 		internal void AttachExtensionNode (ExtensionNode enode)
@@ -70,7 +76,7 @@ namespace Mono.Addins
 			get {
 				if (extensionNode == null && extensionPoint != null) {
 					extensionNode = new ExtensionNode ();
-					extensionNode.SetData (extensionPoint.RootAddin, null, null);
+					extensionNode.SetData (addinEngine, extensionPoint.RootAddin, null, null);
 					AttachExtensionNode (extensionNode);
 				}
 				return extensionNode;
@@ -187,7 +193,7 @@ namespace Mono.Addins
 				}
 				
 				if (buildPath) {
-					TreeNode newNode = new TreeNode (part);
+					TreeNode newNode = new TreeNode (addinEngine, part);
 					curNode.AddChildNode (newNode);
 					curNode = newNode;
 				} else
@@ -287,7 +293,7 @@ namespace Mono.Addins
 			if (extensionPoint != null) {
 				foreach (ExtensionNodeType nt in extensionPoint.NodeSet.NodeTypes) {
 					if (nt.ObjectTypeName.Length > 0 && (nodeName.Length == 0 || nodeName == nt.Id)) {
-						RuntimeAddin addin = AddinManager.SessionService.GetAddin (extensionPoint.RootAddin);
+						RuntimeAddin addin = addinEngine.GetAddin (extensionPoint.RootAddin);
 						Type ot = addin.GetType (nt.ObjectTypeName);
 						if (ot != null) {
 							if (ot.IsAssignableFrom (type)) {
@@ -334,7 +340,7 @@ namespace Mono.Addins
 		{
 			if (extensionPoint != null) {
 				string aid = Addin.GetIdName (extensionPoint.ParentAddinDescription.AddinId);
-				RuntimeAddin ad = AddinManager.SessionService.GetAddin (aid);
+				RuntimeAddin ad = addinEngine.GetAddin (aid);
 				if (ad != null)
 					extensionPoint = ad.Addin.Description.ExtensionPoints [GetPath ()];
 			}

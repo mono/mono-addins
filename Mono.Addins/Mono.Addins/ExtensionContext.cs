@@ -55,12 +55,28 @@ namespace Mono.Addins
 				parentContext.DisposeChildContext (this);
 		}
 		
-		internal ExtensionContext ()
+		internal void Initialize (AddinEngine addinEngine)
 		{
-			tree = new ExtensionTree (this);
+			fireEvents = false;
+			tree = new ExtensionTree (addinEngine, this);
 		}
 		
-		internal void ResetCachedData ()
+		protected void Clear ()
+		{
+			conditionTypes.Clear ();
+			conditionsToNodes.Clear ();
+			childContexts = null;
+			parentContext = null;
+			tree = null;
+			runTimeEnabledAddins = null;
+			runTimeDisabledAddins = null;
+		}
+		
+		internal AddinEngine AddinEngine {
+			get { return tree.AddinEngine; }
+		}
+		
+		internal virtual void ResetCachedData ()
 		{
 			tree.ResetCachedData ();
 			if (childContexts != null) {
@@ -78,6 +94,7 @@ namespace Mono.Addins
 				if (childContexts == null)
 					childContexts = new ArrayList ();
 				ExtensionContext ctx = new ExtensionContext ();
+				ctx.Initialize (AddinEngine);
 				ctx.parentContext = this;
 				WeakReference wref = new WeakReference (ctx);
 				childContexts.Add (wref);
@@ -236,7 +253,7 @@ namespace Mono.Addins
 		
 		public ExtensionNodeList GetExtensionNodes (Type instanceType, Type expectedNodeType)
 		{
-			string path = AddinManager.SessionService.GetAutoTypeExtensionPoint (instanceType);
+			string path = AddinEngine.GetAutoTypeExtensionPoint (instanceType);
 			if (path == null)
 				return new ExtensionNodeList (null);
 			return GetExtensionNodes (path, expectedNodeType);
@@ -244,7 +261,7 @@ namespace Mono.Addins
 		
 		public ExtensionNodeList<T> GetExtensionNodes<T> (Type instanceType) where T: ExtensionNode
 		{
-			string path = AddinManager.SessionService.GetAutoTypeExtensionPoint (instanceType);
+			string path = AddinEngine.GetAutoTypeExtensionPoint (instanceType);
 			if (path == null)
 				return new ExtensionNodeList<T> (null);
 			return new ExtensionNodeList<T> (GetExtensionNodes (path, typeof (T)).list);
@@ -263,7 +280,7 @@ namespace Mono.Addins
 				foreach (ExtensionNode cnode in list) {
 					if (!expectedNodeType.IsInstanceOfType (cnode)) {
 						foundError = true;
-						AddinManager.ReportError ("Error while getting nodes for path '" + path + "'. Expected subclass of node type '" + expectedNodeType + "'. Found '" + cnode.GetType (), null, null, false);
+						AddinEngine.ReportError ("Error while getting nodes for path '" + path + "'. Expected subclass of node type '" + expectedNodeType + "'. Found '" + cnode.GetType (), null, null, false);
 					}
 				}
 				if (foundError) {
@@ -291,7 +308,7 @@ namespace Mono.Addins
 		
 		public object[] GetExtensionObjects (Type instanceType, bool reuseCachedInstance)
 		{
-			string path = AddinManager.SessionService.GetAutoTypeExtensionPoint (instanceType);
+			string path = AddinEngine.GetAutoTypeExtensionPoint (instanceType);
 			if (path == null)
 				return (object[]) Array.CreateInstance (instanceType, 0);
 			return GetExtensionObjects (path, instanceType, reuseCachedInstance);
@@ -299,7 +316,7 @@ namespace Mono.Addins
 		
 		public T[] GetExtensionObjects<T> (bool reuseCachedInstance)
 		{
-			string path = AddinManager.SessionService.GetAutoTypeExtensionPoint (typeof(T));
+			string path = AddinEngine.GetAutoTypeExtensionPoint (typeof(T));
 			if (path == null)
 				return new T[0];
 			return GetExtensionObjects<T> (path, reuseCachedInstance);
@@ -442,9 +459,9 @@ namespace Mono.Addins
 			try {
 				fireEvents = true;
 				
-				Addin addin = AddinManager.Registry.GetAddin (id);
+				Addin addin = AddinEngine.Registry.GetAddin (id);
 				if (addin == null) {
-					AddinManager.ReportError ("Required add-in not found", id, null, false);
+					AddinEngine.ReportError ("Required add-in not found", id, null, false);
 					return;
 				}
 				// Take note that this add-in has been enabled at run-time
@@ -476,7 +493,7 @@ namespace Mono.Addins
 									LoadModuleExtensionNodes (ext, data.AddinId, node.ExtensionNodeSet, loadedNodes);
 							}
 							else
-								AddinManager.ReportError ("Extension node not found or not extensible: " + ext.Path, id, null, false);
+								AddinEngine.ReportError ("Extension node not found or not extensible: " + ext.Path, id, null, false);
 						}
 					}
 				}
@@ -538,7 +555,7 @@ namespace Mono.Addins
 				// The event is called for all extensions, even for those not loaded. This is for coherence,
 				// although that something that it doesn't make much sense to do (subcribing the ExtensionChanged
 				// event without first getting the list of nodes that may change).
-				Addin addin = AddinManager.Registry.GetAddin (id);
+				Addin addin = AddinEngine.Registry.GetAddin (id);
 				if (addin != null) {
 					ArrayList paths = new ArrayList ();
 					foreach (ModuleDescription mod in addin.Description.AllModules) {
@@ -632,7 +649,7 @@ namespace Mono.Addins
 						bool added = false;
 						for (int n=0; n<loadData.Count; n++) {
 							ExtensionLoadData other = (ExtensionLoadData) loadData [n];
-							if (AddinManager.Registry.AddinDependsOn (other.AddinId, ed.AddinId)) {
+							if (AddinEngine.Registry.AddinDependsOn (other.AddinId, ed.AddinId)) {
 								loadData.Insert (n, ed);
 								added = true;
 								break;
@@ -652,7 +669,7 @@ namespace Mono.Addins
 						if (cnode != null && cnode.ExtensionNodeSet != null)
 							LoadModuleExtensionNodes (ext, data.AddinId, cnode.ExtensionNodeSet, loadedNodes);
 						else
-							AddinManager.ReportError ("Extension node not found or not extensible: " + ext.Path, data.AddinId, null, false);
+							AddinEngine.ReportError ("Extension node not found or not extensible: " + ext.Path, data.AddinId, null, false);
 					}
 				}
 				// Call the OnAddinLoaded method on nodes, if the add-in is already loaded
@@ -668,14 +685,14 @@ namespace Mono.Addins
 			Addin pinfo = null;
 
 			// Root add-ins are not returned by GetInstalledAddin.
-			RuntimeAddin addin = AddinManager.SessionService.GetAddin (id);
+			RuntimeAddin addin = AddinEngine.GetAddin (id);
 			if (addin != null)
 				pinfo = addin.Addin;
 			else
-				pinfo = AddinManager.Registry.GetAddin (id);
+				pinfo = AddinEngine.Registry.GetAddin (id);
 			
 			if (pinfo == null) {
-				AddinManager.ReportError ("Required add-in not found", id, null, false);
+				AddinEngine.ReportError ("Required add-in not found", id, null, false);
 				return null;
 			}
 			if (!pinfo.Enabled)
@@ -719,7 +736,7 @@ namespace Mono.Addins
 			ArrayList addedNodes = new ArrayList ();
 			tree.LoadExtension (addinId, extension, addedNodes);
 			
-			RuntimeAddin ad = AddinManager.SessionService.GetAddin (addinId);
+			RuntimeAddin ad = AddinEngine.GetAddin (addinId);
 			if (ad != null) {
 				foreach (TreeNode nod in addedNodes) {
 					// Don't call OnAddinLoaded here. Do it when the entire extension point has been loaded.
@@ -734,7 +751,7 @@ namespace Mono.Addins
 			foreach (Dependency dep in module.Dependencies) {
 				AddinDependency pdep = dep as AddinDependency;
 				if (pdep != null) {
-					Addin pinfo = AddinManager.Registry.GetAddin (Addin.GetFullId (conf.Namespace, pdep.AddinId, pdep.Version));
+					Addin pinfo = AddinEngine.Registry.GetAddin (Addin.GetFullId (conf.Namespace, pdep.AddinId, pdep.Version));
 					if (pinfo == null || !pinfo.Enabled)
 						return false;
 				}
@@ -778,7 +795,7 @@ namespace Mono.Addins
 				}
 				else {
 					// Create if not found
-					TreeNode newNode = new TreeNode (part);
+					TreeNode newNode = new TreeNode (AddinEngine, part);
 					dstNode.AddChildNode (newNode);
 					dstNode = newNode;
 					

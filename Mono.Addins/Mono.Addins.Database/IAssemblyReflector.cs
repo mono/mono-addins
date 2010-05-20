@@ -28,6 +28,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Mono.Addins.Database
 {
@@ -40,6 +41,8 @@ namespace Mono.Addins.Database
 		
 		object LoadAssembly (string file);
 		object LoadAssemblyFromReference (object asmReference);
+		string[] GetResourceNames (object asm);
+		Stream GetResourceStream (object asm, string resourceName);
 		IEnumerable GetAssemblyTypes (object asm);
 		IEnumerable GetAssemblyReferences (object asm);
 		

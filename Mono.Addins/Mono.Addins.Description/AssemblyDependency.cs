@@ -82,7 +82,7 @@ namespace Mono.Addins.Description
 			}
 		}
 		
-		internal override bool CheckInstalled ()
+		internal override bool CheckInstalled (AddinRegistry registry)
 		{
 			// TODO
 			return true;

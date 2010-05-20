@@ -161,9 +161,11 @@ namespace Mono.Addins
 	{
 		ExtensionNodeDescription node;
 		string typeId;
+		AddinEngine addinEngine;
 		
-		internal Condition (ExtensionNodeDescription element, BaseCondition parent): base (parent)
+		internal Condition (AddinEngine addinEngine, ExtensionNodeDescription element, BaseCondition parent): base (parent)
 		{
+			this.addinEngine = addinEngine;
 			typeId = element.GetAttribute ("id");
 			node = element;
 		}
@@ -175,7 +177,7 @@ namespace Mono.Addins
 			
 			ConditionType type = ctx.GetCondition (typeId);
 			if (type == null) {
-				AddinManager.ReportError ("Condition '" + typeId + "' not found in current extension context.", null, null, false);
+				addinEngine.ReportError ("Condition '" + typeId + "' not found in current extension context.", null, null, false);
 				return false;
 			}
 			
@@ -183,7 +185,7 @@ namespace Mono.Addins
 				return type.Evaluate (node);
 			}
 			catch (Exception ex) {
-				AddinManager.ReportError ("Error while evaluating condition '" + typeId + "'", null, ex, false);
+				addinEngine.ReportError ("Error while evaluating condition '" + typeId + "'", null, ex, false);
 				return false;
 			}
 		}
