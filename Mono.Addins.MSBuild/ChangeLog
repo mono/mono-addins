@@ -1,3 +1,7 @@
+2010-05-21  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Add Mono.Addins.targets to EXTRAS
+
 2010-03-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.MSBuild.csproj: csc doesn't like iso-2.

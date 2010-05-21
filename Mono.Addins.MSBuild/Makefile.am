@@ -23,7 +23,8 @@ DATA_FILES =
 RESOURCES = 
 
 EXTRAS = \
-	./Makefile.am 
+	./Makefile.am \
+	./Mono.Addins.targets
 
 REFERENCES =  \
 	-r:Microsoft.Build.Framework \
