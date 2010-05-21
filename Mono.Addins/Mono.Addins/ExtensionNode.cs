@@ -352,8 +352,14 @@ namespace Mono.Addins
 		}
 	}
 	
-/*	public class ExtensionNode<T>: ExtensionNode where T:CustomExtensionAttribute
+	public class ExtensionNode<T>: ExtensionNode where T:CustomExtensionAttribute
 	{
-		public T Data { get; internal set; }
-	}*/
+		T data;
+		
+		[NodeAttribute]
+		public T Data {
+			get { return data; }
+			internal set { data = value; }
+		}
+	}
 }

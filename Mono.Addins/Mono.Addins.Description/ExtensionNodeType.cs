@@ -37,6 +37,9 @@ using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// An extension node type definition.
+	/// </summary>
 	public sealed class ExtensionNodeType: ExtensionNodeSet
 	{
 		string typeName;
@@ -87,35 +90,49 @@ namespace Mono.Addins.Description
 			set { addinId = value; }
 		}
 		
-		// Type of the extension node
+		/// <summary>
+		/// Type of the extension node.
+		/// </summary>
 		public string TypeName {
 			get { return typeName != null ? typeName : string.Empty; }
 			set { typeName = value; }
 		}
 		
+		/// <summary>
+		/// Element name to be used when defining an extension in an XML manifest. The default name is "Type".
+		/// </summary>
 		public string NodeName {
 			get { return Id; }
 			set { Id = value; }
 		}
 		
-		// Type of the object that the extension creates (only valid for TypeNodeExtension).
+		/// <summary>
+		/// Type of the object that the extension creates (only valid for TypeNodeExtension).
+		/// </summary>
 		public string ObjectTypeName {
 			get { return objectTypeName != null ? objectTypeName : string.Empty; }
 			set { objectTypeName = value; }
 		}
 		
-		// Name of the custom attribute that can be used to declare nodes of this type
-		public string CustomAttributeTypeName {
+		/// <summary>
+		/// Name of the custom attribute that can be used to declare nodes of this type
+		/// </summary>
+		public string ExtensionAttributeTypeName {
 			get { return customAttributeTypeName ?? string.Empty; }
 			set { customAttributeTypeName = value; }
 		}
 		
-		// The description
+		/// <summary>
+		/// Long description of the node type
+		/// </summary>
 		public string Description {
 			get { return description != null ? description : string.Empty; }
 			set { description = value; }
 		}
 		
+		/// <summary>
+		/// Attributes supported by the extension node type.
+		/// </summary>
 		public NodeTypeAttributeCollection Attributes {
 			get {
 				if (attributes == null) {
@@ -205,8 +222,8 @@ namespace Mono.Addins.Description
 			else
 				Element.RemoveAttribute ("objectType");
 			
-			if (CustomAttributeTypeName.Length > 0)
-				Element.SetAttribute ("customAttributeType", CustomAttributeTypeName);
+			if (ExtensionAttributeTypeName.Length > 0)
+				Element.SetAttribute ("customAttributeType", ExtensionAttributeTypeName);
 			else
 				Element.RemoveAttribute ("customAttributeType");
 

@@ -32,9 +32,7 @@ using System.Collections.Generic;
 
 namespace Mono.Addins.Database
 {
-	
-	
-	public class DefaultAssemblyReflector: IAssemblyReflector
+	class DefaultAssemblyReflector: IAssemblyReflector
 	{
 		public void Initialize (IAssemblyLocator locator)
 		{

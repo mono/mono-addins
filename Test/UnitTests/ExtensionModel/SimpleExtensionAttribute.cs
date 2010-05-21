@@ -1,5 +1,5 @@
 // 
-// AttrubuteExtensions.cs
+// SimpleExtensionAttribute.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -25,10 +25,30 @@
 // THE SOFTWARE.
 
 using System;
-using UnitTests;
+using Mono.Addins;
 
-[assembly:TestNode ("test1", true, Id="t1")]
-[assembly:TestNode (Name="test2", Value=true, InsertAfter="t1")]
+[assembly:ExtensionPoint ("/SimpleApp/DataExtensionWithAttribute", ExtensionAttributeType=typeof(UnitTests.SimpleExtensionAttribute))]
 
-[assembly:SimpleExtension ("test3", true)]
-[assembly:SimpleExtension ("test4", false)]
+namespace UnitTests
+{
+	[AttributeUsage (AttributeTargets.Assembly, AllowMultiple=true)]
+	public class SimpleExtensionAttribute: CustomExtensionAttribute
+	{
+		public SimpleExtensionAttribute ()
+		{
+		}
+		
+		public SimpleExtensionAttribute (string name, [NodeAttribute("value")] bool val)
+		{
+			Name = name;
+			Value = val;
+		}
+		
+		[NodeAttribute ("name")]
+		public string Name { get; set; }
+		
+		[NodeAttribute ("value")]
+		public bool Value;
+	}
+}
+

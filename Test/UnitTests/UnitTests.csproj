@@ -49,17 +49,18 @@
     <Compile Include="TestBase.cs" />
     <Compile Include="TestEvents.cs" />
     <Compile Include="TestLoadUnload.cs" />
-    <Compile Include="GlobalInfoCondition.cs" />
-    <Compile Include="ParameterInfoCondition.cs" />
     <Compile Include="TestConditions.cs" />
     <Compile Include="TestSetup.cs" />
-    <Compile Include="ISampleExtender.cs" />
-    <Compile Include="ComplexNode.cs" />
-    <Compile Include="IWriter.cs" />
     <Compile Include="TestLocalization.cs" />
     <Compile Include="AddinInformationTests.cs" />
-    <Compile Include="NodeWithAttribute.cs" />
-    <Compile Include="IWriterWithMetadata.cs" />
+    <Compile Include="ExtensionModel\ComplexNode.cs" />
+    <Compile Include="ExtensionModel\GlobalInfoCondition.cs" />
+    <Compile Include="ExtensionModel\ISampleExtender.cs" />
+    <Compile Include="ExtensionModel\IWriter.cs" />
+    <Compile Include="ExtensionModel\IWriterWithMetadata.cs" />
+    <Compile Include="ExtensionModel\NodeWithAttribute.cs" />
+    <Compile Include="ExtensionModel\ParameterInfoCondition.cs" />
+    <Compile Include="ExtensionModel\SimpleExtensionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SimpleApp.addin.xml">
@@ -89,4 +90,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="ExtensionModel\" />
+  </ItemGroup>
 </Project>

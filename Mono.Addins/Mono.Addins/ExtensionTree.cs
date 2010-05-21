@@ -206,13 +206,16 @@ namespace Mono.Addins
 			// If no type name is provided, use TypeExtensionNode by default
 			if (ntype.TypeName == null || ntype.TypeName.Length == 0 || ntype.TypeName == typeof(TypeExtensionNode).FullName) {
 				// If it has a custom attribute, use the generic version of TypeExtensionNode
-				if (ntype.CustomAttributeTypeName.Length > 0) {
-					Type attType = p.GetType (ntype.CustomAttributeTypeName, false);
+				if (ntype.ExtensionAttributeTypeName.Length > 0) {
+					Type attType = p.GetType (ntype.ExtensionAttributeTypeName, false);
 					if (attType == null) {
-						addinEngine.ReportError ("Custom attribute type '" + ntype.CustomAttributeTypeName + "' not found.", ntype.AddinId, null, false);
+						addinEngine.ReportError ("Custom attribute type '" + ntype.ExtensionAttributeTypeName + "' not found.", ntype.AddinId, null, false);
 						return false;
 					}
-					ntype.Type = typeof(TypeExtensionNode<>).MakeGenericType (attType);
+					if (ntype.ObjectTypeName.Length > 0)
+						ntype.Type = typeof(TypeExtensionNode<>).MakeGenericType (attType);
+					else
+						ntype.Type = typeof(ExtensionNode<>).MakeGenericType (attType);
 				} else {
 					ntype.Type = typeof(TypeExtensionNode);
 					return true;
@@ -237,10 +240,10 @@ namespace Mono.Addins
 			// get the member map for the attribute.
 				
 			if (boundAttributeType != null) {
-				if (ntype.CustomAttributeTypeName.Length == 0)
+				if (ntype.ExtensionAttributeTypeName.Length == 0)
 					throw new InvalidOperationException ("Extension node not bound to a custom attribute.");
-				if (ntype.CustomAttributeTypeName != boundAttributeType.MemberType.FullName)
-					throw new InvalidOperationException ("Incorrect custom attribute type declaration in " + ntype.Type + ". Expected '" + ntype.CustomAttributeTypeName + "' found '" + boundAttributeType.MemberType.FullName + "'");
+				if (ntype.ExtensionAttributeTypeName != boundAttributeType.MemberType.FullName)
+					throw new InvalidOperationException ("Incorrect custom attribute type declaration in " + ntype.Type + ". Expected '" + ntype.ExtensionAttributeTypeName + "' found '" + boundAttributeType.MemberType.FullName + "'");
 				
 				fields = GetMembersMap (boundAttributeType.MemberType, out boundAttributeType);
 				if (fields.Count > 0)

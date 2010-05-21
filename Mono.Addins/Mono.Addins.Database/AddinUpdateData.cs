@@ -132,11 +132,11 @@ namespace Mono.Addins.Database
 					}
 					list.Add (ep);
 				}
-				if (nt.CustomAttributeTypeName.Length > 0) {
+				if (nt.ExtensionAttributeTypeName.Length > 0) {
 					List<ExtensionNodeType> list;
-					if (!customAttributeTypeExtensions.TryGetValue (nt.CustomAttributeTypeName, out list)) {
+					if (!customAttributeTypeExtensions.TryGetValue (nt.ExtensionAttributeTypeName, out list)) {
 						list = new List<ExtensionNodeType> ();
-						customAttributeTypeExtensions [nt.CustomAttributeTypeName] = list;
+						customAttributeTypeExtensions [nt.ExtensionAttributeTypeName] = list;
 					}
 					list.Add (nt);
 				}

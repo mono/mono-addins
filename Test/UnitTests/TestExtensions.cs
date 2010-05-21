@@ -165,5 +165,20 @@ namespace UnitTests
 			Assert.AreEqual ("meta2", n2.Data.Name, "t3");
 			Assert.AreEqual (2, n2.Data.Version, "t4");
 		}
+		
+		[Test()]
+		public void TestDataExtensionWithAttribute ()
+		{
+			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/SimpleApp/DataExtensionWithAttribute");
+			Assert.AreEqual (2, nodes.Count, "Node count");
+			ExtensionNode<SimpleExtensionAttribute> n1 = nodes [0] as ExtensionNode<SimpleExtensionAttribute>;
+			ExtensionNode<SimpleExtensionAttribute> n2 = nodes [1] as ExtensionNode<SimpleExtensionAttribute>;
+			Assert.IsNotNull (n1);
+			Assert.IsNotNull (n2);
+			Assert.AreEqual ("test3", n1.Data.Name, "t1");
+			Assert.AreEqual (true, n1.Data.Value, "t2");
+			Assert.AreEqual ("test4", n2.Data.Name, "t1");
+			Assert.AreEqual (false, n2.Data.Value, "t2");
+		}
 	}
 }

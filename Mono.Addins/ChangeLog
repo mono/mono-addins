@@ -1,3 +1,24 @@
+2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins/ExtensionNode.cs:
+	* Mono.Addins/ExtensionTree.cs: Data extension points bound to
+	  an attribute now generate nodes of type
+	  ExtensionNode<TheAttribute>
+
+	* Mono.Addins/Addin.cs: Added some docs.
+
+	* Mono.Addins.Database/AddinScanner.cs:
+	* Mono.Addins/ExtensionNodeAttribute.cs:
+	* Mono.Addins.Database/AddinUpdateData.cs:
+	* Mono.Addins.Description/ExtensionNodeType.cs: Changed name
+	  of property (for consistency)
+
+	* Mono.Addins/ExtensionPointAttribute.cs: Don't set a default
+	  node name. The default name is assigned while scanning.
+
+	* Mono.Addins.Database/DefaultAssemblyReflector.cs: This class
+	  should not be public.
+
 2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

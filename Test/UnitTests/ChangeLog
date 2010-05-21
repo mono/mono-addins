@@ -1,3 +1,27 @@
+2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* IWriter.cs:
+	* Makefile.am:
+	* TestEvents.cs:
+	* ExtensionModel:
+	* ComplexNode.cs:
+	* UnitTests.csproj:
+	* TestExtensions.cs:
+	* ISampleExtender.cs:
+	* NodeWithAttribute.cs:
+	* GlobalInfoCondition.cs:
+	* IWriterWithMetadata.cs:
+	* ParameterInfoCondition.cs:
+	* ExtensionModel/IWriter.cs:
+	* ExtensionModel/ComplexNode.cs:
+	* ExtensionModel/ISampleExtender.cs:
+	* ExtensionModel/NodeWithAttribute.cs:
+	* ExtensionModel/IWriterWithMetadata.cs:
+	* ExtensionModel/GlobalInfoCondition.cs:
+	* ExtensionModel/ParameterInfoCondition.cs:
+	* ExtensionModel/SimpleExtensionAttribute.cs: Reorganized
+	  tests.
+
 2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* IWriter.cs:

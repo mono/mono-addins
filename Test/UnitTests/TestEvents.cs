@@ -75,7 +75,8 @@ namespace UnitTests
 				"/SimpleApp/Writers",
 				"/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender",
 				"/SimpleApp.Core/TypeExtensions/SimpleApp.IWriterWithMetadata",
-				"/SimpleApp/NodesWithAttribute"
+				"/SimpleApp/NodesWithAttribute",
+				"/SimpleApp/DataExtensionWithAttribute",
 			};
 
 			InitChangedExtensionEvent (addinExtensions);
@@ -174,7 +175,8 @@ namespace UnitTests
 				"/SimpleApp/Writers",
 				"/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender",
 				"/SimpleApp.Core/TypeExtensions/SimpleApp.IWriterWithMetadata",
-				"/SimpleApp/NodesWithAttribute"
+				"/SimpleApp/NodesWithAttribute",
+				"/SimpleApp/DataExtensionWithAttribute",
 			};
 
 			InitChangedExtensionEvent (addinExtensions);

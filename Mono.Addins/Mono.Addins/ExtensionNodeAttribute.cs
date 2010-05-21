@@ -64,12 +64,12 @@ namespace Mono.Addins
 			set { description = value; }
 		}
 		
-		public Type CustomAttributeType {
+		public Type ExtensionAttributeType {
 			get { return customAttributeType; }
 			set { customAttributeType = value; customAttributeTypeName = value.FullName; }
 		}
 		
-		internal string CustomAttributeTypeName {
+		internal string ExtensionAttributeTypeName {
 			get { return customAttributeTypeName ?? string.Empty; }
 			set { customAttributeTypeName = value; }
 		}

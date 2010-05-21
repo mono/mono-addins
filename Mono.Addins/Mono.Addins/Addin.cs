@@ -37,6 +37,9 @@ using Mono.Addins.Database;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// An add-in.
+	/// </summary>
 	public class Addin
 	{
 		AddinInfo addin;
@@ -51,6 +54,9 @@ namespace Mono.Addins
 			configFile = file;
 		}
 		
+		/// <summary>
+		/// Full identifier of the add-in, including namespace and version.
+		/// </summary>
 		public string Id {
 			get {
 				if (configFile != null)
@@ -59,14 +65,23 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Namespace of the add-in.
+		/// </summary>
 		public string Namespace {
 			get { return this.AddinInfo.Namespace; }
 		}
 		
+		/// <summary>
+		/// Identifier of the add-in (without namespace)
+		/// </summary>
 		public string LocalId {
 			get { return this.AddinInfo.LocalId; }
 		}
 		
+		/// <summary>
+		/// Version of the add-in
+		/// </summary>
 		public string Version {
 			get { return this.AddinInfo.Version; }
 		}
@@ -79,6 +94,18 @@ namespace Mono.Addins
 			get { return Path.Combine (database.AddinPrivateDataPath, Path.GetFileNameWithoutExtension (Description.FileName)); }
 		}
 		
+		/// <summary>
+		/// Checks version compatibility.
+		/// </summary>
+		/// <param name="version">
+		/// An add-in version.
+		/// </param>
+		/// <returns>
+		/// True if the provided version is compatible with this add-in.
+		/// </returns>
+		/// <remarks>
+		/// This method checks the CompatVersion property to know if the provided version is compatible with the version of this add-in.
+		/// </remarks>
 		public bool SupportsVersion (string version)
 		{
 			return AddinInfo.SupportsVersion (version);
@@ -102,6 +129,17 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Gets or sets the enabled status of the add-in.
+		/// </summary>
+		/// <remarks>
+		/// This property can be used to enable or disable an add-in.
+		/// The enabled status of an add-in is stored in the add-in registry,
+		/// so when an add-in is disabled, it will be disabled for all applications
+		/// sharing the same registry.
+		/// When an add-in is enabled or disabled, the extension points currently loaded
+		/// in memory will be properly updated to include or exclude extensions from the add-in.
+		/// </remarks>
 		public bool Enabled {
 			get { return AddinInfo.IsRoot ? true : database.IsAddinEnabled (Description.Domain, AddinInfo.Id, true); }
 			set {
@@ -112,10 +150,16 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Returns 'true' if the add-in is installed in the user's personal folder
+		/// </summary>
 		public bool IsUserAddin {
 			get { return configFile.StartsWith (Environment.GetFolderPath (Environment.SpecialFolder.Personal)); }
 		}
 		
+		/// <summary>
+		/// Path to the add-in file (it can be an assembly or a standalone XML manifest)
+		/// </summary>
 		public string AddinFile {
 			get {
 				if (sourceFile == null && addin == null)
@@ -137,6 +181,9 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Description of the add-in
+		/// </summary>
 		public AddinDescription Description {
 			get {
 				if (desc != null) {

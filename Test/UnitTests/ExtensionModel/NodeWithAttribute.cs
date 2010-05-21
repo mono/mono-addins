@@ -29,7 +29,7 @@ using Mono.Addins;
 
 namespace UnitTests
 {
-	[ExtensionNode (CustomAttributeType=typeof(TestNodeAttribute))]
+	[ExtensionNode (ExtensionAttributeType=typeof(TestNodeAttribute))]
 	public class NodeWithAttribute: ExtensionNode
 	{
 		[NodeAttribute]

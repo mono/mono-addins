@@ -29,7 +29,7 @@ using Mono.Addins;
 
 namespace SimpleApp
 {
-	[TypeExtensionPoint (CustomAttributeType=typeof(WriterWithMetadataAttribute))]
+	[TypeExtensionPoint (ExtensionAttributeType=typeof(WriterWithMetadataAttribute))]
 	public interface IWriterWithMetadata
 	{
 		string Write ();

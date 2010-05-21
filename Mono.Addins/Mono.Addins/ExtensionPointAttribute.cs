@@ -98,7 +98,7 @@ namespace Mono.Addins
 		}
 		
 		public string NodeName {
-			get { return nodeName != null && nodeName.Length > 0 ? nodeName : "Type"; }
+			get { return nodeName != null && nodeName.Length > 0 ? nodeName : string.Empty; }
 			set { nodeName = value; }
 		}
 		
