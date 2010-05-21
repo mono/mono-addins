@@ -1,0 +1,7 @@
+2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Extensions.cs:
+	* SecondAssembly:
+	* OptionalModule:
+	* MultiAssemblyAddin.csproj: Added new tests.
+

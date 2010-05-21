@@ -1,5 +1,14 @@
 2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* UnitTests.csproj:
+	* TestExtensions.cs:
+	* ExtensionModel/AttrExtensionWithManyNodes.cs:
+	* ExtensionModel/MultiAssemblyTestExtensionPoint.cs: Added new
+	  tests.
+
+2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* IWriter.cs:
 	* Makefile.am:
 	* TestEvents.cs:

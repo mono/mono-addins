@@ -1,0 +1,5 @@
+2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Extensions.cs:
+	* SecondAssembly.csproj: Added new tests.
+

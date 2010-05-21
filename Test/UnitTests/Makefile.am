@@ -16,11 +16,13 @@ endif
 
 FILES =  \
 	AddinInformationTests.cs \
+	ExtensionModel/AttrExtensionWithManyNodes.cs \
 	ExtensionModel/ComplexNode.cs \
 	ExtensionModel/GlobalInfoCondition.cs \
 	ExtensionModel/ISampleExtender.cs \
 	ExtensionModel/IWriter.cs \
 	ExtensionModel/IWriterWithMetadata.cs \
+	ExtensionModel/MultiAssemblyTestExtensionPoint.cs \
 	ExtensionModel/NodeWithAttribute.cs \
 	ExtensionModel/ParameterInfoCondition.cs \
 	ExtensionModel/SimpleExtensionAttribute.cs \

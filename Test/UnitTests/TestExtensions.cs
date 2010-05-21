@@ -180,5 +180,21 @@ namespace UnitTests
 			Assert.AreEqual ("test4", n2.Data.Name, "t1");
 			Assert.AreEqual (false, n2.Data.Value, "t2");
 		}
+		
+		[Test()]
+		public void TestAttrExtensionWithManyNodes ()
+		{
+			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/SimpleApp/AttrExtensionWithManyNodes");
+			Assert.AreEqual (2, nodes.Count, "Node count");
+			Assert.IsTrue (nodes [0] is AttrExtensionWithManyNodesExtensionNode);
+			Assert.IsNotNull (nodes [1] is AttrExtensionWithManyNodesExtensionNodeExtra);
+		}
+		
+		[Test()]
+		public void TestMultiAssemblyAddin ()
+		{
+			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/SimpleApp/MultiAssemblyTestExtensionPoint");
+			Assert.AreEqual (6, nodes.Count, "Node count");
+		}
 	}
 }

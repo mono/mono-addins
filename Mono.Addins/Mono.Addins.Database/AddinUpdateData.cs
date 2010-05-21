@@ -252,8 +252,17 @@ namespace Mono.Addins.Database
 			string addinId = Addin.GetFullId (installedDescription.Namespace, installedDescription.LocalId, null);
 			string requiredVersion = null;
 			
-			for (int n = module.Dependencies.Count - 1; n >= 0; n--) {
-				AddinDependency adep = module.Dependencies [n] as AddinDependency;
+			IEnumerable deps;
+			if (module == description.MainModule)
+				deps = module.Dependencies;
+			else {
+				ArrayList list = new ArrayList ();
+				list.AddRange (module.Dependencies);
+				list.AddRange (description.MainModule.Dependencies);
+				deps = list;
+			}
+			foreach (object dep in deps) {
+				AddinDependency adep = dep as AddinDependency;
 				if (adep != null && Addin.GetFullId (description.Namespace, adep.AddinId, null) == addinId) {
 					requiredVersion = adep.Version;
 					break;

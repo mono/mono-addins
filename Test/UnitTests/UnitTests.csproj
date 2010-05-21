@@ -61,6 +61,8 @@
     <Compile Include="ExtensionModel\NodeWithAttribute.cs" />
     <Compile Include="ExtensionModel\ParameterInfoCondition.cs" />
     <Compile Include="ExtensionModel\SimpleExtensionAttribute.cs" />
+    <Compile Include="ExtensionModel\AttrExtensionWithManyNodes.cs" />
+    <Compile Include="ExtensionModel\MultiAssemblyTestExtensionPoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SimpleApp.addin.xml">
@@ -77,6 +79,9 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
+        <Policies>
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="None" ResourceNamePolicy="FileName" />
+        </Policies>
         <Deployment.LinuxDeployData scriptName="unittests" generatePcFile="false" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" RelativeConfigureInPath="../../">
           <BuildFilesVar Sync="true" Name="FILES" />

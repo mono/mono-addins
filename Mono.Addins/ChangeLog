@@ -1,5 +1,16 @@
 2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins.Database/AddinUpdateData.cs: When resolving
+	  extension from an optional module, include dependencies
+	  defined in the main module.
+
+	* Mono.Addins.Database/SetupDomain.cs: Flush.
+
+	* Mono.Addins.Database/AddinScanner.cs: Look for assembly
+	  imports in the main assembly.
+
+2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Addins/ExtensionNode.cs:
 	* Mono.Addins/ExtensionTree.cs: Data extension points bound to
 	  an attribute now generate nodes of type

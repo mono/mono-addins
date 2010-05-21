@@ -603,6 +603,7 @@ namespace Mono.Addins.Database
 				
 				if (rootAssembly != null) {
 					ScanAssemblyAddinHeaders (config, rootAssembly, scanResult);
+					ScanAssemblyImports (config.MainModule, rootAssembly);
 					assemblies.Add (rootAssembly);
 					rootAsmFile = Path.GetFileName (config.AddinFile);
 				}

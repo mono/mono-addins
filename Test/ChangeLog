@@ -1,3 +1,7 @@
+2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MultiAssemblyAddin: Added new tests.
+
 2008-11-10  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* UnitTests/Makefile.am:
