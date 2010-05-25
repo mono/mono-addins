@@ -374,6 +374,22 @@ namespace Mono.Addins
 			node.ExtensionNodeChanged -= handler;
 		}
 		
+		public void AddExtensionNodeHandler (Type instanceType, ExtensionNodeEventHandler handler)
+		{
+			string path = AddinEngine.GetAutoTypeExtensionPoint (instanceType);
+			if (path == null)
+				throw new InvalidOperationException ("Type '" + instanceType + "' not bound to an extension point.");
+			AddExtensionNodeHandler (path, handler);
+		}
+		
+		public void RemoveExtensionNodeHandler (Type instanceType, ExtensionNodeEventHandler handler)
+		{
+			string path = AddinEngine.GetAutoTypeExtensionPoint (instanceType);
+			if (path == null)
+				throw new InvalidOperationException ("Type '" + instanceType + "' not bound to an extension point.");
+			RemoveExtensionNodeHandler (path, handler);
+		}
+		
 		void OnConditionChanged (object s, EventArgs a)
 		{
 			ConditionType cond = (ConditionType) s;

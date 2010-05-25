@@ -258,7 +258,7 @@ namespace Mono.Addins
 			add { AddinEngine.CheckInitialized(); AddinEngine.ExtensionChanged += value; }
 			remove { AddinEngine.CheckInitialized(); AddinEngine.ExtensionChanged -= value; }
 		}
-		
+
 		public static void AddExtensionNodeHandler (string path, ExtensionNodeEventHandler handler)
 		{
 			AddinEngine.CheckInitialized ();
@@ -269,6 +269,18 @@ namespace Mono.Addins
 		{
 			AddinEngine.CheckInitialized ();
 			AddinEngine.RemoveExtensionNodeHandler (path, handler);
+		}
+		
+		public static void AddExtensionNodeHandler (Type instanceType, ExtensionNodeEventHandler handler)
+		{
+			AddinEngine.CheckInitialized ();
+			AddinEngine.AddExtensionNodeHandler (instanceType, handler);
+		}
+		
+		public static void RemoveExtensionNodeHandler (Type instanceType, ExtensionNodeEventHandler handler)
+		{
+			AddinEngine.CheckInitialized ();
+			AddinEngine.RemoveExtensionNodeHandler (instanceType, handler);
 		}
 		
 		public static event AddinErrorEventHandler AddinLoadError {
