@@ -1,0 +1,8 @@
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Properties:
+	* MainMenu.addin:
+	* DateSnippet.cs:
+	* DateAddin.csproj:
+	* InsertDateCommand.cs: Added new sample
+

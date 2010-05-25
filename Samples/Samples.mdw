@@ -4,5 +4,6 @@
     <Item>TextEditor/TextEditor.sln</Item>
     <Item>WriterService/WriterService.sln</Item>
     <Item>HelloWorldWithManifest/HelloWorldWithManifest.sln</Item>
+    <Item>TextEditorSWF/TextEditorSWF.sln</Item>
   </Items>
 </WorkspaceItem>

@@ -1,0 +1,17 @@
+﻿<ExtensionModel>
+  <!-- Defines the main menu. The extension point is defined in ExtensionPoints.cs -->
+  <Extension path="/TextEditor/MainMenu">
+    <Menu id="File" label="File">
+      <Command id="New" />
+      <Command id="Open" />
+      <Command id="Save" />
+      <Separator id="ExitSeparator"/>
+      <Command id="Exit" />
+    </Menu>
+    <Menu id="Edit" label="Edit">
+      <Command id="Cut" />
+      <Command id="Copy" />
+      <Command id="Paste" />
+    </Menu>
+  </Extension>
+</ExtensionModel>

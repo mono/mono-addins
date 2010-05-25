@@ -1,0 +1,8 @@
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Resources.resx:
+	* AssemblyInfo.cs:
+	* Settings.settings:
+	* Settings.Designer.cs:
+	* Resources.Designer.cs: Added new sample
+

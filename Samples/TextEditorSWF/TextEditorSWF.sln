@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextEditorSWF", "TextEditorSWF\TextEditorSWF.csproj", "{85480AD8-781F-43FC-A48F-91962401DB95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnippetsAddin", "SnippetsAddin\SnippetsAddin.csproj", "{54542FD2-7B2E-4CEB-874C-BB50CF4812FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DateAddin", "DateAddin\DateAddin.csproj", "{D54B7805-BC96-4861-8352-DA403F430CD7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{54542FD2-7B2E-4CEB-874C-BB50CF4812FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54542FD2-7B2E-4CEB-874C-BB50CF4812FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54542FD2-7B2E-4CEB-874C-BB50CF4812FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54542FD2-7B2E-4CEB-874C-BB50CF4812FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85480AD8-781F-43FC-A48F-91962401DB95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85480AD8-781F-43FC-A48F-91962401DB95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85480AD8-781F-43FC-A48F-91962401DB95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85480AD8-781F-43FC-A48F-91962401DB95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D54B7805-BC96-4861-8352-DA403F430CD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D54B7805-BC96-4861-8352-DA403F430CD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D54B7805-BC96-4861-8352-DA403F430CD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D54B7805-BC96-4861-8352-DA403F430CD7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = TextEditorSWF\TextEditorSWF.csproj
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

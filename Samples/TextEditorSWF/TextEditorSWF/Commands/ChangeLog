@@ -1,0 +1,12 @@
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* NewCommand.cs:
+	* Toolbar.addin:
+	* CutCommand.cs:
+	* ExitCommand.cs:
+	* CopyCommand.cs:
+	* SaveCommand.cs:
+	* OpenCommand.cs:
+	* MainMenu.addin:
+	* PasteCommand.cs: Added new sample
+

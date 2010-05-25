@@ -1,0 +1,13 @@
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Icons:
+	* Commands:
+	* Properties:
+	* Program.cs:
+	* TextEditor.cs:
+	* ExtensionModel:
+	* TextEditor.resx:
+	* CommandManager.cs:
+	* TextEditorSWF.csproj:
+	* TextEditor.Designer.cs: Added new sample
+

@@ -1,3 +1,8 @@
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Samples/Samples.mdw:
+	* Samples/TextEditorSWF: Added new sample
+
 2010-03-24  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Makefile.am:

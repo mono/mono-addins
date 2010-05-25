@@ -1,0 +1,12 @@
+﻿<ExtensionModel>
+  <!-- Defines the main toolbar. The extension point is defined in ExtensionPoints.cs -->
+  <Extension path="/TextEditor/Toolbar">
+    <Button id="New" />
+    <Button id="Open" />
+    <Button id="Save" />
+    <Separator id="EditSeparator"/>
+    <Button id="Cut" />
+    <Button id="Copy" />
+    <Button id="Paste" />
+  </Extension>
+</ExtensionModel>

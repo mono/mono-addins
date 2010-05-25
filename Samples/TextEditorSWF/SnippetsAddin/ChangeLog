@@ -1,0 +1,9 @@
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Properties:
+	* StockSnippets.cs:
+	* SnippetsAddin.cs:
+	* ISnippetProvider.cs:
+	* SnippetsAddin.csproj:
+	* StockSnippetProvider.cs: Added new sample
+

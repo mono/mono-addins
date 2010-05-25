@@ -1,0 +1,6 @@
+﻿<ExtensionModel>
+  <Extension path="/TextEditor/MainMenu/Edit">
+    <Separator />
+    <Command id="DateAddin.InsertDateCommand" />
+  </Extension>
+</ExtensionModel>

@@ -1,0 +1,11 @@
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ICommand.cs:
+	* EditorExtension.cs:
+	* ExtensionPoints.cs:
+	* MenuExtensionNode.cs:
+	* IUserInterfaceItem.cs:
+	* CommandExtensionNode.cs:
+	* SeparatorExtensionNode.cs:
+	* InterfaceItemExtensionNode.cs: Added new sample
+
