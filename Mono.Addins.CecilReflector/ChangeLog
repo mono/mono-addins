@@ -1,5 +1,10 @@
 2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins.CecilReflector.csproj: Fix output directory for
+	  the Release configuration.
+
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Addins.CecilReflector/Reflector.cs: When resolving
 	  custom attribute properties and fields look it base classes.
 

@@ -1,3 +1,8 @@
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.Setup.csproj: Fix output directory for the
+	  Release configuration.
+
 2010-04-08  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Setup/AddinStore.cs: Properly get the url path
