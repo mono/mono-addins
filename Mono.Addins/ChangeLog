@@ -1,5 +1,10 @@
 2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins.Database/AddinScanResult.cs: Properly resolve
+	  Mono.Addins.
+
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Addins/AddinManager.cs:
 	* Mono.Addins/ExtensionContext.cs: Added methods for
 	  subscribing type-bound extension points.

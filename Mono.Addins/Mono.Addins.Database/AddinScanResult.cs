@@ -174,6 +174,8 @@ namespace Mono.Addins.Database
 
 			int i = fullName.IndexOf (',');
 			string name = fullName.Substring (0,i);
+			if (name == "Mono.Addins")
+				return GetType ().Assembly.Location;
 			ArrayList list = assemblyLocations [name] as ArrayList;
 			if (list == null)
 				return null;
