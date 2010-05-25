@@ -196,12 +196,19 @@ namespace Mono.Addins.CecilReflector
 				if (val == null)
 					continue;
 
-				foreach (PropertyDefinition prop in attType.Properties.GetProperties (pname)) {
-					NodeAttributeAttribute bat = (NodeAttributeAttribute) GetCustomAttribute (prop, typeof(NodeAttributeAttribute), false);
-					if (bat != null) {
-						string name = string.IsNullOrEmpty (bat.Name) ? prop.Name : bat.Name;
-						mat.Add (name, Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture));
+				foreach (TypeDefinition td in GetInheritanceChain (attType)) {
+					bool propFound = false;
+					foreach (PropertyDefinition prop in td.Properties.GetProperties (pname)) {
+						NodeAttributeAttribute bat = (NodeAttributeAttribute) GetCustomAttribute (prop, typeof(NodeAttributeAttribute), false);
+						if (bat != null) {
+							string name = string.IsNullOrEmpty (bat.Name) ? prop.Name : bat.Name;
+							mat.Add (name, Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture));
+							propFound = true;
+							break;
+						}
 					}
+					if (propFound)
+						break;
 				}
 			}
 			
@@ -211,16 +218,28 @@ namespace Mono.Addins.CecilReflector
 				if (val == null)
 					continue;
 
-				FieldDefinition field = attType.Fields.GetField (pname);
-				if (field != null) {
-					NodeAttributeAttribute bat = (NodeAttributeAttribute) GetCustomAttribute (field, typeof(NodeAttributeAttribute), false);
-					if (bat != null) {
-						string name = string.IsNullOrEmpty (bat.Name) ? field.Name : bat.Name;
-						mat.Add (name, Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture));
+				foreach (TypeDefinition td in GetInheritanceChain (attType)) {
+					FieldDefinition field = td.Fields.GetField (pname);
+					if (field != null) {
+						NodeAttributeAttribute bat = (NodeAttributeAttribute) GetCustomAttribute (field, typeof(NodeAttributeAttribute), false);
+						if (bat != null) {
+							string name = string.IsNullOrEmpty (bat.Name) ? field.Name : bat.Name;
+							mat.Add (name, Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture));
+						}
 					}
 				}
 			}
 			return mat;
+		}
+		
+		IEnumerable<TypeDefinition> GetInheritanceChain (TypeDefinition td)
+		{
+			yield return td;
+			while (td != null && td.BaseType != null && td.BaseType.FullName != "System.Object") {
+				td = FindTypeDefinition (td.Module.Assembly, td.BaseType);
+				if (td != null)
+					yield return td;
+			}
 		}
 
 		MethodReference FindConstructor (CustomAttribute att)

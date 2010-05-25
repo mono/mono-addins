@@ -1,3 +1,7 @@
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* mautil.csproj: Add Debug and Release configurations.
+
 2010-03-26  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* mautil.csproj: Flush.

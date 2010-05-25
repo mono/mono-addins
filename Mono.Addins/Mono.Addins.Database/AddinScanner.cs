@@ -917,7 +917,7 @@ namespace Mono.Addins.Database
 								nt.ObjectTypeName = typeFullName;
 							}
 							nt.Id = epa.NodeName;
-							nt.TypeName = epa.NodeType.FullName;
+							nt.TypeName = epa.NodeTypeName;
 							nt.ExtensionAttributeTypeName = epa.ExtensionAttributeTypeName;
 							ep.NodeSet.NodeTypes.Add (nt);
 							ep.Description = epa.Description;
@@ -932,6 +932,9 @@ namespace Mono.Addins.Database
 							ExtensionNodeDescription elem = module.AddExtensionNode ("%" + att.TypeName, "Type");
 							foreach (KeyValuePair<string,string> prop in att)
 								elem.SetAttribute (prop.Key, prop.Value);
+							elem.SetAttribute ("type", typeFullName);
+							if (string.IsNullOrEmpty (elem.GetAttribute ("id")))
+								elem.SetAttribute ("id", typeFullName);
 						}
 					}
 				}

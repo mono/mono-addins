@@ -1,5 +1,9 @@
 2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins.sln: Add Debug and Release configurations.
+
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Samples/Samples.mdw:
 	* Samples/TextEditorSWF: Added new sample
 

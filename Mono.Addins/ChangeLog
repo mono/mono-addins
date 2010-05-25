@@ -1,3 +1,10 @@
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.csproj: Add Debug and Release configurations.
+
+	* Mono.Addins.Database/AddinScanner.cs: Fixed node type
+	  parsing issue with TypeExtensionPointAttribute.
+
 2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Database/AddinUpdateData.cs: When resolving

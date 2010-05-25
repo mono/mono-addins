@@ -1,3 +1,8 @@
+2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.CecilReflector/Reflector.cs: When resolving
+	  custom attribute properties and fields look it base classes.
+
 2010-05-20  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.CecilReflector/Reflector.cs: Added methods for
