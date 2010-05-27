@@ -1,5 +1,18 @@
 2010-05-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins/AddinManager.cs:
+	* Mono.Addins/ConditionType.cs:
+	* Mono.Addins/ExtensionNode.cs:
+	* Mono.Addins/ExtensionContext.cs:
+	* Mono.Addins/ExtensionAttribute.cs:
+	* Mono.Addins/AddinRootAttribute.cs:
+	* Mono.Addins/ConsoleProgressStatus.cs:
+	* Mono.Addins/CustomExtensionAttribute.cs:
+	* Mono.Addins/ExtensionAttributeAttribute.cs: More
+	  documentation.
+
+2010-05-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Addins/AddinEngine.cs:
 	* Mono.Addins/AddinManager.cs:
 	* Mono.Addins/AddinRegistry.cs:

@@ -31,17 +31,41 @@ using System;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// Marks an assembly as being an add-in root.
+	/// </summary>
+	/// <remarks>
+	/// An add-in root is an assemly which can be extended by add-ins.
+	/// </remarks>
 	[AttributeUsage (AttributeTargets.Assembly)]
 	public class AddinRootAttribute: AddinAttribute
 	{
+		/// <summary>
+		/// Initializes a new instance
+		/// </summary>
 		public AddinRootAttribute ()
 		{
 		}
 		
+		/// <summary>
+		/// Initializes a new instance
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the add-in root
+		/// </param>
 		public AddinRootAttribute (string id): base (id)
 		{
 		}
 		
+		/// <summary>
+		/// Initializes a new instance
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the add-in root
+		/// </param>
+		/// <param name="version">
+		/// Version of the add-in root
+		/// </param>
 		public AddinRootAttribute (string id, string version): base (id, version)
 		{
 		}

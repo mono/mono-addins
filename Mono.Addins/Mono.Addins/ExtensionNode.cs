@@ -36,6 +36,18 @@ using Mono.Addins.Description;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// A node of the extension model.
+	/// </summary>
+	/// <remarks>
+	/// An extension node is an element registered by an add-in in an extension point.
+	/// A host can get nodes registered in an extension point using methods such as
+	/// AddinManager.GetExtensionNodes(string), which returns a collection of ExtensionNode objects.
+	/// 
+	/// ExtensionNode will normally be used as a base class of more complex extension point types.
+	/// The most common subclass is Mono.Addins.TypeExtensionNode, which allows registering a class
+	/// implemented in an add-in.
+	/// </remarks>
 	public class ExtensionNode
 	{
 		bool childrenLoaded;
@@ -48,14 +60,33 @@ namespace Mono.Addins
 		AddinEngine addinEngine;
 		event ExtensionNodeEventHandler extensionNodeChanged;
 		
+		/// <summary>
+		/// Identifier of the node.
+		/// </summary>
+		/// <remarks>
+		/// It is not mandatory to specify an 'id' for a node. When none is provided,
+		/// the add-in manager will automatically generate an unique id for the node.
+		/// The ExtensionNode.HasId property can be used to know if the 'id' has been
+		/// specified by the developer or not.
+		/// </remarks>
 		public string Id {
 			get { return treeNode != null ? treeNode.Id : string.Empty; }
 		}
 		
+		/// <summary>
+		/// Location of this node in the extension tree.
+		/// </summary>
+		/// <remarks>
+		/// The node path is composed by the path of the extension point where it is defined,
+		/// the identifiers of its parent nodes, and its own identifier.
+		/// </remarks>
 		public string Path {
 			get { return treeNode != null ? treeNode.GetPath () : string.Empty; }
 		}
 		
+		/// <summary>
+		/// Parent node of this node.
+		/// </summary>
 		public ExtensionNode Parent {
 			get {
 				if (treeNode != null && treeNode.Parent != null)
@@ -65,10 +96,22 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Extension context to which this node belongs
+		/// </summary>
 		public ExtensionContext ExtensionContext {
 			get { return treeNode.Context; }
 		}
 		
+		/// <summary>
+		/// Specifies whether the extension node has as an Id or not.
+		/// </summary>
+		/// <remarks>
+		/// It is not mandatory to specify an 'id' for a node. When none is provided,
+		/// the add-in manager will automatically generate an unique id for the node.
+		/// This property will return true if an 'id' was provided for the node, and
+		/// false if the id was assigned by the add-in manager.
+		/// </remarks>
 		public bool HasId {
 			get { return !Id.StartsWith (ExtensionTree.AutoIdPrefix); }
 		}
@@ -94,6 +137,12 @@ namespace Mono.Addins
 			get { return treeNode; }
 		}
 		
+		/// <summary>
+		/// The add-in that registered this extension node.
+		/// </summary>
+		/// <remarks>
+		/// This property provides access to the resources and types of the add-in that created this extension node.
+		/// </remarks>
 		public RuntimeAddin Addin {
 			get {
 				if (addin == null && addinId != null) {
@@ -109,6 +158,12 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Notifies that a child node of this node has been added or removed.
+		/// </summary>
+		/// <remarks>
+		/// The first time the event is subscribed, the handler will be called for each existing node.
+		/// </remarks>
 		public event ExtensionNodeEventHandler ExtensionNodeChanged {
 			add {
 				extensionNodeChanged += value;
@@ -125,6 +180,9 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Child nodes of this extension node.
+		/// </summary>
 		public ExtensionNodeList ChildNodes {
 			get {
 				if (childrenLoaded)
@@ -166,31 +224,117 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Returns the child objects of a node.
+		/// </summary>
+		/// <returns>
+		/// An array of child objects.
+		/// </returns>
+		/// <remarks>
+		/// This method only works if all children of this node are of type Mono.Addins.TypeExtensionNode.
+		/// The returned array is composed by all objects created by calling the
+		/// TypeExtensionNode.GetInstance() method for each node.
+		/// </remarks>
 		public object[] GetChildObjects ()
 		{
 			return GetChildObjects (typeof(object), true);
 		}
 		
+		/// <summary>
+		/// Returns the child objects of a node.
+		/// </summary>
+		/// <param name="reuseCachedInstance">
+		/// True if the method can reuse instances created in previous calls.
+		/// </param>
+		/// <returns>
+		/// An array of child objects.
+		/// </returns>
+		/// <remarks>
+		/// This method only works if all children of this node are of type Mono.Addins.TypeExtensionNode.
+		/// The returned array is composed by all objects created by calling the TypeExtensionNode.CreateInstance()
+		/// method for each node (or TypeExtensionNode.GetInstance() if reuseCachedInstance is set to true).
+		/// </remarks>
 		public object[] GetChildObjects (bool reuseCachedInstance)
 		{
 			return GetChildObjects (typeof(object), reuseCachedInstance);
 		}
 		
+		/// <summary>
+		/// Returns the child objects of a node (with type check).
+		/// </summary>
+		/// <param name="arrayElementType">
+		/// Type of the return array elements.
+		/// </param>
+		/// <returns>
+		/// An array of child objects.
+		/// </returns>
+		/// <remarks>
+		/// This method only works if all children of this node are of type Mono.Addins.TypeExtensionNode.
+		/// The returned array is composed by all objects created by calling the
+		/// TypeExtensionNode.GetInstance(Type) method for each node.
+		/// 
+		/// An InvalidOperationException exception is thrown if one of the found child objects is not a
+		/// subclass of the provided type.
+		/// </remarks>
 		public object[] GetChildObjects (Type arrayElementType)
 		{
 			return GetChildObjects (arrayElementType, true);
 		}
 		
+		/// <summary>
+		/// Returns the child objects of a node (casting to the specified type)
+		/// </summary>
+		/// <returns>
+		/// An array of child objects.
+		/// </returns>
+		/// <remarks>
+		/// This method only works if all children of this node are of type Mono.Addins.TypeExtensionNode.
+		/// The returned array is composed by all objects created by calling the
+		/// TypeExtensionNode.GetInstance() method for each node.
+		/// </remarks>
 		public T[] GetChildObjects<T> ()
 		{
 			return (T[]) GetChildObjectsInternal (typeof(T), true);
 		}
-		
+		/// <summary>
+		/// Returns the child objects of a node (with type check).
+		/// </summary>
+		/// <param name="arrayElementType">
+		/// Type of the return array elements.
+		/// </param>
+		/// <param name="reuseCachedInstance">
+		/// True if the method can reuse instances created in previous calls.
+		/// </param>
+		/// <returns>
+		/// An array of child objects.
+		/// </returns>
+		/// <remarks>
+		/// This method only works if all children of this node are of type Mono.Addins.TypeExtensionNode.
+		/// The returned array is composed by all objects created by calling the TypeExtensionNode.CreateInstance(Type)
+		/// method for each node (or TypeExtensionNode.GetInstance(Type) if reuseCachedInstance is set to true).
+		/// 
+		/// An InvalidOperationException exception will be thrown if one of the found child objects is not a subclass
+		/// of the provided type.
+		/// </remarks>
 		public object[] GetChildObjects (Type arrayElementType, bool reuseCachedInstance)
 		{
 			return (object[]) GetChildObjectsInternal (arrayElementType, reuseCachedInstance);
 		}
 		
+		/// <summary>
+		/// Returns the child objects of a node (casting to the specified type).
+		/// </summary>
+		/// <param name="reuseCachedInstance">
+		/// True if the method can reuse instances created in previous calls.
+		/// </param>
+		/// <returns>
+		/// An array of child objects.
+		/// </returns>
+		/// <remarks>
+		/// This method only works if all children of this node are of type Mono.Addins.TypeExtensionNode.
+		/// The returned array is composed by all objects created by calling the TypeExtensionNode.CreateInstance()
+		/// method for each node (or TypeExtensionNode.GetInstance() if reuseCachedInstance is set to true).
+		/// </remarks>
 		public T[] GetChildObjects<T> (bool reuseCachedInstance)
 		{
 			return (T[]) GetChildObjectsInternal (typeof(T), reuseCachedInstance);
@@ -321,30 +465,47 @@ namespace Mono.Addins
 			return changed;
 		}
 		
-		// Called when the add-in that defined this extension node is actually
-		// loaded in memory.
+		/// <summary>
+		/// Called when the add-in that defined this extension node is actually loaded in memory.
+		/// </summary>
 		internal protected virtual void OnAddinLoaded ()
 		{
 		}
 		
-		// Called when the add-in that defined this extension node is being
-		// unloaded from memory.
+		/// <summary>
+		/// Called when the add-in that defined this extension node is being
+		/// unloaded from memory.
+		/// </summary>
 		internal protected virtual void OnAddinUnloaded ()
 		{
 		}
 		
-		// Called when the children list of this node has changed. It may be due to add-ins
-		// being loaded/unloaded, or to conditions being changed.
+		/// <summary>
+		/// Called when the children list of this node has changed. It may be due to add-ins
+		/// being loaded/unloaded, or to conditions being changed.
+		/// </summary>
 		protected virtual void OnChildrenChanged ()
 		{
 		}
 		
+		/// <summary>
+		/// Called when a child node is added
+		/// </summary>
+		/// <param name="node">
+		/// Added node.
+		/// </param>
 		protected virtual void OnChildNodeAdded (ExtensionNode node)
 		{
 			if (extensionNodeChanged != null)
 				extensionNodeChanged (this, new ExtensionNodeEventArgs (ExtensionChange.Add, node));
 		}
 		
+		/// <summary>
+		/// Called when a child node is removed
+		/// </summary>
+		/// <param name="node">
+		/// Removed node.
+		/// </param>
 		protected virtual void OnChildNodeRemoved (ExtensionNode node)
 		{
 			if (extensionNodeChanged != null)
@@ -352,10 +513,19 @@ namespace Mono.Addins
 		}
 	}
 	
+	/// <summary>
+	/// An extension node with custom metadata
+	/// </summary>
+	/// <remarks>
+	/// This is the default type for extension nodes bound to a custom extension attribute.
+	/// </remarks>
 	public class ExtensionNode<T>: ExtensionNode where T:CustomExtensionAttribute
 	{
 		T data;
 		
+		/// <summary>
+		/// The custom attribute containing the extension metadata
+		/// </summary>
 		[NodeAttribute]
 		public T Data {
 			get { return data; }

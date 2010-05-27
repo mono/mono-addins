@@ -297,7 +297,7 @@ namespace Mono.Addins
 		/// <param name="path">
 		/// An extension path.
 		/// </param>
-		/// <param name="type">
+		/// <param name="expectedNodeType">
 		/// Expected node type.
 		/// </param>
 		/// <returns>
@@ -308,10 +308,10 @@ namespace Mono.Addins
 		/// It will throw a InvalidOperationException if the type of one of
 		/// the registered nodes is not assignable to the provided type.
 		/// </remarks>
-		public static ExtensionNodeList GetExtensionNodes (string path, Type type)
+		public static ExtensionNodeList GetExtensionNodes (string path, Type expectedNodeType)
 		{
 			AddinEngine.CheckInitialized ();
-			return AddinEngine.GetExtensionNodes (path, type);
+			return AddinEngine.GetExtensionNodes (path, expectedNodeType);
 		}
 		
 		/// <summary>

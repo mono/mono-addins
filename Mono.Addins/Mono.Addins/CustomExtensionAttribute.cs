@@ -28,24 +28,40 @@ using System;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// Base class for custon extension attributes.
+	/// </summary>
+	/// <remarks>
+	/// Custom extension attributes can be used to declare extensions with custom metadata.
+	/// All custom extension attributes must subclass CustomExtensionAttribute.
+	/// </remarks>
 	public class CustomExtensionAttribute: Attribute
 	{
 		string id;
 		string insertBefore;
 		string insertAfter;
 		
+		/// <summary>
+		/// Identifier of the node
+		/// </summary>
 		[NodeAttributeAttribute ("id")]
 		public string Id {
 			get { return id; }
 			set { id = value; }
 		}
 		
+		/// <summary>
+		/// Identifier of the node before which this node has to be placed
+		/// </summary>
 		[NodeAttributeAttribute ("insertbefore")]
 		public string InsertBefore {
 			get { return insertBefore; }
 			set { insertBefore = value; }
 		}
 		
+		/// <summary>
+		/// Identifier of the node after which this node has to be placed
+		/// </summary>
 		[NodeAttributeAttribute ("insertafter")]
 		public string InsertAfter {
 			get { return insertAfter; }

@@ -34,13 +34,41 @@ using System.Collections;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// A condition evaluator.
+	/// </summary>
+	/// <remarks>
+	/// Add-ins may use conditions to register nodes in an extension point which
+	/// are only visible under some contexts. For example, an add-in registering
+	/// a custom menu option to the main menu of a sample text editor might want
+	/// to make that option visible only for some kind of files. To allow add-ins
+	/// to do this kind of check, the host application needs to define a new condition.
+	/// </remarks>
 	public abstract class ConditionType
 	{
 		internal event EventHandler Changed;
 		string id;
 		
+		/// <summary>
+		/// Evaluates the condition.
+		/// </summary>
+		/// <param name="conditionNode">
+		/// Condition node information.
+		/// </param>
+		/// <returns>
+		/// 'true' if the condition is satisfied.
+		/// </returns>
 		public abstract bool Evaluate (NodeElement conditionNode);
 		
+		/// <summary>
+		/// Notifies that the condition has changed, and that it has to be re-evaluated.
+		/// </summary>
+		/// This method must be called when there is a change in the state that determines
+		/// the result of the evaluation. When this method is called, all node conditions
+		/// depending on it are reevaluated and the corresponding events for adding or
+		/// removing extension nodes are fired.
+		/// <remarks>
+		/// </remarks>
 		public void NotifyChanged ()
 		{
 			if (Changed != null)

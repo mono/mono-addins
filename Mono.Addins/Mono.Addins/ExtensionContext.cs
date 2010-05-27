@@ -35,6 +35,16 @@ using Mono.Addins.Description;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// An extension context.
+	/// </summary>
+	/// <remarks>
+	/// Extension contexts can be used to query the extension tree
+	/// using particular condition values. Extension points which
+	/// declare the availability of a condition type can only be
+	/// queryed using an extension context which provides an
+	/// evaluator for that condition.
+	/// </remarks>
 	public class ExtensionContext
 	{
 		Hashtable conditionTypes = new Hashtable ();
@@ -47,6 +57,16 @@ namespace Mono.Addins
 		ArrayList runTimeEnabledAddins;
 		ArrayList runTimeDisabledAddins;
 		
+		/// <summary>
+		/// Extension change event.
+		/// </summary>
+		/// <remarks>
+		/// This event is fired when any extension point in the add-in system changes.
+		/// The event args object provides the path of the changed extension, although
+		/// it does not provide information about what changed. Hosts subscribing to
+		/// this event should get the new list of nodes using a query method such as
+		/// AddinManager.GetExtensionNodes() and then update whatever needs to be updated.
+		/// </remarks>
 		public event ExtensionEventHandler ExtensionChanged;
 		
 		~ExtensionContext ()
@@ -114,6 +134,20 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Registers a new condition in the extension context.
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the condition.
+		/// </param>
+		/// <param name="type">
+		/// Condition evaluator.
+		/// </param>
+		/// <remarks>
+		/// The registered condition will be particular to this extension context.
+		/// Any event that might be fired as a result of changes in the condition will
+		/// only be fired in this context.
+		/// </remarks>
 		public void RegisterCondition (string id, ConditionType type)
 		{
 			type.Id = id;
@@ -125,6 +159,19 @@ namespace Mono.Addins
 			type.Changed += new EventHandler (OnConditionChanged);
 		}
 		
+		/// <summary>
+		/// Registers a new condition in the extension context.
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the condition.
+		/// </param>
+		/// <param name="type">
+		/// Type of the condition evaluator. Must be a subclass of Mono.Addins.ConditionType.
+		/// </param>
+		/// <remarks>
+		/// The registered condition will be particular to this extension context. Any event
+		/// that might be fired as a result of changes in the condition will only be fired in this context.
+		/// </remarks>
 		public void RegisterCondition (string id, Type type)
 		{
 			// Allows delayed creation of condition types
@@ -218,6 +265,15 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Returns the extension node in a path
+		/// </summary>
+		/// <param name="path">
+		/// Location of the node.
+		/// </param>
+		/// <returns>
+		/// The node, or null if not found.
+		/// </returns>
 		public ExtensionNode GetExtensionNode (string path)
 		{
 			TreeNode node = GetNode (path);
@@ -230,27 +286,88 @@ namespace Mono.Addins
 				return null;
 		}
 		
+		/// <summary>
+		/// Returns the extension node in a path
+		/// </summary>
+		/// <param name="path">
+		/// Location of the node.
+		/// </param>
+		/// <returns>
+		/// The node, or null if not found.
+		/// </returns>
 		public T GetExtensionNode<T> (string path) where T: ExtensionNode
 		{
 			return (T) GetExtensionNode (path);
 		}
 		
+		/// <summary>
+		/// Gets extension nodes registered in a path.
+		/// </summary>
+		/// <param name="path">
+		/// An extension path.>
+		/// </param>
+		/// <returns>
+		/// All nodes registered in the provided path.
+		/// </returns>
 		public ExtensionNodeList GetExtensionNodes (string path)
 		{
 			return GetExtensionNodes (path, null);
 		}
 		
+		/// <summary>
+		/// Gets extension nodes registered in a path.
+		/// </summary>
+		/// <param name="path">
+		/// An extension path.
+		/// </param>
+		/// <returns>
+		/// A list of nodes
+		/// </returns>
+		/// <remarks>
+		/// This method returns all nodes registered under the provided path.
+		/// It will throw a InvalidOperationException if the type of one of
+		/// the registered nodes is not assignable to the provided type.
+		/// </remarks>
 		public ExtensionNodeList<T> GetExtensionNodes<T> (string path) where T: ExtensionNode
 		{
 			ExtensionNodeList nodes = GetExtensionNodes (path, typeof(T));
 			return new ExtensionNodeList<T> (nodes.list);
 		}
 		
+		/// <summary>
+		/// Gets extension nodes for a type extension point
+		/// </summary>
+		/// <param name="instanceType">
+		/// Type defining the extension point
+		/// </param>
+		/// <returns>
+		/// A list of nodes
+		/// </returns>
+		/// <remarks>
+		/// This method returns all extension nodes bound to the provided type.
+		/// </remarks>
 		public ExtensionNodeList GetExtensionNodes (Type instanceType)
 		{
 			return GetExtensionNodes (instanceType, typeof(ExtensionNode));
 		}
 		
+		/// <summary>
+		/// Gets extension nodes for a type extension point
+		/// </summary>
+		/// <param name="instanceType">
+		/// Type defining the extension point
+		/// </param>
+		/// <param name="expectedNodeType">
+		/// Expected extension node type
+		/// </param>
+		/// <returns>
+		/// A list of nodes
+		/// </returns>
+		/// <remarks>
+		/// This method returns all nodes registered for the provided type.
+		/// It will throw a InvalidOperationException if the type of one of
+		/// the registered nodes is not assignable to the provided node type.
+		/// </remarks>
 		public ExtensionNodeList GetExtensionNodes (Type instanceType, Type expectedNodeType)
 		{
 			string path = AddinEngine.GetAutoTypeExtensionPoint (instanceType);
@@ -259,6 +376,20 @@ namespace Mono.Addins
 			return GetExtensionNodes (path, expectedNodeType);
 		}
 		
+		/// <summary>
+		/// Gets extension nodes for a type extension point
+		/// </summary>
+		/// <param name="instanceType">
+		/// Type defining the extension point
+		/// </param>
+		/// <returns>
+		/// A list of nodes
+		/// </returns>
+		/// <remarks>
+		/// This method returns all nodes registered for the provided type.
+		/// It will throw a InvalidOperationException if the type of one of
+		/// the registered nodes is not assignable to the specified node type argument.
+		/// </remarks>
 		public ExtensionNodeList<T> GetExtensionNodes<T> (Type instanceType) where T: ExtensionNode
 		{
 			string path = AddinEngine.GetAutoTypeExtensionPoint (instanceType);
@@ -267,6 +398,23 @@ namespace Mono.Addins
 			return new ExtensionNodeList<T> (GetExtensionNodes (path, typeof (T)).list);
 		}
 		
+		/// <summary>
+		/// Gets extension nodes registered in a path.
+		/// </summary>
+		/// <param name="path">
+		/// An extension path.
+		/// </param>
+		/// <param name="expectedNodeType">
+		/// Expected node type.
+		/// </param>
+		/// <returns>
+		/// A list of nodes
+		/// </returns>
+		/// <remarks>
+		/// This method returns all nodes registered under the provided path.
+		/// It will throw a InvalidOperationException if the type of one of
+		/// the registered nodes is not assignable to the provided type.
+		/// </remarks>
 		public ExtensionNodeList GetExtensionNodes (string path, Type expectedNodeType)
 		{
 			TreeNode node = GetNode (path);
@@ -296,16 +444,47 @@ namespace Mono.Addins
 			return list;
 		}
 		
+		/// <summary>
+		/// Gets extension objects registered for a type extension point.
+		/// </summary>
+		/// <param name="instanceType">
+		/// Type defining the extension point
+		/// </param>
+		/// <returns>
+		/// A list of objects
+		/// </returns>
 		public object[] GetExtensionObjects (Type instanceType)
 		{
 			return GetExtensionObjects (instanceType, true);
 		}
 		
+		/// <summary>
+		/// Gets extension objects registered for a type extension point.
+		/// </summary>
+		/// <returns>
+		/// A list of objects
+		/// </returns>
+		/// <remarks>
+		/// The type argument of this generic method is the type that defines
+		/// the extension point.
+		/// </remarks>
 		public T[] GetExtensionObjects<T> ()
 		{
 			return GetExtensionObjects<T> (true);
 		}
 		
+		/// <summary>
+		/// Gets extension objects registered for a type extension point.
+		/// </summary>
+		/// <param name="instanceType">
+		/// Type defining the extension point
+		/// </param>
+		/// <param name="reuseCachedInstance">
+		/// When set to True, it will return instances created in previous calls.
+		/// </param>
+		/// <returns>
+		/// A list of extension objects.
+		/// </returns>
 		public object[] GetExtensionObjects (Type instanceType, bool reuseCachedInstance)
 		{
 			string path = AddinEngine.GetAutoTypeExtensionPoint (instanceType);
@@ -314,6 +493,19 @@ namespace Mono.Addins
 			return GetExtensionObjects (path, instanceType, reuseCachedInstance);
 		}
 		
+		/// <summary>
+		/// Gets extension objects registered for a type extension point.
+		/// </summary>
+		/// <param name="reuseCachedInstance">
+		/// When set to True, it will return instances created in previous calls.
+		/// </param>
+		/// <returns>
+		/// A list of extension objects.
+		/// </returns>
+		/// <remarks>
+		/// The type argument of this generic method is the type that defines
+		/// the extension point.
+		/// </remarks>
 		public T[] GetExtensionObjects<T> (bool reuseCachedInstance)
 		{
 			string path = AddinEngine.GetAutoTypeExtensionPoint (typeof(T));
@@ -322,26 +514,121 @@ namespace Mono.Addins
 			return GetExtensionObjects<T> (path, reuseCachedInstance);
 		}
 		
+		/// <summary>
+		/// Gets extension objects registered in a path
+		/// </summary>
+		/// <param name="path">
+		/// An extension path.
+		/// </param>
+		/// <returns>
+		/// An array of objects registered in the path.
+		/// </returns>
+		/// <remarks>
+		/// This method can only be used if all nodes in the provided extension path
+		/// are of type Mono.Addins.TypeExtensionNode. The returned array is composed
+		/// by all objects created by calling the TypeExtensionNode.CreateInstance()
+		/// method for each node.
+		/// </remarks>
 		public object[] GetExtensionObjects (string path)
 		{
 			return GetExtensionObjects (path, typeof(object), true);
 		}
 		
+		/// <summary>
+		/// Gets extension objects registered in a path.
+		/// </summary>
+		/// <param name="path">
+		/// An extension path.
+		/// </param>
+		/// <param name="reuseCachedInstance">
+		/// When set to True, it will return instances created in previous calls.
+		/// </param>
+		/// <returns>
+		/// An array of objects registered in the path.
+		/// </returns>
+		/// <remarks>
+		/// This method can only be used if all nodes in the provided extension path
+		/// are of type Mono.Addins.TypeExtensionNode. The returned array is composed
+		/// by all objects created by calling the TypeExtensionNode.CreateInstance()
+		/// method for each node (or TypeExtensionNode.GetInstance() if
+		/// reuseCachedInstance is set to true)
+		/// </remarks>
 		public object[] GetExtensionObjects (string path, bool reuseCachedInstance)
 		{
 			return GetExtensionObjects (path, typeof(object), reuseCachedInstance);
 		}
 		
+		/// <summary>
+		/// Gets extension objects registered in a path.
+		/// </summary>
+		/// <param name="path">
+		/// An extension path.
+		/// </param>
+		/// <param name="arrayElementType">
+		/// Type of the return array elements.
+		/// </param>
+		/// <returns>
+		/// An array of objects registered in the path.
+		/// </returns>
+		/// <remarks>
+		/// This method can only be used if all nodes in the provided extension path
+		/// are of type Mono.Addins.TypeExtensionNode. The returned array is composed
+		/// by all objects created by calling the TypeExtensionNode.CreateInstance()
+		/// method for each node.
+		/// 
+		/// An InvalidOperationException exception is thrown if one of the found
+		/// objects is not a subclass of the provided type.
+		/// </remarks>
 		public object[] GetExtensionObjects (string path, Type arrayElementType)
 		{
 			return GetExtensionObjects (path, arrayElementType, true);
 		}
 		
+		/// <summary>
+		/// Gets extension objects registered in a path.
+		/// </summary>
+		/// <param name="path">
+		/// An extension path.
+		/// </param>
+		/// <returns>
+		/// An array of objects registered in the path.
+		/// </returns>
+		/// <remarks>
+		/// This method can only be used if all nodes in the provided extension path
+		/// are of type Mono.Addins.TypeExtensionNode. The returned array is composed
+		/// by all objects created by calling the TypeExtensionNode.CreateInstance()
+		/// method for each node.
+		/// 
+		/// An InvalidOperationException exception is thrown if one of the found
+		/// objects is not a subclass of the provided type.
+		/// </remarks>
 		public T[] GetExtensionObjects<T> (string path)
 		{
 			return GetExtensionObjects<T> (path, true);
 		}
 		
+		/// <summary>
+		/// Gets extension objects registered in a path.
+		/// </summary>
+		/// <param name="path">
+		/// An extension path.
+		/// </param>
+		/// <param name="reuseCachedInstance">
+		/// When set to True, it will return instances created in previous calls.
+		/// </param>
+		/// <returns>
+		/// An array of objects registered in the path.
+		/// </returns>
+		/// <remarks>
+		/// This method can only be used if all nodes in the provided extension path
+		/// are of type Mono.Addins.TypeExtensionNode. The returned array is composed
+		/// by all objects created by calling the TypeExtensionNode.CreateInstance()
+		/// method for each node (or TypeExtensionNode.GetInstance() if
+		/// reuseCachedInstance is set to true).
+		/// 
+		/// An InvalidOperationException exception is thrown if one of the found
+		/// objects is not a subclass of the provided type.
+		/// </remarks>
 		public T[] GetExtensionObjects<T> (string path, bool reuseCachedInstance)
 		{
 			ExtensionNode node = GetExtensionNode (path);
@@ -350,6 +637,31 @@ namespace Mono.Addins
 			return node.GetChildObjects<T> (reuseCachedInstance);
 		}
 		
+		/// <summary>
+		/// Gets extension objects registered in a path.
+		/// </summary>
+		/// <param name="path">
+		/// An extension path.
+		/// </param>
+		/// <param name="arrayElementType">
+		/// Type of the return array elements.
+		/// </param>
+		/// <param name="reuseCachedInstance">
+		/// When set to True, it will return instances created in previous calls.
+		/// </param>
+		/// <returns>
+		/// An array of objects registered in the path.
+		/// </returns>
+		/// <remarks>
+		/// This method can only be used if all nodes in the provided extension path
+		/// are of type Mono.Addins.TypeExtensionNode. The returned array is composed
+		/// by all objects created by calling the TypeExtensionNode.CreateInstance()
+		/// method for each node (or TypeExtensionNode.GetInstance() if
+		/// reuseCachedInstance is set to true).
+		/// 
+		/// An InvalidOperationException exception is thrown if one of the found
+		/// objects is not a subclass of the provided type.
+		/// </remarks>
 		public object[] GetExtensionObjects (string path, Type arrayElementType, bool reuseCachedInstance)
 		{
 			ExtensionNode node = GetExtensionNode (path);
@@ -358,6 +670,23 @@ namespace Mono.Addins
 			return node.GetChildObjects (arrayElementType, reuseCachedInstance);
 		}
 		
+		/// <summary>
+		/// Register a listener of extension node changes.
+		/// </summary>
+		/// <param name="path">
+		/// Path of the node.
+		/// </param>
+		/// <param name="handler">
+		/// A handler method.
+		/// </param>
+		/// <remarks>
+		/// Hosts can call this method to be subscribed to an extension change
+		/// event for a specific path. The event will be fired once for every
+		/// individual node change. The event arguments include the change type
+		/// (Add or Remove) and the extension node added or removed.
+		/// 
+		/// NOTE: The handler will be called for all nodes existing in the path at the moment of registration.
+		/// </remarks>
 		public void AddExtensionNodeHandler (string path, ExtensionNodeEventHandler handler)
 		{
 			ExtensionNode node = GetExtensionNode (path);
@@ -366,6 +695,18 @@ namespace Mono.Addins
 			node.ExtensionNodeChanged += handler;
 		}
 		
+		/// <summary>
+		/// Unregister a listener of extension node changes.
+		/// </summary>
+		/// <param name="path">
+		/// Path of the node.
+		/// </param>
+		/// <param name="handler">
+		/// A handler method.
+		/// </param>
+		/// <remarks>
+		/// This method unregisters a delegate from the node change event of a path.
+		/// </remarks>
 		public void RemoveExtensionNodeHandler (string path, ExtensionNodeEventHandler handler)
 		{
 			ExtensionNode node = GetExtensionNode (path);
@@ -374,6 +715,23 @@ namespace Mono.Addins
 			node.ExtensionNodeChanged -= handler;
 		}
 		
+		/// <summary>
+		/// Register a listener of extension node changes.
+		/// </summary>
+		/// <param name="instanceType">
+		/// Type defining the extension point
+		/// </param>
+		/// <param name="handler">
+		/// A handler method.
+		/// </param>
+		/// <remarks>
+		/// Hosts can call this method to be subscribed to an extension change
+		/// event for a specific type extension point. The event will be fired once for every
+		/// individual node change. The event arguments include the change type
+		/// (Add or Remove) and the extension node added or removed.
+		/// 
+		/// NOTE: The handler will be called for all nodes existing in the path at the moment of registration.
+		/// </remarks>
 		public void AddExtensionNodeHandler (Type instanceType, ExtensionNodeEventHandler handler)
 		{
 			string path = AddinEngine.GetAutoTypeExtensionPoint (instanceType);
@@ -382,6 +740,15 @@ namespace Mono.Addins
 			AddExtensionNodeHandler (path, handler);
 		}
 		
+		/// <summary>
+		/// Unregister a listener of extension node changes.
+		/// </summary>
+		/// <param name="instanceType">
+		/// Type defining the extension point
+		/// </param>
+		/// <param name="handler">
+		/// A handler method.
+		/// </param>
 		public void RemoveExtensionNodeHandler (Type instanceType, ExtensionNodeEventHandler handler)
 		{
 			string path = AddinEngine.GetAutoTypeExtensionPoint (instanceType);
@@ -845,6 +1212,9 @@ namespace Mono.Addins
 	public delegate void ExtensionEventHandler (object sender, ExtensionEventArgs args);
 	public delegate void ExtensionNodeEventHandler (object sender, ExtensionNodeEventArgs args);
 	
+	/// <summary>
+	/// Arguments for extension events.
+	/// </summary>
 	public class ExtensionEventArgs: EventArgs
 	{
 		string path;
@@ -853,15 +1223,36 @@ namespace Mono.Addins
 		{
 		}
 		
+		/// <summary>
+		/// Creates a new instance.
+		/// </summary>
+		/// <param name="path">
+		/// Path of the extension node that has changed.
+		/// </param>
 		public ExtensionEventArgs (string path)
 		{
 			this.path = path;
 		}
 		
+		/// <summary>
+		/// Path of the extension node that has changed.
+		/// </summary>
 		public virtual string Path {
 			get { return path; }
 		}
 		
+		/// <summary>
+		/// Checks if a path has changed.
+		/// </summary>
+		/// <param name="pathToCheck">
+		/// An extension path.
+		/// </param>
+		/// <returns>
+		/// 'true' if the path is affected by the extension change event.
+		/// </returns>
+		/// <remarks>
+		/// Checks if the specified path or any of its children paths is affected by the extension change event.
+		/// </remarks>
 		public bool PathChanged (string pathToCheck)
 		{
 			if (pathToCheck.EndsWith ("/"))
@@ -871,29 +1262,53 @@ namespace Mono.Addins
 		}
 	}
 	
+	/// <summary>
+	/// Arguments for extension node events.
+	/// </summary>
 	public class ExtensionNodeEventArgs: ExtensionEventArgs
 	{
 		ExtensionNode node;
 		ExtensionChange change;
 		
+		/// <summary>
+		/// Creates a new instance
+		/// </summary>
+		/// <param name="change">
+		/// Type of change.
+		/// </param>
+		/// <param name="node">
+		/// Node that has been added or removed.
+		/// </param>
 		public ExtensionNodeEventArgs (ExtensionChange change, ExtensionNode node)
 		{
 			this.node = node;
 			this.change = change;
 		}
 		
+		/// <summary>
+		/// Path of the extension that changed.
+		/// </summary>
 		public override string Path {
 			get { return node.Path; }
 		}
 		
+		/// <summary>
+		/// Type of change.
+		/// </summary>
 		public ExtensionChange Change {
 			get { return change; }
 		}
 		
+		/// <summary>
+		/// Node that has been added or removed.
+		/// </summary>
 		public ExtensionNode ExtensionNode {
 			get { return node; }
 		}
 		
+		/// <summary>
+		/// Extension object that has been added or removed.
+		/// </summary>
 		public object ExtensionObject {
 			get {
 				InstanceExtensionNode tnode = node as InstanceExtensionNode;
@@ -904,9 +1319,19 @@ namespace Mono.Addins
 		}
 	}
 	
+	/// <summary>
+	/// Type of change in an extension change event.
+	/// </summary>
 	public enum ExtensionChange
 	{
+		/// <summary>
+		/// An extension node has been added.
+		/// </summary>
 		Add,
+		
+		/// <summary>
+		/// An extension node has been removed.
+		/// </summary>
 		Remove
 	}
 

@@ -31,11 +31,20 @@ using System;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// An IProgressStatus class which writes output to the console.
+	/// </summary>
 	public class ConsoleProgressStatus: MarshalByRefObject, IProgressStatus
 	{
 		bool canceled;
 		int logLevel;
 		
+		/// <summary>
+		/// Initializes a new instance
+		/// </summary>
+		/// <param name="verboseLog">
+		/// Set to true to enabled verbose log
+		/// </param>
 		public ConsoleProgressStatus (bool verboseLog)
 		{
 			if (verboseLog)
@@ -44,6 +53,12 @@ namespace Mono.Addins
 				logLevel = 1;
 		}
 		
+		/// <summary>
+		/// Initializes a new instance
+		/// </summary>
+		/// <param name="logLevel">
+		/// Verbosity level. 0: not verbose, 1: normal, >1 extra verbose
+		/// </param>
 		public ConsoleProgressStatus (int logLevel)
 		{
 			this.logLevel = logLevel;

@@ -28,6 +28,13 @@ using System;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// Assigns an attribute value to an extension
+	/// </summary>
+	/// <remarks>
+	/// This attribute can be used together with the [Extenion] attribute to specify
+	/// a value for an attribute of the extension.
+	/// </remarks>
 	public class ExtensionAttributeAttribute: Attribute
 	{
 		Type targetType;
@@ -56,21 +63,33 @@ namespace Mono.Addins
 			Path = path;
 		}
 		
+		/// <summary>
+		/// Name of the attribute
+		/// </summary>
 		public string Name {
 			get { return this.name; }
 			set { this.name = value; }
 		}
 
+		/// <summary>
+		/// Value of the attribute
+		/// </summary>
 		public string Value {
 			get { return this.val; }
 			set { this.val = value; }
 		}
 
+		/// <summary>
+		/// Path of the extension for which the attribute value is being set
+		/// </summary>
 		public string Path {
 			get { return this.path; }
 			set { this.path = value; }
 		}
-		
+
+		/// <summary>
+		/// Type of the extension for which the attribute value is being set
+		/// </summary>
 		public Type Type {
 			get { return targetType; }
 			set { targetType = value; targetTypeName = targetType.FullName; }
