@@ -28,16 +28,28 @@ using System;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// Declares an author of the add-in
+	/// </summary>
 	[AttributeUsage (AttributeTargets.Assembly, AllowMultiple=true)]
 	public class AddinAuthorAttribute: Attribute
 	{
 		string name;
 		
+		/// <summary>
+		/// Initializes the attribute
+		/// </summary>
+		/// <param name="name">
+		/// Name of the author
+		/// </param>
 		public AddinAuthorAttribute (string name)
 		{
 			this.name = name;
 		}
 
+		/// <summary>
+		/// Author name
+		/// </summary>
 		public string Name {
 			get { return this.name; }
 			set { this.name = value; }

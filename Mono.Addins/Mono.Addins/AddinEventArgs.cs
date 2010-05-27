@@ -33,6 +33,9 @@ namespace Mono.Addins
 {
 	public delegate void AddinEventHandler (object sender, AddinEventArgs args);
 	
+	/// <summary>
+	/// Provides information about an add-in engine event.
+	/// </summary>
 	public class AddinEventArgs: EventArgs
 	{
 		string addinId;
@@ -42,6 +45,9 @@ namespace Mono.Addins
 			this.addinId = addinId;
 		}
 		
+		/// <summary>
+		/// Identifier of the add-in that generated the event.
+		/// </summary>
 		public string AddinId {
 			get { return addinId; }
 		}

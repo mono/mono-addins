@@ -37,6 +37,32 @@ using Mono.Addins.Description;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// An add-in registry.
+	/// </summary>
+	/// <remarks>
+	/// An add-in registry is a data structure used by the add-in engine to locate add-ins to load.
+	/// 
+	/// A registry can be configured to look for add-ins in several directories. However, add-ins
+	/// copied to those directories won't be detected until an explicit add-in scan is requested.
+	/// The registry can be updated by an application by calling Registry.Update(), or by a user by
+	/// running the 'mautil' add-in setup tool.
+	/// 
+	/// The registry has information about the location of every add-in and a timestamp of the last
+	/// check, so the Update method will only scan new or modified add-ins. An application can
+	/// add a call to Registry.Update() in the Main method to detect all new add-ins every time the
+	/// app is started.
+	/// 
+	/// Every add-in added to the registry is parsed and validated, and if there is any error it
+	/// will be rejected. The registry is also in charge of scanning the add-in assemblies and look
+	/// for extensions and other information declared using custom attributes. That information is
+	/// merged with the manifest information (if there is one) to create a complete add-in
+	/// description ready to be used at run-time.
+	/// 
+	/// Mono.Addins allows sharing an add-in registry among several applications. In this context,
+	/// all applications sharing the registry share the same extension point model, and it is
+	/// possible to implement add-ins which extend several hosts.
+	/// </remarks>
 	public class AddinRegistry: IDisposable
 	{
 		AddinDatabase database;
@@ -45,10 +71,31 @@ namespace Mono.Addins
 		string currentDomain;
 		string startupDirectory;
 		
+		/// <summary>
+		/// Initializes a new instance.
+		/// </summary>
+		/// <param name="registryPath">
+		/// Location of the add-in registry.
+		/// </param>
+		/// <remarks>
+		/// Creates a new add-in registry located in the provided path.
+		/// </remarks>
 		public AddinRegistry (string registryPath): this (null, registryPath, null)
 		{
 		}
 		
+		/// <summary>
+		/// Initializes a new instance.
+		/// </summary>
+		/// <param name="registryPath">
+		/// Location of the add-in registry.
+		/// </param>
+		/// <param name="startupDirectory">
+		/// Location of the application.
+		/// </param>
+		/// <remarks>
+		/// Creates a new add-in registry located in the provided path.
+		/// </remarks>
 		public AddinRegistry (string registryPath, string startupDirectory): this (null, registryPath, startupDirectory)
 		{
 		}
@@ -71,6 +118,16 @@ namespace Mono.Addins
 				currentDomain = AddinDatabase.GlobalDomain;
 		}
 		
+		/// <summary>
+		/// Gets the global registry.
+		/// </summary>
+		/// <returns>
+		/// The global registry
+		/// </returns>
+		/// <remarks>
+		/// The global add-in registry is created in "~/.config/mono.addins",
+		/// and it is the default registry used when none is specified.
+		/// </remarks>
 		public static AddinRegistry GetGlobalRegistry ()
 		{
 			return GetGlobalRegistry (null, null);
@@ -105,15 +162,33 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Location of the add-in registry.
+		/// </summary>
 		public string RegistryPath {
 			get { return basePath; }
 		}
 		
+		/// <summary>
+		/// Disposes the add-in engine.
+		/// </summary>
 		public void Dispose ()
 		{
 			database.Shutdown ();
 		}
 		
+		/// <summary>
+		/// Returns an add-in from the registry.
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the add-in.
+		/// </param>
+		/// <returns>
+		/// The add-in, or 'null' if not found.
+		/// </returns>
+		/// <remarks>
+		/// The add-in identifier may optionally include a version number, for example: "TextEditor.Xml,1.2"
+		/// </remarks>
 		public Addin GetAddin (string id)
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)
@@ -121,6 +196,23 @@ namespace Mono.Addins
 			return database.GetInstalledAddin (currentDomain, id);
 		}
 		
+		/// <summary>
+		/// Returns an add-in from the registry.
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the add-in.
+		/// </param>
+		/// <param name="exactVersionMatch">
+		/// 'true' if the exact add-in version must be found.
+		/// </param>
+		/// <returns>
+		/// The add-in, or 'null' if not found.
+		/// </returns>
+		/// <remarks>
+		/// The add-in identifier may optionally include a version number, for example: "TextEditor.Xml,1.2".
+		/// In this case, if the exact version is not found and exactVersionMatch is 'false', it will
+		/// return one than is compatible with the required version.
+		/// </remarks>
 		public Addin GetAddin (string id, bool exactVersionMatch)
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)
@@ -128,6 +220,12 @@ namespace Mono.Addins
 			return database.GetInstalledAddin (currentDomain, id, exactVersionMatch);
 		}
 		
+		/// <summary>
+		/// Gets all add-ins registered in the registry.
+		/// </summary>
+		/// <returns>
+		/// Add-ins registered in the registry.
+		/// </returns>
 		public Addin[] GetAddins ()
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)
@@ -136,6 +234,12 @@ namespace Mono.Addins
 			return (Addin[]) list.ToArray (typeof(Addin));
 		}
 		
+		/// <summary>
+		/// Gets all add-in roots registered in the registry.
+		/// </summary>
+		/// <returns>
+		/// Descriptions of all add-in roots.
+		/// </returns>
 		public Addin[] GetAddinRoots ()
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)
@@ -144,6 +248,22 @@ namespace Mono.Addins
 			return (Addin[]) list.ToArray (typeof(Addin));
 		}
 		
+		/// <summary>
+		/// Loads an add-in description
+		/// </summary>
+		/// <param name="progressStatus">
+		/// Progress tracker.
+		/// </param>
+		/// <param name="file">
+		/// Name of the file to load
+		/// </param>
+		/// <returns>
+		/// An add-in description
+		/// </returns>
+		/// <remarks>
+		/// This method loads an add-in description from a file. The file can be an XML manifest or an
+		/// assembly that implements an add-in.
+		/// </remarks>
 		public AddinDescription GetAddinDescription (IProgressStatus progressStatus, string file)
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)
@@ -174,6 +294,15 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Reads an XML add-in manifest
+		/// </summary>
+		/// <param name="file">
+		/// Path to the XML file
+		/// </param>
+		/// <returns>
+		/// An add-in description
+		/// </returns>
 		public AddinDescription ReadAddinManifestFile (string file)
 		{
 			AddinDescription desc = AddinDescription.Read (file);
@@ -183,7 +312,19 @@ namespace Mono.Addins
 			}
 			return desc;
 		}
-		
+
+		/// <summary>
+		/// Reads an XML add-in manifest
+		/// </summary>
+		/// <param name="reader">
+		/// Reader that contains the XML
+		/// </param>
+		/// <param name="baseFile">
+		/// Base path to use to discover add-in files
+		/// </param>
+		/// <returns>
+		/// An add-in description
+		/// </returns>
 		public AddinDescription ReadAddinManifestFile (TextReader reader, string baseFile)
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)
@@ -194,6 +335,15 @@ namespace Mono.Addins
 			return desc;
 		}
 		
+		/// <summary>
+		/// Checks whether an add-in is enabled.
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the add-in.
+		/// </param>
+		/// <returns>
+		/// 'true' if the add-in is enabled.
+		/// </returns>
 		public bool IsAddinEnabled (string id)
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)
@@ -201,6 +351,16 @@ namespace Mono.Addins
 			return database.IsAddinEnabled (currentDomain, id);
 		}
 		
+		/// <summary>
+		/// Enables an add-in.
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the add-in
+		/// </param>
+		/// <remarks>
+		/// If the enabled add-in depends on other add-ins which are disabled,
+		/// those will automatically be enabled too.
+		/// </remarks>
 		public void EnableAddin (string id)
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)
@@ -208,6 +368,17 @@ namespace Mono.Addins
 			database.EnableAddin (currentDomain, id, true);
 		}
 		
+		/// <summary>
+		/// Disables an add-in.
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the add-in.
+		/// </param>
+		/// <remarks>
+		/// When an add-in is disabled, all extension points it defines will be ignored
+		/// by the add-in engine. Other add-ins which depend on the disabled add-in will
+		/// also automatically be disabled.
+		/// </remarks>
 		public void DisableAddin (string id)
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)
@@ -215,11 +386,17 @@ namespace Mono.Addins
 			database.DisableAddin (currentDomain, id);
 		}
 		
+		/// <summary>
+		/// Internal use only
+		/// </summary>
 		public void DumpFile (string file)
 		{
 			Mono.Addins.Serialization.BinaryXmlReader.DumpFile (file);
 		}
 		
+		/// <summary>
+		/// Resets the configuration files of the registry
+		/// </summary>
 		public void ResetConfiguration ()
 		{
 			database.ResetConfiguration ();
@@ -231,16 +408,53 @@ namespace Mono.Addins
 				currentDomain = database.GetFolderDomain (null, startupDirectory);
 		}
 
+		/// <summary>
+		/// Updates the add-in registry.
+		/// </summary>
+		/// <remarks>
+		/// This method must be called after modifying, installing or uninstalling add-ins.
+		/// 
+		/// When calling Update, every add-in added to the registry is parsed and validated,
+		/// and if there is any error it will be rejected. It will also cache add-in information
+		/// needed at run-time.
+		/// 
+		/// If during the update operation the registry finds new add-ins or detects that some
+		/// add-ins have been deleted, the loaded extension points will be updated to include
+		/// or exclude extension nodes from those add-ins.
+		/// </remarks>
 		public void Update ()
 		{
 			Update (new ConsoleProgressStatus (false));
 		}
 
+		/// <summary>
+		/// Updates the add-in registry.
+		/// </summary>
+		/// <param name="monitor">
+		/// Progress monitor to keep track of the update operation.
+		/// </param>
+		/// <remarks>
+		/// This method must be called after modifying, installing or uninstalling add-ins.
+		/// 
+		/// When calling Update, every add-in added to the registry is parsed and validated,
+		/// and if there is any error it will be rejected. It will also cache add-in information
+		/// needed at run-time.
+		/// 
+		/// If during the update operation the registry finds new add-ins or detects that some
+		/// add-ins have been deleted, the loaded extension points will be updated to include
+		/// or exclude extension nodes from those add-ins.
+		/// </remarks>
 		public void Update (IProgressStatus monitor)
 		{
 			database.Update (monitor, currentDomain);
 		}
 
+		/// <summary>
+		/// Regenerates the cached data of the add-in registry.
+		/// </summary>
+		/// <param name="monitor">
+		/// Progress monitor to keep track of the rebuild operation.
+		/// </param>
 		public void Rebuild (IProgressStatus monitor)
 		{
 			database.Repair (monitor, currentDomain);
@@ -268,6 +482,14 @@ namespace Mono.Addins
 			database.ParseAddin (progressStatus, currentDomain, file, outFile, true);
 		}
 		
+		/// <summary>
+		/// Gets the default add-ins folder of the registry.
+		/// </summary>
+		/// <remarks>
+		/// For every add-in registry there is an add-in folder where the registry will look for add-ins by default.
+		/// This folder is an "addins" subdirectory of the directory where the repository is located. In most cases,
+		/// this folder will only contain .addins files referencing other more convenient locations for add-ins.
+		/// </remarks>
 		public string DefaultAddinsFolder {
 			get { return Path.Combine (basePath, "addins"); }
 		}
@@ -325,6 +547,7 @@ namespace Mono.Addins
 			return true;
 		}
 		
+		[Obsolete]
 		public static string[] GetRegisteredStartupFolders (string registryPath)
 		{
 			string dbDir = Path.Combine (registryPath, "addin-db-" + AddinDatabase.VersionTag);

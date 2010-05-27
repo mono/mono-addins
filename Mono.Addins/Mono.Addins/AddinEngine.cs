@@ -38,6 +38,17 @@ using Mono.Addins.Localization;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// An add-in engine.
+	/// </summary>
+	/// <remarks>
+	/// This class allows hosting several independent add-in engines in a single application domain.
+	/// In general, applications use the AddinManager class to query and manage extensions. This class is static,
+	/// so the API is easily accessible. However, some kind applications may need to use several isolated
+	/// add-in engines, and in this case the AddinManager class can't be used, because it is bound to a single
+	/// add-in engine. Those applications can instead create several instances of the AddinEngine class. Each
+	/// add-in engine can be independently initialized with different add-in registries and extension models.
+	/// </remarks>
 	public class AddinEngine: ExtensionContext
 	{
 		bool initialized;
@@ -61,6 +72,16 @@ namespace Mono.Addins
 		{
 		}
 		
+		/// <summary>
+		/// Initializes the add-in engine
+		/// </summary>
+		/// <param name="configDir">
+		/// Location of the add-in registry.
+		/// </param>
+		/// <remarks>The add-in engine needs to be initialized before doing any add-in operation.
+		/// When initialized with this method, it will look for add-in in the add-in registry
+		/// located in the specified path.
+		/// </remarks>
 		public void Initialize (string configDir)
 		{
 			if (initialized)
@@ -100,6 +121,9 @@ namespace Mono.Addins
 			AppDomain.CurrentDomain.AssemblyLoad += new AssemblyLoadEventHandler (OnAssemblyLoaded);
 		}
 		
+		/// <summary>
+		/// Finalizes the add-in engine.
+		/// </summary>
 		public void Shutdown ()
 		{
 			initialized = false;
@@ -112,6 +136,12 @@ namespace Mono.Addins
 			Clear ();
 		}
 		
+		/// <summary>
+		/// Sets the default localizer to be used for this add-in engine
+		/// </summary>
+		/// <param name="localizer">
+		/// The add-in localizer
+		/// </param>
 		public void InitializeDefaultLocalizer (IAddinLocalizer localizer)
 		{
 			CheckInitialized ();
@@ -125,15 +155,28 @@ namespace Mono.Addins
 			get { return startupDirectory; }
 		}
 		
+		/// <summary>
+		/// Gets whether the add-in engine has been initialized.
+		/// </summary>
 		public bool IsInitialized {
 			get { return initialized; }
 		}
 		
+		/// <summary>
+		/// Gets the default add-in installer
+		/// </summary>
+		/// <remarks>
+		/// The default installer is used by the CheckInstalled method to request
+		/// the installation of missing add-ins.
+		/// </remarks>
 		public IAddinInstaller DefaultInstaller {
 			get { return installer; }
 			set { installer = value; }
 		}
 		
+		/// <summary>
+		/// Gets the default localizer for this add-in engine
+		/// </summary>
 		public AddinLocalizer DefaultLocalizer {
 			get {
 				CheckInitialized ();
@@ -148,6 +191,9 @@ namespace Mono.Addins
 			get { return this; }
 		}
 		
+		/// <summary>
+		/// Gets the localizer for the add-in that is invoking this property
+		/// </summary>
 		public AddinLocalizer CurrentLocalizer {
 			get {
 				CheckInitialized ();
@@ -160,6 +206,9 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Gets a reference to the RuntimeAddin object for the add-in that is invoking this property
+		/// </summary>
 		public RuntimeAddin CurrentAddin {
 			get {
 				CheckInitialized ();
@@ -168,6 +217,9 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Gets the add-in registry bound to this add-in engine
+		/// </summary>
 		public AddinRegistry Registry {
 			get {
 				CheckInitialized ();
@@ -180,11 +232,23 @@ namespace Mono.Addins
 			return (RuntimeAddin) loadedAssemblies [asm];
 		}
 		
-		// This method checks if the specified add-ins are installed.
-		// If some of the add-ins are not installed, it will use
-		// the installer assigned to the DefaultAddinInstaller property
-		// to install them. If the installation fails, or if DefaultAddinInstaller
-		// is not set, an exception will be thrown.
+		/// <summary>
+		/// Checks if the provided add-ins are installed, and requests the installation of those
+		/// which aren't.
+		/// </summary>
+		/// <param name="message">
+		/// Message to show to the user when new add-ins have to be installed.
+		/// </param>
+		/// <param name="addinIds">
+		/// List of IDs of the add-ins to be checked.
+		/// </param>
+		/// <remarks>
+		/// This method checks if the specified add-ins are installed.
+		/// If some of the add-ins are not installed, it will use
+		/// the installer assigned to the DefaultAddinInstaller property
+		/// to install them. If the installation fails, or if DefaultAddinInstaller
+		/// is not set, an exception will be thrown.
+		/// </remarks>
 		public void CheckInstalled (string message, params string[] addinIds)
 		{
 			ArrayList notInstalled = new ArrayList ();
@@ -214,7 +278,16 @@ namespace Mono.Addins
 			get { return checkAssemblyLoadConflicts; }
 			set { checkAssemblyLoadConflicts = value; }
 		}
-
+		
+		/// <summary>
+		/// Checks if an add-in has been loaded.
+		/// </summary>
+		/// <param name="id">
+		/// Full identifier of the add-in.
+		/// </param>
+		/// <returns>
+		/// True if the add-in is loaded.
+		/// </returns>
 		public bool IsAddinLoaded (string id)
 		{
 			CheckInitialized ();
@@ -247,6 +320,21 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Forces the loading of an add-in.
+		/// </summary>
+		/// <param name="statusMonitor">
+		/// Status monitor to keep track of the loading process.
+		/// </param>
+		/// <param name="id">
+		/// Full identifier of the add-in to load.
+		/// </param>
+		/// <remarks>
+		/// This method loads all assemblies that belong to an add-in in memory.
+		/// All add-ins on which the specified add-in depends will also be loaded.
+		/// Notice that in general add-ins don't need to be explicitely loaded using
+		/// this method, since the add-in engine will load them on demand.
+		/// </remarks>
 		public void LoadAddin (IProgressStatus statusMonitor, string id)
 		{
 			CheckInitialized ();
@@ -516,6 +604,15 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Creates a new extension context.
+		/// </summary>
+		/// <returns>
+		/// The new extension context.
+		/// </returns>
+		/// <remarks>
+		/// Extension contexts can be used to query the extension model using particular condition values.
+		/// </remarks>
 		public ExtensionContext CreateExtensionContext ()
 		{
 			CheckInitialized ();

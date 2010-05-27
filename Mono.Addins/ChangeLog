@@ -1,3 +1,18 @@
+2010-05-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins/AddinEngine.cs:
+	* Mono.Addins/AddinManager.cs:
+	* Mono.Addins/AddinRegistry.cs:
+	* Mono.Addins/AddinEventArgs.cs:
+	* Mono.Addins/AddinLocalizer.cs:
+	* Mono.Addins/AddinAttribute.cs:
+	* Mono.Addins/AddinErrorEventArgs.cs:
+	* Mono.Addins/AddinModuleAttribute.cs:
+	* Mono.Addins/AddinAuthorAttribute.cs:
+	* Mono.Addins/AddinDependencyAttribute.cs:
+	* Mono.Addins/AddinLocalizerGettextAttribute.cs: Added some
+	  API documentation.
+
 2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Database/AddinScanResult.cs: Properly resolve

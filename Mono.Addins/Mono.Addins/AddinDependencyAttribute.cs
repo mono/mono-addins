@@ -31,22 +31,40 @@ using System;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// Declares a dependency on an add-in or add-in host
+	/// </summary>
 	[AttributeUsage (AttributeTargets.Assembly, AllowMultiple=true)]
 	public class AddinDependencyAttribute: Attribute
 	{
 		string id;
 		string version;
 		
+		/// <summary>
+		/// Initializes the attribute
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the add-in
+		/// </param>
+		/// <param name="version">
+		/// Version of the add-in
+		/// </param>
 		public AddinDependencyAttribute (string id, string version)
 		{
 			this.id = id;
 			this.version = version;
 		}
 		
+		/// <summary>
+		/// Identifier of the add-in
+		/// </summary>
 		public string Id {
 			get { return id; }
 		}
 		
+		/// <summary>
+		/// Version of the add-in
+		/// </summary>
 		public string Version {
 			get { return version; }
 		}

@@ -31,6 +31,9 @@ using Mono.Addins.Localization;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// Converts message identifiers to localized messages.
+	/// </summary>
 	public class AddinLocalizer
 	{
 		IAddinLocalizer localizer;
@@ -41,22 +44,70 @@ namespace Mono.Addins
 			this.localizer = localizer;
 			pluralLocalizer = localizer as IPluralAddinLocalizer;
 		}
-		
+
+		/// <summary>
+		/// Gets a localized message
+		/// </summary>
+		/// <param name="msgid">
+		/// Message identifier
+		/// </param>
+		/// <returns>
+		/// The localized message
+		/// </returns>
 		public string GetString (string msgid)
 		{
 			return localizer.GetString (msgid);
 		}
 		
+		/// <summary>
+		/// Gets a formatted and localized message
+		/// </summary>
+		/// <param name="msgid">
+		/// Message identifier (can contain string format placeholders)
+		/// </param>
+		/// <param name="args">
+		/// Arguments for the string format operation
+		/// </param>
+		/// <returns>
+		/// The formatted and localized string
+		/// </returns>
 		public string GetString (string msgid, params string[] args)
 		{
 			return string.Format (localizer.GetString (msgid), args);
 		}
 		
+		/// <summary>
+		/// Gets a formatted and localized message
+		/// </summary>
+		/// <param name="msgid">
+		/// Message identifier (can contain string format placeholders)
+		/// </param>
+		/// <param name="args">
+		/// Arguments for the string format operation
+		/// </param>
+		/// <returns>
+		/// The formatted and localized string
+		/// </returns>
 		public string GetString (string msgid, params object[] args)
 		{
 			return string.Format (localizer.GetString (msgid), args);
 		}
-		
+
+		/// <summary>
+		/// Gets a localized plural form for a message identifier
+		/// </summary>
+		/// <param name="msgid">
+		/// Message identifier for the singular form
+		/// </param>
+		/// <param name="defaultPlural">
+		/// Default result message for the plural form
+		/// </param>
+		/// <param name="n">
+		/// Value count. Determines wether to use singular or plural form.
+		/// </param>
+		/// <returns>
+		/// The localized message
+		/// </returns>
 		public string GetPluralString (string msgid, string defaultPlural, int n)
 		{
 			// If the localizer does not support plural forms, just use GetString to
@@ -69,11 +120,47 @@ namespace Mono.Addins
 				return GetString (msgid);
 		}
 		
+		/// <summary>
+		/// Gets a localized and formatted plural form for a message identifier
+		/// </summary>
+		/// <param name="msgid">
+		/// Message identifier for the singular form (can contain string format placeholders)
+		/// </param>
+		/// <param name="defaultPlural">
+		/// Default result message for the plural form (can contain string format placeholders)
+		/// </param>
+		/// <param name="n">
+		/// Value count. Determines whether to use singular or plural form.
+		/// </param>
+		/// <param name="args">
+		/// Arguments for the string format operation
+		/// </param>
+		/// <returns>
+		/// The localized message
+		/// </returns>
 		public string GetPluralString (string singular, string defaultPlural, int n, params string[] args)
 		{
 			return string.Format (GetPluralString (singular, defaultPlural, n), args);
 		}
 		
+		/// <summary>
+		/// Gets a localized and formatted plural form for a message identifier
+		/// </summary>
+		/// <param name="msgid">
+		/// Message identifier for the singular form (can contain string format placeholders)
+		/// </param>
+		/// <param name="defaultPlural">
+		/// Default result message for the plural form (can contain string format placeholders)
+		/// </param>
+		/// <param name="n">
+		/// Value count. Determines whether to use singular or plural form.
+		/// </param>
+		/// <param name="args">
+		/// Arguments for the string format operation
+		/// </param>
+		/// <returns>
+		/// The localized message
+		/// </returns>
 		public string GetPluralString (string singular, string defaultPlural, int n, params object[] args)
 		{
 			return string.Format (GetPluralString (singular, defaultPlural, n), args);

@@ -33,6 +33,9 @@ namespace Mono.Addins
 {
 	public delegate void AddinErrorEventHandler (object sender, AddinErrorEventArgs args);
 	
+	/// <summary>
+	/// Provides information about an add-in loading error.
+	/// </summary>
 	public class AddinErrorEventArgs: AddinEventArgs
 	{
 		Exception exception;
@@ -44,10 +47,16 @@ namespace Mono.Addins
 			this.exception = exception;
 		}
 		
+		/// <summary>
+		/// Exception that caused the error.
+		/// </summary>
 		public Exception Exception {
 			get { return exception; }
 		}
 		
+		/// <summary>
+		/// Error message
+		/// </summary>
 		public string Message {
 			get { return message; }
 		}
