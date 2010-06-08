@@ -1,3 +1,10 @@
+2010-06-08  Jb Evain  <jbevain@novell.com>
+
+	* Mono.Cecil/: update to cecil/light.
+
+	* Mono.Addins.CecilReflector/Reflector.cs: update
+	according to the cecil update.
+
 2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.CecilReflector.csproj: Fix output directory for
