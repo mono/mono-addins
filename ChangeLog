@@ -1,3 +1,7 @@
+2010-06-08  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.sln: Add missing project.
+
 2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.sln: Fix windows build.
