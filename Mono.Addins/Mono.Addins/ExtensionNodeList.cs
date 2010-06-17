@@ -33,6 +33,9 @@ using System.Collections.Generic;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// A list of extension nodes.
+	/// </summary>
 	public class ExtensionNodeList: IEnumerable
 	{
 		internal List<ExtensionNode> list;
@@ -44,6 +47,12 @@ namespace Mono.Addins
 			this.list = list;
 		}
 		
+		/// <summary>
+		/// Returns the node in the specified index.
+		/// </summary>
+		/// <param name="n">
+		/// The index.
+		/// </param>
 		public ExtensionNode this [int n] {
 			get {
 				if (list == null)
@@ -53,6 +62,12 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Returns the node with the specified ID.
+		/// </summary>
+		/// <param name="id">
+		/// An id.
+		/// </param>
 		public ExtensionNode this [string id] {
 			get {
 				if (list == null)
@@ -73,6 +88,9 @@ namespace Mono.Addins
 			return list.GetEnumerator ();
 		}
 		
+		/// <summary>
+		/// Number of nodes of the collection.
+		/// </summary>
 		public int Count {
 			get { return list == null ? 0 : list.Count; }
 		}
@@ -84,6 +102,9 @@ namespace Mono.Addins
 		}
 	}
 
+	/// <summary>
+	/// A list of extension nodes.
+	/// </summary>
 	public class ExtensionNodeList<T>: IEnumerable, IEnumerable<T> where T: ExtensionNode
 	{
 		List<ExtensionNode> list;
@@ -95,6 +116,12 @@ namespace Mono.Addins
 			this.list = list;
 		}
 		
+		/// <summary>
+		/// Returns the node in the specified index.
+		/// </summary>
+		/// <param name="n">
+		/// The index.
+		/// </param>
 		public T this [int n] {
 			get {
 				if (list == null)
@@ -104,6 +131,12 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Returns the node with the specified ID.
+		/// </summary>
+		/// <param name="id">
+		/// An id.
+		/// </param>
 		public T this [string id] {
 			get {
 				if (list == null)
@@ -132,6 +165,9 @@ namespace Mono.Addins
 			return list.GetEnumerator ();
 		}
 		
+		/// <summary>
+		/// Number of nodes of the collection.
+		/// </summary>
 		public int Count {
 			get { return list == null ? 0 : list.Count; }
 		}

@@ -1,3 +1,22 @@
+2010-06-17  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins/NodeElement.cs:
+	* Mono.Addins/RuntimeAddin.cs:
+	* Mono.Addins/IProgressStatus.cs:
+	* Mono.Addins/IAddinInstaller.cs:
+	* Mono.Addins/TypeExtensionNode.cs:
+	* Mono.Addins/ExtensionNodeList.cs:
+	* Mono.Addins/InstanceExtensionNode.cs:
+	* Mono.Addins/NodeAttributeAttribute.cs:
+	* Mono.Addins/ExtensionNodeAttribute.cs:
+	* Mono.Addins/ExtensionPointAttribute.cs:
+	* Mono.Addins/ImportAddinFileAttribute.cs:
+	* Mono.Addins/MissingDependencyException.cs:
+	* Mono.Addins/TypeExtensionPointAttribute.cs:
+	* Mono.Addins/ExtensionNodeChildAttribute.cs:
+	* Mono.Addins/ImportAddinAssemblyAttribute.cs: Added some
+	  documentation.
+
 2010-05-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins/AddinManager.cs:

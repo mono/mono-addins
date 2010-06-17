@@ -23,18 +23,40 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+
 namespace Mono.Addins
 {
+	/// <summary>
+	/// Declares an add-in file import
+	/// </summary>
+	/// <remarks>
+	/// An add-in may be composed by several assemblies and data files.
+	/// Data files must be declared in the main assembly using this attribute, or in the XML manifest.
+	/// 
+	/// It is important to properly declare all files used by an add-in. 
+	/// This information is used by setup tools to know exactly what needs to be packaged when creating 
+	/// an add-in package, or to know what needs to be deleted when removing an add-in.
+	/// </remarks>
 	public class ImportAddinFileAttribute: Attribute
 	{
 		string filePath;
 		
+		/// <summary>
+		/// Initializes a new instance
+		/// </summary>
+		/// <param name="filePath">
+		/// Path to the file. Must be relative to the assembly declaring this attribute.
+		/// </param>
 		public ImportAddinFileAttribute (string filePath)
 		{
 			this.filePath = filePath;
 		}
 		
+		/// <summary>
+		/// Path to the file. Must be relative to the assembly declaring this attribute.
+		/// </summary>
 		public string FilePath {
 			get { return filePath; }
 			set { filePath = value; }

@@ -32,14 +32,45 @@ using System.Collections;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// An extension node element.
+	/// </summary>
+	/// <remarks>
+	/// A raw representation of an extension node. Contains the basic information
+	/// needed to create ExtensionNode instances.
+	/// </remarks>
 	public interface NodeElement
 	{
+		/// <summary>
+		/// Name of the node element.
+		/// </summary>
 		string NodeName { get; }
+		
+		/// <summary>
+		/// Gets element attributes.
+		/// </summary>
+		/// <param name="key">
+		/// Name of the attribute
+		/// </param>
+		/// <returns>
+		/// The value of the attribute
+		/// </returns>
 		string GetAttribute (string key);
+		
+		/// <summary>
+		/// Gets all attributes defined in the element.
+		/// </summary>
 		NodeAttribute[] Attributes { get; }
+		
+		/// <summary>
+		/// Gets child nodes of this node
+		/// </summary>
 		NodeElementCollection ChildNodes { get; }
 	}
 	
+	/// <summary>
+	/// Attribute of a NodeElement.
+	/// </summary>
 	public class NodeAttribute
 	{
 		internal string name;
@@ -49,15 +80,24 @@ namespace Mono.Addins
 		{
 		}
 		
+		/// <summary>
+		/// Name of the attribute.
+		/// </summary>
 		public string Name {
 			get { return name; }
 		}
 		
+		/// <summary>
+		/// Value of the attribute.
+		/// </summary>
 		public string Value {
 			get { return value; }
 		}
 	}
 	
+	/// <summary>
+	/// A collection of NodeElement objects
+	/// </summary>
 	public interface NodeElementCollection: IList, ICollection, IEnumerable
 	{
 		new NodeElement this [int n] { get; }

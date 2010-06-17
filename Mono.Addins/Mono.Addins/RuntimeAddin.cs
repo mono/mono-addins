@@ -42,6 +42,9 @@ using Mono.Addins.Localization;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// Run-time representation of an add-in.
+	/// </summary>
 	public class RuntimeAddin
 	{
 		string id;
@@ -82,10 +85,16 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Identifier of the add-in.
+		/// </summary>
 		public string Id {
 			get { return Addin.GetIdName (id); }
 		}
 		
+		/// <summary>
+		/// Version of the add-in.
+		/// </summary>
 		public string Version {
 			get { return Addin.GetIdVersion (id); }
 		}
@@ -119,31 +128,121 @@ namespace Mono.Addins
 			return resourceManagers = (ResourceManager[]) managersList.ToArray (typeof(ResourceManager));
 		}
 
+		/// <summary>
+		/// Gets a resource string
+		/// </summary>
+		/// <param name="name">
+		/// Name of the resource
+		/// </param>
+		/// <returns>
+		/// The value of the resource string, or null if the resource can't be found.
+		/// </returns>
+		/// <remarks>
+		/// The add-in engine will look for resources in the main add-in assembly and in all included add-in assemblies.
+		/// </remarks>
 		public string GetResourceString (string name)
 		{
 			return (string) GetResourceObject (name, true, null);
 		}
 
+		/// <summary>
+		/// Gets a resource string
+		/// </summary>
+		/// <param name="name">
+		/// Name of the resource
+		/// </param>
+		/// <param name="throwIfNotFound">
+		/// When set to true, an exception will be thrown if the resource is not found.
+		/// </param>
+		/// <returns>
+		/// The value of the resource string
+		/// </returns>
+		/// <remarks>
+		/// The add-in engine will look for resources in the main add-in assembly and in all included add-in assemblies.
+		/// </remarks>
 		public string GetResourceString (string name, bool throwIfNotFound)
 		{
 			return (string) GetResourceObject (name, throwIfNotFound, null);
 		}
 
+		/// <summary>
+		/// Gets a resource string
+		/// </summary>
+		/// <param name="name">
+		/// Name of the resource
+		/// </param>
+		/// <param name="throwIfNotFound">
+		/// When set to true, an exception will be thrown if the resource is not found.
+		/// </param>
+		/// <param name="culture">
+		/// Culture of the resource
+		/// </param>
+		/// <returns>
+		/// The value of the resource string
+		/// </returns>
+		/// <remarks>
+		/// The add-in engine will look for resources in the main add-in assembly and in all included add-in assemblies.
+		/// </remarks>
 		public string GetResourceString (string name, bool throwIfNotFound, CultureInfo culture)
 		{
 			return (string) GetResourceObject (name, throwIfNotFound, culture);
 		}
 
+		/// <summary>
+		/// Gets a resource object
+		/// </summary>
+		/// <param name="name">
+		/// Name of the resource
+		/// </param>
+		/// <returns>
+		/// Value of the resource
+		/// </returns>
+		/// <remarks>
+		/// The add-in engine will look for resources in the main add-in assembly and in all included add-in assemblies.
+		/// </remarks>
 		public object GetResourceObject (string name)
 		{
 			return GetResourceObject (name, true, null);
 		}
 
+		/// <summary>
+		/// Gets a resource object
+		/// </summary>
+		/// <param name="name">
+		/// Name of the resource
+		/// </param>
+		/// <param name="throwIfNotFound">
+		/// When set to true, an exception will be thrown if the resource is not found.
+		/// </param>
+		/// <returns>
+		/// Value of the resource
+		/// </returns>
+		/// <remarks>
+		/// The add-in engine will look for resources in the main add-in assembly and in all included add-in assemblies.
+		/// </remarks>
 		public object GetResourceObject (string name, bool throwIfNotFound)
 		{
 			return GetResourceObject (name, throwIfNotFound, null);
 		}
 
+		/// <summary>
+		/// Gets a resource object
+		/// </summary>
+		/// <param name="name">
+		/// Name of the resource
+		/// </param>
+		/// <param name="throwIfNotFound">
+		/// When set to true, an exception will be thrown if the resource is not found.
+		/// </param>
+		/// <param name="culture">
+		/// Culture of the resource
+		/// </param>
+		/// <returns>
+		/// Value of the resource
+		/// </returns>
+		/// <remarks>
+		/// The add-in engine will look for resources in the main add-in assembly and in all included add-in assemblies.
+		/// </remarks>
 		public object GetResourceObject (string name, bool throwIfNotFound, CultureInfo culture)
 		{
 			// Look in resources of this add-in
@@ -166,12 +265,45 @@ namespace Mono.Addins
 			return null;
 		}
 
-
+		/// <summary>
+		/// Gets a type defined in the add-in
+		/// </summary>
+		/// <param name="typeName">
+		/// Full name of the type
+		/// </param>
+		/// <returns>
+		/// A type.
+		/// </returns>
+		/// <remarks>
+		/// The type will be looked up in the assemblies that implement the add-in,
+		/// and recursivelly in all add-ins on which it depends.
+		/// 
+		/// This method throws an InvalidOperationException if the type can't be found.
+		/// </remarks>
 		public Type GetType (string typeName)
 		{
 			return GetType (typeName, true);
 		}
 		
+		/// <summary>
+		/// Gets a type defined in the add-in
+		/// </summary>
+		/// <param name="typeName">
+		/// Full name of the type
+		/// </param>
+		/// <param name="throwIfNotFound">
+		/// Indicates whether the method should throw an exception if the type can't be found.
+		/// </param>
+		/// <returns>
+		/// A <see cref="Type"/>
+		/// </returns>
+		/// <remarks>
+		/// The type will be looked up in the assemblies that implement the add-in,
+		/// and recursivelly in all add-ins on which it depends.
+		/// 
+		/// If the type can't be found, this method throw a InvalidOperationException if
+		/// 'throwIfNotFound' is 'true', or 'null' otherwise.
+		/// </remarks>
 		public Type GetType (string typeName, bool throwIfNotFound)
 		{
 			EnsureAssembliesLoaded ();
@@ -237,11 +369,49 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Creates an instance of a type defined in the add-in
+		/// </summary>
+		/// <param name="typeName">
+		/// Name of the type.
+		/// </param>
+		/// <returns>
+		/// A new instance of the type
+		/// </returns>
+		/// <remarks>
+		/// The type will be looked up in the assemblies that implement the add-in,
+		/// and recursivelly in all add-ins on which it depends.
+		/// 
+		/// This method throws an InvalidOperationException if the type can't be found.
+		/// 
+		/// The specified type must have a default constructor.
+		/// </remarks>
 		public object CreateInstance (string typeName)
 		{
 			return CreateInstance (typeName, true);
 		}
 		
+		/// <summary>
+		/// Creates an instance of a type defined in the add-in
+		/// </summary>
+		/// <param name="typeName">
+		/// Name of the type.
+		/// </param>
+		/// <param name="throwIfNotFound">
+		/// Indicates whether the method should throw an exception if the type can't be found.
+		/// </param>
+		/// <returns>
+		/// A new instance of the type
+		/// </returns>
+		/// <remarks>
+		/// The type will be looked up in the assemblies that implement the add-in,
+		/// and recursivelly in all add-ins on which it depends.
+		/// 
+		/// If the type can't be found, this method throw a InvalidOperationException if
+		/// 'throwIfNotFound' is 'true', or 'null' otherwise.
+		/// 
+		/// The specified type must have a default constructor.
+		/// </remarks>
 		public object CreateInstance (string typeName, bool throwIfNotFound)
 		{
 			Type type = GetType (typeName, throwIfNotFound);
@@ -251,16 +421,43 @@ namespace Mono.Addins
 				return Activator.CreateInstance (type, true);
 		}
 		
+		/// <summary>
+		/// Gets the path of an add-in file
+		/// </summary>
+		/// <param name="fileName">
+		/// Relative path of the file
+		/// </param>
+		/// <returns>
+		/// Full path of the file
+		/// </returns>
+		/// <remarks>
+		/// This method can be used to get the full path of a data file deployed together with the add-in.
+		/// </remarks>
 		public string GetFilePath (string fileName)
 		{
 			return Path.Combine (baseDirectory, fileName);
 		}
-		
+
+		/// <summary>
+		/// Gets the path of an add-in file
+		/// </summary>
+		/// <param name="filePath">
+		/// Components of the file path
+		/// </param>
+		/// <returns>
+		/// Full path of the file
+		/// </returns>
+		/// <remarks>
+		/// This method can be used to get the full path of a data file deployed together with the add-in.
+		/// </remarks>
 		public string GetFilePath (params string[] filePath)
 		{
 			return Path.Combine (baseDirectory, string.Join ("" + Path.DirectorySeparatorChar, filePath));
 		}
 		
+		/// <summary>
+		/// Path to a directory where add-ins can store private configuration or status data
+		/// </summary>
 		public string PrivateDataPath {
 			get {
 				if (privatePath == null) {
@@ -272,11 +469,38 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Gets the content of a resource
+		/// </summary>
+		/// <param name="resourceName">
+		/// Name of the resource
+		/// </param>
+		/// <returns>
+		/// Content of the resource, or null if not found
+		/// </returns>
+		/// <remarks>
+		/// The add-in engine will look for resources in the main add-in assembly and in all included add-in assemblies.
+		/// </remarks>
 		public Stream GetResource (string resourceName)
 		{
 			return GetResource (resourceName, false);
 		}
 		
+		/// <summary>
+		/// Gets the content of a resource
+		/// </summary>
+		/// <param name="resourceName">
+		/// Name of the resource
+		/// </param>
+		/// <param name="throwIfNotFound">
+		/// When set to true, an exception will be thrown if the resource is not found.
+		/// </param>
+		/// <returns>
+		/// Content of the resource.
+		/// </returns>
+		/// <remarks>
+		/// The add-in engine will look for resources in the main add-in assembly and in all included add-in assemblies.
+		/// </remarks>
 		public Stream GetResource (string resourceName, bool throwIfNotFound)
 		{
 			EnsureAssembliesLoaded ();
@@ -302,6 +526,9 @@ namespace Mono.Addins
 			return null;
 		}
 		
+		/// <summary>
+		/// Localizer which can be used to localize strings defined in this add-in
+		/// </summary>
 		public AddinLocalizer Localizer {
 			get {
 				if (localizer != null)

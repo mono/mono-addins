@@ -32,6 +32,9 @@ using System.Runtime.Serialization;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// Exception thrown when the add-in engine can't find a required add-in dependency
+	/// </summary>
 	[Serializable]
 	internal class MissingDependencyException: Exception
 	{

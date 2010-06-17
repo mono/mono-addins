@@ -23,24 +23,52 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+
 namespace Mono.Addins
 {
+	/// <summary>
+	/// Declares an add-in assembly import
+	/// </summary>
+	/// <remarks>
+	/// An add-in may be composed by several assemblies and data files.
+	/// Assemblies must be declared in the main assembly using this attribute, or in the XML manifest.
+	/// 
+	/// It is important to properly declare all files used by an add-in.
+	/// For example, when a type from the add-in is required (e.g. an ICommand implementation), 
+	/// only properly declared assemblies will be checked. 
+	/// This information is also used by setup tools to know exactly what needs to be packaged when creating 
+	/// an add-in package, or to know what needs to be deleted when removing an add-in.
+	/// </remarks>
 	public class ImportAddinAssemblyAttribute: Attribute
 	{
 		string filePath;
 		bool scan = true;
 		
+		/// <summary>
+		/// Initializes a new instance
+		/// </summary>
+		/// <param name="filePath">
+		/// Path to the assembly. Must be relative to the assembly declaring this attribute.
+		/// </param>
 		public ImportAddinAssemblyAttribute (string filePath)
 		{
 			this.filePath = filePath;
 		}
 		
+		/// <summary>
+		/// Path to the assembly. Must be relative to the assembly declaring this attribute.
+		/// </summary>
 		public string FilePath {
 			get { return filePath; }
 			set { filePath = value; }
 		}
 		
+		/// <summary>
+		/// When set to true (the default), the included assembly will be scanned
+		/// looking for extension point declarations.
+		/// </summary>
 		public bool Scan {
 			get { return this.scan; }
 			set { this.scan = value; }

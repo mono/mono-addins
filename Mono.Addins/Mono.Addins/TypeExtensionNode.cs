@@ -32,6 +32,28 @@ using System.Xml;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// An extension node which specifies a type.
+	/// </summary>
+	/// <remarks>
+	/// This class is a kind of Mono.Addins.ExtensionNode which can be used to register
+	/// types in an extension point. This is a very common case: a host application
+	/// defines an interface, and add-ins create classes that implement that interface.
+	/// The host will define an extension point which will use TypeExtensionNode as node
+	/// type. Add-ins will register the classes they implement in that extension point.
+	/// 
+	/// When the nodes of an extension point are of type TypeExtensionNode it is then
+	/// possible to use query methods such as AddinManager.GetExtensionObjects(string),
+	/// which will get all nodes in the provided extension path and will create an object
+	/// for each node.
+	/// 
+	/// When declaring extension nodes in an add-in manifest, the class names can be
+	/// specified using the 'class' or 'type' attribute. If none of those attributes is
+	/// provided, the class name will be taken from the 'id' attribute.
+	/// 
+	/// TypeExtensionNode is the default extension type used when no type is provided
+	/// in the definition of an extension point.
+	/// </remarks>
 	[ExtensionNode ("Type", Description="Specifies a class that will be used to create an extension object.")]
 	[NodeAttribute ("class", typeof(Type), false, Description="Name of the class. If a value is not provided, the class name will be taken from the 'id' attribute")]
 	public class TypeExtensionNode: InstanceExtensionNode
@@ -53,7 +75,10 @@ namespace Mono.Addins
 		{
 			return Activator.CreateInstance (Type);
 		}
-		
+
+		/// <summary>
+		/// Type of the object that this node creates
+		/// </summary>
 		public Type Type {
 			get {
 				if (type == null) {
@@ -66,10 +91,19 @@ namespace Mono.Addins
 		}
 	}
 	
+	/// <summary>
+	/// An extension node which specifies a type with custom extension metadata
+	/// </summary>
+	/// <remarks>
+	/// This is the default type for type extension nodes bound to a custom extension attribute.
+	/// </remarks>
 	public class TypeExtensionNode<T>: TypeExtensionNode where T:CustomExtensionAttribute
 	{
 		T data;
 		
+		/// <summary>
+		/// The custom attribute containing the extension metadata
+		/// </summary>
 		[NodeAttribute]
 		public T Data {
 			get { return data; }
