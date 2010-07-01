@@ -101,24 +101,39 @@ namespace Mono.Addins.Setup
 		}
 	}
 	
+	/// <summary>
+	/// An on-line add-in repository
+	/// </summary>
 	public interface AddinRepository
 	{
 		string File {
 			get;
 		}
 		
+		/// <summary>
+		/// Url of the repository
+		/// </summary>
 		string Url {
 			get;
 		}
 		
+		/// <summary>
+		/// Do not use. Use Title instead.
+		/// </summary>
 		string Name {
 			get;
 		}
 		
+		/// <summary>
+		/// Title of the repository
+		/// </summary>
 		string Title {
 			get;
 		}
-				
+		
+		/// <summary>
+		/// Last change timestamp
+		/// </summary>
 		DateTime LastModified {
 			get;
 		}

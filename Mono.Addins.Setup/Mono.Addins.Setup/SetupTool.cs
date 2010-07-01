@@ -38,6 +38,12 @@ using Mono.Addins.Description;
 
 namespace Mono.Addins.Setup
 {
+	/// <summary>
+	/// A command line add-in manager.
+	/// </summary>
+	/// <remarks>
+	/// This class can be used to provide an add-in management command line tool to applications.
+	/// </remarks>
 	public class SetupTool
 	{
 		Hashtable options = new Hashtable ();
@@ -51,6 +57,12 @@ namespace Mono.Addins.Setup
 		
 		int verbose = 1;
 		
+		/// <summary>
+		/// Creates a new instance
+		/// </summary>
+		/// <param name="registry">
+		/// Add-in registry to manage.
+		/// </param>
 		public SetupTool (AddinRegistry registry)
 		{
 			this.registry = registry;
@@ -58,26 +70,51 @@ namespace Mono.Addins.Setup
 			CreateCommands ();
 		}
 		
+		/// <summary>
+		/// Display name of the host application
+		/// </summary>
 		public string ApplicationName {
 			get { return applicationName; }
 			set { applicationName = value; }
 		}
 		
+		/// <summary>
+		/// Default add-in namespace of the application (optional). If set, only add-ins that belong to that namespace
+		/// will be shown in add-in lists.
+		/// </summary>
 		public string ApplicationNamespace {
 			get { return service.ApplicationNamespace; }
 			set { service.ApplicationNamespace = value; }
 		}
 		
+		/// <summary>
+		/// Enables or disables verbose output
+		/// </summary>
 		public bool VerboseOutput {
 			get { return verbose > 1; }
 			set { verbose = value ? 2 : 1; }
 		}
 		
+		/// <summary>
+		/// Sets or gets the verbose output level (0: normal output, 1:verbose, 2+:extra verbose)
+		/// </summary>
 		public int VerboseOutputLevel {
 			get { return verbose; }
 			set { verbose = value; }
 		}
 
+		/// <summary>
+		/// Runs the command line tool.
+		/// </summary>
+		/// <param name="args">
+		/// Array that contains the command line arguments
+		/// </param>
+		/// <param name="firstArgumentIndex">
+		/// Index of the arguments array that has the first argument for the management tool
+		/// </param>
+		/// <returns>
+		/// 0 if it succeeds. != 0 otherwise
+		/// </returns>
 		public int Run (string[] args, int firstArgumentIndex)
 		{
 			string[] aa = new string [args.Length - firstArgumentIndex];
@@ -85,6 +122,15 @@ namespace Mono.Addins.Setup
 			return Run (aa);
 		}
 		
+		/// <summary>
+		/// Runs the command line tool.
+		/// </summary>
+		/// <param name="args">
+		/// Command line arguments
+		/// </param>
+		/// <returns>
+		/// 0 if it succeeds. != 0 otherwise
+		/// </returns>
 		public int Run (string[] args)
 		{
 			if (args.Length == 0) {
@@ -768,6 +814,30 @@ namespace Mono.Addins.Setup
 			arguments = (string[]) list.ToArray (typeof(string));
 		}
 		
+		/// <summary>
+		/// Adds a custom command to the add-in manager
+		/// </summary>
+		/// <param name="category">
+		/// Category under which the command has to be shown in the help text
+		/// </param>
+		/// <param name="command">
+		/// Name of the command
+		/// </param>
+		/// <param name="shortName">
+		/// Short name of the command (it's an alias of the normal name)
+		/// </param>
+		/// <param name="arguments">
+		/// Formal description of the arguments that the command accepts. For example: "[addin-id|addin-file] [--xml] [--all] [--full] [--namespace <namespace>]"
+		/// </param>
+		/// <param name="description">
+		/// Short description of the command
+		/// </param>
+		/// <param name="longDescription">
+		/// Long description of the command
+		/// </param>
+		/// <param name="handler">
+		/// Delegate to be invoked to run the command
+		/// </param>
 		public void AddCommand (string category, string command, string shortName, string arguments, string description, string longDescription, SetupCommandHandler handler)
 		{
 			SetupCommand cmd = new SetupCommand (category, command, shortName, handler);
@@ -795,6 +865,12 @@ namespace Mono.Addins.Setup
 			return null;
 		}
 
+		/// <summary>
+		/// Prints help about the add-in management tool, or about a specific command
+		/// </summary>
+		/// <param name="parms">
+		/// Optional command name and arguments
+		/// </param>
 		public void PrintHelp (params string[] parms)
 		{
 			if (parms.Length == 0) {
@@ -1022,6 +1098,9 @@ namespace Mono.Addins.Setup
 		public string LongDescription = "";
 	}
 	
+	/// <summary>
+	/// A command handler
+	/// </summary>
 	public delegate void SetupCommandHandler (string[] args);
 }
 

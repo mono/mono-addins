@@ -31,6 +31,9 @@ using System.Collections;
 
 namespace Mono.Addins.Setup
 {
+	/// <summary>
+	/// An IAddinInstaller implementation which interacts with the user through the console
+	/// </summary>
 	public class ConsoleAddinInstaller: IAddinInstaller
 	{
 		bool prompt;
@@ -41,6 +44,9 @@ namespace Mono.Addins.Setup
 		{
 		}
 		
+		/// <summary>
+		/// Gets or sets whether the installer can ask questions to the user
+		/// </summary>
 		public bool UserPrompt {
 			get { return prompt; }
 			set {
@@ -50,6 +56,9 @@ namespace Mono.Addins.Setup
 			}
 		}
 		
+		/// <summary>
+		/// Log level (0:normal, 1+:verbose);
+		/// </summary>
 		public int LogLevel {
 			get { return logLevel; }
 			set { logLevel = value; }

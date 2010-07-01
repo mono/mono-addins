@@ -63,20 +63,35 @@ namespace Mono.Addins.Setup
 		}
 	}
 	
+	/// <summary>
+	/// A reference to an add-in available in an on-line repository
+	/// </summary>
 	public interface AddinRepositoryEntry
 	{
+		/// <summary>
+		/// Add-in information
+		/// </summary>
 		AddinHeader Addin {
 			get;
 		}
 		
+		/// <summary>
+		/// Url to the add-in package
+		/// </summary>
 		string Url {
 			get;
 		}
 		
+		/// <summary>
+		/// The URL of the repository
+		/// </summary>
 		string RepositoryUrl {
 			get;
 		}
 		
+		/// <summary>
+		/// Name of the repository
+		/// </summary>
 		string RepositoryName {
 			get;
 		}

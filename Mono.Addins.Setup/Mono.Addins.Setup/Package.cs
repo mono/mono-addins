@@ -32,25 +32,51 @@ using Mono.Addins.Description;
 
 namespace Mono.Addins.Setup
 {
+	/// <summary>
+	/// An add-in package
+	/// </summary>
 	public abstract class Package
 	{
 		internal Package ()
 		{
 		}
 		
+		/// <summary>
+		/// Name of the package
+		/// </summary>
 		public abstract string Name { get; }
 		
-		// Returns true if the package will be installed in the shared directory,
-		// false if it will be installed in the user directory.
+		/// <summary>
+		/// Returns true if the package will be installed in the shared directory, 
+		/// false if it will be installed in the user directory.
+		/// </summary>
 		public virtual bool SharedInstall {
 			get { return false; }
 		}
-		
+
+		/// <summary>
+		/// Creates a package object for an add-in available in an on-line repository
+		/// </summary>
+		/// <param name="repAddin">
+		/// An add-in reference
+		/// </param>
+		/// <returns>
+		/// The package
+		/// </returns>
 		public static Package FromRepository (AddinRepositoryEntry repAddin)
 		{
 			return AddinPackage.PackageFromRepository (repAddin);
 		}
 		
+		/// <summary>
+		/// Creates a package object for a local package file
+		/// </summary>
+		/// <param name="file">
+		/// Package file path
+		/// </param>
+		/// <returns>
+		/// The package
+		/// </returns>
 		public static Package FromFile (string file)
 		{
 			return AddinPackage.PackageFromFile (file);

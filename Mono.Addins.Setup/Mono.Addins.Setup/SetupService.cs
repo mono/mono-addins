@@ -41,6 +41,14 @@ using Mono.PkgConfig;
 
 namespace Mono.Addins.Setup
 {
+	/// <summary>
+	/// Provides tools for managing add-ins
+	/// </summary>
+	/// <remarks>
+	/// This class can be used to manage the add-ins of an application. It allows installing and uninstalling
+	/// add-ins, taking into account add-in dependencies. It provides methods for installing add-ins from on-line
+	/// repositories and tools for generating those repositories.
+	/// </remarks>
 	public class SetupService
 	{
 		RepositoryRegistry repositories;
@@ -51,6 +59,13 @@ namespace Mono.Addins.Setup
 		
 		AddinRegistry registry;
 		
+		/// <summary>
+		/// Initializes a new instance
+		/// </summary>
+		/// <remarks>
+		/// If the add-in manager is initialized (AddinManager.Initialize has been called), then this instance
+		/// will manage the add-in registry of the initialized engine.
+		/// </remarks>
 		public SetupService ()
 		{
 			if (AddinManager.IsInitialized)
@@ -62,6 +77,12 @@ namespace Mono.Addins.Setup
 			store = new AddinStore (this);
 		}
 		
+		/// <summary>
+		/// Initializes a new instance
+		/// </summary>
+		/// <param name="registry">
+		/// Add-in registry to manage
+		/// </param>
 		public SetupService (AddinRegistry registry)
 		{
 			this.registry = registry;
@@ -69,6 +90,9 @@ namespace Mono.Addins.Setup
 			store = new AddinStore (this);
 		}
 		
+		/// <summary>
+		/// The add-in registry being managed
+		/// </summary>
 		public AddinRegistry Registry {
 			get { return registry; }
 		}
@@ -81,11 +105,19 @@ namespace Mono.Addins.Setup
 			get { return Path.Combine (registry.RegistryPath, "addins-setup.config"); }
 		}
 		
+		/// <summary>
+		/// Default add-in namespace of the application (optional). If set, only add-ins that belong to that namespace
+		/// will be shown in add-in lists.
+		/// </summary>
 		public string ApplicationNamespace {
 			get { return applicationNamespace; }
 			set { applicationNamespace = value; }
 		}
 		
+		/// <summary>
+		/// Directory where to install add-ins. If not specified, the 'addins' subdirectory of the
+		/// registry location is used.
+		/// </summary>
 		public string InstallDirectory {
 			get {
 				if (installDirectory != null && installDirectory.Length > 0)
@@ -96,6 +128,9 @@ namespace Mono.Addins.Setup
 			set { installDirectory = value; }
 		}
 		
+		/// <summary>
+		/// Returns a RepositoryRegistry which can be used to manage on-line repository references
+		/// </summary>
 		public RepositoryRegistry Repositories {
 			get { return repositories; }
 		}
@@ -104,46 +139,188 @@ namespace Mono.Addins.Setup
 			get { return store; }
 		}
 		
+		/// <summary>
+		/// Resolves add-in dependencies.
+		/// </summary>
+		/// <param name="statusMonitor">
+		/// Progress monitor where to show progress status
+		/// </param>
+		/// <param name="addins">
+		/// List of add-ins to check
+		/// </param>
+		/// <param name="resolved">
+		/// Packages that need to be installed.
+		/// </param>
+		/// <param name="toUninstall">
+		/// Packages that need to be uninstalled.
+		/// </param>
+		/// <param name="unresolved">
+		/// Add-in dependencies that could not be resolved.
+		/// </param>
+		/// <returns>
+		/// True if all dependencies could be resolved.
+		/// </returns>
+		/// <remarks>
+		/// This method can be used to get a list of all packages that have to be installed in order to install
+		/// an add-in or set of add-ins. The list of packages to install will include the package that provides the
+		/// add-in, and all packages that provide the add-in dependencies. In some cases, packages may need to
+		/// be installed (for example, when an installed add-in needs to be upgraded).
+		/// </remarks>
 		public bool ResolveDependencies (IProgressStatus statusMonitor, AddinRepositoryEntry[] addins, out PackageCollection resolved, out PackageCollection toUninstall, out DependencyCollection unresolved)
 		{
 			return store.ResolveDependencies (statusMonitor, addins, out resolved, out toUninstall, out unresolved);
 		}
 		
+		/// <summary>
+		/// Resolves add-in dependencies.
+		/// </summary>
+		/// <param name="statusMonitor">
+		/// Progress monitor where to show progress status
+		/// </param>
+		/// <param name="packages">
+		/// Packages that need to be installed.
+		/// </param>
+		/// <param name="toUninstall">
+		/// Packages that need to be uninstalled.
+		/// </param>
+		/// <param name="unresolved">
+		/// Add-in dependencies that could not be resolved.
+		/// </param>
+		/// <returns>
+		/// True if all dependencies could be resolved.
+		/// </returns>
+		/// <remarks>
+		/// This method can be used to get a list of all packages that have to be installed in order to satisfy
+		/// the dependencies of a package or set of packages. The 'packages' argument must have the list of packages
+		/// to be resolved. When resolving dependencies, if there is any additional package that needs to be installed,
+		/// it will be added to the same 'packages' collection. In some cases, packages may need to
+		/// be installed (for example, when an installed add-in needs to be upgraded). Those packages will be added
+		/// to the 'toUninstall' collection. Packages that could not be resolved are added to the 'unresolved'
+		/// collection.
+		/// </remarks>
 		public bool ResolveDependencies (IProgressStatus statusMonitor, PackageCollection packages, out PackageCollection toUninstall, out DependencyCollection unresolved)
 		{
 			return store.ResolveDependencies (statusMonitor, packages, out toUninstall, out unresolved);
 		}
 		
+		/// <summary>
+		/// Installs add-in packages
+		/// </summary>
+		/// <param name="statusMonitor">
+		/// Progress monitor where to show progress status
+		/// </param>
+		/// <param name="files">
+		/// Paths to the packages to install
+		/// </param>
+		/// <returns>
+		/// True if the installation succeeded
+		/// </returns>
 		public bool Install (IProgressStatus statusMonitor, params string[] files)
 		{
 			return store.Install (statusMonitor, files);
 		}
 		
+		/// <summary>
+		/// Installs add-in packages from on-line repositories
+		/// </summary>
+		/// <param name="statusMonitor">
+		/// Progress monitor where to show progress status
+		/// </param>
+		/// <param name="addins">
+		/// References to the add-ins to be installed
+		/// </param>
+		/// <returns>
+		/// True if the installation succeeded
+		/// </returns>
 		public bool Install (IProgressStatus statusMonitor, params AddinRepositoryEntry[] addins)
 		{
 			return store.Install (statusMonitor, addins);
 		}
 		
+		/// <summary>
+		/// Installs add-in packages
+		/// </summary>
+		/// <param name="statusMonitor">
+		/// Progress monitor where to show progress status
+		/// </param>
+		/// <param name="packages">
+		/// Packages to install
+		/// </param>
+		/// <returns>
+		/// True if the installation succeeded
+		/// </returns>
 		public bool Install (IProgressStatus statusMonitor, PackageCollection packages)
 		{
 			return store.Install (statusMonitor, packages);
 		}
 		
+		/// <summary>
+		/// Uninstalls an add-in.
+		/// </summary>
+		/// <param name="statusMonitor">
+		/// Progress monitor where to show progress status
+		/// </param>
+		/// <param name="id">
+		/// Full identifier of the add-in to uninstall.
+		/// </param>
 		public void Uninstall (IProgressStatus statusMonitor, string id)
 		{
 			store.Uninstall (statusMonitor, id);
 		}
 		
+		/// <summary>
+		/// Gets information about an add-in
+		/// </summary>
+		/// <param name="addin">
+		/// The add-in
+		/// </param>
+		/// <returns>
+		/// Add-in header data
+		/// </returns>
 		public static AddinHeader GetAddinHeader (Addin addin)
 		{
 			return AddinInfo.ReadFromDescription (addin.Description);
 		}
 		
+		/// <summary>
+		/// Gets a list of add-ins which depend on an add-in
+		/// </summary>
+		/// <param name="id">
+		/// Full identifier of an add-in.
+		/// </param>
+		/// <param name="recursive">
+		/// When set to True, dependencies will be gathered recursivelly
+		/// </param>
+		/// <returns>
+		/// List of dependent add-ins.
+		/// </returns>
+		/// <remarks>
+		/// This methods returns a list of add-ins which have the add-in identified by 'id' as a direct
+		/// (or indirect if recursive=True) dependency.
+		/// </remarks>
 		public Addin[] GetDependentAddins (string id, bool recursive)
 		{
 			return store.GetDependentAddins (id, recursive);
 		}
 		
+		/// <summary>
+		/// Packages an add-in
+		/// </summary>
+		/// <param name="statusMonitor">
+		/// Progress monitor where to show progress status
+		/// </param>
+		/// <param name="targetDirectory">
+		/// Directory where to generate the package
+		/// </param>
+		/// <param name="filePaths">
+		/// Paths to the add-ins to be packaged. Paths can be either the main assembly of an add-in, or an add-in
+		/// manifest (.addin or .addin.xml).
+		/// </param>
+		/// <remarks>
+		/// This method can be used to create a package for an add-in, which can then be pushed to an on-line
+		/// repository. The package will include the main assembly or manifest of the add-in and any external
+		/// file declared in the add-in metadata.
+		/// </remarks>
 		public void BuildPackage (IProgressStatus statusMonitor, string targetDirectory, params string[] filePaths)
 		{
 			foreach (string file in filePaths)
@@ -240,6 +417,19 @@ namespace Mono.Addins.Setup
 				parent.RemoveChild (e);
 		}
 		
+		/// <summary>
+		/// Generates an on-line repository
+		/// </summary>
+		/// <param name="statusMonitor">
+		/// Progress monitor where to show progress status
+		/// </param>
+		/// <param name="path">
+		/// Path to the directory that contains the add-ins and that is going to be published
+		/// </param>
+		/// <remarks>
+		/// This method generates the index files required to publish a directory as an online repository
+		/// of add-ins.
+		/// </remarks>
 		public void BuildRepository (IProgressStatus statusMonitor, string path)
 		{
 			string mainPath = Path.Combine (path, "main.mrep");
@@ -371,11 +561,32 @@ namespace Mono.Addins.Setup
 				Directory.Delete (RepositoryCachePath, true);
 		}
 		
+		/// <summary>
+		/// Gets a reference to an extensible application
+		/// </summary>
+		/// <param name="name">
+		/// Name of the application
+		/// </param>
+		/// <returns>
+		/// The Application object. Null if not found.
+		/// </returns>
 		public static Application GetExtensibleApplication (string name)
 		{
 			return GetExtensibleApplication (name, null);
 		}
 		
+		/// <summary>
+		/// Gets a reference to an extensible application
+		/// </summary>
+		/// <param name="name">
+		/// Name of the application
+		/// </param>
+		/// <param name="searchPaths">
+		/// Custom paths where to look for the application.
+		/// </param>
+		/// <returns>
+		/// The Application object. Null if not found.
+		/// </returns>
 		public static Application GetExtensibleApplication (string name, IEnumerable<string> searchPaths)
 		{
 			AddinsPcFileCache pcc = GetAddinsPcFileCache (searchPaths);
@@ -386,11 +597,26 @@ namespace Mono.Addins.Setup
 				return null;
 		}
 		
+		/// <summary>
+		/// Gets a lis of all known extensible applications
+		/// </summary>
+		/// <returns>
+		/// A list of applications.
+		/// </returns>
 		public static Application[] GetExtensibleApplications ()
 		{
 			return GetExtensibleApplications (null);
 		}
 		
+		/// <summary>
+		/// Gets a lis of all known extensible applications
+		/// </summary>
+		/// <param name="searchPaths">
+		/// Custom paths where to look for applications.
+		/// </param>
+		/// <returns>
+		/// A list of applications.
+		/// </returns>
 		public static Application[] GetExtensibleApplications (IEnumerable<string> searchPaths)
 		{
 			List<Application> list = new List<Application> ();
@@ -463,6 +689,9 @@ namespace Mono.Addins.Setup
 		}
 	}
 	
+	/// <summary>
+	/// A registered extensible application
+	/// </summary>
 	public class Application
 	{
 		AddinRegistry registry;
@@ -481,6 +710,9 @@ namespace Mono.Addins.Setup
 			testCommand = pinfo.GetData ("MonoAddinsTestCommand");
 		}
 		
+		/// <summary>
+		/// Add-in registry of the application
+		/// </summary>
 		public AddinRegistry Registry {
 			get {
 				if (registry == null)
@@ -489,30 +721,45 @@ namespace Mono.Addins.Setup
 			}
 		}
 
+		/// <summary>
+		/// Description of the application
+		/// </summary>
 		public string Description {
 			get {
 				return description;
 			}
 		}
 
+		/// <summary>
+		/// Name of the application
+		/// </summary>
 		public string Name {
 			get {
 				return name;
 			}
 		}
 
+		/// <summary>
+		/// Path to the add-in registry
+		/// </summary>
 		public string RegistryPath {
 			get {
 				return registryPath;
 			}
 		}
 
+		/// <summary>
+		/// Path to the directory that contains the main executable assembly of the application
+		/// </summary>
 		public string StartupPath {
 			get {
 				return startupPath;
 			}
 		}
 
+		/// <summary>
+		/// Command to be used to execute the application in add-in development mode.
+		/// </summary>
 		public string TestCommand {
 			get {
 				return testCommand;

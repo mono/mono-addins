@@ -217,56 +217,104 @@ namespace Mono.Addins.Setup
 		}
 	}
 
+	/// <summary>
+	/// Basic add-in information
+	/// </summary>
 	public interface AddinHeader
 	{
+		/// <summary>
+		/// Full identifier of the add-in
+		/// </summary>
 		string Id {
 			get;
 		}
 		
+		/// <summary>
+		/// Display name of the add-in
+		/// </summary>
 		string Name {
 			get;
 		}
 		
+		/// <summary>
+		/// Namespace of the add-in
+		/// </summary>
 		string Namespace {
 			get;
 		}
 		
+		/// <summary>
+		/// Version of the add-in
+		/// </summary>
 		string Version {
 			get;
 		}
 		
+		/// <summary>
+		/// Version with which this add-in is compatible
+		/// </summary>
 		string BaseVersion {
 			get;
 		}
 		
+		/// <summary>
+		/// Add-in author
+		/// </summary>
 		string Author {
 			get;
 		}
 		
+		/// <summary>
+		/// Add-in copyright
+		/// </summary>
 		string Copyright {
 			get;
 		}
 		
+		/// <summary>
+		/// Web page URL with more information about the add-in
+		/// </summary>
 		string Url {
 			get;
 		}
 		
+		/// <summary>
+		/// Description of the add-in
+		/// </summary>
 		string Description {
 			get;
 		}
 		
+		/// <summary>
+		/// Category of the add-in
+		/// </summary>
 		string Category {
 			get;
 		}
 		
+		/// <summary>
+		/// Dependencies of the add-in
+		/// </summary>
 		DependencyCollection Dependencies {
 			get;
 		}
 		
+		/// <summary>
+		/// Optional dependencies of the add-in
+		/// </summary>
 		DependencyCollection OptionalDependencies {
 			get;
 		}
 		
+		/// <summary>
+		/// Compares the versions of two add-ins
+		/// </summary>
+		/// <param name="other">
+		/// Another add-in
+		/// </param>
+		/// <returns>
+		/// Result of comparison
+		/// </returns>
 		int CompareVersionTo (AddinHeader other);
 	}
 }

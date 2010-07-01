@@ -1,3 +1,17 @@
+2010-07-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.Setup/Package.cs:
+	* Mono.Addins.Setup/AddinInfo.cs:
+	* Mono.Addins.Setup/SetupTool.cs:
+	* Mono.Addins.Setup/SetupService.cs:
+	* Mono.Addins.Setup/RepositoryRecord.cs:
+	* Mono.Addins.Setup/InstallException.cs:
+	* Mono.Addins.Setup/PackageCollection.cs:
+	* Mono.Addins.Setup/RepositoryRegistry.cs:
+	* Mono.Addins.Setup/AddinRepositoryEntry.cs:
+	* Mono.Addins.Setup/ConsoleAddinInstaller.cs: Added some
+	  documentation.
+
 2010-05-25  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Setup.csproj: Fix output directory for the
