@@ -34,6 +34,7 @@ using Mono.Addins.Description;
 
 namespace Mono.Addins.Description
 {
+	[Obsolete]
 	[XmlType ("NativeReference")]
 	public class NativeDependency: Dependency
 	{

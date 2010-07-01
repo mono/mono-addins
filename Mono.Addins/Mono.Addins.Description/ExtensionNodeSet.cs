@@ -35,6 +35,15 @@ using System.Collections.Specialized;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// An extension node set definition.
+	/// </summary>
+	/// <remarks>
+	/// Node sets allow grouping a set of extension node declarations and give an identifier to that group
+	/// (the node set). Once a node set is declared, it can be referenced from several extension points
+	/// which use the same extension node structure. Extension node sets also allow declaring recursive
+	/// extension nodes, that is, extension nodes with a tree structure.
+	/// </remarks>
 	public class ExtensionNodeSet: ObjectDescription
 	{
 		string id;
@@ -49,6 +58,12 @@ namespace Mono.Addins.Description
 			id = element.GetAttribute (IdAttribute);
 		}
 		
+		/// <summary>
+		/// Copies data from another node set
+		/// </summary>
+		/// <param name='nset'>
+		/// Node set from which to copy
+		/// </param>
 		public void CopyFrom (ExtensionNodeSet nset)
 		{
 			id = nset.id;
@@ -105,10 +120,19 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.ExtensionNodeSet"/> class.
+		/// </summary>
 		public ExtensionNodeSet ()
 		{
 		}
 		
+		/// <summary>
+		/// Gets or sets the identifier of the node set.
+		/// </summary>
+		/// <value>
+		/// The identifier.
+		/// </value>
 		public string Id {
 			get { return id != null ? id : string.Empty; }
 			set { id = value; }
@@ -118,6 +142,12 @@ namespace Mono.Addins.Description
 			get { return "id"; }
 		}
 		
+		/// <summary>
+		/// Gets the node types allowed in this node set.
+		/// </summary>
+		/// <value>
+		/// The node types.
+		/// </value>
 		public ExtensionNodeTypeCollection NodeTypes {
 			get {
 				if (nodeTypes == null) {
@@ -130,6 +160,12 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets a list of other node sets included in this node set.
+		/// </summary>
+		/// <value>
+		/// The node sets.
+		/// </value>
 		public NodeSetIdCollection NodeSets {
 			get {
 				if (nodeSets == null) {
@@ -142,11 +178,18 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets all the allowed node types.
+		/// </summary>
+		/// <returns>
+		/// The allowed node types.
+		/// </returns>
+		/// <remarks>
+		/// Gets all allowed node types, including those defined in included node sets.
+		/// This method only works for descriptions loaded from a registry.
+		/// </remarks>
 		public ExtensionNodeTypeCollection GetAllowedNodeTypes ()
 		{
-			// Gets all allowed node types, including those defined in node sets
-			// It only works for descriptions generated from a registry
-			
 			if (cachedAllowedTypes == null) {
 				cachedAllowedTypes = new ExtensionNodeTypeCollection ();
 				GetAllowedNodeTypes (new Hashtable (), cachedAllowedTypes);
@@ -260,20 +303,41 @@ namespace Mono.Addins.Description
 		}
 	}
 	
+	/// <summary>
+	/// A collection of node set identifiers
+	/// </summary>
 	public class NodeSetIdCollection: IEnumerable
 	{
 		// A list of string[2]. Item 0 is the node set id, item 1 is the addin that defines it.
 		
 		ArrayList list = new ArrayList ();
 		
+		/// <summary>
+		/// Gets the node set identifier at the specified index.
+		/// </summary>
+		/// <param name='n'>
+		/// An index.
+		/// </param>
 		public string this [int n] {
 			get { return (string) list [n]; }
 		}
 		
+		/// <summary>
+		/// Gets the item count.
+		/// </summary>
+		/// <value>
+		/// The count.
+		/// </value>
 		public int Count {
 			get { return list.Count; }
 		}
 		
+		/// <summary>
+		/// Gets the collection enumerator.
+		/// </summary>
+		/// <returns>
+		/// The enumerator.
+		/// </returns>
 		public IEnumerator GetEnumerator ()
 		{
 			ArrayList ll = new ArrayList (list.Count);
@@ -282,12 +346,24 @@ namespace Mono.Addins.Description
 			return ll.GetEnumerator ();
 		}
 		
+		/// <summary>
+		/// Add the specified node set identifier.
+		/// </summary>
+		/// <param name='nodeSetId'>
+		/// Node set identifier.
+		/// </param>
 		public void Add (string nodeSetId)
 		{
 			if (!Contains (nodeSetId))
 				list.Add (new string [] { nodeSetId, null });
 		}
 		
+		/// <summary>
+		/// Remove a node set identifier
+		/// </summary>
+		/// <param name='nodeSetId'>
+		/// Node set identifier.
+		/// </param>
 		public void Remove (string nodeSetId)
 		{
 			int i = IndexOf (nodeSetId);
@@ -295,16 +371,34 @@ namespace Mono.Addins.Description
 				list.RemoveAt (i);
 		}
 		
+		/// <summary>
+		/// Clears the collection
+		/// </summary>
 		public void Clear ()
 		{
 			list.Clear ();
 		}
 		
+		/// <summary>
+		/// Checks if the specified identifier is present in the collection
+		/// </summary>
+		/// <param name='nodeSetId'>
+		/// <c>true</c> if the node set identifier is present.
+		/// </param>
 		public bool Contains (string nodeSetId)
 		{
 			return IndexOf (nodeSetId) != -1;
 		}
 
+		/// <summary>
+		/// Returns the index of the specified node set identifier
+		/// </summary>
+		/// <returns>
+		/// The index.
+		/// </returns>
+		/// <param name='nodeSetId'>
+		/// A node set identifier.
+		/// </param>
 		public int IndexOf (string nodeSetId)
 		{
 			for (int n=0; n<list.Count; n++)

@@ -32,8 +32,14 @@ using System.Collections;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// A collection of extensions
+	/// </summary>
 	public class ExtensionCollection: ObjectDescriptionCollection
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.ExtensionCollection"/> class.
+		/// </summary>
 		public ExtensionCollection ()
 		{
 		}
@@ -42,6 +48,12 @@ namespace Mono.Addins.Description
 		{
 		}
 		
+		/// <summary>
+		/// Gets the <see cref="Mono.Addins.Description.Extension"/> at the specified index.
+		/// </summary>
+		/// <param name='n'>
+		/// The index.
+		/// </param>
 		public Extension this [int n] {
 			get { return (Extension) List [n]; }
 		}

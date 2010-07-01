@@ -35,12 +35,18 @@ using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// Definition of a dependency of an add-in on an assembly.
+	/// </summary>
 	[XmlType ("AssemblyDependency")]
 	public class AssemblyDependency: Dependency
 	{
 		string fullName;
 		string package;
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.AssemblyDependency"/> class.
+		/// </summary>
 		public AssemblyDependency ()
 		{
 		}
@@ -63,16 +69,34 @@ namespace Mono.Addins.Description
 			Element.SetAttribute ("package", Package);
 		}
 		
+		/// <summary>
+		/// Gets or sets the full name of the assembly
+		/// </summary>
+		/// <value>
+		/// The full name of the assembly.
+		/// </value>
 		public string FullName {
 			get { return fullName != null ? fullName : string.Empty; }
 			set { fullName = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets the name of the package that provides the assembly.
+		/// </summary>
+		/// <value>
+		/// The name of the package that provides the assembly.
+		/// </value>
 		public string Package {
 			get { return package != null ? package : string.Empty; }
 			set { package = value; }
 		}
 		
+		/// <summary>
+		/// Display name of the dependency
+		/// </summary>
+		/// <value>
+		/// The name.
+		/// </value>
 		public override string Name {
 			get {
 				if (Package.Length > 0)

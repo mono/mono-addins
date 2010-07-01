@@ -31,8 +31,14 @@ using System.Collections;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// A collection of module descriptions
+	/// </summary>
 	public class ModuleCollection: ObjectDescriptionCollection
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.ModuleCollection"/> class.
+		/// </summary>
 		public ModuleCollection ()
 		{
 		}
@@ -41,6 +47,12 @@ namespace Mono.Addins.Description
 		{
 		}
 		
+		/// <summary>
+		/// Gets the <see cref="Mono.Addins.Description.ModuleDescription"/> at the specified index.
+		/// </summary>
+		/// <param name='n'>
+		/// The index.
+		/// </param>
 		public ModuleDescription this [int n] {
 			get { return (ModuleDescription) List [n]; }
 		}

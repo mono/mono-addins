@@ -37,8 +37,13 @@ using Mono.Addins.Database;
 
 namespace Mono.Addins.Description
 {
-	// This class represent an add-in configuration file. It has properties for getting
-	// all information, and methods for loading and saving files.
+	/// <summary>
+	/// An add-in description
+	/// </summary>
+	/// <remarks>
+	/// This class represent an add-in manifest. It has properties for getting
+	/// all information, and methods for loading and saving files.
+	///	</remarks>
 	public class AddinDescription: IBinaryXmlElement
 	{
 		XmlDocument configDoc;
@@ -97,25 +102,58 @@ namespace Mono.Addins.Description
 			set { ownerDatabase = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets the path to the main addin file.
+		/// </summary>
+		/// <value>
+		/// The addin file.
+		/// </value>
+		/// <remarks>
+		/// The add-in file can be either the main assembly of an add-in or an xml manifest.
+		/// </remarks>
 		public string AddinFile {
 			get { return sourceAddinFile; }
 			set { sourceAddinFile = value; }
 		}
 		
+		/// <summary>
+		/// Gets the addin identifier.
+		/// </summary>
+		/// <value>
+		/// The addin identifier.
+		/// </value>
 		public string AddinId {
 			get { return Addin.GetFullId (Namespace, LocalId, Version); }
 		}
 		
+		/// <summary>
+		/// Gets or sets the local identifier.
+		/// </summary>
+		/// <value>
+		/// The local identifier.
+		/// </value>
 		public string LocalId {
 			get { return id != null ? id : string.Empty; }
 			set { id = value; hasUserId = true; }
 		}
 
+		/// <summary>
+		/// Gets or sets the namespace.
+		/// </summary>
+		/// <value>
+		/// The namespace.
+		/// </value>
 		public string Namespace {
 			get { return ns != null ? ns : string.Empty; }
 			set { ns = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the display name of the add-in.
+		/// </summary>
+		/// <value>
+		/// The name.
+		/// </value>
 		public string Name {
 			get {
 				if (name != null && name.Length > 0)
@@ -130,41 +168,89 @@ namespace Mono.Addins.Description
 			set { name = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the version.
+		/// </summary>
+		/// <value>
+		/// The version.
+		/// </value>
 		public string Version {
 			get { return version != null ? version : string.Empty; }
 			set { version = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the version of the add-in with which this add-in is backwards compatible.
+		/// </summary>
+		/// <value>
+		/// The compat version.
+		/// </value>
 		public string CompatVersion {
 			get { return compatVersion != null ? compatVersion : string.Empty; }
 			set { compatVersion = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the author.
+		/// </summary>
+		/// <value>
+		/// The author.
+		/// </value>
 		public string Author {
 			get { return author != null ? author : string.Empty; }
 			set { author = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the Url where more information about the add-in can be found.
+		/// </summary>
+		/// <value>
+		/// The URL.
+		/// </value>
 		public string Url {
 			get { return url != null ? url : string.Empty; }
 			set { url = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the copyright.
+		/// </summary>
+		/// <value>
+		/// The copyright.
+		/// </value>
 		public string Copyright {
 			get { return copyright != null ? copyright : string.Empty; }
 			set { copyright = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the description of the add-in.
+		/// </summary>
+		/// <value>
+		/// The description.
+		/// </value>
 		public string Description {
 			get { return description != null ? description : string.Empty; }
 			set { description = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the category of the add-in.
+		/// </summary>
+		/// <value>
+		/// The category.
+		/// </value>
 		public string Category {
 			get { return category != null ? category : string.Empty; }
 			set { category = value; }
 		}
 		
+		/// <summary>
+		/// Gets the base path for locating external files relative to the add-in.
+		/// </summary>
+		/// <value>
+		/// The base path.
+		/// </value>
 		public string BasePath {
 			get { return basePath != null ? basePath : string.Empty; }
 		}
@@ -174,16 +260,34 @@ namespace Mono.Addins.Description
 			basePath = path;
 		}
 		
+		/// <summary>
+		/// Gets or sets a value indicating whether this instance is an add-in root.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance is an add-in root; otherwise, <c>false</c>.
+		/// </value>
 		public bool IsRoot {
 			get { return isroot; }
 			set { isroot = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets a value indicating whether this add-in is enabled by default.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if enabled by default; otherwise, <c>false</c>.
+		/// </value>
 		public bool EnabledByDefault {
 			get { return defaultEnabled; }
 			set { defaultEnabled = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets the add-in flags.
+		/// </summary>
+		/// <value>
+		/// The flags.
+		/// </value>
 		public AddinFlags Flags {
 			get { return flags; }
 			set { flags = value; }
@@ -194,14 +298,32 @@ namespace Mono.Addins.Description
 			set { hasUserId = value; }
 		}
 		
+		/// <summary>
+		/// Gets a value indicating whether this add-in can be disabled.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this add-in can be disabled; otherwise, <c>false</c>.
+		/// </value>
 		public bool CanDisable {
 			get { return (flags & AddinFlags.CantDisable) == 0 && !IsHidden; }
 		}
 		
+		/// <summary>
+		/// Gets a value indicating whether this add-in can be uninstalled.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance can be uninstalled; otherwise, <c>false</c>.
+		/// </value>
 		public bool CanUninstall {
 			get { return (flags & AddinFlags.CantUninstall) == 0 && !IsHidden; }
 		}
 		
+		/// <summary>
+		/// Gets a value indicating whether this add-in is hidden.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this add-in is hidden; otherwise, <c>false</c>.
+		/// </value>
 		public bool IsHidden {
 			get { return (flags & AddinFlags.Hidden) != 0; }
 		}
@@ -212,6 +334,15 @@ namespace Mono.Addins.Description
 				   (CompatVersion.Length == 0 || Addin.CompareVersions (ver, CompatVersion) <= 0);
 		}
 		
+		/// <summary>
+		/// Gets all external files
+		/// </summary>
+		/// <value>
+		/// All files.
+		/// </value>
+		/// <remarks>
+		/// External files are data files and assemblies explicitly referenced in the Runtime section of the add-in manifest.
+		/// </remarks>
 		public StringCollection AllFiles {
 			get {
 				StringCollection col = new StringCollection ();
@@ -226,6 +357,12 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets all paths to be ignored by the add-in scanner.
+		/// </summary>
+		/// <value>
+		/// All paths to be ignored.
+		/// </value>
 		public StringCollection AllIgnorePaths {
 			get {
 				StringCollection col = new StringCollection ();
@@ -240,6 +377,12 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets the main module.
+		/// </summary>
+		/// <value>
+		/// The main module.
+		/// </value>
 		public ModuleDescription MainModule {
 			get {
 				if (mainModule == null) {
@@ -253,6 +396,17 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets the optional modules.
+		/// </summary>
+		/// <value>
+		/// The optional modules.
+		/// </value>
+		/// <remarks>
+		/// Optional modules can be used to declare extensions which will be registered only if some specified
+		/// add-in dependencies can be satisfied. Dependencies specified in optional modules are 'soft dependencies',
+		/// which means that they don't need to be satisfied in order to load the add-in.
+		/// </remarks>
 		public ModuleCollection OptionalModules {
 			get {
 				if (optionalModules == null) {
@@ -266,6 +420,12 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets all modules (including the main module and all optional modules)
+		/// </summary>
+		/// <value>
+		/// All modules.
+		/// </value>
 		public ModuleCollection AllModules {
 			get {
 				ModuleCollection col = new ModuleCollection (this);
@@ -276,6 +436,12 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets the extension node sets.
+		/// </summary>
+		/// <value>
+		/// The extension node sets.
+		/// </value>
 		public ExtensionNodeSetCollection ExtensionNodeSets {
 			get {
 				if (nodeSets == null) {
@@ -289,6 +455,12 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets the extension points.
+		/// </summary>
+		/// <value>
+		/// The extension points.
+		/// </value>
 		public ExtensionPointCollection ExtensionPoints {
 			get {
 				if (extensionPoints == null) {
@@ -302,6 +474,12 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets the condition types.
+		/// </summary>
+		/// <value>
+		/// The condition types.
+		/// </value>
 		public ConditionTypeDescriptionCollection ConditionTypes {
 			get {
 				if (conditionTypes == null) {
@@ -315,11 +493,26 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets or sets the add-in localizer.
+		/// </summary>
+		/// <value>
+		/// The description of the add-in localizer for this add-in.
+		/// </value>
 		public ExtensionNodeDescription Localizer {
 			get { return localizer; }
 			set { localizer = value; }
 		}
 		
+		/// <summary>
+		/// Adds an extension point.
+		/// </summary>
+		/// <returns>
+		/// The extension point.
+		/// </returns>
+		/// <param name='path'>
+		/// Path that identifies the new extension point.
+		/// </param>
 		public ExtensionPoint AddExtensionPoint (string path)
 		{
 			ExtensionPoint ep = new ExtensionPoint ();
@@ -376,6 +569,12 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets or sets file where this description is stored
+		/// </summary>
+		/// <value>
+		/// The file path.
+		/// </value>
 		public string FileName {
 			get { return configFile; }
 			set { configFile = value; }
@@ -416,12 +615,30 @@ namespace Mono.Addins.Description
 			return false;
 		}
 		
+		/// <summary>
+		/// Saves the add-in description.
+		/// </summary>
+		/// <param name='fileName'>
+		/// File name where to save this instance
+		/// </param>
+		/// <remarks>
+		/// Saves the add-in description to the specified file and sets the FileName property.
+		/// </remarks>
 		public void Save (string fileName)
 		{
 			configFile = fileName;
 			Save ();
 		}
 		
+		/// <summary>
+		/// Saves the add-in description.
+		/// </summary>
+		/// <exception cref='InvalidOperationException'>
+		/// It is thrown if FileName is not set
+		/// </exception>
+		/// <remarks>
+		/// The description is saved to the file specified in the FileName property.
+		/// </remarks>
 		public void Save ()
 		{
 			if (configFile == null)
@@ -436,6 +653,12 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Generates an XML representation of the add-in description
+		/// </summary>
+		/// <returns>
+		/// An XML manifest.
+		/// </returns>
 		public XmlDocument SaveToXml ()
 		{
 			SaveXml ();
@@ -540,6 +763,12 @@ namespace Mono.Addins.Description
 		}
 		
 
+		/// <summary>
+		/// Load an add-in description from a file
+		/// </summary>
+		/// <param name='configFile'>
+		/// The file.
+		/// </param>
 		public static AddinDescription Read (string configFile)
 		{
 			AddinDescription config;
@@ -550,11 +779,29 @@ namespace Mono.Addins.Description
 			return config;
 		}
 		
+		/// <summary>
+		/// Load an add-in description from a stream
+		/// </summary>
+		/// <param name='stream'>
+		/// The stream
+		/// </param>
+		/// <param name='basePath'>
+		/// The path to be used to resolve relative file paths.
+		/// </param>
 		public static AddinDescription Read (Stream stream, string basePath)
 		{
 			return Read (new StreamReader (stream), basePath);
 		}
 		
+		/// <summary>
+		/// Load an add-in description from a text reader
+		/// </summary>
+		/// <param name='reader'>
+		/// The text reader
+		/// </param>
+		/// <param name='basePath'>
+		/// The path to be used to resolve relative file paths.
+		/// </param>
 		public static AddinDescription Read (TextReader reader, string basePath)
 		{
 			AddinDescription config = new AddinDescription ();
@@ -637,6 +884,13 @@ namespace Mono.Addins.Description
 //			BinaryXmlReader.DumpFile (configFile);
 		}
 		
+		/// <summary>
+		/// Verify this instance.
+		/// </summary>
+		/// <remarks>
+		/// This method checks all the definitions in the description and returns a list of errors.
+		/// If the returned list is empty, it means that the description is valid.
+		/// </remarks>
 		public StringCollection Verify ()
 		{
 			StringCollection errors = new StringCollection ();

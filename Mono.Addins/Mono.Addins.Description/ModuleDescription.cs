@@ -36,6 +36,13 @@ using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// A module definition.
+	/// </summary>
+	/// <remarks>
+	/// Optional modules can be used to declare extensions which will be registered only if some
+	/// specified add-in dependencies can be satisfied.
+	/// </remarks>
 	public class ModuleDescription: ObjectDescription
 	{
 		StringCollection assemblies;
@@ -52,10 +59,22 @@ namespace Mono.Addins.Description
 			Element = element;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.ModuleDescription"/> class.
+		/// </summary>
 		public ModuleDescription ()
 		{
 		}
 
+		/// <summary>
+		/// Checks if this module depends on the specified add-in.
+		/// </summary>
+		/// <returns>
+		/// <c>true</c> if there is a dependency.
+		/// </returns>
+		/// <param name='addinId'>
+		/// Identifier of the add-in
+		/// </param>
 		public bool DependsOnAddin (string addinId)
 		{
 			AddinDescription desc = Parent as AddinDescription;
@@ -71,6 +90,9 @@ namespace Mono.Addins.Description
 			return false;
 		}
 		
+		/// <summary>
+		/// Gets the list of paths to be ignored by the add-in scanner.
+		/// </summary>
 		public StringCollection IgnorePaths {
 			get {
 				if (ignorePaths == null)
@@ -79,6 +101,15 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets all external files
+		/// </summary>
+		/// <value>
+		/// All files.
+		/// </value>
+		/// <remarks>
+		/// External files are data files and assemblies explicitly referenced in the Runtime section of the add-in manifest.
+		/// </remarks>
 		public StringCollection AllFiles {
 			get {
 				StringCollection col = new StringCollection ();
@@ -92,6 +123,9 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets the list of external assemblies used by this module.
+		/// </summary>
 		public StringCollection Assemblies {
 			get {
 				if (assemblies == null) {
@@ -104,6 +138,9 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets the list of external data files used by this module
+		/// </summary>
 		public StringCollection DataFiles {
 			get {
 				if (dataFiles == null) {
@@ -116,6 +153,9 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets the dependencies of this module
+		/// </summary>
 		public DependencyCollection Dependencies {
 			get {
 				if (dependencies == null) {
@@ -141,6 +181,9 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets the extensions of this module
+		/// </summary>
 		public ExtensionCollection Extensions {
 			get {
 				if (extensions == null) {
@@ -154,6 +197,21 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Adds an extension node to the module.
+		/// </summary>
+		/// <returns>
+		/// The extension node.
+		/// </returns>
+		/// <param name='path'>
+		/// Path that identifies the extension point.
+		/// </param>
+		/// <param name='nodeName'>
+		/// Node name.
+		/// </param>
+		/// <remarks>
+		/// This method creates a new Extension object for the provided path if none exist.
+		/// </remarks>
 		public ExtensionNodeDescription AddExtensionNode (string path, string nodeName)
 		{
 			ExtensionNodeDescription node = new ExtensionNodeDescription (nodeName);
@@ -161,6 +219,18 @@ namespace Mono.Addins.Description
 			return node;
 		}
 		
+		/// <summary>
+		/// Gets an extension instance.
+		/// </summary>
+		/// <returns>
+		/// The extension instance.
+		/// </returns>
+		/// <param name='path'>
+		/// Path that identifies the extension point that the extension extends.
+		/// </param>
+		/// <remarks>
+		/// This method creates a new Extension object for the provided path if none exist.
+		/// </remarks>
 		public Extension GetExtension (string path)
 		{
 			foreach (Extension e in Extensions) {
@@ -218,6 +288,15 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Adds an add-in reference (there is a typo in the method name)
+		/// </summary>
+		/// <param name='id'>
+		/// Identifier of the add-in.
+		/// </param>
+		/// <param name='version'>
+		/// Version of the add-in.
+		/// </param>
 		public void AddAssemblyReference (string id, string version)
 		{
 			XmlElement deps = GetDependenciesElement ();

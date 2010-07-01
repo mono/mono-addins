@@ -32,8 +32,14 @@ using System.Collections;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// A collection of extension point definitions.
+	/// </summary>
 	public class ExtensionPointCollection: ObjectDescriptionCollection
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.ExtensionPointCollection"/> class.
+		/// </summary>
 		public ExtensionPointCollection ()
 		{
 		}
@@ -42,10 +48,22 @@ namespace Mono.Addins.Description
 		{
 		}
 		
+		/// <summary>
+		/// Gets the <see cref="Mono.Addins.Description.ExtensionPoint"/> at the specified index.
+		/// </summary>
+		/// <param name='n'>
+		/// The index.
+		/// </param>
 		public ExtensionPoint this [int n] {
 			get { return (ExtensionPoint) List [n]; }
 		}
 		
+		/// <summary>
+		/// Gets the <see cref="Mono.Addins.Description.ExtensionPoint"/> with the specified path.
+		/// </summary>
+		/// <param name='path'>
+		/// Path.
+		/// </param>
 		public ExtensionPoint this [string path] {
 			get {
 				for (int n=0; n<List.Count; n++)

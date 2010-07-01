@@ -1,3 +1,36 @@
+2010-07-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Mono.Addins.csproj:
+	* Mono.Addins.Description/Extension.cs:
+	* Mono.Addins.Description/Dependency.cs:
+	* Mono.Addins.Description/AddinFlags.cs:
+	* Mono.Addins.Description/ExtensionPoint.cs:
+	* Mono.Addins.Description/AddinDependency.cs:
+	* Mono.Addins.Description/AddinDescription.cs:
+	* Mono.Addins.Description/ExtensionNodeSet.cs:
+	* Mono.Addins.Description/NativeDependency.cs:
+	* Mono.Addins.Localization/IAddinLocalizer.cs:
+	* Mono.Addins.Description/ObjectDescription.cs:
+	* Mono.Addins.Description/ModuleDescription.cs:
+	* Mono.Addins.Description/ExtensionNodeType.cs:
+	* Mono.Addins.Description/NodeTypeAttribute.cs:
+	* Mono.Addins.Description/AssemblyDependency.cs:
+	* Mono.Addins.Description/ExtensionCollection.cs:
+	* Mono.Addins.Description/DependencyCollection.cs:
+	* Mono.Addins.Localization/IPluralAddinLocalizer.cs:
+	* Mono.Addins.Localization/IAddinLocalizerFactory.cs:
+	* Mono.Addins.Description/ExtensionNodeDescription.cs:
+	* Mono.Addins.Description/ExtensionPointCollection.cs:
+	* Mono.Addins.Description/ConditionTypeDescription.cs:
+	* Mono.Addins.Description/ExtensionNodeSetCollection.cs:
+	* Mono.Addins.Description/ModuleDescriptionCollection.cs:
+	* Mono.Addins.Description/NodeTypeAttributeCollection.cs:
+	* Mono.Addins.Description/ExtensionNodeTypeCollection.cs:
+	* Mono.Addins.Description/ObjectDescriptionCollection.cs:
+	* Mono.Addins.Description/ExtensionNodeDescriptionCollection.cs:
+	* Mono.Addins.Description/ConditionTypeDescriptionCollection.cs:
+	  Added documentation.
+
 2010-06-17  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins/NodeElement.cs:

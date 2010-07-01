@@ -34,6 +34,9 @@ using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// A condition type definition.
+	/// </summary>
 	public sealed class ConditionTypeDescription: ObjectDescription
 	{
 		string id;
@@ -41,6 +44,9 @@ namespace Mono.Addins.Description
 		string addinId;
 		string description;
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.ConditionTypeDescription"/> class.
+		/// </summary>
 		public ConditionTypeDescription ()
 		{
 		}
@@ -52,6 +58,12 @@ namespace Mono.Addins.Description
 			description = ReadXmlDescription ();
 		}
 		
+		/// <summary>
+		/// Copies data from another condition type definition
+		/// </summary>
+		/// <param name='cond'>
+		/// Condition from which to copy
+		/// </param>
 		public void CopyFrom (ConditionTypeDescription cond)
 		{
 			id = cond.id;
@@ -66,16 +78,34 @@ namespace Mono.Addins.Description
 			VerifyNotEmpty (location + "ConditionType (" + Id + ")", errors, TypeName, "type");
 		}
 		
+		/// <summary>
+		/// Gets or sets the identifier of the condition type
+		/// </summary>
+		/// <value>
+		/// The identifier.
+		/// </value>
 		public string Id {
 			get { return id != null ? id : string.Empty; }
 			set { id = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets the name of the type that implements the condition
+		/// </summary>
+		/// <value>
+		/// The name of the type.
+		/// </value>
 		public string TypeName {
 			get { return typeName != null ? typeName : string.Empty; }
 			set { typeName = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets the description of the condition.
+		/// </summary>
+		/// <value>
+		/// The description.
+		/// </value>
 		public string Description {
 			get { return description != null ? description : string.Empty; }
 			set { description = value; }

@@ -36,6 +36,9 @@ using System.Collections.Generic;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// An extension point definition.
+	/// </summary>
 	public sealed class ExtensionPoint: ObjectDescription
 	{
 		string path;
@@ -56,10 +59,19 @@ namespace Mono.Addins.Description
 			description = ReadXmlDescription ();
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.ExtensionPoint"/> class.
+		/// </summary>
 		public ExtensionPoint ()
 		{
 		}
 		
+		/// <summary>
+		/// Copies another extension point.
+		/// </summary>
+		/// <param name='ep'>
+		/// Extension point from which to copy.
+		/// </param>
 		public void CopyFrom (ExtensionPoint ep)
 		{
 			path = ep.path;
@@ -155,21 +167,45 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets or sets the path that identifies the extension point.
+		/// </summary>
+		/// <value>
+		/// The path.
+		/// </value>
 		public string Path {
 			get { return path != null ? path : string.Empty; }
 			set { path = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets the display name of the extension point.
+		/// </summary>
+		/// <value>
+		/// The name.
+		/// </value>
 		public string Name {
 			get { return name != null ? name : string.Empty; }
 			set { name = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets the description of the extension point.
+		/// </summary>
+		/// <value>
+		/// The description.
+		/// </value>
 		public string Description {
 			get { return description != null ? description : string.Empty; }
 			set { description = value; }
 		}
 		
+		/// <summary>
+		/// Gets a list of add-ins that extend this extension point.
+		/// </summary>
+		/// <remarks>
+		/// This value is only available when the add-in description is loaded from an add-in registry.
+		/// </remarks>
 		public string[] ExtenderAddins {
 			get {
 				return Addins.ToArray ();
@@ -189,6 +225,12 @@ namespace Mono.Addins.Description
 			set { rootAddin = value; }
 		}
 		
+		/// <summary>
+		/// A node set which specifies the node types allowed in this extension point.
+		/// </summary>
+		/// <value>
+		/// The node set.
+		/// </value>
 		public ExtensionNodeSet NodeSet {
 			get {
 				if (nodeSet == null) {
@@ -209,6 +251,12 @@ namespace Mono.Addins.Description
 			nodeSet.SetParent (this);
 		}
 		
+		/// <summary>
+		/// Gets the conditions available in this node set.
+		/// </summary>
+		/// <value>
+		/// The conditions.
+		/// </value>
 		public ConditionTypeDescriptionCollection Conditions {
 			get {
 				if (conditions == null) {
@@ -222,6 +270,21 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Adds an extension node type.
+		/// </summary>
+		/// <returns>
+		/// The extension node type.
+		/// </returns>
+		/// <param name='name'>
+		/// Name of the node
+		/// </param>
+		/// <param name='typeName'>
+		/// Name of the type that implements the extension node.
+		/// </param>
+		/// <remarks>
+		/// This method can be used to register a new allowed node type for the extension point.
+		/// </remarks>
 		public ExtensionNodeType AddExtensionNode (string name, string typeName)
 		{
 			ExtensionNodeType ntype = new ExtensionNodeType ();

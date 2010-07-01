@@ -91,8 +91,11 @@ namespace Mono.Addins.Description
 		}
 		
 		/// <summary>
-		/// Type of the extension node.
+		/// Type that implements the extension node.
 		/// </summary>
+		/// <value>
+		/// The full name of the type.
+		/// </value>
 		public string TypeName {
 			get { return typeName != null ? typeName : string.Empty; }
 			set { typeName = value; }
@@ -101,6 +104,9 @@ namespace Mono.Addins.Description
 		/// <summary>
 		/// Element name to be used when defining an extension in an XML manifest. The default name is "Type".
 		/// </summary>
+		/// <value>
+		/// The name of the node.
+		/// </value>
 		public string NodeName {
 			get { return Id; }
 			set { Id = value; }
@@ -168,10 +174,16 @@ namespace Mono.Addins.Description
 				description = de.InnerText;
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.ExtensionNodeType"/> class.
+		/// </summary>
 		public ExtensionNodeType ()
 		{
 		}
 		
+		/// <summary>
+		///  Copies data from another node set 
+		/// </summary>
 		public void CopyFrom (ExtensionNodeType ntype)
 		{
 			base.CopyFrom (ntype);

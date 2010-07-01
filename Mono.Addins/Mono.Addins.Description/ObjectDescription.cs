@@ -34,6 +34,9 @@ using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// Base class for add-in description definitions.
+	/// </summary>
 	public class ObjectDescription: IBinaryXmlElement
 	{
 		internal XmlElement Element;
@@ -48,10 +51,22 @@ namespace Mono.Addins.Description
 		{
 		}
 		
+		/// <summary>
+		/// Gets the parent object.
+		/// </summary>
+		/// <value>
+		/// The parent object.
+		/// </value>
 		public object Parent {
 			get { return parent; }
 		}
 		
+		/// <summary>
+		/// Gets the parent add-in description.
+		/// </summary>
+		/// <value>
+		/// The parent add-in description.
+		/// </value>
 		public AddinDescription ParentAddinDescription {
 			get {
 				if (parent is AddinDescription)

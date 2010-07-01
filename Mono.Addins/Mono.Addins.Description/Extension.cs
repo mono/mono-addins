@@ -34,22 +34,47 @@ using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// An extension definition.
+	/// </summary>
+	/// <remarks>
+	/// An Extension is a collection of nodes which have to be registered in an extension point.
+	/// The target extension point is specified in the <see cref="Mono.Addins.Description.Extension"/>.Path property.
+	/// </remarks>
 	public class Extension: ObjectDescription, IComparable
 	{
 		string path;
 		ExtensionNodeDescriptionCollection nodes;
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.Extension"/> class.
+		/// </summary>
 		public Extension ()
 		{
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.Extension"/> class.
+		/// </summary>
+		/// <param name='path'>
+		/// Path that identifies the extension point being extended
+		/// </param>
 		public Extension (string path)
 		{
 			this.path = path;
 		}
 		
-		// Returns the object extended by this Extension. It can be an ExtensionPoint or
-		// an ExtensionNodeDescription.
+		/// <summary>
+		/// Gets the object extended by this extension
+		/// </summary>
+		/// <returns>
+		/// The extended object can be an <see cref="Mono.Addins.Description.ExtensionPoint"/> or
+		/// an <see cref="Mono.Addins.Description.ExtensionNodeDescription"/>.
+		/// </returns>
+		/// <remarks>
+		/// This method only works when the add-in description to which the extension belongs has been
+		/// loaded from an add-in registry.
+		/// </remarks>
 		public ObjectDescription GetExtendedObject ()
 		{
 			AddinDescription desc = ParentAddinDescription;
@@ -80,6 +105,16 @@ namespace Mono.Addins.Description
 			return null;
 		}
 		
+		/// <summary>
+		/// Gets the node types allowed in this extension.
+		/// </summary>
+		/// <returns>
+		/// The allowed node types.
+		/// </returns>
+		/// <remarks>
+		/// This method only works when the add-in description to which the extension belongs has been
+		/// loaded from an add-in registry.
+		/// </remarks>
 		public ExtensionNodeTypeCollection GetAllowedNodeTypes ()
 		{
 			ObjectDescription ob = GetExtendedObject ();
@@ -146,12 +181,24 @@ namespace Mono.Addins.Description
 				VerifyConditionNode (location, cnode, errors);
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.Extension"/> class.
+		/// </summary>
+		/// <param name='element'>
+		/// XML that describes the extension.
+		/// </param>
 		public Extension (XmlElement element)
 		{
 			Element = element;
 			path = element.GetAttribute ("path");
 		}
 		
+		/// <summary>
+		/// Gets or sets the path that identifies the extension point being extended.
+		/// </summary>
+		/// <value>
+		/// The path.
+		/// </value>
 		public string Path {
 			get { return path; }
 			set { path = value; }
@@ -168,6 +215,12 @@ namespace Mono.Addins.Description
 				nodes.SaveXml (Element);
 		}
 		
+		/// <summary>
+		/// Gets the extension nodes.
+		/// </summary>
+		/// <value>
+		/// The extension nodes.
+		/// </value>
 		public ExtensionNodeDescriptionCollection ExtensionNodes {
 			get {
 				if (nodes == null) {

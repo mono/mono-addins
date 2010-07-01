@@ -32,8 +32,14 @@ using System.Collections;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// A collection of node sets.
+	/// </summary>
 	public class ExtensionNodeSetCollection: ObjectDescriptionCollection
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.ExtensionNodeSetCollection"/> class.
+		/// </summary>
 		public ExtensionNodeSetCollection ()
 		{
 		}
@@ -42,10 +48,22 @@ namespace Mono.Addins.Description
 		{
 		}
 		
+		/// <summary>
+		/// Gets the <see cref="Mono.Addins.Description.ExtensionNodeSet"/> at the specified index.
+		/// </summary>
+		/// <param name='n'>
+		/// The index.
+		/// </param>
 		public ExtensionNodeSet this [int n] {
 			get { return (ExtensionNodeSet) List [n]; }
 		}
 		
+		/// <summary>
+		/// Gets the <see cref="Mono.Addins.Description.ExtensionNodeSet"/> with the specified id.
+		/// </summary>
+		/// <param name='id'>
+		/// Identifier.
+		/// </param>
 		public ExtensionNodeSet this [string id] {
 			get {
 				for (int n=0; n<List.Count; n++)

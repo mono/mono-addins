@@ -31,8 +31,14 @@ using System;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// A collection of node attributes
+	/// </summary>
 	public class NodeTypeAttributeCollection: ObjectDescriptionCollection
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.NodeTypeAttributeCollection"/> class.
+		/// </summary>
 		public NodeTypeAttributeCollection ()
 		{
 		}
@@ -41,6 +47,12 @@ namespace Mono.Addins.Description
 		{
 		}
 		
+		/// <summary>
+		/// Gets the <see cref="Mono.Addins.Description.NodeTypeAttribute"/> at the specified index.
+		/// </summary>
+		/// <param name='n'>
+		/// The index.
+		/// </param>
 		public NodeTypeAttribute this [int n] {
 			get { return (NodeTypeAttribute) List [n]; }
 		}

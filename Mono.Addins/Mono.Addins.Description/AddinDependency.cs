@@ -35,22 +35,43 @@ using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// Definition of a dependency of an add-in on another add-in.
+	/// </summary>
 	[XmlType ("AddinReference")]
 	public class AddinDependency: Dependency
 	{
 		string id;
 		string version;
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.AddinDependency"/> class.
+		/// </summary>
 		public AddinDependency ()
 		{
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.AddinDependency"/> class.
+		/// </summary>
+		/// <param name='fullId'>
+		/// Full identifier of the add-in (includes version)
+		/// </param>
 		public AddinDependency (string fullId)
 		{
 			Addin.GetIdParts (fullId, out id, out version);
 			id = "::" + id;
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.AddinDependency"/> class.
+		/// </summary>
+		/// <param name='id'>
+		/// Identifier of the add-in.
+		/// </param>
+		/// <param name='version'>
+		/// Version of the add-in.
+		/// </param>
 		public AddinDependency (string id, string version)
 		{
 			this.id = id;
@@ -76,6 +97,15 @@ namespace Mono.Addins.Description
 			Element.SetAttribute ("version", Version);
 		}
 		
+		/// <summary>
+		/// Gets the full addin identifier.
+		/// </summary>
+		/// <value>
+		/// The full addin identifier.
+		/// </value>
+		/// <remarks>
+		/// Includes namespace and version number. For example: MonoDevelop.TextEditor,1.0
+		/// </remarks>
 		public string FullAddinId {
 			get {
 				AddinDescription desc = ParentAddinDescription;
@@ -86,16 +116,34 @@ namespace Mono.Addins.Description
 			}
 		}
 		
+		/// <summary>
+		/// Gets or sets the addin identifier.
+		/// </summary>
+		/// <value>
+		/// The addin identifier.
+		/// </value>
 		public string AddinId {
 			get { return id != null ? id : string.Empty; }
 			set { id = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets the version.
+		/// </summary>
+		/// <value>
+		/// The version.
+		/// </value>
 		public string Version {
 			get { return version != null ? version : string.Empty; }
 			set { version = value; }
 		}
 		
+		/// <summary>
+		/// Display name of the dependency.
+		/// </summary>
+		/// <value>
+		/// The name.
+		/// </value>
 		public override string Name {
 			get { return AddinId + " v" + version; }
 		}

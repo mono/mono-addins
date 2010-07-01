@@ -34,6 +34,9 @@ using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// Description of the attribute of a node type.
+	/// </summary>
 	public sealed class NodeTypeAttribute: ObjectDescription
 	{
 		string name;
@@ -42,10 +45,19 @@ namespace Mono.Addins.Description
 		bool localizable;
 		string description;
 	
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Description.NodeTypeAttribute"/> class.
+		/// </summary>
 		public NodeTypeAttribute()
 		{
 		}
 		
+		/// <summary>
+		/// Copies data from another node attribute.
+		/// </summary>
+		/// <param name='att'>
+		/// The attribute from which to copy.
+		/// </param>
 		public void CopyFrom (NodeTypeAttribute att)
 		{
 			name = att.name;
@@ -55,26 +67,56 @@ namespace Mono.Addins.Description
 			description = att.description;
 		}
 		
+		/// <summary>
+		/// Gets or sets the name of the attribute.
+		/// </summary>
+		/// <value>
+		/// The name.
+		/// </value>
 		public string Name {
 			get { return name != null ? name : string.Empty; }
 			set { name = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Mono.Addins.Description.NodeTypeAttribute"/> is required.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if required; otherwise, <c>false</c>.
+		/// </value>
 		public bool Required {
 			get { return required; }
 			set { required = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Mono.Addins.Description.NodeTypeAttribute"/> is localizable.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if localizable; otherwise, <c>false</c>.
+		/// </value>
 		public bool Localizable {
 			get { return localizable; }
 			set { localizable = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets the type of the attribute.
+		/// </summary>
+		/// <value>
+		/// The type.
+		/// </value>
 		public string Type {
 			get { return type != null ? type : string.Empty; }
 			set { type = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets the description of the attribute.
+		/// </summary>
+		/// <value>
+		/// The description.
+		/// </value>
 		public string Description {
 			get { return description != null ? description : string.Empty; }
 			set { description = value; }
