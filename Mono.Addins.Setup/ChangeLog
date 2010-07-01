@@ -1,5 +1,9 @@
 2010-07-01  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Mono.Addins.Setup.csproj: Generate documentation.
+
+2010-07-01  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Mono.Addins.Setup/Package.cs:
 	* Mono.Addins.Setup/AddinInfo.cs:
 	* Mono.Addins.Setup/SetupTool.cs:
