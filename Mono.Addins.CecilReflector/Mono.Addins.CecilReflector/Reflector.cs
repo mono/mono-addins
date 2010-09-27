@@ -79,14 +79,14 @@ namespace Mono.Addins.CecilReflector
 			
 			object ob;
 			
-			if (att.ConstructorParameters.Count > 0) {
-				object[] cargs = new object [att.ConstructorParameters.Count];
-				att.ConstructorParameters.CopyTo (cargs, 0);
+			if (att.ConstructorArguments.Count > 0) {
+				object[] cargs = new object [att.ConstructorArguments.Count];
 				ArrayList typeParameters = null;
 
 				// Constructor parameters of type System.Type can't be set because types from the assembly
 				// can't be loaded. The parameter value will be set later using a type name property.
 				for (int n=0; n<cargs.Length; n++) {
+					cargs [n] = att.ConstructorArguments [n].Value;
 					string atype = att.Constructor.Parameters[n].ParameterType.FullName;
 					if (atype == "System.Type") {
 						if (typeParameters == null)
@@ -111,28 +111,32 @@ namespace Mono.Addins.CecilReflector
 						string propName = ciParams[ip].Name;
 						propName = char.ToUpper (propName [0]) + propName.Substring (1) + "Name";
 						PropertyInfo pi = attype.GetProperty (propName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-						pi.SetValue (ob, (string) att.ConstructorParameters [ip], null);
+
 						if (pi == null)
 							throw new InvalidOperationException ("Property '" + propName + "' not found in type '" + attype + "'.");
+
+						pi.SetValue (ob, ((TypeReference) att.ConstructorArguments [ip].Value).FullName, null);
 					}
 				}
 			} else {
 				ob = Activator.CreateInstance (attype);
 			}
 			
-			foreach (DictionaryEntry de in att.Properties) {
-				string pname = (string)de.Key;
+			foreach (Mono.Cecil.CustomAttributeNamedArgument namedArgument in att.Properties) {
+				string pname = namedArgument.Name;
 				PropertyInfo prop = attype.GetProperty (pname);
 				if (prop != null) {
 					if (prop.PropertyType == typeof(System.Type)) {
 						// We can't load the type. We have to use the typeName property instead.
 						pname += "Name";
 						prop = attype.GetProperty (pname, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-					}
-					if (prop == null) {
-						throw new InvalidOperationException ("Property '" + pname + "' not found in type '" + attype + "'.");
-					}
-					prop.SetValue (ob, de.Value, null);
+						
+						if (prop == null)
+							throw new InvalidOperationException ("Property '" + pname + "' not found in type '" + attype + "'.");
+
+						prop.SetValue (ob, ((TypeReference) namedArgument.Argument.Value).FullName, null);
+					} else
+						prop.SetValue (ob, namedArgument.Argument.Value, null);
 				}
 			}
 			return ob;
@@ -164,22 +168,23 @@ namespace Mono.Addins.CecilReflector
 		MA.CustomAttribute ConvertToRawAttribute (CustomAttribute att, string expectedType)
 		{
 			TypeDefinition attType = FindTypeDefinition (att.Constructor.DeclaringType.Module.Assembly, att.Constructor.DeclaringType);
+			
 			if (attType == null || !TypeIsAssignableFrom (expectedType, attType))
 				return null;
 
 			MA.CustomAttribute mat = new MA.CustomAttribute ();
 			mat.TypeName = att.Constructor.DeclaringType.FullName;
 			
-			if (att.ConstructorParameters.Count > 0) {
-				IList cargs = att.ConstructorParameters;
+			if (att.ConstructorArguments.Count > 0) {
+				var arguments = att.ConstructorArguments;
 				
 				MethodReference constructor = FindConstructor (att);
 				if (constructor == null)
 					throw new InvalidOperationException ("Custom attribute constructor not found");
 
-				for (int n=0; n<cargs.Count; n++) {
+				for (int n=0; n<arguments.Count; n++) {
 					ParameterDefinition par = constructor.Parameters[n];
-					object val = cargs [n];
+					object val = arguments [n].Value;
 					if (val != null) {
 						string name = par.Name;
 						NodeAttributeAttribute bat = (NodeAttributeAttribute) GetCustomAttribute (par, typeof(NodeAttributeAttribute), false);
@@ -190,36 +195,33 @@ namespace Mono.Addins.CecilReflector
 				}
 			}
 			
-			foreach (DictionaryEntry de in att.Properties) {
-				string pname = (string)de.Key;
-				object val = de.Value;
+			foreach (Mono.Cecil.CustomAttributeNamedArgument namedArgument in att.Properties) {
+				string pname = namedArgument.Name;
+				object val = namedArgument.Argument.Value;
 				if (val == null)
 					continue;
 
 				foreach (TypeDefinition td in GetInheritanceChain (attType)) {
-					bool propFound = false;
-					foreach (PropertyDefinition prop in td.Properties.GetProperties (pname)) {
-						NodeAttributeAttribute bat = (NodeAttributeAttribute) GetCustomAttribute (prop, typeof(NodeAttributeAttribute), false);
-						if (bat != null) {
-							string name = string.IsNullOrEmpty (bat.Name) ? prop.Name : bat.Name;
-							mat.Add (name, Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture));
-							propFound = true;
-							break;
-						}
+					PropertyDefinition prop = GetMember (td.Properties, pname);
+					if (prop == null)
+						continue;
+
+					NodeAttributeAttribute bat = (NodeAttributeAttribute) GetCustomAttribute (prop, typeof(NodeAttributeAttribute), false);
+					if (bat != null) {
+						string name = string.IsNullOrEmpty (bat.Name) ? prop.Name : bat.Name;
+						mat.Add (name, Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture));
 					}
-					if (propFound)
-						break;
 				}
 			}
 			
-			foreach (DictionaryEntry de in att.Fields) {
-				string pname = (string)de.Key;
-				object val = de.Value;
+			foreach (Mono.Cecil.CustomAttributeNamedArgument namedArgument in att.Fields) {
+				string pname = namedArgument.Name;
+				object val = namedArgument.Argument.Value;
 				if (val == null)
 					continue;
 
 				foreach (TypeDefinition td in GetInheritanceChain (attType)) {
-					FieldDefinition field = td.Fields.GetField (pname);
+					FieldDefinition field = GetMember (td.Fields, pname);
 					if (field != null) {
 						NodeAttributeAttribute bat = (NodeAttributeAttribute) GetCustomAttribute (field, typeof(NodeAttributeAttribute), false);
 						if (bat != null) {
@@ -229,7 +231,17 @@ namespace Mono.Addins.CecilReflector
 					}
 				}
 			}
+
 			return mat;
+		}
+
+		static TMember GetMember<TMember> (ICollection<TMember> members, string name) where TMember : class, IMemberDefinition
+		{
+			foreach (var member in members)
+				if (member.Name == name)
+					return member;
+
+			return null;
 		}
 		
 		IEnumerable<TypeDefinition> GetInheritanceChain (TypeDefinition td)
@@ -248,7 +260,10 @@ namespace Mono.Addins.CecilReflector
 			// name and custom attributes. Since we need the full info, we have to look it up in the declaring type.
 			
 			TypeDefinition atd = FindTypeDefinition (att.Constructor.DeclaringType.Module.Assembly, att.Constructor.DeclaringType);
-			foreach (MethodReference met in atd.Constructors) {
+			foreach (MethodReference met in atd.Methods) {
+				if (met.Name != ".ctor")
+					continue;
+
 				if (met.Parameters.Count == att.Constructor.Parameters.Count) {
 					for (int n = met.Parameters.Count - 1; n >= 0; n--) {
 						if (met.Parameters[n].ParameterType.FullName != att.Constructor.Parameters[n].ParameterType.FullName)
@@ -260,8 +275,6 @@ namespace Mono.Addins.CecilReflector
 			}
 			return null;
 		}
-			
-
 
 		public object LoadAssembly (string file)
 		{
@@ -273,7 +286,7 @@ namespace Mono.Addins.CecilReflector
 			AssemblyDefinition adef = (AssemblyDefinition) cachedAssemblies [file];
 			if (adef != null)
 				return adef;
-			adef = AssemblyFactory.GetAssembly (file);
+			adef = AssemblyDefinition.ReadAssembly (file);
 			if (adef != null && cache)
 				cachedAssemblies [file] = adef;
 			return adef;
@@ -296,7 +309,7 @@ namespace Mono.Addins.CecilReflector
 			foreach (Resource res in adef.MainModule.Resources) {
 				EmbeddedResource r = res as EmbeddedResource;
 				if (r != null && r.Name == resourceName)
-					return new System.IO.MemoryStream (r.Data);
+					return r.GetResourceStream ();
 			}
 			throw new InvalidOperationException ("Resource not found: " + resourceName);
 		}
@@ -313,10 +326,7 @@ namespace Mono.Addins.CecilReflector
 
 		public System.Collections.IEnumerable GetAssemblyTypes (object asm)
 		{
-			TypeDefinitionCollection types = ((AssemblyDefinition)asm).MainModule.Types;
-			foreach (IAnnotationProvider t in types)
-				t.Annotations [typeof(AssemblyDefinition)] = asm;
-			return types;
+			return ((AssemblyDefinition)asm).MainModule.Types;
 		}
 
 		public System.Collections.IEnumerable GetAssemblyReferences (object asm)
@@ -329,18 +339,16 @@ namespace Mono.Addins.CecilReflector
 			if (typeName.IndexOf ('`') != -1) {
 				foreach (TypeDefinition td in ((AssemblyDefinition)asm).MainModule.Types) {
 					if (td.FullName == typeName) {
-						IAnnotationProvider at = td;
-						at.Annotations [typeof(AssemblyDefinition)] = asm;
 						return td;
 					}
 				}
 			}
-			IAnnotationProvider t = ((AssemblyDefinition)asm).MainModule.Types [typeName];
+			TypeDefinition t = ((AssemblyDefinition)asm).MainModule.GetType (typeName);
 			if (t != null) {
-				t.Annotations [typeof(AssemblyDefinition)] = asm;
 				return t;
-			} else
+			} else {
 				return null;
+			}
 		}
 
 		public object GetCustomAttribute (object obj, Type type, bool inherit)
@@ -369,9 +377,7 @@ namespace Mono.Addins.CecilReflector
 		
 		AssemblyDefinition GetAssemblyDefinition (TypeDefinition t)
 		{
-			IAnnotationProvider aprov = (IAnnotationProvider) t;
-			AssemblyDefinition ad = (AssemblyDefinition) aprov.Annotations [typeof(AssemblyDefinition)];
-			return ad ?? t.Module.Assembly;
+			return t.Module.Assembly;
 		}
 
 		public System.Collections.IEnumerable GetBaseTypeFullNameList (object type)
@@ -467,6 +473,5 @@ namespace Mono.Addins.CecilReflector
 		{
 			return ((FieldDefinition)field).FieldType.FullName;
 		}
-
 	}
 }
