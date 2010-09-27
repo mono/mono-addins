@@ -14,263 +14,90 @@ all: $(ASSEMBLY)
 FILES =  \
 	AssemblyInfo.cs \
 	Mono.Addins.CecilReflector/Reflector.cs \
-	Mono.Cecil/Mono.Cecil.Binary/BaseImageVisitor.cs \
-	Mono.Cecil/Mono.Cecil.Binary/CLIHeader.cs \
-	Mono.Cecil/Mono.Cecil.Binary/CopyImageVisitor.cs \
-	Mono.Cecil/Mono.Cecil.Binary/DataDirectory.cs \
-	Mono.Cecil/Mono.Cecil.Binary/DebugHeader.cs \
-	Mono.Cecil/Mono.Cecil.Binary/DebugStoreType.cs \
-	Mono.Cecil/Mono.Cecil.Binary/DOSHeader.cs \
-	Mono.Cecil/Mono.Cecil.Binary/ExportTable.cs \
-	Mono.Cecil/Mono.Cecil.Binary/IBinaryVisitable.cs \
-	Mono.Cecil/Mono.Cecil.Binary/IBinaryVisitor.cs \
-	Mono.Cecil/Mono.Cecil.Binary/IHeader.cs \
-	Mono.Cecil/Mono.Cecil.Binary/Image.cs \
-	Mono.Cecil/Mono.Cecil.Binary/ImageCharacteristics.cs \
-	Mono.Cecil/Mono.Cecil.Binary/ImageFormatException.cs \
-	Mono.Cecil/Mono.Cecil.Binary/ImageInitializer.cs \
-	Mono.Cecil/Mono.Cecil.Binary/ImageReader.cs \
-	Mono.Cecil/Mono.Cecil.Binary/ImageWriter.cs \
-	Mono.Cecil/Mono.Cecil.Binary/Imports.cs \
-	Mono.Cecil/Mono.Cecil.Binary/MemoryBinaryWriter.cs \
-	Mono.Cecil/Mono.Cecil.Binary/PEFileHeader.cs \
-	Mono.Cecil/Mono.Cecil.Binary/PEOptionalHeader.cs \
-	Mono.Cecil/Mono.Cecil.Binary/ResourceDataEntry.cs \
-	Mono.Cecil/Mono.Cecil.Binary/ResourceDirectoryEntry.cs \
-	Mono.Cecil/Mono.Cecil.Binary/ResourceDirectoryString.cs \
-	Mono.Cecil/Mono.Cecil.Binary/ResourceDirectoryTable.cs \
-	Mono.Cecil/Mono.Cecil.Binary/ResourceNode.cs \
-	Mono.Cecil/Mono.Cecil.Binary/ResourceReader.cs \
-	Mono.Cecil/Mono.Cecil.Binary/ResourceWriter.cs \
-	Mono.Cecil/Mono.Cecil.Binary/RuntimeImage.cs \
-	Mono.Cecil/Mono.Cecil.Binary/RVA.cs \
-	Mono.Cecil/Mono.Cecil.Binary/Section.cs \
-	Mono.Cecil/Mono.Cecil.Binary/SectionCharacteristics.cs \
-	Mono.Cecil/Mono.Cecil.Binary/SectionCollection.cs \
-	Mono.Cecil/Mono.Cecil.Binary/SubSystem.cs \
-	Mono.Cecil/Mono.Cecil.Cil/BaseCodeVisitor.cs \
-	Mono.Cecil/Mono.Cecil.Cil/CilWorker.cs \
 	Mono.Cecil/Mono.Cecil.Cil/Code.cs \
 	Mono.Cecil/Mono.Cecil.Cil/CodeReader.cs \
 	Mono.Cecil/Mono.Cecil.Cil/CodeWriter.cs \
 	Mono.Cecil/Mono.Cecil.Cil/Document.cs \
-	Mono.Cecil/Mono.Cecil.Cil/DocumentHashAlgorithm.cs \
-	Mono.Cecil/Mono.Cecil.Cil/DocumentLanguage.cs \
-	Mono.Cecil/Mono.Cecil.Cil/DocumentLanguageVendor.cs \
-	Mono.Cecil/Mono.Cecil.Cil/DocumentType.cs \
 	Mono.Cecil/Mono.Cecil.Cil/ExceptionHandler.cs \
-	Mono.Cecil/Mono.Cecil.Cil/ExceptionHandlerCollection.cs \
-	Mono.Cecil/Mono.Cecil.Cil/ExceptionHandlerType.cs \
-	Mono.Cecil/Mono.Cecil.Cil/FlowControl.cs \
-	Mono.Cecil/Mono.Cecil.Cil/GuidAttribute.cs \
-	Mono.Cecil/Mono.Cecil.Cil/ICodeVisitable.cs \
-	Mono.Cecil/Mono.Cecil.Cil/ICodeVisitor.cs \
+	Mono.Cecil/Mono.Cecil.Cil/ILProcessor.cs \
 	Mono.Cecil/Mono.Cecil.Cil/Instruction.cs \
-	Mono.Cecil/Mono.Cecil.Cil/InstructionCollection.cs \
-	Mono.Cecil/Mono.Cecil.Cil/IScopeProvider.cs \
-	Mono.Cecil/Mono.Cecil.Cil/ISymbolReader.cs \
-	Mono.Cecil/Mono.Cecil.Cil/ISymbolStoreFactory.cs \
-	Mono.Cecil/Mono.Cecil.Cil/ISymbolWriter.cs \
-	Mono.Cecil/Mono.Cecil.Cil/IVariableDefinitionProvider.cs \
 	Mono.Cecil/Mono.Cecil.Cil/MethodBody.cs \
-	Mono.Cecil/Mono.Cecil.Cil/MethodDataSection.cs \
-	Mono.Cecil/Mono.Cecil.Cil/MethodHeader.cs \
 	Mono.Cecil/Mono.Cecil.Cil/OpCode.cs \
 	Mono.Cecil/Mono.Cecil.Cil/OpCodes.cs \
-	Mono.Cecil/Mono.Cecil.Cil/OpCodeType.cs \
-	Mono.Cecil/Mono.Cecil.Cil/OperandType.cs \
-	Mono.Cecil/Mono.Cecil.Cil/Scope.cs \
-	Mono.Cecil/Mono.Cecil.Cil/ScopeCollection.cs \
 	Mono.Cecil/Mono.Cecil.Cil/SequencePoint.cs \
-	Mono.Cecil/Mono.Cecil.Cil/StackBehaviour.cs \
-	Mono.Cecil/Mono.Cecil.Cil/SymbolStoreHelper.cs \
+	Mono.Cecil/Mono.Cecil.Cil/Symbols.cs \
 	Mono.Cecil/Mono.Cecil.Cil/VariableDefinition.cs \
-	Mono.Cecil/Mono.Cecil.Cil/VariableDefinitionCollection.cs \
 	Mono.Cecil/Mono.Cecil.Cil/VariableReference.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/Assembly.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/AssemblyOS.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/AssemblyProcessor.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/AssemblyRef.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/AssemblyRefOS.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/AssemblyRefProcessor.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/BaseMetadataVisitor.cs \
 	Mono.Cecil/Mono.Cecil.Metadata/BlobHeap.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/ClassLayout.cs \
+	Mono.Cecil/Mono.Cecil.Metadata/Buffers.cs \
 	Mono.Cecil/Mono.Cecil.Metadata/CodedIndex.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/Constant.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/CultureUtils.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/CustomAttribute.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/DeclSecurity.cs \
 	Mono.Cecil/Mono.Cecil.Metadata/ElementType.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/Event.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/EventMap.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/EventPtr.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/ExportedType.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/Field.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/FieldLayout.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/FieldMarshal.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/FieldPtr.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/FieldRVA.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/File.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/GenericParam.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/GenericParamConstraint.cs \
 	Mono.Cecil/Mono.Cecil.Metadata/GuidHeap.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/IMetadataRow.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/IMetadataTable.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/IMetadataVisitable.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/IMetadataVisitor.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/ImplMap.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/InterfaceImpl.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/ManifestResource.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MemberRef.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MetadataFormatException.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MetadataHeap.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MetadataInitializer.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MetadataReader.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MetadataRoot.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MetadataRowReader.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MetadataRowWriter.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MetadataStream.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MetadataStreamCollection.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MetadataTableReader.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MetadataTableWriter.cs \
+	Mono.Cecil/Mono.Cecil.Metadata/Heap.cs \
 	Mono.Cecil/Mono.Cecil.Metadata/MetadataToken.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MetadataWriter.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/Method.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MethodImpl.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MethodPtr.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MethodSemantics.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/MethodSpec.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/Module.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/ModuleRef.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/NestedClass.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/Param.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/ParamPtr.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/Property.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/PropertyMap.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/PropertyPtr.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/RowCollection.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/StandAloneSig.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/StringsHeap.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/TableCollection.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/TablesHeap.cs \
+	Mono.Cecil/Mono.Cecil.Metadata/Row.cs \
+	Mono.Cecil/Mono.Cecil.Metadata/StringHeap.cs \
+	Mono.Cecil/Mono.Cecil.Metadata/TableHeap.cs \
 	Mono.Cecil/Mono.Cecil.Metadata/TokenType.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/TypeDef.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/TypeRef.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/TypeSpec.cs \
-	Mono.Cecil/Mono.Cecil.Metadata/UserStringsHeap.cs \
+	Mono.Cecil/Mono.Cecil.Metadata/UserStringHeap.cs \
 	Mono.Cecil/Mono.Cecil.Metadata/Utilities.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/Array.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/ArrayShape.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/BaseSignatureVisitor.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/Class.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/Constraint.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/CustomAttrib.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/CustomMod.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/FieldSig.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/FnPtr.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/GenericArg.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/GenericInst.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/GenericInstSignature.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/InputOutputItem.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/ISignatureVisitable.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/ISignatureVisitor.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/LocalVarSig.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/MarshalSig.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/MethodDefSig.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/MethodRefSig.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/MethodSig.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/MethodSpec.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/MVar.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/Param.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/PropertySig.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/Ptr.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/RetType.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/Signature.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/SignatureReader.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/SignatureWriter.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/SigType.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/SzArray.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/TypeSpec.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/ValueType.cs \
-	Mono.Cecil/Mono.Cecil.Signatures/Var.cs \
-	Mono.Cecil/Mono.Cecil/AggressiveReflectionReader.cs \
-	Mono.Cecil/Mono.Cecil/ArrayDimension.cs \
-	Mono.Cecil/Mono.Cecil/ArrayDimensionCollection.cs \
+	Mono.Cecil/Mono.Cecil.PE/BinaryStreamReader.cs \
+	Mono.Cecil/Mono.Cecil.PE/BinaryStreamWriter.cs \
+	Mono.Cecil/Mono.Cecil.PE/ByteBuffer.cs \
+	Mono.Cecil/Mono.Cecil.PE/ByteBufferEqualityComparer.cs \
+	Mono.Cecil/Mono.Cecil.PE/DataDirectory.cs \
+	Mono.Cecil/Mono.Cecil.PE/Image.cs \
+	Mono.Cecil/Mono.Cecil.PE/ImageReader.cs \
+	Mono.Cecil/Mono.Cecil.PE/ImageWriter.cs \
+	Mono.Cecil/Mono.Cecil.PE/Section.cs \
+	Mono.Cecil/Mono.Cecil.PE/TextMap.cs \
 	Mono.Cecil/Mono.Cecil/ArrayType.cs \
 	Mono.Cecil/Mono.Cecil/AssemblyDefinition.cs \
-	Mono.Cecil/Mono.Cecil/AssemblyFactory.cs \
 	Mono.Cecil/Mono.Cecil/AssemblyFlags.cs \
 	Mono.Cecil/Mono.Cecil/AssemblyHashAlgorithm.cs \
-	Mono.Cecil/Mono.Cecil/AssemblyKind.cs \
 	Mono.Cecil/Mono.Cecil/AssemblyLinkedResource.cs \
 	Mono.Cecil/Mono.Cecil/AssemblyNameDefinition.cs \
 	Mono.Cecil/Mono.Cecil/AssemblyNameReference.cs \
-	Mono.Cecil/Mono.Cecil/AssemblyNameReferenceCollection.cs \
+	Mono.Cecil/Mono.Cecil/AssemblyReader.cs \
+	Mono.Cecil/Mono.Cecil/AssemblyWriter.cs \
 	Mono.Cecil/Mono.Cecil/BaseAssemblyResolver.cs \
-	Mono.Cecil/Mono.Cecil/BaseReflectionReader.cs \
-	Mono.Cecil/Mono.Cecil/BaseReflectionVisitor.cs \
-	Mono.Cecil/Mono.Cecil/BaseStructureVisitor.cs \
 	Mono.Cecil/Mono.Cecil/CallSite.cs \
-	Mono.Cecil/Mono.Cecil/CompactFrameworkCompatibility.cs \
-	Mono.Cecil/Mono.Cecil/Constants.cs \
-	Mono.Cecil/Mono.Cecil/ConstraintCollection.cs \
-	Mono.Cecil/Mono.Cecil/ConstructorCollection.cs \
 	Mono.Cecil/Mono.Cecil/CustomAttribute.cs \
-	Mono.Cecil/Mono.Cecil/CustomAttributeCollection.cs \
 	Mono.Cecil/Mono.Cecil/DefaultAssemblyResolver.cs \
-	Mono.Cecil/Mono.Cecil/DefaultImporter.cs \
 	Mono.Cecil/Mono.Cecil/EmbeddedResource.cs \
 	Mono.Cecil/Mono.Cecil/EventAttributes.cs \
 	Mono.Cecil/Mono.Cecil/EventDefinition.cs \
-	Mono.Cecil/Mono.Cecil/EventDefinitionCollection.cs \
 	Mono.Cecil/Mono.Cecil/EventReference.cs \
-	Mono.Cecil/Mono.Cecil/ExternTypeCollection.cs \
+	Mono.Cecil/Mono.Cecil/ExportedType.cs \
 	Mono.Cecil/Mono.Cecil/FieldAttributes.cs \
 	Mono.Cecil/Mono.Cecil/FieldDefinition.cs \
-	Mono.Cecil/Mono.Cecil/FieldDefinitionCollection.cs \
 	Mono.Cecil/Mono.Cecil/FieldReference.cs \
 	Mono.Cecil/Mono.Cecil/FileAttributes.cs \
 	Mono.Cecil/Mono.Cecil/FunctionPointerType.cs \
-	Mono.Cecil/Mono.Cecil/GenericArgumentCollection.cs \
-	Mono.Cecil/Mono.Cecil/GenericContext.cs \
 	Mono.Cecil/Mono.Cecil/GenericInstanceMethod.cs \
 	Mono.Cecil/Mono.Cecil/GenericInstanceType.cs \
 	Mono.Cecil/Mono.Cecil/GenericParameter.cs \
 	Mono.Cecil/Mono.Cecil/GenericParameterAttributes.cs \
-	Mono.Cecil/Mono.Cecil/GenericParameterCollection.cs \
-	Mono.Cecil/Mono.Cecil/HashCodeProvider.cs \
-	Mono.Cecil/Mono.Cecil/IAnnotationProvider.cs \
-	Mono.Cecil/Mono.Cecil/IAssemblyResolver.cs \
+	Mono.Cecil/Mono.Cecil/IConstantProvider.cs \
 	Mono.Cecil/Mono.Cecil/ICustomAttributeProvider.cs \
-	Mono.Cecil/Mono.Cecil/IDetailReader.cs \
 	Mono.Cecil/Mono.Cecil/IGenericInstance.cs \
 	Mono.Cecil/Mono.Cecil/IGenericParameterProvider.cs \
-	Mono.Cecil/Mono.Cecil/IHasConstant.cs \
-	Mono.Cecil/Mono.Cecil/IHasMarshalSpec.cs \
-	Mono.Cecil/Mono.Cecil/IHasSecurity.cs \
-	Mono.Cecil/Mono.Cecil/IImporter.cs \
+	Mono.Cecil/Mono.Cecil/IMarshalInfoProvider.cs \
 	Mono.Cecil/Mono.Cecil/IMemberDefinition.cs \
-	Mono.Cecil/Mono.Cecil/IMemberReference.cs \
 	Mono.Cecil/Mono.Cecil/IMetadataScope.cs \
 	Mono.Cecil/Mono.Cecil/IMetadataTokenProvider.cs \
 	Mono.Cecil/Mono.Cecil/IMethodSignature.cs \
-	Mono.Cecil/Mono.Cecil/ImportContext.cs \
-	Mono.Cecil/Mono.Cecil/InterfaceCollection.cs \
-	Mono.Cecil/Mono.Cecil/IReflectionStructureVisitable.cs \
-	Mono.Cecil/Mono.Cecil/IReflectionStructureVisitor.cs \
-	Mono.Cecil/Mono.Cecil/IReflectionVisitable.cs \
-	Mono.Cecil/Mono.Cecil/IReflectionVisitor.cs \
-	Mono.Cecil/Mono.Cecil/IRequireResolving.cs \
+	Mono.Cecil/Mono.Cecil/Import.cs \
 	Mono.Cecil/Mono.Cecil/LinkedResource.cs \
 	Mono.Cecil/Mono.Cecil/ManifestResourceAttributes.cs \
-	Mono.Cecil/Mono.Cecil/MarshalSpec.cs \
+	Mono.Cecil/Mono.Cecil/MarshalInfo.cs \
+	Mono.Cecil/Mono.Cecil/MemberDefinitionCollection.cs \
 	Mono.Cecil/Mono.Cecil/MemberReference.cs \
-	Mono.Cecil/Mono.Cecil/MemberReferenceCollection.cs \
+	Mono.Cecil/Mono.Cecil/MetadataResolver.cs \
+	Mono.Cecil/Mono.Cecil/MetadataSystem.cs \
 	Mono.Cecil/Mono.Cecil/MethodAttributes.cs \
 	Mono.Cecil/Mono.Cecil/MethodCallingConvention.cs \
 	Mono.Cecil/Mono.Cecil/MethodDefinition.cs \
-	Mono.Cecil/Mono.Cecil/MethodDefinitionCollection.cs \
 	Mono.Cecil/Mono.Cecil/MethodImplAttributes.cs \
 	Mono.Cecil/Mono.Cecil/MethodReference.cs \
 	Mono.Cecil/Mono.Cecil/MethodReturnType.cs \
@@ -278,13 +105,9 @@ FILES =  \
 	Mono.Cecil/Mono.Cecil/MethodSpecification.cs \
 	Mono.Cecil/Mono.Cecil/Modifiers.cs \
 	Mono.Cecil/Mono.Cecil/ModuleDefinition.cs \
-	Mono.Cecil/Mono.Cecil/ModuleDefinitionCollection.cs \
+	Mono.Cecil/Mono.Cecil/ModuleKind.cs \
 	Mono.Cecil/Mono.Cecil/ModuleReference.cs \
-	Mono.Cecil/Mono.Cecil/ModuleReferenceCollection.cs \
 	Mono.Cecil/Mono.Cecil/NativeType.cs \
-	Mono.Cecil/Mono.Cecil/NestedTypeCollection.cs \
-	Mono.Cecil/Mono.Cecil/NullReferenceImporter.cs \
-	Mono.Cecil/Mono.Cecil/OverrideCollection.cs \
 	Mono.Cecil/Mono.Cecil/ParameterAttributes.cs \
 	Mono.Cecil/Mono.Cecil/ParameterDefinition.cs \
 	Mono.Cecil/Mono.Cecil/ParameterDefinitionCollection.cs \
@@ -295,35 +118,27 @@ FILES =  \
 	Mono.Cecil/Mono.Cecil/PointerType.cs \
 	Mono.Cecil/Mono.Cecil/PropertyAttributes.cs \
 	Mono.Cecil/Mono.Cecil/PropertyDefinition.cs \
-	Mono.Cecil/Mono.Cecil/PropertyDefinitionCollection.cs \
 	Mono.Cecil/Mono.Cecil/PropertyReference.cs \
 	Mono.Cecil/Mono.Cecil/ReferenceType.cs \
-	Mono.Cecil/Mono.Cecil/ReflectionController.cs \
-	Mono.Cecil/Mono.Cecil/ReflectionException.cs \
-	Mono.Cecil/Mono.Cecil/ReflectionHelper.cs \
-	Mono.Cecil/Mono.Cecil/ReflectionReader.cs \
-	Mono.Cecil/Mono.Cecil/ReflectionWriter.cs \
 	Mono.Cecil/Mono.Cecil/Resource.cs \
-	Mono.Cecil/Mono.Cecil/ResourceCollection.cs \
-	Mono.Cecil/Mono.Cecil/SecurityAction.cs \
 	Mono.Cecil/Mono.Cecil/SecurityDeclaration.cs \
-	Mono.Cecil/Mono.Cecil/SecurityDeclarationCollection.cs \
-	Mono.Cecil/Mono.Cecil/SecurityDeclarationReader.cs \
 	Mono.Cecil/Mono.Cecil/SentinelType.cs \
-	Mono.Cecil/Mono.Cecil/StructureReader.cs \
-	Mono.Cecil/Mono.Cecil/StructureWriter.cs \
-	Mono.Cecil/Mono.Cecil/TableComparers.cs \
 	Mono.Cecil/Mono.Cecil/TargetRuntime.cs \
 	Mono.Cecil/Mono.Cecil/TypeAttributes.cs \
 	Mono.Cecil/Mono.Cecil/TypeDefinition.cs \
 	Mono.Cecil/Mono.Cecil/TypeDefinitionCollection.cs \
+	Mono.Cecil/Mono.Cecil/TypeParser.cs \
 	Mono.Cecil/Mono.Cecil/TypeReference.cs \
-	Mono.Cecil/Mono.Cecil/TypeReferenceCollection.cs \
 	Mono.Cecil/Mono.Cecil/TypeSpecification.cs \
+	Mono.Cecil/Mono.Cecil/TypeSystem.cs \
 	Mono.Cecil/Mono.Cecil/VariantType.cs \
-	Mono.Cecil/Mono.Xml/MiniParser.cs \
-	Mono.Cecil/Mono.Xml/SecurityParser.cs \
-	Mono.Cecil/Mono.Xml/SmallXmlParser.cs 
+	Mono.Cecil/Mono.Collections.Generic/Collection.cs \
+	Mono.Cecil/Mono.Security.Cryptography/CryptoConvert.cs \
+	Mono.Cecil/Mono.Security.Cryptography/CryptoService.cs \
+	Mono.Cecil/Mono/Actions.cs \
+	Mono.Cecil/Mono/Empty.cs \
+	Mono.Cecil/Mono/Funcs.cs \
+	Mono.Cecil/System.Runtime.CompilerServices/ExtensionAttribute.cs
 
 DATA_FILES =  
 
