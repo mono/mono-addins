@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// (C) 2005 Jb Evain
+// Copyright (c) 2008 - 2010 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,33 +26,58 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace Mono.Cecil {
+using System;
 
-	using Mono.Cecil;
+namespace Mono.Cecil {
 
 	public class FieldReference : MemberReference {
 
-		TypeReference m_fieldType;
+		TypeReference field_type;
 
 		public TypeReference FieldType {
-			get { return m_fieldType; }
-			set { m_fieldType = value; }
+			get { return field_type; }
+			set { field_type = value; }
 		}
 
-		internal FieldReference (string name, TypeReference fieldType) : base (name)
-		{
-			m_fieldType = fieldType;
+		public override string FullName {
+			get { return field_type.FullName + " " + MemberFullName (); }
 		}
 
-		public FieldReference (string name, TypeReference declaringType, TypeReference fieldType) :
-			this (name, fieldType)
+		internal override bool ContainsGenericParameter {
+			get { return field_type.ContainsGenericParameter || base.ContainsGenericParameter; }
+		}
+
+		internal FieldReference ()
 		{
+			this.token = new MetadataToken (TokenType.MemberRef);
+		}
+
+		public FieldReference (string name, TypeReference fieldType)
+			: base (name)
+		{
+			if (fieldType == null)
+				throw new ArgumentNullException ("fieldType");
+
+			this.field_type = fieldType;
+			this.token = new MetadataToken (TokenType.MemberRef);
+		}
+
+		public FieldReference (string name, TypeReference fieldType, TypeReference declaringType)
+			: this (name, fieldType)
+		{
+			if (declaringType == null)
+				throw new ArgumentNullException("declaringType");
+
 			this.DeclaringType = declaringType;
 		}
 
-		public override string ToString ()
+		public virtual FieldDefinition Resolve ()
 		{
-			return string.Concat (m_fieldType.FullName, " ", base.ToString ());
+			var module = this.Module;
+			if (module == null)
+				throw new NotSupportedException ();
+
+			return module.Resolve (this);
 		}
 	}
 }

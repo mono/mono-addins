@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// (C) 2005 Jb Evain
+// Copyright (c) 2008 - 2010 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,85 +26,74 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono.Collections.Generic;
+
 namespace Mono.Cecil {
 
-	using System.Reflection;
+	public sealed class MethodReturnType : IConstantProvider, ICustomAttributeProvider, IMarshalInfoProvider {
 
-	using Mono.Cecil.Metadata;
+		internal IMethodSignature method;
+		internal ParameterDefinition parameter;
+		TypeReference return_type;
 
-	public sealed class MethodReturnType : ICustomAttributeProvider, IHasMarshalSpec, IHasConstant {
-
-		MethodReference m_method;
-		ParameterDefinition m_param;
-
-		TypeReference m_returnType;
-
-		public MethodReference Method {
-			get { return m_method; }
-			set { m_method = value; }
+		public IMethodSignature Method {
+			get { return method; }
 		}
 
 		public TypeReference ReturnType {
-			get { return m_returnType; }
-			set { m_returnType = value; }
+			get { return return_type; }
+			set { return_type = value; }
 		}
 
 		internal ParameterDefinition Parameter {
-			get { return m_param; }
-			set { m_param = value; }
+			get { return parameter ?? (parameter = new ParameterDefinition (return_type)); }
+			set { parameter = value; }
 		}
 
 		public MetadataToken MetadataToken {
-			get { return m_param.MetadataToken; }
-			set { m_param.MetadataToken = value; }
+			get { return Parameter.MetadataToken; }
+			set { Parameter.MetadataToken = value; }
 		}
 
-		public CustomAttributeCollection CustomAttributes {
-			get {
-				if (m_param == null) {
-					m_param = new ParameterDefinition (
-						string.Empty, 0, (ParameterAttributes) 0, m_returnType);
-					m_param.Method = m_method;
-				}
+		public bool HasCustomAttributes {
+			get { return parameter != null && parameter.HasCustomAttributes; }
+		}
 
-				return m_param.CustomAttributes;
-			}
+		public Collection<CustomAttribute> CustomAttributes {
+			get { return Parameter.CustomAttributes; }
+		}
+
+		public bool HasDefault {
+			get { return parameter != null && parameter.HasDefault; }
+			set { Parameter.HasDefault = value; }
 		}
 
 		public bool HasConstant {
-			get {
-				if (m_param == null)
-					return false;
-
-				return m_param.HasConstant;
-			}
+			get { return parameter != null && parameter.HasConstant; }
 		}
 
 		public object Constant {
-			get {
-				if (m_param == null)
-					return null;
-
-				return m_param.Constant;
-			}
-			set {
-				m_param.Constant = value;
-			}
+			get { return Parameter.Constant; }
+			set { Parameter.Constant = value; }
 		}
 
-		public MarshalSpec MarshalSpec {
-			get {
-				if (m_param == null)
-					return null;
-
-				return m_param.MarshalSpec;
-			}
-			set { m_param.MarshalSpec = value; }
+		public bool HasFieldMarshal {
+			get { return parameter != null && parameter.HasFieldMarshal; }
+			set { Parameter.HasFieldMarshal = value; }
 		}
 
-		public MethodReturnType (TypeReference retType)
+		public bool HasMarshalInfo {
+			get { return parameter != null && parameter.HasMarshalInfo; }
+		}
+
+		public MarshalInfo MarshalInfo {
+			get { return Parameter.MarshalInfo; }
+			set { Parameter.MarshalInfo = value; }
+		}
+
+		public MethodReturnType (IMethodSignature method)
 		{
-			m_returnType = retType;
+			this.method = method;
 		}
 	}
 }
