@@ -1,7 +1,7 @@
 
 KEY_FILE=$(top_srcdir)/mono-addins.snk
 ASSEMBLY_COMPILER_COMMAND = @MCS@
-ASSEMBLY_COMPILER_FLAGS =  -keyfile:$(KEY_FILE) -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG
+ASSEMBLY_COMPILER_FLAGS =  -keyfile:$(KEY_FILE) -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG -d:NET_3_5
 ASSEMBLY = ../bin/Mono.Addins.CecilReflector.dll
 ASSEMBLY_NAME=Mono.Addins.CecilReflector
 COMPILE_TARGET = library
@@ -148,7 +148,7 @@ EXTRAS =
 
 REFERENCES =  \
 	-r:../bin/Mono.Addins.dll \
-	-r:System
+	-r:System.Core
 
 DLL_REFERENCES = 
 
