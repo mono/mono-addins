@@ -1,3 +1,8 @@
+2010-10-14  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* SetupService.cs: Build package now returns a list of the
+	  generated files. 
+
 2010-07-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* Mono.Addins.Setup.csproj: Generate documentation.

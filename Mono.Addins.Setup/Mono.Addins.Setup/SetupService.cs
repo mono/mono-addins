@@ -321,18 +321,23 @@ namespace Mono.Addins.Setup
 		/// repository. The package will include the main assembly or manifest of the add-in and any external
 		/// file declared in the add-in metadata.
 		/// </remarks>
-		public void BuildPackage (IProgressStatus statusMonitor, string targetDirectory, params string[] filePaths)
+		public string[] BuildPackage (IProgressStatus statusMonitor, string targetDirectory, params string[] filePaths)
 		{
-			foreach (string file in filePaths)
-				BuildPackageInternal (statusMonitor, targetDirectory, file);
+			List<string> outFiles = new List<string> ();
+			foreach (string file in filePaths) {
+				string f = BuildPackageInternal (statusMonitor, targetDirectory, file);
+				if (f != null)
+					outFiles.Add (f);
+			}
+			return outFiles.ToArray ();
 		}
 		
-		void BuildPackageInternal (IProgressStatus monitor, string targetDirectory, string filePath)
+		string BuildPackageInternal (IProgressStatus monitor, string targetDirectory, string filePath)
 		{
 			AddinDescription conf = registry.GetAddinDescription (monitor, filePath);
 			if (conf == null) {
 				monitor.ReportError ("Could not read add-in file: " + filePath, null);
-				return;
+				return null;
 			}
 			
 			string basePath = Path.GetDirectoryName (filePath);
@@ -397,7 +402,8 @@ namespace Mono.Addins.Setup
 			}
 			
 			s.Finish();
-			s.Close();			
+			s.Close();		
+			return outFilePath;
 		}
 		
 		void CleanDescription (XmlElement parent)
