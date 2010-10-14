@@ -928,7 +928,7 @@ namespace Mono.Addins.Database
 					}
 					else {
 						// Look for custom extension attribtues
-						foreach (CustomAttribute att in reflector.GetRawCustomAttributes (t, typeof(CustomExtensionAttribute), true)) {
+						foreach (CustomAttribute att in reflector.GetRawCustomAttributes (t, typeof(CustomExtensionAttribute), false)) {
 							ExtensionNodeDescription elem = module.AddExtensionNode ("%" + att.TypeName, "Type");
 							foreach (KeyValuePair<string,string> prop in att)
 								elem.SetAttribute (prop.Key, prop.Value);
