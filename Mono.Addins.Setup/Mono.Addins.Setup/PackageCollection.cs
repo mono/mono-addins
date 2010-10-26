@@ -39,6 +39,9 @@ namespace Mono.Addins.Setup
 	/// </summary>
 	public class PackageCollection: CollectionBase
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Setup.PackageCollection"/> class.
+		/// </summary>
 		public PackageCollection ()
 		{
 		}
