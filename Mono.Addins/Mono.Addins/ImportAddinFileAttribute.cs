@@ -39,6 +39,7 @@ namespace Mono.Addins
 	/// This information is used by setup tools to know exactly what needs to be packaged when creating 
 	/// an add-in package, or to know what needs to be deleted when removing an add-in.
 	/// </remarks>
+	[AttributeUsage (AttributeTargets.Assembly, AllowMultiple = true)]
 	public class ImportAddinFileAttribute: Attribute
 	{
 		string filePath;
