@@ -5,15 +5,10 @@ namespace Mono.Addins.Gui
 	internal partial class AddinInfoDialog
 	{
 		private global::Gtk.HBox hbox81;
-
 		private global::Gtk.VBox vbox94;
-
 		private global::Gtk.Image packageImage;
-
 		private global::Gtk.ScrolledWindow scrolledwindow22;
-
 		private global::Gtk.Label infoLabel;
-
 		private global::Gtk.Button closebutton3;
 
 		protected virtual void Build ()
@@ -42,12 +37,12 @@ namespace Mono.Addins.Gui
 			this.packageImage = new global::Gtk.Image ();
 			this.packageImage.Name = "packageImage";
 			this.vbox94.Add (this.packageImage);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox94[this.packageImage]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox94 [this.packageImage]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
 			this.hbox81.Add (this.vbox94);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox81[this.vbox94]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox81 [this.vbox94]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -64,17 +59,17 @@ namespace Mono.Addins.Gui
 			this.infoLabel.Name = "infoLabel";
 			this.infoLabel.Xpad = 6;
 			this.infoLabel.Ypad = 6;
-			this.infoLabel.Xalign = 0f;
-			this.infoLabel.Yalign = 0f;
+			this.infoLabel.Xalign = 0F;
+			this.infoLabel.Yalign = 0F;
 			this.infoLabel.LabelProp = "aa a a a a a a a a aa a a a a aaa a a a a a a a a aa a a a a aaa a a a a a a a a aa a a a a a";
 			this.infoLabel.Wrap = true;
 			w4.Add (this.infoLabel);
 			this.scrolledwindow22.Add (w4);
 			this.hbox81.Add (this.scrolledwindow22);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox81[this.scrolledwindow22]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox81 [this.scrolledwindow22]));
 			w7.Position = 1;
 			w1.Add (this.hbox81);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(w1[this.hbox81]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox81]));
 			w8.Position = 0;
 			// Internal child Mono.Addins.Gui.AddinInfoDialog.ActionArea
 			global::Gtk.HButtonBox w9 = this.ActionArea;
@@ -91,7 +86,7 @@ namespace Mono.Addins.Gui
 			this.closebutton3.UseUnderline = true;
 			this.closebutton3.Label = "gtk-close";
 			this.AddActionWidget (this.closebutton3, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9[this.closebutton3]));
+			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9 [this.closebutton3]));
 			w10.Expand = false;
 			w10.Fill = false;
 			if ((this.Child != null)) {

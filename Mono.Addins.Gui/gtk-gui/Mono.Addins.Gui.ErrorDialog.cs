@@ -5,23 +5,14 @@ namespace Mono.Addins.Gui
 	internal partial class ErrorDialog
 	{
 		private global::Gtk.HBox hbox59;
-
 		private global::Gtk.VBox vbox72;
-
 		private global::Gtk.Image icon;
-
 		private global::Gtk.VBox vbox73;
-
 		private global::Gtk.Label descriptionLabel;
-
 		private global::Gtk.Expander expander;
-
 		private global::Gtk.ScrolledWindow scrolledwindow10;
-
 		private global::Gtk.TextView detailsTextView;
-
 		private global::Gtk.Label label102;
-
 		private global::Gtk.Button okButton;
 
 		protected virtual void Build ()
@@ -49,12 +40,12 @@ namespace Mono.Addins.Gui
 			this.icon.Name = "icon";
 			this.icon.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-error", global::Gtk.IconSize.Dialog);
 			this.vbox72.Add (this.icon);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox72[this.icon]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox72 [this.icon]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
 			this.hbox59.Add (this.vbox72);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox59[this.vbox72]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox59 [this.vbox72]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -67,12 +58,12 @@ namespace Mono.Addins.Gui
 			this.descriptionLabel.WidthRequest = 540;
 			this.descriptionLabel.CanFocus = true;
 			this.descriptionLabel.Name = "descriptionLabel";
-			this.descriptionLabel.Xalign = 0f;
+			this.descriptionLabel.Xalign = 0F;
 			this.descriptionLabel.LabelProp = "An exception has been thrown 1 2 3 4 5 6 7 8 9 10 11 12 13 14";
 			this.descriptionLabel.Wrap = true;
 			this.descriptionLabel.Selectable = true;
 			this.vbox73.Add (this.descriptionLabel);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox73[this.descriptionLabel]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox73 [this.descriptionLabel]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -101,13 +92,13 @@ namespace Mono.Addins.Gui
 			this.label102.LabelProp = global::Mono.Unix.Catalog.GetString ("Details");
 			this.expander.LabelWidget = this.label102;
 			this.vbox73.Add (this.expander);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox73[this.expander]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox73 [this.expander]));
 			w7.Position = 1;
 			this.hbox59.Add (this.vbox73);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox59[this.vbox73]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox59 [this.vbox73]));
 			w8.Position = 1;
 			w1.Add (this.hbox59);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1[this.hbox59]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox59]));
 			w9.Position = 0;
 			// Internal child Mono.Addins.Gui.ErrorDialog.ActionArea
 			global::Gtk.HButtonBox w10 = this.ActionArea;
@@ -124,7 +115,7 @@ namespace Mono.Addins.Gui
 			this.okButton.UseUnderline = true;
 			this.okButton.Label = "gtk-ok";
 			this.AddActionWidget (this.okButton, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.okButton]));
+			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.okButton]));
 			w11.Expand = false;
 			w11.Fill = false;
 			if ((this.Child != null)) {

@@ -5,17 +5,11 @@ namespace Mono.Addins.Gui
 	internal partial class ManageSitesDialog
 	{
 		private global::Gtk.HBox hbox67;
-
 		private global::Gtk.ScrolledWindow scrolledwindow17;
-
 		private global::Gtk.TreeView repoTree;
-
 		private global::Gtk.VBox vbox88;
-
 		private global::Gtk.Button btnAdd;
-
 		private global::Gtk.Button btnRemove;
-
 		private global::Gtk.Button closebutton2;
 
 		protected virtual void Build ()
@@ -49,7 +43,7 @@ namespace Mono.Addins.Gui
 			this.repoTree.HeadersVisible = false;
 			this.scrolledwindow17.Add (this.repoTree);
 			this.hbox67.Add (this.scrolledwindow17);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox67[this.scrolledwindow17]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox67 [this.scrolledwindow17]));
 			w3.Position = 0;
 			// Container child hbox67.Gtk.Box+BoxChild
 			this.vbox88 = new global::Gtk.VBox ();
@@ -63,7 +57,7 @@ namespace Mono.Addins.Gui
 			this.btnAdd.UseUnderline = true;
 			this.btnAdd.Label = "gtk-add";
 			this.vbox88.Add (this.btnAdd);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox88[this.btnAdd]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox88 [this.btnAdd]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -75,17 +69,17 @@ namespace Mono.Addins.Gui
 			this.btnRemove.UseUnderline = true;
 			this.btnRemove.Label = "gtk-delete";
 			this.vbox88.Add (this.btnRemove);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox88[this.btnRemove]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox88 [this.btnRemove]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
 			this.hbox67.Add (this.vbox88);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox67[this.vbox88]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox67 [this.vbox88]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
 			w1.Add (this.hbox67);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1[this.hbox67]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox67]));
 			w7.Position = 0;
 			// Internal child Mono.Addins.Gui.ManageSitesDialog.ActionArea
 			global::Gtk.HButtonBox w8 = this.ActionArea;
@@ -102,7 +96,7 @@ namespace Mono.Addins.Gui
 			this.closebutton2.UseUnderline = true;
 			this.closebutton2.Label = "gtk-close";
 			this.AddActionWidget (this.closebutton2, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8[this.closebutton2]));
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.closebutton2]));
 			w9.Expand = false;
 			w9.Fill = false;
 			if ((this.Child != null)) {

@@ -5,19 +5,12 @@ namespace Mono.Addins.Gui
 	internal partial class AddinInstallerDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.Label addinList;
-
 		private global::Gtk.ProgressBar progressBar;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -41,20 +34,20 @@ namespace Mono.Addins.Gui
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Additional extensions are required to perform this operation.");
 			this.vbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("The following add-ins will be installed:");
 			this.vbox2.Add (this.label2);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label2]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label2]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -71,25 +64,25 @@ namespace Mono.Addins.Gui
 			this.addinList.Name = "addinList";
 			this.addinList.Xpad = 6;
 			this.addinList.Ypad = 6;
-			this.addinList.Xalign = 0f;
-			this.addinList.Yalign = 0f;
+			this.addinList.Xalign = 0F;
+			this.addinList.Yalign = 0F;
 			this.addinList.LabelProp = "label3";
 			w4.Add (this.addinList);
 			this.scrolledwindow1.Add (w4);
 			this.vbox2.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.scrolledwindow1]));
 			w7.Position = 2;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.progressBar = new global::Gtk.ProgressBar ();
 			this.progressBar.Name = "progressBar";
 			this.progressBar.Text = "";
 			this.vbox2.Add (this.progressBar);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.progressBar]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.progressBar]));
 			w8.Position = 3;
 			w8.Expand = false;
 			w8.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w9.Position = 0;
 			// Internal child Mono.Addins.Gui.AddinInstallerDialog.ActionArea
 			global::Gtk.HButtonBox w10 = this.ActionArea;
@@ -106,7 +99,7 @@ namespace Mono.Addins.Gui
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.buttonCancel]));
 			w11.Expand = false;
 			w11.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -118,7 +111,7 @@ namespace Mono.Addins.Gui
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			w10.Add (this.buttonOk);
-			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.buttonOk]));
 			w12.Position = 1;
 			w12.Expand = false;
 			w12.Fill = false;

@@ -5,41 +5,23 @@ namespace Mono.Addins.Gui
 	internal partial class AddinManagerDialog
 	{
 		private global::Gtk.VBox vbox93;
-
 		private global::Gtk.HBox hbox85;
-
 		private global::Gtk.Image imageInstall;
-
 		private global::Gtk.Label label144;
-
 		private global::Gtk.HBox hbox73;
-
 		private global::Gtk.Label label134;
-
 		private global::Gtk.HBox hbox65;
-
 		private global::Gtk.HBox hbox72;
-
 		private global::Gtk.ScrolledWindow scrolledwindow13;
-
 		private global::Gtk.TreeView addinTree;
-
 		private global::Gtk.VBox vbox933;
-
 		private global::Gtk.Button btnInstall;
-
 		private global::Gtk.Button btnRepositories;
-
 		private global::Gtk.HSeparator hseparator4;
-
 		private global::Gtk.Button btnUninstall;
-
 		private global::Gtk.Button btnEnable;
-
 		private global::Gtk.Button btnDisable;
-
 		private global::Gtk.Button btnInfo;
-
 		private global::Gtk.Button btnClose;
 
 		protected virtual void Build ()
@@ -69,10 +51,10 @@ namespace Mono.Addins.Gui
 			// Container child hbox85.Gtk.Box+BoxChild
 			this.imageInstall = new global::Gtk.Image ();
 			this.imageInstall.Name = "imageInstall";
-			this.imageInstall.Yalign = 0f;
+			this.imageInstall.Yalign = 0F;
 			this.imageInstall.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("system-software-update.png");
 			this.hbox85.Add (this.imageInstall);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox85[this.imageInstall]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox85 [this.imageInstall]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -82,12 +64,12 @@ namespace Mono.Addins.Gui
 			this.label144.LabelProp = global::Mono.Unix.Catalog.GetString ("<big><b>Add-in Manager</b></big>");
 			this.label144.UseMarkup = true;
 			this.hbox85.Add (this.label144);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox85[this.label144]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox85 [this.label144]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
 			this.vbox93.Add (this.hbox85);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox93[this.hbox85]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox93 [this.hbox85]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -98,15 +80,15 @@ namespace Mono.Addins.Gui
 			// Container child hbox73.Gtk.Box+BoxChild
 			this.label134 = new global::Gtk.Label ();
 			this.label134.Name = "label134";
-			this.label134.Xalign = 0f;
+			this.label134.Xalign = 0F;
 			this.label134.LabelProp = global::Mono.Unix.Catalog.GetString ("The following add-ins are currently installed:");
 			this.hbox73.Add (this.label134);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox73[this.label134]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox73 [this.label134]));
 			w5.Position = 0;
 			w5.Expand = false;
 			w5.Fill = false;
 			this.vbox93.Add (this.hbox73);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox93[this.hbox73]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox93 [this.hbox73]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -129,7 +111,7 @@ namespace Mono.Addins.Gui
 			this.addinTree.Name = "addinTree";
 			this.scrolledwindow13.Add (this.addinTree);
 			this.hbox72.Add (this.scrolledwindow13);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox72[this.scrolledwindow13]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox72 [this.scrolledwindow13]));
 			w8.Position = 0;
 			// Container child hbox72.Gtk.Box+BoxChild
 			this.vbox933 = new global::Gtk.VBox ();
@@ -141,7 +123,7 @@ namespace Mono.Addins.Gui
 			this.btnInstall.Name = "btnInstall";
 			this.btnInstall.UseUnderline = true;
 			// Container child btnInstall.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w9 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w9 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w10 = new global::Gtk.HBox ();
 			w10.Spacing = 2;
@@ -157,7 +139,7 @@ namespace Mono.Addins.Gui
 			w9.Add (w10);
 			this.btnInstall.Add (w9);
 			this.vbox933.Add (this.btnInstall);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox933[this.btnInstall]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox933 [this.btnInstall]));
 			w17.Position = 0;
 			w17.Expand = false;
 			w17.Fill = false;
@@ -168,7 +150,7 @@ namespace Mono.Addins.Gui
 			this.btnRepositories.UseUnderline = true;
 			this.btnRepositories.Label = global::Mono.Unix.Catalog.GetString ("_Repositories...");
 			this.vbox933.Add (this.btnRepositories);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox933[this.btnRepositories]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox933 [this.btnRepositories]));
 			w18.Position = 1;
 			w18.Expand = false;
 			w18.Fill = false;
@@ -176,7 +158,7 @@ namespace Mono.Addins.Gui
 			this.hseparator4 = new global::Gtk.HSeparator ();
 			this.hseparator4.Name = "hseparator4";
 			this.vbox933.Add (this.hseparator4);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox933[this.hseparator4]));
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox933 [this.hseparator4]));
 			w19.Position = 2;
 			w19.Expand = false;
 			w19.Fill = false;
@@ -186,7 +168,7 @@ namespace Mono.Addins.Gui
 			this.btnUninstall.Name = "btnUninstall";
 			this.btnUninstall.UseUnderline = true;
 			// Container child btnUninstall.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w20 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w20 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w21 = new global::Gtk.HBox ();
 			w21.Spacing = 2;
@@ -202,7 +184,7 @@ namespace Mono.Addins.Gui
 			w20.Add (w21);
 			this.btnUninstall.Add (w20);
 			this.vbox933.Add (this.btnUninstall);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox933[this.btnUninstall]));
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox933 [this.btnUninstall]));
 			w28.Position = 3;
 			w28.Expand = false;
 			w28.Fill = false;
@@ -212,7 +194,7 @@ namespace Mono.Addins.Gui
 			this.btnEnable.Name = "btnEnable";
 			this.btnEnable.UseUnderline = true;
 			// Container child btnEnable.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w29 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w29 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w30 = new global::Gtk.HBox ();
 			w30.Spacing = 2;
@@ -228,7 +210,7 @@ namespace Mono.Addins.Gui
 			w29.Add (w30);
 			this.btnEnable.Add (w29);
 			this.vbox933.Add (this.btnEnable);
-			global::Gtk.Box.BoxChild w37 = ((global::Gtk.Box.BoxChild)(this.vbox933[this.btnEnable]));
+			global::Gtk.Box.BoxChild w37 = ((global::Gtk.Box.BoxChild)(this.vbox933 [this.btnEnable]));
 			w37.Position = 4;
 			w37.Expand = false;
 			w37.Fill = false;
@@ -238,7 +220,7 @@ namespace Mono.Addins.Gui
 			this.btnDisable.Name = "btnDisable";
 			this.btnDisable.UseUnderline = true;
 			// Container child btnDisable.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w38 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w38 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w39 = new global::Gtk.HBox ();
 			w39.Spacing = 2;
@@ -254,7 +236,7 @@ namespace Mono.Addins.Gui
 			w38.Add (w39);
 			this.btnDisable.Add (w38);
 			this.vbox933.Add (this.btnDisable);
-			global::Gtk.Box.BoxChild w46 = ((global::Gtk.Box.BoxChild)(this.vbox933[this.btnDisable]));
+			global::Gtk.Box.BoxChild w46 = ((global::Gtk.Box.BoxChild)(this.vbox933 [this.btnDisable]));
 			w46.Position = 5;
 			w46.Expand = false;
 			w46.Fill = false;
@@ -266,23 +248,23 @@ namespace Mono.Addins.Gui
 			this.btnInfo.UseUnderline = true;
 			this.btnInfo.Label = "gtk-dialog-info";
 			this.vbox933.Add (this.btnInfo);
-			global::Gtk.Box.BoxChild w47 = ((global::Gtk.Box.BoxChild)(this.vbox933[this.btnInfo]));
+			global::Gtk.Box.BoxChild w47 = ((global::Gtk.Box.BoxChild)(this.vbox933 [this.btnInfo]));
 			w47.Position = 6;
 			w47.Expand = false;
 			w47.Fill = false;
 			this.hbox72.Add (this.vbox933);
-			global::Gtk.Box.BoxChild w48 = ((global::Gtk.Box.BoxChild)(this.hbox72[this.vbox933]));
+			global::Gtk.Box.BoxChild w48 = ((global::Gtk.Box.BoxChild)(this.hbox72 [this.vbox933]));
 			w48.Position = 1;
 			w48.Expand = false;
 			w48.Fill = false;
 			this.hbox65.Add (this.hbox72);
-			global::Gtk.Box.BoxChild w49 = ((global::Gtk.Box.BoxChild)(this.hbox65[this.hbox72]));
+			global::Gtk.Box.BoxChild w49 = ((global::Gtk.Box.BoxChild)(this.hbox65 [this.hbox72]));
 			w49.Position = 0;
 			this.vbox93.Add (this.hbox65);
-			global::Gtk.Box.BoxChild w50 = ((global::Gtk.Box.BoxChild)(this.vbox93[this.hbox65]));
+			global::Gtk.Box.BoxChild w50 = ((global::Gtk.Box.BoxChild)(this.vbox93 [this.hbox65]));
 			w50.Position = 2;
 			w1.Add (this.vbox93);
-			global::Gtk.Box.BoxChild w51 = ((global::Gtk.Box.BoxChild)(w1[this.vbox93]));
+			global::Gtk.Box.BoxChild w51 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox93]));
 			w51.Position = 0;
 			// Internal child Mono.Addins.Gui.AddinManagerDialog.ActionArea
 			global::Gtk.HButtonBox w52 = this.ActionArea;
@@ -299,7 +281,7 @@ namespace Mono.Addins.Gui
 			this.btnClose.UseUnderline = true;
 			this.btnClose.Label = "gtk-close";
 			this.AddActionWidget (this.btnClose, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w53 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w52[this.btnClose]));
+			global::Gtk.ButtonBox.ButtonBoxChild w53 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w52 [this.btnClose]));
 			w53.Expand = false;
 			w53.Fill = false;
 			if ((this.Child != null)) {

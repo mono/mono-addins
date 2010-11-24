@@ -5,19 +5,12 @@ namespace Mono.Addins.Gui
 	internal partial class ProgressDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label labelMessage;
-
 		private global::Gtk.ProgressBar progressbar;
-
 		private global::Gtk.Expander expander1;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TextView textview;
-
 		private global::Gtk.Label GtkLabel1;
-
 		private global::Gtk.Button buttonCancel;
 
 		protected virtual void Build ()
@@ -40,9 +33,9 @@ namespace Mono.Addins.Gui
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.labelMessage = new global::Gtk.Label ();
 			this.labelMessage.Name = "labelMessage";
-			this.labelMessage.Xalign = 0f;
+			this.labelMessage.Xalign = 0F;
 			this.vbox2.Add (this.labelMessage);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.labelMessage]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelMessage]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -50,7 +43,7 @@ namespace Mono.Addins.Gui
 			this.progressbar = new global::Gtk.ProgressBar ();
 			this.progressbar.Name = "progressbar";
 			this.vbox2.Add (this.progressbar);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.progressbar]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.progressbar]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -74,10 +67,10 @@ namespace Mono.Addins.Gui
 			this.GtkLabel1.UseUnderline = true;
 			this.expander1.LabelWidget = this.GtkLabel1;
 			this.vbox2.Add (this.expander1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.expander1]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.expander1]));
 			w6.Position = 2;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w7.Position = 0;
 			// Internal child Mono.Addins.Gui.ProgressDialog.ActionArea
 			global::Gtk.HButtonBox w8 = this.ActionArea;
@@ -94,7 +87,7 @@ namespace Mono.Addins.Gui
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.buttonCancel]));
 			w9.Expand = false;
 			w9.Fill = false;
 			if ((this.Child != null)) {
