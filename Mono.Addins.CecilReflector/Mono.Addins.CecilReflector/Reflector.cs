@@ -55,7 +55,6 @@ namespace Mono.Addins.CecilReflector
 			
 			ArrayList atts = new ArrayList ();
 			foreach (CustomAttribute att in aprov.CustomAttributes) {
-				att.Resolve ();
 				object catt = ConvertAttribute (att, type);
 				if (catt != null)
 					atts.Add (catt);
@@ -151,7 +150,6 @@ namespace Mono.Addins.CecilReflector
 				return atts;
 			
 			foreach (CustomAttribute att in aprov.CustomAttributes) {
-				att.Resolve ();
 				MA.CustomAttribute catt = ConvertToRawAttribute (att, type.FullName);
 				if (catt != null)
 					atts.Add (catt);
