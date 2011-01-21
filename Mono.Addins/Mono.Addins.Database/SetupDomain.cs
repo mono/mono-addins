@@ -67,7 +67,7 @@ namespace Mono.Addins.Database
 		{
 			lock (this) {
 				if (useCount++ == 0) {
-					domain = AppDomain.CreateDomain ("SetupDomain");
+					domain = AppDomain.CreateDomain ("SetupDomain", null, AppDomain.CurrentDomain.SetupInformation);
 					remoteSetupDomain = (RemoteSetupDomain) domain.CreateInstanceFromAndUnwrap (typeof(RemoteSetupDomain).Assembly.Location, typeof(RemoteSetupDomain).FullName);
 				}
 				return remoteSetupDomain;
