@@ -145,6 +145,7 @@ namespace Mono.Addins.Database
 		{
 			if (inTransaction) {
 				deletedFiles.Remove (fileName);
+				deletedDirs.Remove (Path.GetDirectoryName (fileName));
 				foldersToUpdate [Path.GetDirectoryName (fileName)] = null;
 				return File.Create (fileName + ".new");
 			}
