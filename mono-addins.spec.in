@@ -1,0 +1,46 @@
+%define _libdir %{_prefix}/lib
+
+Name:           mono-addins
+Version:        @VERSION@
+Release:        0
+License:        X11/MIT
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+BuildArch:      noarch
+Url:            http://www.mono-project.com
+Source0:        http://ftp.novell.com/pub/mono/sources/%{name}/%{name}-%{version}.tar.bz2
+BuildRequires:  gtk-sharp2
+BuildRequires:  mono-devel
+BuildRequires:  pkg-config
+Summary:        Mono Addins Framework
+Group:          Development/Languages/Mono
+
+%description
+Mono.Addins is a generic framework for creating extensible
+applications, and for creating libraries which extend those
+applications.
+
+%files
+%defattr(-, root, root)
+%{_bindir}/mautil
+%{_datadir}/pkgconfig/*.pc
+%{_libdir}/mono/gac/*Mono.Addins*
+%{_libdir}/mono/mono-addins
+%{_libdir}/mono/xbuild/Mono.Addins.targets
+%{_mandir}/man1/mautil.1%ext_man
+
+%prep
+%setup -q
+
+%build
+%configure
+make
+
+%install
+make install DESTDIR=%{buildroot}
+mkdir -p %{buildroot}%{_datadir}/pkgconfig
+mv %{buildroot}%{_libdir}/pkgconfig/*.pc %{buildroot}%{_datadir}/pkgconfig
+
+%clean
+rm -rf %{buildroot}
+
+%changelog

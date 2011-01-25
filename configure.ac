@@ -1,7 +1,7 @@
 dnl Warning: This is an automatically generated file, do not edit!
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.54])
-AC_INIT([mono-addins], [0.5])
+AC_INIT([mono-addins], [0.5.90])
 AM_INIT_AUTOMAKE([foreign tar-ustar])
 AM_MAINTAINER_MODE
 
@@ -84,6 +84,7 @@ AC_SUBST(MONO_ADDINS_GUI_DEFAULT_LIB)
 AC_SUBST(MONO_ADDINS_SETUP_DEFAULT_LIB)
 
 AC_CONFIG_FILES([
+./mono-addins.spec
 ./Mono.Addins/mono-addins.pc
 ./Mono.Addins.Gui/mono-addins-gui.pc
 ./Mono.Addins.Setup/mono-addins-setup.pc
