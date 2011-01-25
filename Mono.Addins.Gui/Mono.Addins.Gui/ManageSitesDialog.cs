@@ -48,15 +48,13 @@ namespace Mono.Addins.Gui
 			this.service = service;
 			treeStore = new Gtk.ListStore (typeof (string), typeof (string));
 			repoTree.Model = treeStore;
-			repoTree.HeadersVisible = true;
-			repoTree.AppendColumn (Catalog.GetString ("Name"), new Gtk.CellRendererText (), "text", 1);
-			repoTree.AppendColumn (Catalog.GetString ("Url"), new Gtk.CellRendererText (), "text", 0);
+			repoTree.HeadersVisible = false;
+			repoTree.AppendColumn ("", new Gtk.CellRendererText (), "markup", 1);
 			repoTree.Selection.Changed += new EventHandler(OnSelect);
 			
 			AddinRepository[] reps = service.Repositories.GetRepositories ();
-			foreach (AddinRepository rep in reps) {
-				treeStore.AppendValues (rep.Url, rep.Title);
-			}
+			foreach (AddinRepository rep in reps)
+				AppendRepository (rep);
 
 			btnRemove.Sensitive = false;
 		}
@@ -65,6 +63,12 @@ namespace Mono.Addins.Gui
 		{
 			base.Dispose ();
 			Destroy ();
+		}
+		
+		void AppendRepository (AddinRepository rep)
+		{
+			string txt = GLib.Markup.EscapeText (rep.Title) + "\n<span color='darkgray'>" + GLib.Markup.EscapeText (rep.Url) + "</span>";
+			treeStore.AppendValues (rep.Url, txt);
 		}
 		
 		protected void OnAdd (object sender, EventArgs e)
@@ -122,7 +126,7 @@ namespace Mono.Addins.Gui
 							return;
 						}
 						
-						treeStore.AppendValues (rr.Url, rr.Title);
+						AppendRepository (rr);
 					}
 				}
 			} finally {

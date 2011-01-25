@@ -34,6 +34,8 @@ using Gdk;
 using Mono.Addins;
 using Mono.Addins.Setup;
 using Mono.Unix;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Mono.Addins.Gui
 {
@@ -44,9 +46,13 @@ namespace Mono.Addins.Gui
 		bool allowSelection;
 		ArrayList selected = new ArrayList ();
 		Hashtable addinData = new Hashtable ();
+		TreeViewColumn versionColumn;
+		string filter;
 		
-		Gdk.Pixbuf package;
-		Gdk.Pixbuf userPackage;
+		Gdk.Pixbuf iconInstalled;
+		Gdk.Pixbuf iconNotInstalled;
+		Gdk.Pixbuf iconHasUpdate;
+		Gdk.Pixbuf iconDisabled;
 		
 		public event EventHandler SelectionChanged;
 		
@@ -61,8 +67,10 @@ namespace Mono.Addins.Gui
 		
 		public AddinTreeWidget (Gtk.TreeView treeView)
 		{
-			package = Gdk.Pixbuf.LoadFromResource ("package-x-generic_22.png");
-			userPackage = Gdk.Pixbuf.LoadFromResource ("user-package.png");
+			iconInstalled = Gdk.Pixbuf.LoadFromResource ("plugin-32.png");
+			iconNotInstalled = Gdk.Pixbuf.LoadFromResource ("plugin-avail-32.png");
+			iconHasUpdate = Gdk.Pixbuf.LoadFromResource ("plugin-update-32.png");
+			iconDisabled = Gdk.Pixbuf.LoadFromResource ("plugin-disabled-32.png");
 			
 			this.treeView = treeView;
 			ArrayList list = new ArrayList ();
@@ -71,6 +79,17 @@ namespace Mono.Addins.Gui
 			treeStore = new Gtk.TreeStore (types);
 			treeView.Model = treeStore;
 			CreateColumns ();
+			ShowCategories = true;
+		}
+		
+		internal void SetFilter (string text)
+		{
+			this.filter = text;
+		}
+		
+		internal void ShowEmptyMessage ()
+		{
+			treeStore.AppendValues (null, null, Catalog.GetString ("No add-ins found"), "", false, false, null, false);
 		}
 		
 		protected virtual void AddStoreTypes (ArrayList list)
@@ -112,6 +131,7 @@ namespace Mono.Addins.Gui
 			col.Title = Catalog.GetString ("Version");
 			col.PackStart (crt, true);
 			col.AddAttribute (crt, "markup", ColVersion);
+			versionColumn = col;
 			treeView.AppendColumn (col);
 		}
 		
@@ -119,6 +139,18 @@ namespace Mono.Addins.Gui
 			get { return allowSelection; }
 			set { allowSelection = value; }
 		}
+		
+		public bool VersionVisible {
+			get {
+				return versionColumn.Visible;
+			}
+			set {
+				versionColumn.Visible = value;
+				treeView.HeadersVisible = value;
+			}
+		}
+		
+		public bool ShowCategories { get; set; }
 		
 		void OnAddinToggled (object o, ToggledArgs args)
 		{
@@ -151,27 +183,40 @@ namespace Mono.Addins.Gui
 		
 		public TreeIter AddAddin (AddinHeader info, object dataItem, bool enabled)
 		{
-			return AddAddin (info, dataItem, enabled, false);
+			return AddAddin (info, dataItem, enabled, true);
 		}
 		
 		public TreeIter AddAddin (AddinHeader info, object dataItem, bool enabled, bool userDir)
 		{
-			Gdk.Pixbuf icon;
-			if (userDir)
-				icon = userPackage;
-			else
-				icon = package;
-
-			addinData [info] = dataItem;
-			TreeIter piter = TreeIter.Zero;
-			if (info.Category == "") {
-				string otherCat = Catalog.GetString ("Other");
-				piter = FindCategory (otherCat);
-			} else {
-				piter = FindCategory (info.Category);
+			return AddAddin (info, dataItem, enabled, AddinStatus.Installed);
+		}
+		
+		public TreeIter AddAddin (AddinHeader info, object dataItem, bool enabled, AddinStatus status)
+		{
+			Gdk.Pixbuf icon = null;
+			switch (status) {
+			case AddinStatus.HasUpdate: icon = iconHasUpdate; break;
+			case AddinStatus.Installed: icon = iconInstalled; break;
+			case AddinStatus.NotInstalled: icon = iconNotInstalled; break;
 			}
 			
-			TreeIter iter = treeStore.AppendNode (piter);
+			if (!enabled)
+				icon = iconDisabled;
+
+			addinData [info] = dataItem;
+			TreeIter iter;
+			if (ShowCategories) {
+				TreeIter piter = TreeIter.Zero;
+				if (info.Category == "") {
+					string otherCat = Catalog.GetString ("Other");
+					piter = FindCategory (otherCat);
+				} else {
+					piter = FindCategory (info.Category);
+				}
+				iter = treeStore.AppendNode (piter);
+			} else {
+				iter = treeStore.AppendNode ();
+			}
 			UpdateRow (iter, info, dataItem, enabled, icon);
 			return iter;
 		}
@@ -183,13 +228,22 @@ namespace Mono.Addins.Gui
 			treeStore.SetValue (iter, ColAddin, info);
 			treeStore.SetValue (iter, ColData, dataItem);
 			
+			string name = EscapeWithFilterMarker (info.Name);
+			if (!string.IsNullOrEmpty (info.Description)) {
+				string desc = info.Description;
+				int i = desc.IndexOf ('\n');
+				if (i != -1)
+					desc = desc.Substring (0, i);
+				name += "\n<small><span foreground=\"darkgrey\">" + EscapeWithFilterMarker (desc) + "</span></small>";
+			}
+			
 			if (enabled) {
-				treeStore.SetValue (iter, ColName, info.Name);
+				treeStore.SetValue (iter, ColName, name);
 				treeStore.SetValue (iter, ColVersion, info.Version);
 				treeStore.SetValue (iter, ColAllowSelection, allowSelection);
 			}
 			else {
-				treeStore.SetValue (iter, ColName, "<span foreground=\"grey\">" + info.Name + "</span>");
+				treeStore.SetValue (iter, ColName, "<span foreground=\"grey\">" + name + "</span>");
 				treeStore.SetValue (iter, ColVersion, "<span foreground=\"grey\">" + info.Version + "</span>");
 				treeStore.SetValue (iter, ColAllowSelection, false);
 			}
@@ -198,6 +252,25 @@ namespace Mono.Addins.Gui
 			treeStore.SetValue (iter, ColShowImage, true);
 			
 			treeStore.SetValue (iter, ColSelected, sel);
+		}
+		
+		string EscapeWithFilterMarker (string txt)
+		{
+			if (string.IsNullOrEmpty (filter))
+				return GLib.Markup.EscapeText (txt);
+			
+			StringBuilder sb = new StringBuilder ();
+			int last = 0;
+			int i = txt.IndexOf (filter, StringComparison.CurrentCultureIgnoreCase);
+			while (i != -1) {
+				sb.Append (GLib.Markup.EscapeText (txt.Substring (last, i - last)));
+				sb.Append ("<span color='blue'>").Append (txt.Substring (i, filter.Length)).Append ("</span>");
+				last = i + filter.Length;
+				i = txt.IndexOf (filter, last, StringComparison.CurrentCultureIgnoreCase);
+			}
+			if (last < txt.Length)
+				sb.Append (GLib.Markup.EscapeText (txt.Substring (last, txt.Length - last)));
+			return sb.ToString ();
 		}
 		
 		public object GetAddinData (AddinHeader info)
@@ -248,12 +321,25 @@ namespace Mono.Addins.Gui
 		
 		public AddinHeader ActiveAddin {
 			get {
-				Gtk.TreeModel foo;
-				Gtk.TreeIter iter;
-				if (!treeView.Selection.GetSelected (out foo, out iter))
+				AddinHeader[] sel = ActiveAddins;
+				if (sel.Length > 0)
+					return sel[0];
+				else
 					return null;
-					
-				return (AddinHeader) treeStore.GetValue (iter, 0);
+			}
+		}
+		
+		public AddinHeader[] ActiveAddins {
+			get {
+				List<AddinHeader> list = new List<AddinHeader> ();
+				foreach (TreePath p in treeView.Selection.GetSelectedRows ()) {
+					TreeIter iter;
+					treeStore.GetIter (out iter, p);
+					AddinHeader ah = (AddinHeader) treeStore.GetValue (iter, 0);
+					if (ah != null)
+						list.Add (ah);
+				}
+				return list.ToArray ();
 			}
 		}
 		
@@ -264,17 +350,31 @@ namespace Mono.Addins.Gui
 			}
 		}
 		
+		public object[] ActiveAddinsData {
+			get {
+				List<object> res = new List<object> ();
+				foreach (AddinHeader ai in ActiveAddins) {
+					res.Add (GetAddinData (ai));
+				}
+				return res.ToArray ();
+			}
+		}
+		
+		public object[] AddinsData {
+			get {
+				object[] data = new object [addinData.Count];
+				addinData.Values.CopyTo (data, 0);
+				return data;
+			}
+		}
+		
 		public object SaveStatus ()
 		{
 			TreeIter iter;
 			ArrayList list = new ArrayList ();
 			
 			// Save the current selection
-			Gtk.TreeModel foo;
-			if (treeView.Selection.GetSelected (out foo, out iter))
-				list.Add (treeStore.GetPath (iter));
-			else
-				list.Add (null);
+			list.Add (treeView.Selection.GetSelectedRows ());
 			
 			if (!treeStore.GetIterFirst (out iter))
 				return null;
@@ -306,14 +406,14 @@ namespace Mono.Addins.Gui
 				
 			// The first element is the selection
 			ArrayList list = (ArrayList) ob;
-			TreePath selpath = (TreePath) list [0];
+			TreePath[] selpaths = (TreePath[]) list [0];
 			list.RemoveAt (0);
 			
 			foreach (TreePath path in list)
 				treeView.ExpandRow (path, false);
-
-			if (selpath != null)
-				treeView.Selection.SelectPath (selpath);
+			
+			foreach (TreePath p in selpaths)
+				treeView.Selection.SelectPath (p);
 		}
 		
 		public void SelectAll ()
@@ -371,5 +471,12 @@ namespace Mono.Addins.Gui
 				}
 			}
 		}
+	}
+	
+	public enum AddinStatus
+	{
+		NotInstalled,
+		Installed,
+		HasUpdate
 	}
 }

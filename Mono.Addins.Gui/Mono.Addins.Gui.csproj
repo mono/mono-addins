@@ -21,6 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -30,25 +31,17 @@
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="pango-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="atk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="gdk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="gtk-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="Mono.Posix" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj">
@@ -85,6 +78,14 @@
     <Compile Include="gtk-gui\Mono.Addins.Gui.AddinInstallerDialog.cs" />
     <Compile Include="gtk-gui\Mono.Addins.Gui.ProgressDialog.cs" />
     <Compile Include="Mono.Addins.Gui\ProgressDialog.cs" />
+    <Compile Include="gtk-gui\Mono.Addins.Gui.InstallDialog.cs" />
+    <Compile Include="Mono.Addins.Gui\InstallDialog.cs" />
+    <Compile Include="Mono.Addins.Gui\AddinInfoView.cs" />
+    <Compile Include="gtk-gui\Mono.Addins.Gui.AddinInfoView.cs" />
+    <Compile Include="Mono.Addins.Gui\HeaderBox.cs" />
+    <Compile Include="Mono.Addins.Gui\HslColor.cs" />
+    <Compile Include="Mono.Addins.Gui\SearchEntry.cs" />
+    <Compile Include="Mono.Addins.Gui\HoverImageButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\package-x-generic.png">
@@ -104,6 +105,39 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\system-software-update.png">
       <LogicalName>system-software-update.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-avail-16.png">
+      <LogicalName>plugin-avail-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-16.png">
+      <LogicalName>plugin-update-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-16.png">
+      <LogicalName>plugin-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-32.png">
+      <LogicalName>plugin-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-avail-32.png">
+      <LogicalName>plugin-avail-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-32.png">
+      <LogicalName>plugin-update-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-disabled-32.png">
+      <LogicalName>plugin-disabled-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\system-software-update_22.png">
+      <LogicalName>system-software-update_22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\download.png">
+      <LogicalName>download.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-22.png">
+      <LogicalName>plugin-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-22.png">
+      <LogicalName>plugin-update-22.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
