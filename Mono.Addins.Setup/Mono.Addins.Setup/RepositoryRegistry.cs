@@ -503,7 +503,7 @@ namespace Mono.Addins.Setup
 				foreach (PackageRepositoryEntry addin in rep.Addins) {
 					if ((id == null || Addin.GetIdName (addin.Addin.Id) == id) && (version == null || addin.Addin.Version == version)) {
 						if (updates) {
-							Addin ainfo = service.Registry.GetAddin (addin.Addin.Id);
+							Addin ainfo = service.Registry.GetAddin (Addin.GetIdName (addin.Addin.Id));
 							if (ainfo == null || Addin.CompareVersions (ainfo.Version, addin.Addin.Version) <= 0)
 								continue;
 						}
