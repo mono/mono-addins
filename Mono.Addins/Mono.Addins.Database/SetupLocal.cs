@@ -1,10 +1,10 @@
 // 
-// ISetupHandler.cs
+// SetupLocal.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
+using System.Collections.Specialized;
 
 namespace Mono.Addins.Database
 {
-	internal interface ISetupHandler
+	class SetupLocal: ISetupHandler
 	{
-		void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, string[] filesToIgnore);
-		void GetAddinDescription (IProgressStatus monitor, AddinRegistry registry, string file, string outFile);
+		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, string[] filesToIgnore)
+		{
+			AddinRegistry reg = new AddinRegistry (registry.RegistryPath, registry.StartupDirectory);
+			reg.CopyExtensionsFrom (registry);
+			StringCollection files = new StringCollection ();
+			for (int n=0; n<filesToIgnore.Length; n++)
+				files.Add (filesToIgnore[n]);
+			reg.ScanFolders (monitor, scanFolder, files);
+		}
+		
+		public void GetAddinDescription (IProgressStatus monitor, AddinRegistry registry, string file, string outFile)
+		{
+			registry.ParseAddin (monitor, file, outFile);
+		}
 	}
 }
+

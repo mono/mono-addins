@@ -44,37 +44,13 @@ namespace Mono.Addins.Database
 	class AddinScanner: MarshalByRefObject
 	{
 		AddinDatabase database;
-		IAssemblyReflector reflector;
-		object coreAssembly;
+		AddinFileSystemExtension fs;
+		Dictionary<IAssemblyReflector,object> coreAssemblies = new Dictionary<IAssemblyReflector, object> ();
 		
 		public AddinScanner (AddinDatabase database, AddinScanResult scanResult, IProgressStatus monitor)
 		{
 			this.database = database;
-			if (!scanResult.CheckOnly) {
-				
-				// If there is a local copy of the cecil reflector, use it instead of the one in the gac
-				Type t;
-				string asmFile = Path.Combine (Path.GetDirectoryName (GetType().Assembly.Location), "Mono.Addins.CecilReflector.dll");
-				if (File.Exists (asmFile)) {
-					Assembly asm = Assembly.LoadFrom (asmFile);
-					t = asm.GetType ("Mono.Addins.CecilReflector.Reflector");
-				}
-				else {
-					string refName = GetType().Assembly.FullName;
-					int i = refName.IndexOf (',');
-					refName = "Mono.Addins.CecilReflector.Reflector, Mono.Addins.CecilReflector" + refName.Substring (i);
-					t = Type.GetType (refName, false);
-				}
-				if (t != null)
-					reflector = (IAssemblyReflector) Activator.CreateInstance (t);
-				else
-					reflector = new DefaultAssemblyReflector ();
-				
-				if (monitor.LogLevel > 1)
-					monitor.Log ("Using assembly reflector: " + reflector.GetType ());
-				reflector.Initialize (scanResult);
-				coreAssembly = reflector.LoadAssembly (GetType().Assembly.Location);
-			}
+			fs = database.FileSystem;
 		}
 		
 		public void ScanFolder (IProgressStatus monitor, string path, string domain, AddinScanResult scanResult)
@@ -89,11 +65,11 @@ namespace Mono.Addins.Database
 			if (!database.GetFolderInfoForPath (monitor, path, out folderInfo)) {
 				// folderInfo file was corrupt.
 				// Just in case, we are going to regenerate all relation data.
-				if (!Directory.Exists (path))
+				if (!fs.DirectoryExists (path))
 					scanResult.RegenerateRelationData = true;
 			} else {
 				// Directory is included but it doesn't exist. Ignore it.
-				if (folderInfo == null && !Directory.Exists (path))
+				if (folderInfo == null && !fs.DirectoryExists (path))
 					return;
 			}
 			
@@ -144,9 +120,9 @@ namespace Mono.Addins.Database
 			if (monitor.LogLevel > 1 && !scanResult.LocateAssembliesOnly)
 				monitor.Log ("Checking: " + path);
 			
-			if (Directory.Exists (path))
+			if (fs.DirectoryExists (path))
 			{
-				string[] files = Directory.GetFiles (path);
+				IEnumerable<string> files = fs.GetFiles (path);
 				
 				// First of all, look for .addin files. Addin files must be processed before
 				// assemblies, because they may add files to the ignore list (i.e., assemblies
@@ -194,9 +170,9 @@ namespace Mono.Addins.Database
 		
 		public void UpdateDeletedAddins (IProgressStatus monitor, AddinScanFolderInfo folderInfo, AddinScanResult scanResult)
 		{
-			ArrayList missing = folderInfo.GetMissingAddins ();
+			ArrayList missing = folderInfo.GetMissingAddins (fs);
 			if (missing.Count > 0) {
-				if (Directory.Exists (folderInfo.Folder))
+				if (fs.DirectoryExists (folderInfo.Folder))
 					scanResult.RegisterModifiedFolderInfo (folderInfo);
 				scanResult.ChangesFound = true;
 				if (scanResult.CheckOnly)
@@ -216,7 +192,7 @@ namespace Mono.Addins.Database
 			AddinFileInfo finfo = folderInfo.GetAddinFileInfo (file);
 			bool added = false;
 			   
-			if (finfo != null && (!finfo.IsAddin || finfo.Domain == folderInfo.GetDomain (finfo.IsRoot)) && File.GetLastWriteTime (file) == finfo.LastScan && !scanResult.RegenerateAllData) {
+			if (finfo != null && (!finfo.IsAddin || finfo.Domain == folderInfo.GetDomain (finfo.IsRoot)) && fs.GetLastWriteTime (file) == finfo.LastScan && !scanResult.RegenerateAllData) {
 				if (finfo.ScanError) {
 					// Always schedule the file for scan if there was an error in a previous scan.
 					// However, don't set ChangesFound=true, in this way if there isn't any other
@@ -249,7 +225,7 @@ namespace Mono.Addins.Database
 				// The file must be ignored. Maybe it caused a crash in a previous scan, or it
 				// might be included by a .addin file (in which case it will be scanned when processing
 				// the .addin file).
-				folderInfo.SetLastScanTime (file, null, false, File.GetLastWriteTime (file), true);
+				folderInfo.SetLastScanTime (file, null, false, fs.GetLastWriteTime (file), true);
 				return;
 			}
 			
@@ -377,7 +353,7 @@ namespace Mono.Addins.Database
 				monitor.ReportError ("Unexpected error while scanning file: " + file, ex);
 			}
 			finally {
-				AddinFileInfo ainfo = folderInfo.SetLastScanTime (file, scannedAddinId, scannedIsRoot, File.GetLastWriteTime (file), !scanSuccessful);
+				AddinFileInfo ainfo = folderInfo.SetLastScanTime (file, scannedAddinId, scannedIsRoot, fs.GetLastWriteTime (file), !scanSuccessful);
 				
 				if (scanSuccessful && config != null) {
 					// Update the ignore list in the folder info object. To be used in the next scan
@@ -437,7 +413,7 @@ namespace Mono.Addins.Database
 			string basePath = Path.GetDirectoryName (file);
 			
 			try {
-				r = new XmlTextReader (new StreamReader (file));
+				r = new XmlTextReader (fs.OpenTextFile (file));
 				r.MoveToContent ();
 				if (r.IsEmptyElement)
 					return;
@@ -514,10 +490,10 @@ namespace Mono.Addins.Database
 		{
 			ScanFolder (monitor, dir, domain, scanResult);
 			
-			if (!Directory.Exists (dir))
+			if (!fs.DirectoryExists (dir))
 				return;
 				
-			foreach (string sd in Directory.GetDirectories (dir))
+			foreach (string sd in fs.GetDirectories (dir))
 				ScanFolderRec (monitor, sd, domain, scanResult);
 		}
 		
@@ -526,13 +502,18 @@ namespace Mono.Addins.Database
 			config = null;
 			
 			try {
+				IAssemblyReflector reflector = GetReflector (monitor, scanResult, filePath);
+				
 				string basePath = Path.GetDirectoryName (filePath);
 				
-				config = AddinDescription.Read (filePath);
+				using (var s = fs.OpenFile (filePath)) {
+					config = AddinDescription.Read (s, basePath);
+				}
+				config.FileName = filePath;
 				config.SetBasePath (basePath);
 				config.AddinFile = filePath;
 				
-				return ScanDescription (monitor, config, null, scanResult);
+				return ScanDescription (monitor, reflector, config, null, scanResult);
 			}
 			catch (Exception ex) {
 				// Something went wrong while scanning the assembly. We'll ignore it for now.
@@ -541,11 +522,24 @@ namespace Mono.Addins.Database
 			}
 		}
 		
+		IAssemblyReflector GetReflector (IProgressStatus monitor, AddinScanResult scanResult, string filePath)
+		{
+			IAssemblyReflector reflector = fs.GetReflectorForFile (scanResult, filePath);
+			object coreAssembly;
+			if (!coreAssemblies.TryGetValue (reflector, out coreAssembly)) {
+				if (monitor.LogLevel > 1)
+					monitor.Log ("Using assembly reflector: " + reflector.GetType ());
+				coreAssemblies [reflector] = coreAssembly = reflector.LoadAssembly (GetType().Assembly.Location);
+			}
+			return reflector;
+		}
+		
 		bool ScanAssembly (IProgressStatus monitor, string filePath, AddinScanResult scanResult, out AddinDescription config)
 		{
 			config = null;
 				
 			try {
+				IAssemblyReflector reflector = GetReflector (monitor, scanResult, filePath);
 				object asm = reflector.LoadAssembly (filePath);
 				
 				// Get the config file from the resources, if there is one
@@ -583,7 +577,7 @@ namespace Mono.Addins.Database
 				if (!config.MainModule.Assemblies.Contains (rasmFile))
 					config.MainModule.Assemblies.Add (rasmFile);
 				
-				return ScanDescription (monitor, config, asm, scanResult);
+				return ScanDescription (monitor, reflector, config, asm, scanResult);
 			}
 			catch (Exception ex) {
 				// Something went wrong while scanning the assembly. We'll ignore it for now.
@@ -592,7 +586,7 @@ namespace Mono.Addins.Database
 			}
 		}
 
-		bool ScanDescription (IProgressStatus monitor, AddinDescription config, object rootAssembly, AddinScanResult scanResult)
+		bool ScanDescription (IProgressStatus monitor, IAssemblyReflector reflector, AddinDescription config, object rootAssembly, AddinScanResult scanResult)
 		{
 			// First of all scan the main module
 			
@@ -602,8 +596,8 @@ namespace Mono.Addins.Database
 				string rootAsmFile = null;
 				
 				if (rootAssembly != null) {
-					ScanAssemblyAddinHeaders (config, rootAssembly, scanResult);
-					ScanAssemblyImports (config.MainModule, rootAssembly);
+					ScanAssemblyAddinHeaders (reflector, config, rootAssembly, scanResult);
+					ScanAssemblyImports (reflector, config.MainModule, rootAssembly);
 					assemblies.Add (rootAssembly);
 					rootAsmFile = Path.GetFileName (config.AddinFile);
 				}
@@ -618,8 +612,8 @@ namespace Mono.Addins.Database
 						continue;
 					object asm = reflector.LoadAssembly (asmFile);
 					assemblies.Add (asm);
-					ScanAssemblyAddinHeaders (config, asm, scanResult);
-					ScanAssemblyImports (config.MainModule, asm);
+					ScanAssemblyAddinHeaders (reflector, config, asm, scanResult);
+					ScanAssemblyImports (reflector, config.MainModule, asm);
 				}
 				
 				// Add all data files to the ignore file list. It avoids scanning assemblies
@@ -640,7 +634,7 @@ namespace Mono.Addins.Database
 					scanResult.HostIndex.RemoveHostData (config.AddinId, config.AddinFile);
 
 				foreach (object asm in assemblies)
-					ScanAssemblyContents (config, config.MainModule, asm, scanResult);
+					ScanAssemblyContents (reflector, config, config.MainModule, asm, scanResult);
 				
 			} catch (Exception ex) {
 				ReportReflectionException (monitor, ex, config, scanResult);
@@ -654,10 +648,10 @@ namespace Mono.Addins.Database
 			ArrayList setsCopy = new ArrayList ();
 			setsCopy.AddRange (config.ExtensionNodeSets);
 			foreach (ExtensionNodeSet eset in setsCopy)
-				ScanNodeSet (config, eset, assemblies, internalNodeSets);
+				ScanNodeSet (reflector, config, eset, assemblies, internalNodeSets);
 			
 			foreach (ExtensionPoint ep in config.ExtensionPoints) {
-				ScanNodeSet (config, ep.NodeSet, assemblies, internalNodeSets);
+				ScanNodeSet (reflector, config, ep.NodeSet, assemblies, internalNodeSets);
 			}
 		
 			// Now scan all modules
@@ -674,7 +668,7 @@ namespace Mono.Addins.Database
 							object asm = reflector.LoadAssembly (asmFile);
 							assemblies.Add (asm);
 							scanResult.AddPathToIgnore (Util.GetFullPath (asmFile));
-							ScanAssemblyImports (mod, asm);
+							ScanAssemblyImports (reflector, mod, asm);
 						}
 						// Add all data files to the ignore file list. It avoids scanning assemblies
 						// which are included as 'data' in an add-in.
@@ -688,7 +682,7 @@ namespace Mono.Addins.Database
 						}
 						
 						foreach (object asm in assemblies)
-							ScanAssemblyContents (config, mod, asm, scanResult);
+							ScanAssemblyContents (reflector, config, mod, asm, scanResult);
 						
 					} catch (Exception ex) {
 						ReportReflectionException (monitor, ex, config, scanResult);
@@ -714,7 +708,7 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		void ScanAssemblyAddinHeaders (AddinDescription config, object asm, AddinScanResult scanResult)
+		void ScanAssemblyAddinHeaders (IAssemblyReflector reflector, AddinDescription config, object asm, AddinScanResult scanResult)
 		{
 			// Get basic add-in information
 			AddinAttribute att = (AddinAttribute) reflector.GetCustomAttribute (asm, typeof(AddinAttribute), false);
@@ -782,7 +776,7 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		void ScanAssemblyImports (ModuleDescription module, object asm)
+		void ScanAssemblyImports (IAssemblyReflector reflector, ModuleDescription module, object asm)
 		{
 			object[] atts = reflector.GetCustomAttributes (asm, typeof(ImportAddinAssemblyAttribute), false);
 			foreach (ImportAddinAssemblyAttribute import in atts) {
@@ -799,7 +793,7 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		void ScanAssemblyContents (AddinDescription config, ModuleDescription module, object asm, AddinScanResult scanResult)
+		void ScanAssemblyContents (IAssemblyReflector reflector, AddinDescription config, ModuleDescription module, object asm, AddinScanResult scanResult)
 		{
 			bool isMainModule = module == config.MainModule;
 			
@@ -854,7 +848,7 @@ namespace Mono.Addins.Database
 							path = "$" + eatt.TypeName;
 						}
 						else if (eatt.Path.Length == 0) {
-							path = GetBaseTypeNameList (t);
+							path = GetBaseTypeNameList (reflector, t);
 							if (path == "$") {
 								// The type does not implement any interface and has no superclass.
 								// Will be reported later as an error.
@@ -941,18 +935,18 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		void ScanNodeSet (AddinDescription config, ExtensionNodeSet nset, ArrayList assemblies, Hashtable internalNodeSets)
+		void ScanNodeSet (IAssemblyReflector reflector, AddinDescription config, ExtensionNodeSet nset, ArrayList assemblies, Hashtable internalNodeSets)
 		{
 			foreach (ExtensionNodeType nt in nset.NodeTypes)
-				ScanNodeType (config, nt, assemblies, internalNodeSets);
+				ScanNodeType (reflector, config, nt, assemblies, internalNodeSets);
 		}
 		
-		void ScanNodeType (AddinDescription config, ExtensionNodeType nt, ArrayList assemblies, Hashtable internalNodeSets)
+		void ScanNodeType (IAssemblyReflector reflector, AddinDescription config, ExtensionNodeType nt, ArrayList assemblies, Hashtable internalNodeSets)
 		{
 			if (nt.TypeName.Length == 0)
 				nt.TypeName = "Mono.Addins.TypeExtensionNode";
 			
-			object ntype = FindAddinType (nt.TypeName, assemblies);
+			object ntype = FindAddinType (reflector, nt.TypeName, assemblies);
 			if (ntype == null)
 				return;
 			
@@ -1027,7 +1021,7 @@ namespace Mono.Addins.Database
 					// same internal set.
 					internalNodeSets [nt.TypeName] = internalSet.Id;
 					internalNodeSets [reflector.GetTypeAssemblyQualifiedName (ntype)] = internalSet.Id;
-					ScanNodeSet (config, internalSet, assemblies, internalNodeSets);
+					ScanNodeSet (reflector, config, internalSet, assemblies, internalNodeSets);
 				}
 			}
 			else {
@@ -1041,10 +1035,10 @@ namespace Mono.Addins.Database
 				return;
 			}
 			
-			ScanNodeSet (config, nt, assemblies, internalNodeSets);
+			ScanNodeSet (reflector, config, nt, assemblies, internalNodeSets);
 		}
 		
-		string GetBaseTypeNameList (object type)
+		string GetBaseTypeNameList (IAssemblyReflector reflector, object type)
 		{
 			StringBuilder sb = new StringBuilder ("$");
 			foreach (string tn in reflector.GetBaseTypeFullNameList (type))
@@ -1054,10 +1048,10 @@ namespace Mono.Addins.Database
 			return sb.ToString ();
 		}
 		
-		object FindAddinType (string typeName, ArrayList assemblies)
+		object FindAddinType (IAssemblyReflector reflector, string typeName, ArrayList assemblies)
 		{
 			// Look in the current assembly
-			object etype = reflector.GetType (coreAssembly, typeName);
+			object etype = reflector.GetType (coreAssemblies [reflector], typeName);
 			if (etype != null)
 				return etype;
 			

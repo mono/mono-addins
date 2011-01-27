@@ -60,6 +60,8 @@ namespace Mono.Addins.Database
 		AddinRegistry registry;
 		int lastDomainId;
 		AddinEngine addinEngine;
+		AddinFileSystemExtension fs = new AddinFileSystemExtension ();
+		List<object> extensions = new List<object> ();
 		
 		public AddinDatabase (AddinEngine addinEngine, AddinRegistry registry)
 		{
@@ -71,6 +73,10 @@ namespace Mono.Addins.Database
 		
 		string AddinDbDir {
 			get { return addinDbDir; }
+		}
+		
+		public AddinFileSystemExtension FileSystem {
+			get { return fs; }
 		}
 		
 		public string AddinCachePath {
@@ -109,6 +115,30 @@ namespace Mono.Addins.Database
 				Directory.Delete (AddinCachePath, true);
 			if (Directory.Exists (AddinFolderCachePath))
 				Directory.Delete (AddinFolderCachePath, true);
+		}
+		
+		public void CopyExtensions (AddinDatabase other)
+		{
+			foreach (object o in other.extensions)
+				RegisterExtension (o);
+		}
+		
+		public void RegisterExtension (object extension)
+		{
+			extensions.Add (extension);
+			if (extension is AddinFileSystemExtension)
+				fs = (AddinFileSystemExtension) extension;
+			else
+				throw new NotSupportedException ();
+		}
+		
+		public void UnregisterExtension (object extension)
+		{
+			extensions.Remove (extension);
+			if ((extension as AddinFileSystemExtension) == fs)
+				fs = new AddinFileSystemExtension ();
+			else
+				throw new InvalidOperationException ();
 		}
 		
 		public ExtensionNodeSet FindNodeSet (string domain, string addinId, string id)
@@ -552,7 +582,7 @@ namespace Mono.Addins.Database
 				}
 
 				// If the original file does not exist, the description can be deleted
-				if (!File.Exists (conf.AddinFile)) {
+				if (!fs.FileExists (conf.AddinFile)) {
 					SafeDelete (monitor, file);
 					continue;
 				}
@@ -958,7 +988,7 @@ namespace Mono.Addins.Database
 				try {
 					if (monitor.LogLevel > 1)
 						monitor.Log ("Looking for addins");
-					setup.Scan (scanMonitor, registry.RegistryPath, registry.StartupDirectory, null, (string[]) pparams.ToArray (typeof(string)));
+					setup.Scan (scanMonitor, registry, null, (string[]) pparams.ToArray (typeof(string)));
 					retry = false;
 				}
 				catch (Exception ex) {
@@ -1102,6 +1132,16 @@ namespace Mono.Addins.Database
 		
 		void InternalScanFolders (IProgressStatus monitor, AddinScanResult scanResult)
 		{
+			try {
+				fs.ScanStarted ();
+				InternalScanFolders2 (monitor, scanResult);
+			} finally {
+				fs.ScanFinished ();
+			}
+		}
+		
+		void InternalScanFolders2 (IProgressStatus monitor, AddinScanResult scanResult)
+		{
 			DateTime tim = DateTime.Now;
 			
 			DatabaseInfrastructureCheck (monitor);
@@ -1128,7 +1168,7 @@ namespace Mono.Addins.Database
 				AddinScanFolderInfo folderInfo;
 				bool res = ReadFolderInfo (monitor, file, out folderInfo);
 				bool validForDomain = scanResult.Domain == null || folderInfo.Domain == GlobalDomain || folderInfo.Domain == scanResult.Domain;
-				if (!res || (validForDomain && !Directory.Exists (folderInfo.Folder))) {
+				if (!res || (validForDomain && !fs.DirectoryExists (folderInfo.Folder))) {
 					if (res) {
 						// Folder has been deleted. Remove the add-ins it had.
 						scanner.UpdateDeletedAddins (monitor, folderInfo, scanResult);
@@ -1166,7 +1206,7 @@ namespace Mono.Addins.Database
 				scanner.ScanFolderRec (monitor, dir, GlobalDomain, scanResult);
 			}
 			
-			if (scanResult.CheckOnly)
+			if (scanResult.CheckOnly || !scanResult.ChangesFound)
 				return;
 			
 			// Scan the files which have been modified
@@ -1219,7 +1259,7 @@ namespace Mono.Addins.Database
 		{
 			if (!inProcess) {
 				ISetupHandler setup = GetSetupHandler ();
-				setup.GetAddinDescription (progressStatus, registry.RegistryPath, registry.StartupDirectory, Path.GetFullPath (file), outFile);
+				setup.GetAddinDescription (progressStatus, registry, Path.GetFullPath (file), outFile);
 				return;
 			}
 			
@@ -1500,7 +1540,10 @@ namespace Mono.Addins.Database
 //			if (Util.IsMono)
 //				return new SetupProcess ();
 //			else
+			if (fs.RequiresIsolation)
 				return new SetupDomain ();
+			else
+				return new SetupLocal ();
 		}
 		
 		public void ResetConfiguration ()

@@ -15,18 +15,21 @@ all: $(ASSEMBLY)
 FILES =  \
 	AssemblyInfo.cs \
 	Mono.Addins.Database/AddinDatabase.cs \
+	Mono.Addins.Database/AddinFileSystemExtension.cs \
 	Mono.Addins.Database/AddinHostIndex.cs \
 	Mono.Addins.Database/AddinScanFolderInfo.cs \
 	Mono.Addins.Database/AddinScanner.cs \
 	Mono.Addins.Database/AddinScanResult.cs \
 	Mono.Addins.Database/AddinUpdateData.cs \
 	Mono.Addins.Database/DatabaseConfiguration.cs \
+	Mono.Addins.Database/DefaultAddinFileSystem.cs \
 	Mono.Addins.Database/DefaultAssemblyReflector.cs \
 	Mono.Addins.Database/FileDatabase.cs \
 	Mono.Addins.Database/IAssemblyReflector.cs \
 	Mono.Addins.Database/ISetupHandler.cs \
 	Mono.Addins.Database/ProcessProgressStatus.cs \
 	Mono.Addins.Database/SetupDomain.cs \
+	Mono.Addins.Database/SetupLocal.cs \
 	Mono.Addins.Database/SetupProcess.cs \
 	Mono.Addins.Database/Util.cs \
 	Mono.Addins.Description/AddinDependency.cs \

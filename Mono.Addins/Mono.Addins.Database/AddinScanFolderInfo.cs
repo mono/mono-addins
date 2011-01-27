@@ -178,11 +178,11 @@ namespace Mono.Addins.Database
 			return info;
 		}
 		
-		public ArrayList GetMissingAddins ()
+		public ArrayList GetMissingAddins (AddinFileSystemExtension fs)
 		{
 			ArrayList missing = new ArrayList ();
 			
-			if (!Directory.Exists (folder)) {
+			if (!fs.DirectoryExists (folder)) {
 				// All deleted
 				foreach (AddinFileInfo info in files.Values) {
 					if (info.IsAddin)
@@ -193,7 +193,7 @@ namespace Mono.Addins.Database
 			}
 			ArrayList toDelete = new ArrayList ();
 			foreach (AddinFileInfo info in files.Values) {
-				if (!File.Exists (info.File)) {
+				if (!fs.FileExists (info.File)) {
 					if (info.IsAddin)
 						missing.Add (info);
 					toDelete.Add (info.File);

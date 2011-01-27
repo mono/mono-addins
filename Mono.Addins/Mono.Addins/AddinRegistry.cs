@@ -460,6 +460,21 @@ namespace Mono.Addins
 			database.Repair (monitor, currentDomain);
 		}
 		
+		public void RegisterExtension (object extension)
+		{
+			database.RegisterExtension (extension);
+		}
+		
+		public void UnregisterExtension (object extension)
+		{
+			database.UnregisterExtension (extension);
+		}
+		
+		internal void CopyExtensionsFrom (AddinRegistry other)
+		{
+			database.CopyExtensions (other.database);
+		}
+		
 		internal Addin GetAddinForHostAssembly (string filePath)
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)

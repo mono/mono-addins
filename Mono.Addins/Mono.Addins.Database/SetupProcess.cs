@@ -40,14 +40,14 @@ namespace Mono.Addins.Database
 {
 	class SetupProcess: ISetupHandler
 	{
-		public void Scan (IProgressStatus monitor, string registryPath, string startupDir, string scanFolder, string[] filesToIgnore)
+		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, string[] filesToIgnore)
 		{
-			ExecuteCommand (monitor, registryPath, startupDir, "scan", scanFolder, filesToIgnore);
+			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, "scan", scanFolder, filesToIgnore);
 		}
 		
-		public void GetAddinDescription (IProgressStatus monitor, string registryPath, string startupDir, string file, string outFile)
+		public void GetAddinDescription (IProgressStatus monitor, AddinRegistry registry, string file, string outFile)
 		{
-			ExecuteCommand (monitor, registryPath, startupDir, "get-desc", file, outFile);
+			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, "get-desc", file, outFile);
 		}
 		
 		internal static void ExecuteCommand (IProgressStatus monitor, string registryPath, string startupDir, string name, string arg1, params string[] args)
