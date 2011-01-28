@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
@@ -76,6 +77,8 @@ namespace Mono.Addins.Description
 		ExtensionPointCollection extensionPoints;
 		ExtensionNodeDescription localizer;
 		object[] fileInfo;
+		
+		AddinPropertyCollectionImpl properties;
 		
 		internal static BinaryXmlTypeMap typeMap;
 		
@@ -505,6 +508,17 @@ namespace Mono.Addins.Description
 		}
 		
 		/// <summary>
+		/// Custom properties specified in the add-in header
+		/// </summary>
+		public AddinPropertyCollection Properties {
+			get {
+				if (properties == null)
+					properties = new AddinPropertyCollectionImpl ();
+				return properties;
+			}
+		}
+		
+		/// <summary>
 		/// Adds an extension point.
 		/// </summary>
 		/// <returns>
@@ -760,6 +774,28 @@ namespace Mono.Addins.Description
 				
 			if (extensionPoints != null)
 				extensionPoints.SaveXml (elem);
+			
+			XmlElement oldHeader = (XmlElement) elem.SelectSingleNode ("Header");
+			if (properties == null || properties.Count == 0) {
+				if (oldHeader != null)
+					elem.RemoveChild (oldHeader);
+			} else {
+				if (oldHeader == null) {
+					oldHeader = elem.OwnerDocument.CreateElement ("Header");
+					if (elem.FirstChild != null)
+						elem.InsertBefore (elem, elem.FirstChild);
+					else
+						elem.AppendChild (oldHeader);
+				}
+				oldHeader.RemoveAll ();
+				foreach (var prop in properties) {
+					XmlElement propElem = elem.OwnerDocument.CreateElement (prop.Name);
+					if (!string.IsNullOrEmpty (prop.Locale))
+						propElem.SetAttribute ("locale", prop.Locale);
+					propElem.InnerText = prop.Value ?? string.Empty;
+					oldHeader.AppendChild (propElem);
+				}
+			}
 		}
 		
 
@@ -1023,6 +1059,7 @@ namespace Mono.Addins.Description
 			writer.WriteValue ("FilesInfo", fileInfo);
 			writer.WriteValue ("Localizer", localizer);
 			writer.WriteValue ("flags", (int)flags);
+			writer.WriteValue ("Properties", properties);
 		}
 		
 		void IBinaryXmlElement.Read (BinaryXmlReader reader)
@@ -1051,6 +1088,7 @@ namespace Mono.Addins.Description
 			fileInfo = (object[]) reader.ReadValue ("FilesInfo", null);
 			localizer = (ExtensionNodeDescription) reader.ReadValue ("Localizer");
 			flags = (AddinFlags) reader.ReadInt32Value ("flags");
+			properties = (AddinPropertyCollectionImpl) reader.ReadValue ("Properties", new AddinPropertyCollectionImpl ());
 			
 			if (mainModule != null)
 				mainModule.SetParent (this);

@@ -90,6 +90,13 @@ namespace Mono.Addins
 			get { return this.AddinInfo.Name; }
 		}
 		
+		/// <summary>
+		/// Custom properties specified in the add-in header
+		/// </summary>
+		public AddinPropertyCollection Properties {
+			get { return this.AddinInfo.Properties; }
+		}
+		
 		internal string PrivateDataPath {
 			get { return Path.Combine (database.AddinPrivateDataPath, Path.GetFileNameWithoutExtension (Description.FileName)); }
 		}

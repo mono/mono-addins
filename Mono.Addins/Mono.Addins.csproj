@@ -134,6 +134,8 @@
     <Compile Include="Mono.Addins.Database\AddinFileSystemExtension.cs" />
     <Compile Include="Mono.Addins.Database\SetupLocal.cs" />
     <Compile Include="Mono.Addins\ContentType.cs" />
+    <Compile Include="Mono.Addins.Description\AddinProperty.cs" />
+    <Compile Include="Mono.Addins.Description\AddinPropertyCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Mono.Addins.dll.config">

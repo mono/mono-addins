@@ -51,8 +51,9 @@ namespace Mono.Addins
 		bool isroot;
 		DependencyCollection dependencies;
 		DependencyCollection optionalDependencies;
+		AddinPropertyCollection properties;
 		
-		public AddinInfo ()
+		private AddinInfo ()
 		{
 			dependencies = new DependencyCollection ();
 			optionalDependencies = new DependencyCollection ();
@@ -62,7 +63,6 @@ namespace Mono.Addins
 			get { return Addin.GetFullId (namspace, id, version); }
 		}
 		
-		[XmlElement ("Id")]
 		public string LocalId {
 			get { return id; }
 			set { id = value; }
@@ -130,69 +130,16 @@ namespace Mono.Addins
 			set { defaultEnabled = value; }
 		}
 		
-		[XmlArrayItem ("AddinDependency", typeof(AddinDependency))]
-		[XmlArrayItem ("AssemblyDependency", typeof(AssemblyDependency))]
 		public DependencyCollection Dependencies {
 			get { return dependencies; }
 		}
 		
-		[XmlArrayItem ("AddinDependency", typeof(AddinDependency))]
-		[XmlArrayItem ("AssemblyDependency", typeof(AssemblyDependency))]
 		public DependencyCollection OptionalDependencies {
 			get { return optionalDependencies; }
 		}
 		
-		public static AddinInfo ReadFromAddinFile (StreamReader r)
-		{
-			XmlDocument doc = new XmlDocument ();
-			doc.Load (r);
-			r.Close ();
-			
-			AddinInfo info = new AddinInfo ();
-			info.id = doc.DocumentElement.GetAttribute ("id");
-			info.namspace = doc.DocumentElement.GetAttribute ("namespace");
-			info.name = doc.DocumentElement.GetAttribute ("name");
-			if (info.id == "") info.id = info.name;
-			info.version = doc.DocumentElement.GetAttribute ("version");
-			info.author = doc.DocumentElement.GetAttribute ("author");
-			info.copyright = doc.DocumentElement.GetAttribute ("copyright");
-			info.url = doc.DocumentElement.GetAttribute ("url");
-			info.description = doc.DocumentElement.GetAttribute ("description");
-			info.category = doc.DocumentElement.GetAttribute ("category");
-			info.baseVersion = doc.DocumentElement.GetAttribute ("compatVersion");
-			
-			string s = doc.DocumentElement.GetAttribute ("defaultEnabled");
-			info.defaultEnabled = s.Length == 0 || s == "true" || s == "yes";
-
-			s = doc.DocumentElement.GetAttribute ("isRoot");
-			if (s.Length == 0) s = doc.DocumentElement.GetAttribute ("isroot");
-			info.isroot = s == "true" || s == "yes";
-			
-			ReadDependencies (info.Dependencies, info.OptionalDependencies, doc.DocumentElement);
-		
-			return info;
-		}
-		
-		static void ReadDependencies (DependencyCollection deps, DependencyCollection opDeps, XmlElement elem)
-		{
-			foreach (XmlElement dep in elem.SelectNodes ("Dependencies/Addin")) {
-				AddinDependency adep = new AddinDependency ();
-				adep.AddinId = dep.GetAttribute ("id");
-				string v = dep.GetAttribute ("version");
-				if (v.Length != 0)
-					adep.Version = v;
-				deps.Add (adep);
-			}
-			
-			foreach (XmlElement dep in elem.SelectNodes ("Dependencies/Assembly")) {
-				AssemblyDependency adep = new AssemblyDependency ();
-				adep.FullName = dep.GetAttribute ("name");
-				adep.Package = dep.GetAttribute ("package");
-				deps.Add (adep);
-			}
-			
-			foreach (XmlElement mod in elem.SelectNodes ("Module"))
-				ReadDependencies (opDeps, opDeps, mod);
+		public AddinPropertyCollection Properties {
+			get { return properties; }
 		}
 		
 		internal static AddinInfo ReadFromDescription (AddinDescription description)
@@ -218,6 +165,8 @@ namespace Mono.Addins
 				foreach (Dependency dep in mod.Dependencies)
 					info.OptionalDependencies.Add (dep);
 			}
+			info.properties = description.Properties;
+			
 			return info;
 		}
 		

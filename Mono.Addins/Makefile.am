@@ -35,6 +35,8 @@ FILES =  \
 	Mono.Addins.Description/AddinDependency.cs \
 	Mono.Addins.Description/AddinDescription.cs \
 	Mono.Addins.Description/AddinFlags.cs \
+	Mono.Addins.Description/AddinProperty.cs \
+	Mono.Addins.Description/AddinPropertyCollection.cs \
 	Mono.Addins.Description/AssemblyDependency.cs \
 	Mono.Addins.Description/ConditionTypeDescription.cs \
 	Mono.Addins.Description/ConditionTypeDescriptionCollection.cs \
