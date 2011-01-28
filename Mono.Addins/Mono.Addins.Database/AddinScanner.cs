@@ -541,6 +541,8 @@ namespace Mono.Addins.Database
 			try {
 				IAssemblyReflector reflector = GetReflector (monitor, scanResult, filePath);
 				object asm = reflector.LoadAssembly (filePath);
+				if (asm == null)
+					throw new Exception ("Could not load assembly: " + filePath);
 				
 				// Get the config file from the resources, if there is one
 				
