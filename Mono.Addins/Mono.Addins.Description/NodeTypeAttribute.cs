@@ -122,6 +122,16 @@ namespace Mono.Addins.Description
 			set { description = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets the type of the content.
+		/// </summary>
+		/// <remarks>
+		/// Allows specifying the type of the content of a string attribute.
+		/// The value of this property is only informative, and it doesn't
+		/// have any effect on how add-ins are packaged or loaded.
+		/// </remarks>
+		public ContentType ContentType { get; set; }
+		
 		internal override void Verify (string location, StringCollection errors)
 		{
 			VerifyNotEmpty (location + "Attribute", errors, Name, "name");
@@ -133,6 +143,9 @@ namespace Mono.Addins.Description
 			type = elem.GetAttribute ("type");
 			required = elem.GetAttribute ("required").ToLower () == "true";
 			localizable = elem.GetAttribute ("localizable").ToLower () == "true";
+			string ct = elem.GetAttribute ("contentType");
+			if (!string.IsNullOrEmpty (ct))
+				ContentType = (ContentType) Enum.Parse (typeof(ContentType), ct);
 			description = ReadXmlDescription ();
 		}
 		
@@ -156,6 +169,11 @@ namespace Mono.Addins.Description
 			else
 				Element.RemoveAttribute ("localizable");
 			
+			if (ContentType != ContentType.Text)
+				Element.SetAttribute ("contentType", ContentType.ToString ());
+			else
+				Element.RemoveAttribute ("contentType");
+			
 			SaveXmlDescription (description);
 		}
 		
@@ -166,6 +184,7 @@ namespace Mono.Addins.Description
 			writer.WriteValue ("required", required);
 			writer.WriteValue ("description", description);
 			writer.WriteValue ("localizable", localizable);
+			writer.WriteValue ("contentType", ContentType.ToString ());
 		}
 		
 		internal override void Read (BinaryXmlReader reader)
@@ -176,6 +195,12 @@ namespace Mono.Addins.Description
 			if (!reader.IgnoreDescriptionData)
 				description = reader.ReadStringValue ("description");
 			localizable = reader.ReadBooleanValue ("localizable");
+			string ct = reader.ReadStringValue ("contentType");
+			try {
+				ContentType = (ContentType) Enum.Parse (typeof(ContentType), ct);
+			} catch {
+				ContentType = ContentType.Text;
+			}
 		}
 	}
 }

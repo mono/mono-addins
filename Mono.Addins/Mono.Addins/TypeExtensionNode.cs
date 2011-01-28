@@ -55,7 +55,7 @@ namespace Mono.Addins
 	/// in the definition of an extension point.
 	/// </remarks>
 	[ExtensionNode ("Type", Description="Specifies a class that will be used to create an extension object.")]
-	[NodeAttribute ("class", typeof(Type), false, Description="Name of the class. If a value is not provided, the class name will be taken from the 'id' attribute")]
+	[NodeAttribute ("class", typeof(Type), false, ContentType = ContentType.Class, Description="Name of the class. If a value is not provided, the class name will be taken from the 'id' attribute")]
 	public class TypeExtensionNode: InstanceExtensionNode
 	{
 		string typeName;

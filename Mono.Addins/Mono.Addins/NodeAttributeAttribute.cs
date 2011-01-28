@@ -253,5 +253,15 @@ namespace Mono.Addins
 			get { return localizable; }
 			set { localizable = value; }
 		}
+		
+		/// <summary>
+		/// Gets or sets the type of the content.
+		/// </summary>
+		/// <remarks>
+		/// Allows specifying the type of the content of a string attribute.
+		/// If an attribute is of type File, the referenced file will be
+		/// automatically imported in add-ins using it.
+		/// </remarks>
+		public ContentType ContentType { get; set; }
 	}
 }

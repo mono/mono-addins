@@ -85,6 +85,7 @@ FILES =  \
 	Mono.Addins/AddinRootAttribute.cs \
 	Mono.Addins/ConditionType.cs \
 	Mono.Addins/ConsoleProgressStatus.cs \
+	Mono.Addins/ContentType.cs \
 	Mono.Addins/CustomExtensionAttribute.cs \
 	Mono.Addins/ExtensionAttribute.cs \
 	Mono.Addins/ExtensionAttributeAttribute.cs \
