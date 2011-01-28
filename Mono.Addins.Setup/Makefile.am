@@ -22,6 +22,7 @@ FILES =  \
 	Mono.Addins.Setup/AddinInfo.cs \
 	Mono.Addins.Setup/AddinInfoCollection.cs \
 	Mono.Addins.Setup/AddinPackage.cs \
+	Mono.Addins.Setup/AddinPropertyCollection.cs \
 	Mono.Addins.Setup/AddinRepositoryEntry.cs \
 	Mono.Addins.Setup/AddinStore.cs \
 	Mono.Addins.Setup/AddinSystemConfiguration.cs \

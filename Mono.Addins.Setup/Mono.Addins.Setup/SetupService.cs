@@ -416,7 +416,7 @@ namespace Mono.Addins.Setup
 					continue;
 				if (elem.LocalName == "Module")
 					CleanDescription (elem);
-				else if (elem.LocalName != "Dependencies" && elem.LocalName != "Runtime")
+				else if (elem.LocalName != "Dependencies" && elem.LocalName != "Runtime" && elem.LocalName != "Header")
 					todelete.Add (elem);
 			}
 			foreach (XmlElement e in todelete)

@@ -49,6 +49,7 @@ namespace Mono.Addins.Setup
 		string category = "";
 		DependencyCollection dependencies;
 		DependencyCollection optionalDependencies;
+		AddinPropertyCollection properties;
 		
 		public AddinInfo ()
 		{
@@ -132,6 +133,10 @@ namespace Mono.Addins.Setup
 			get { return optionalDependencies; }
 		}
 		
+		public AddinPropertyCollection Properties {
+			get { return properties; }
+		}
+		
 		public static AddinInfo ReadFromAddinFile (StreamReader r)
 		{
 			XmlDocument doc = new XmlDocument ();
@@ -150,7 +155,10 @@ namespace Mono.Addins.Setup
 			info.description = doc.DocumentElement.GetAttribute ("description");
 			info.category = doc.DocumentElement.GetAttribute ("category");
 			info.baseVersion = doc.DocumentElement.GetAttribute ("compatVersion");
-
+			AddinPropertyCollectionImpl props = new AddinPropertyCollectionImpl ();
+			info.properties = props;
+			
+			ReadHeader (props, doc.DocumentElement);
 			ReadDependencies (info.Dependencies, info.OptionalDependencies, doc.DocumentElement);
 		
 			return info;
@@ -178,6 +186,24 @@ namespace Mono.Addins.Setup
 				ReadDependencies (opDeps, opDeps, mod);
 		}
 		
+		static void ReadHeader (AddinPropertyCollectionImpl properties, XmlElement elem)
+		{
+			elem = elem.SelectSingleNode ("Header") as XmlElement;
+			if (elem == null)
+				return;
+			foreach (XmlNode xprop in elem.ChildNodes) {
+				XmlElement prop = xprop as XmlElement;
+				if (prop != null) {
+					AddinProperty aprop = new AddinProperty ();
+					aprop.Name = prop.LocalName;
+					if (prop.HasAttribute ("locale"))
+						aprop.Locale = prop.GetAttribute ("locale");
+					aprop.Value = prop.InnerText;
+					properties.Add (aprop);
+				}
+			}
+		}
+		
 		internal static AddinInfo ReadFromDescription (AddinDescription description)
 		{
 			AddinInfo info = new AddinInfo ();
@@ -191,6 +217,7 @@ namespace Mono.Addins.Setup
 			info.description = description.Description;
 			info.category = description.Category;
 			info.baseVersion = description.CompatVersion;
+			info.properties = description.Properties;
 			
 			foreach (Dependency dep in description.MainModule.Dependencies)
 				info.Dependencies.Add (dep);
@@ -303,6 +330,13 @@ namespace Mono.Addins.Setup
 		/// Optional dependencies of the add-in
 		/// </summary>
 		DependencyCollection OptionalDependencies {
+			get;
+		}
+		
+		/// <summary>
+		/// Custom properties specified in the add-in header
+		/// </summary>
+		AddinPropertyCollection Properties {
 			get;
 		}
 		
