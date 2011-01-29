@@ -102,7 +102,7 @@ namespace Mono.Addins
 		
 		internal AddinRegistry (AddinEngine engine, string registryPath, string startupDirectory)
 		{
-			basePath = Util.GetFullPath (Util.NormalizePath (registryPath));
+			basePath = Path.GetFullPath (Util.NormalizePath (registryPath));
 			database = new AddinDatabase (engine, this);
 
 			// Look for add-ins in the hosts directory and in the default
@@ -154,11 +154,11 @@ namespace Mono.Addins
 			get {
 				string customDir = Environment.GetEnvironmentVariable ("MONO_ADDINS_GLOBAL_REGISTRY");
 				if (customDir != null && customDir.Length > 0)
-					return Util.GetFullPath (Util.NormalizePath (customDir));
+					return Path.GetFullPath (Util.NormalizePath (customDir));
 				
 				string path = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData); 
 				path = Path.Combine (path, "mono.addins");
-				return Util.GetFullPath (path);
+				return Path.GetFullPath (path);
 			}
 		}
 		
@@ -521,7 +521,7 @@ namespace Mono.Addins
 		
 		internal bool CreateHostAddinsFile (string hostFile)
 		{
-			hostFile = Util.GetFullPath (hostFile);
+			hostFile = Path.GetFullPath (hostFile);
 			string baseName = Path.GetFileNameWithoutExtension (hostFile);
 			if (!Directory.Exists (database.HostsPath))
 				Directory.CreateDirectory (database.HostsPath);

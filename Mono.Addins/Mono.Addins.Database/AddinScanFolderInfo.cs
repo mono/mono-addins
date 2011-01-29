@@ -72,7 +72,7 @@ namespace Mono.Addins.Database
 		public static AddinScanFolderInfo Read (FileDatabase filedb, string basePath, string folderPath)
 		{
 			string fileName;
-			AddinScanFolderInfo finfo = (AddinScanFolderInfo) filedb.ReadSharedObject (basePath, GetDomain (folderPath), ".data", Util.GetFullPath (folderPath), typeMap, out fileName);
+			AddinScanFolderInfo finfo = (AddinScanFolderInfo) filedb.ReadSharedObject (basePath, GetDomain (folderPath), ".data", Path.GetFullPath (folderPath), typeMap, out fileName);
 			if (finfo != null)
 				finfo.fileName = fileName;
 			return finfo;
@@ -80,7 +80,7 @@ namespace Mono.Addins.Database
 		
 		static string GetDomain (string path)
 		{
-			path = Util.GetFullPath (path);
+			path = Path.GetFullPath (path);
 			string s = path.Replace (Path.DirectorySeparatorChar, '_');
 			s = s.Replace (Path.AltDirectorySeparatorChar, '_');
 			s = s.Replace (Path.VolumeSeparatorChar, '_');
@@ -90,7 +90,7 @@ namespace Mono.Addins.Database
 		
 		public void Write (FileDatabase filedb, string basePath)
 		{
-			filedb.WriteSharedObject (basePath, GetDomain (folder), ".data", Util.GetFullPath (folder), fileName, typeMap, this);
+			filedb.WriteSharedObject (basePath, GetDomain (folder), ".data", Path.GetFullPath (folder), fileName, typeMap, this);
 		}
 		
 		public string GetExistingLocalDomain ()

@@ -30,6 +30,7 @@
 using System;
 using System.Collections;
 using Mono.Addins.Serialization;
+using System.IO;
 
 namespace Mono.Addins.Database
 {
@@ -42,13 +43,13 @@ namespace Mono.Addins.Database
 		public void RegisterAssembly (string assemblyLocation, string addinId, string addinLocation, string domain)
 		{
 			assemblyLocation = NormalizeFileName (assemblyLocation);
-			index [Util.GetFullPath (assemblyLocation)] = addinId + " " + addinLocation + " " + domain;
+			index [Path.GetFullPath (assemblyLocation)] = addinId + " " + addinLocation + " " + domain;
 		}
 		
 		public bool GetAddinForAssembly (string assemblyLocation, out string addinId, out string addinLocation, out string domain)
 		{
 			assemblyLocation = NormalizeFileName (assemblyLocation);
-			string s = index [Util.GetFullPath (assemblyLocation)] as string;
+			string s = index [Path.GetFullPath (assemblyLocation)] as string;
 			if (s == null) {
 				addinId = null;
 				addinLocation = null;
@@ -67,7 +68,7 @@ namespace Mono.Addins.Database
 		
 		public void RemoveHostData (string addinId, string addinLocation)
 		{
-			string loc = addinId + " " + Util.GetFullPath (addinLocation) + " ";
+			string loc = addinId + " " + Path.GetFullPath (addinLocation) + " ";
 			ArrayList todelete = new ArrayList ();
 			foreach (DictionaryEntry e in index) {
 				if (((string)e.Value).StartsWith (loc))
