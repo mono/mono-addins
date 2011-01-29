@@ -24,14 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Xml.Serialization;
 
 namespace Mono.Addins.Description
 {
 	public class AddinProperty
 	{
+		[XmlAttribute ("name")]
 		public string Name { get; set; }
-		public string Value { get; set; }
+		
+		[XmlAttribute ("locale")]
 		public string Locale { get; set; }
+		
+		[XmlText]
+		public string Value { get; set; }
 	}
 }
 
