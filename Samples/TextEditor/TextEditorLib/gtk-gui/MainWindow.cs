@@ -4,29 +4,17 @@
 public partial class MainWindow
 {
 	private global::Gtk.UIManager UIManager;
-
 	private global::Gtk.VBox vbox2;
-
 	private global::Gtk.MenuBar menubar;
-
 	private global::Gtk.Toolbar toolbar;
-
 	private global::Gtk.ScrolledWindow scrolledwindow1;
-
 	private global::Gtk.TextView textview;
-
 	private global::Gtk.VBox console;
-
 	private global::Gtk.HBox hbox1;
-
 	private global::Gtk.Label label1;
-
 	private global::Gtk.Button button1;
-
 	private global::Gtk.ScrolledWindow scrolledwindow2;
-
 	private global::Gtk.TextView consoleView;
-
 	private global::Gtk.Statusbar statusbar1;
 
 	protected virtual void Build ()
@@ -47,7 +35,7 @@ public partial class MainWindow
 		this.menubar = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/menubar")));
 		this.menubar.Name = "menubar";
 		this.vbox2.Add (this.menubar);
-		global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.menubar]));
+		global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.menubar]));
 		w2.Position = 0;
 		w2.Expand = false;
 		w2.Fill = false;
@@ -59,7 +47,7 @@ public partial class MainWindow
 		this.toolbar.ToolbarStyle = ((global::Gtk.ToolbarStyle)(0));
 		this.toolbar.IconSize = ((global::Gtk.IconSize)(3));
 		this.vbox2.Add (this.toolbar);
-		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.toolbar]));
+		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.toolbar]));
 		w3.Position = 1;
 		w3.Expand = false;
 		w3.Fill = false;
@@ -74,7 +62,7 @@ public partial class MainWindow
 		this.textview.Name = "textview";
 		this.scrolledwindow1.Add (this.textview);
 		this.vbox2.Add (this.scrolledwindow1);
-		global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow1]));
+		global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.scrolledwindow1]));
 		w5.Position = 2;
 		// Container child vbox2.Gtk.Box+BoxChild
 		this.console = new global::Gtk.VBox ();
@@ -87,10 +75,10 @@ public partial class MainWindow
 		// Container child hbox1.Gtk.Box+BoxChild
 		this.label1 = new global::Gtk.Label ();
 		this.label1.Name = "label1";
-		this.label1.Xalign = 0f;
+		this.label1.Xalign = 0F;
 		this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Console");
 		this.hbox1.Add (this.label1);
-		global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+		global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 		w6.Position = 0;
 		w6.Expand = false;
 		w6.Fill = false;
@@ -102,7 +90,7 @@ public partial class MainWindow
 		this.button1.UseUnderline = true;
 		this.button1.Relief = ((global::Gtk.ReliefStyle)(2));
 		// Container child button1.Gtk.Container+ContainerChild
-		global::Gtk.Alignment w7 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+		global::Gtk.Alignment w7 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 		// Container child GtkAlignment.Gtk.Container+ContainerChild
 		global::Gtk.HBox w8 = new global::Gtk.HBox ();
 		w8.Spacing = 2;
@@ -116,13 +104,13 @@ public partial class MainWindow
 		w7.Add (w8);
 		this.button1.Add (w7);
 		this.hbox1.Add (this.button1);
-		global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.button1]));
+		global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.button1]));
 		w15.PackType = ((global::Gtk.PackType)(1));
 		w15.Position = 1;
 		w15.Expand = false;
 		w15.Fill = false;
 		this.console.Add (this.hbox1);
-		global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.console[this.hbox1]));
+		global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.console [this.hbox1]));
 		w16.Position = 0;
 		w16.Expand = false;
 		w16.Fill = false;
@@ -137,10 +125,10 @@ public partial class MainWindow
 		this.consoleView.Name = "consoleView";
 		this.scrolledwindow2.Add (this.consoleView);
 		this.console.Add (this.scrolledwindow2);
-		global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.console[this.scrolledwindow2]));
+		global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.console [this.scrolledwindow2]));
 		w18.Position = 1;
 		this.vbox2.Add (this.console);
-		global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.console]));
+		global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.console]));
 		w19.Position = 3;
 		w19.Expand = false;
 		w19.Fill = false;
@@ -149,7 +137,7 @@ public partial class MainWindow
 		this.statusbar1.Name = "statusbar1";
 		this.statusbar1.Spacing = 2;
 		this.vbox2.Add (this.statusbar1);
-		global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.statusbar1]));
+		global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.statusbar1]));
 		w20.Position = 4;
 		w20.Expand = false;
 		w20.Fill = false;
