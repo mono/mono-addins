@@ -14,8 +14,8 @@
 
 	<Header>
 		<TestProperty1>TestProp1</TestProperty1>
-		<TestProperty2 locale="ca">TestProp2</TestProperty2>
-		<TestProperty2 locale="es">TestProp3</TestProperty2>
+		<TestProperty2 locale="ll1">TestProp2</TestProperty2>
+		<TestProperty2 locale="ll2">TestProp3</TestProperty2>
 	</Header>
 	
 	<Runtime>

@@ -1,9 +1,5 @@
 <Addin id          = "Core"
-       name        = "A simple application"
        namespace   = "SimpleApp"
-       author      = "Lluis Sanchez"
-       copyright   = "GPL"
-       description = "SimpleApp"
 	   category    = "SimpleApp"
 	   isroot      = "true"
        version     = "0.1.0">
@@ -11,6 +7,16 @@
 	<Runtime>
 		<Import assembly="UnitTests.dll"/>
 	</Runtime>
+	
+	<Header>
+		<Name>A simple application</Name>
+		<Name lang="ca">Una aplicació simple</Name>
+		<Description>SimpleApp description</Description>
+		<Author>Lluis Sanchez</Author>
+		<copyright>GPL</copyright>
+		<Prop1>Val1</Prop1>
+		<Prop1 locale="ca-ES">Val1Cat</Prop1>
+	</Header>
 	
 	<!-- Extension sets -->
 	

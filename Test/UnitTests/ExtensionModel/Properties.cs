@@ -1,5 +1,5 @@
 // 
-// TestLoadXmlAddinDescription.cs
+// Properties.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -24,22 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using NUnit.Framework;
-using System.IO;
-using Mono.Addins.Description;
+using Mono.Addins;
 
-namespace UnitTests
-{
-	[TestFixture]
-	public class TestLoadXmlAddinDescription: TestVerifyAddinDescription
-	{
-		[SetUp]
-		public void Load ()
-		{
-			string path = Path.GetFullPath ("TestManifest.xml");
-			desc = AddinDescription.Read (path);
-		}
-		
-	}
-}
+[assembly:AddinProperty ("Prop2", "Val2")]
+[assembly:AddinProperty ("Prop2", "ca-ES", "Val2Cat")]
 

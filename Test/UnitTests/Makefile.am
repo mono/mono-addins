@@ -25,6 +25,7 @@ FILES =  \
 	ExtensionModel/MultiAssemblyTestExtensionPoint.cs \
 	ExtensionModel/NodeWithAttribute.cs \
 	ExtensionModel/ParameterInfoCondition.cs \
+	ExtensionModel/Properties.cs \
 	ExtensionModel/SimpleExtensionAttribute.cs \
 	TestAddinDescription.cs \
 	TestBase.cs \
@@ -34,7 +35,8 @@ FILES =  \
 	TestLoadUnload.cs \
 	TestLoadXmlAddinDescription.cs \
 	TestLocalization.cs \
-	TestSetup.cs 
+	TestSetup.cs \
+	TestVerifyAddinDescription.cs 
 
 DATA_FILES =  \
 	SimpleApp.addin.xml \

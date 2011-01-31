@@ -64,8 +64,10 @@
     <Compile Include="ExtensionModel\SimpleExtensionAttribute.cs" />
     <Compile Include="ExtensionModel\AttrExtensionWithManyNodes.cs" />
     <Compile Include="ExtensionModel\MultiAssemblyTestExtensionPoint.cs" />
-    <Compile Include="TestAddinDescription.cs" />
     <Compile Include="TestLoadXmlAddinDescription.cs" />
+    <Compile Include="TestVerifyAddinDescription.cs" />
+    <Compile Include="TestAddinDescription.cs" />
+    <Compile Include="ExtensionModel\Properties.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SimpleApp.addin.xml">
