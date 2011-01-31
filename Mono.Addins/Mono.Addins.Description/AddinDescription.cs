@@ -882,6 +882,16 @@ namespace Mono.Addins.Description
 			if (localizerElem != null)
 				config.localizer = new ExtensionNodeDescription (localizerElem);
 			
+			XmlElement headerElem = (XmlElement) elem.SelectSingleNode ("Header");
+			if (headerElem != null) {
+				foreach (XmlNode node in headerElem.ChildNodes) {
+					XmlElement prop = node as XmlElement;
+					if (prop == null)
+						continue;
+					config.Properties.SetPropertyValue (prop.LocalName, prop.InnerText, prop.GetAttribute ("locale"));
+				}
+			}
+			
 			if (config.id.Length > 0)
 				config.hasUserId = true;
 			
