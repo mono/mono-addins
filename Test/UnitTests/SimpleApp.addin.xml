@@ -10,10 +10,10 @@
 	
 	<Header>
 		<Name>A simple application</Name>
-		<Name lang="ca">Una aplicació simple</Name>
+		<Name locale="ca">Una aplicació simple</Name>
 		<Description>SimpleApp description</Description>
 		<Author>Lluis Sanchez</Author>
-		<copyright>GPL</copyright>
+		<Copyright>GPL</Copyright>
 		<Prop1>Val1</Prop1>
 		<Prop1 locale="ca-ES">Val1Cat</Prop1>
 	</Header>

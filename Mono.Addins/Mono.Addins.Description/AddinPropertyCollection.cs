@@ -47,20 +47,27 @@ namespace Mono.Addins.Description
 		{
 			locale = NormalizeLocale (locale);
 			string lang = GetLocaleLang (locale);
-			AddinProperty best = null;
+			AddinProperty sameLangDifCountry = null;
+			AddinProperty sameLang = null;
 			AddinProperty defaultLoc = null;
+			
 			foreach (var p in this) {
 				if (p.Name == name) {
 					if (p.Locale == locale)
 						return p.Value;
-					else if (GetLocaleLang (p.Locale) == lang)
-						best = p;
+					string plang = GetLocaleLang (p.Locale);
+					if (plang == p.Locale && plang == lang) // No country specified
+						sameLang = p;
+					else if (plang == lang)
+						sameLangDifCountry = p;
 					else if (p.Locale == null)
 						defaultLoc = p;
 				}
 			}
-			if (best != null)
-				return best.Value;
+			if (sameLang != null)
+				return sameLang.Value;
+			else if (sameLangDifCountry != null)
+				return sameLangDifCountry.Value;
 			else if (defaultLoc != null)
 				return defaultLoc.Value;
 			else

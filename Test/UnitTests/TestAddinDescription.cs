@@ -32,7 +32,8 @@ using Mono.Addins;
 
 namespace UnitTests
 {
-	public class TestAddinDescription
+	[TestFixture]
+	public class TestAddinDescription: TestBase
 	{
 		CultureInfo oldc;
 		
@@ -56,47 +57,47 @@ namespace UnitTests
 			AddinDescription desc = new AddinDescription ();
 			
 			desc.Properties.SetPropertyValue ("prop1", null, "val1");
-			Assert.Equals ("val1", desc.Properties.GetPropertyValue ("prop1"));
-			Assert.Equals ("val1", desc.Properties.GetPropertyValue ("prop1", "en"));
-			Assert.Equals ("val1", desc.Properties.GetPropertyValue ("prop1", "en-US"));
-			Assert.Equals ("val1", desc.Properties.GetPropertyValue ("prop1", "en_US"));
-			Assert.Equals ("val1", desc.Properties.GetPropertyValue ("prop1", null));
+			Assert.AreEqual ("val1", desc.Properties.GetPropertyValue ("prop1"));
+			Assert.AreEqual ("val1", desc.Properties.GetPropertyValue ("prop1", "en"));
+			Assert.AreEqual ("val1", desc.Properties.GetPropertyValue ("prop1", "en-US"));
+			Assert.AreEqual ("val1", desc.Properties.GetPropertyValue ("prop1", "en_US"));
+			Assert.AreEqual ("val1", desc.Properties.GetPropertyValue ("prop1", null));
 			
-			desc.Properties.SetPropertyValue ("prop2", "ca", "val2");
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2"));
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2", "ca"));
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2", "ca-ES"));
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2", "ca_ES"));
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2", "ca-AN"));
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2", "ca_AN"));
+			desc.Properties.SetPropertyValue ("prop2", "ca", "valCa");
+			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2"));
+			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca"));
+			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca-ES"));
+			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca_ES"));
+			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca-AN"));
+			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca_AN"));
 			Assert.IsEmpty (desc.Properties.GetPropertyValue ("prop2", "en"));
 			Assert.IsEmpty (desc.Properties.GetPropertyValue ("prop2", "en-US"));
 			Assert.IsEmpty (desc.Properties.GetPropertyValue ("prop2", "en_US"));
 			Assert.IsEmpty (desc.Properties.GetPropertyValue ("prop2", null));
 			
-			desc.Properties.SetPropertyValue ("prop2", "ca_ES", "val3");
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2"));
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2", "ca"));
-			Assert.Equals ("val3", desc.Properties.GetPropertyValue ("prop2", "ca-ES"));
-			Assert.Equals ("val3", desc.Properties.GetPropertyValue ("prop2", "ca_ES"));
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2", "ca-AN"));
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2", "ca_AN"));
+			desc.Properties.SetPropertyValue ("prop2", "ca_ES", "valCaEs");
+			Assert.AreEqual ("valCaEs", desc.Properties.GetPropertyValue ("prop2"));
+			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca"));
+			Assert.AreEqual ("valCaEs", desc.Properties.GetPropertyValue ("prop2", "ca-ES"));
+			Assert.AreEqual ("valCaEs", desc.Properties.GetPropertyValue ("prop2", "ca_ES"));
+			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca-AN"));
+			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca_AN"));
 			Assert.IsEmpty (desc.Properties.GetPropertyValue ("prop2", "en"));
 			Assert.IsEmpty (desc.Properties.GetPropertyValue ("prop2", "en-US"));
 			Assert.IsEmpty (desc.Properties.GetPropertyValue ("prop2", "en_US"));
 			Assert.IsEmpty (desc.Properties.GetPropertyValue ("prop2", null));
 			
 			desc.Properties.SetPropertyValue ("prop2", null, "val4");
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2"));
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2", "ca"));
-			Assert.Equals ("val3", desc.Properties.GetPropertyValue ("prop2", "ca-ES"));
-			Assert.Equals ("val3", desc.Properties.GetPropertyValue ("prop2", "ca_ES"));
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2", "ca-AN"));
-			Assert.Equals ("val2", desc.Properties.GetPropertyValue ("prop2", "ca_AN"));
-			Assert.Equals ("val4", desc.Properties.GetPropertyValue ("prop2", "en"));
-			Assert.Equals ("val4", desc.Properties.GetPropertyValue ("prop2", "en-US"));
-			Assert.Equals ("val4", desc.Properties.GetPropertyValue ("prop2", "en_US"));
-			Assert.Equals ("val4", desc.Properties.GetPropertyValue ("prop2", null));
+			Assert.AreEqual ("valCaEs", desc.Properties.GetPropertyValue ("prop2"));
+			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca"));
+			Assert.AreEqual ("valCaEs", desc.Properties.GetPropertyValue ("prop2", "ca-ES"));
+			Assert.AreEqual ("valCaEs", desc.Properties.GetPropertyValue ("prop2", "ca_ES"));
+			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca-AN"));
+			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca_AN"));
+			Assert.AreEqual ("val4", desc.Properties.GetPropertyValue ("prop2", "en"));
+			Assert.AreEqual ("val4", desc.Properties.GetPropertyValue ("prop2", "en-US"));
+			Assert.AreEqual ("val4", desc.Properties.GetPropertyValue ("prop2", "en_US"));
+			Assert.AreEqual ("val4", desc.Properties.GetPropertyValue ("prop2", null));
 		}
 		
 		[Test]
@@ -104,15 +105,15 @@ namespace UnitTests
 		{
 			Addin ad = AddinManager.Registry.GetAddin ("SimpleApp.Core");
 			
-			Assert.Equals ("Una aplicació simple", ad.Name);
-			Assert.Equals ("A simple application", ad.Properties.GetPropertyValue ("Name","en-US"));
-			Assert.Equals ("SimpleApp description", ad.Description);
-			Assert.Equals ("Lluis Sanchez", ad.Description.Author);
-			Assert.Equals ("GPL", ad.Description.Copyright);
-			Assert.Equals ("Val1", ad.Properties.GetPropertyValue ("Prop1","en-US"));
-			Assert.Equals ("Val1Cat", ad.Properties.GetPropertyValue ("Prop1"));
-			Assert.Equals ("Val1", ad.Properties.GetPropertyValue ("Prop2","en-US"));
-			Assert.Equals ("Val2", ad.Properties.GetPropertyValue ("Prop2"));
+			Assert.AreEqual ("Una aplicació simple", ad.Name);
+			Assert.AreEqual ("A simple application", ad.Properties.GetPropertyValue ("Name","en-US"));
+			Assert.AreEqual ("SimpleApp description", ad.Description.Description);
+			Assert.AreEqual ("Lluis Sanchez", ad.Description.Author);
+			Assert.AreEqual ("GPL", ad.Description.Copyright);
+			Assert.AreEqual ("Val1", ad.Properties.GetPropertyValue ("Prop1","en-US"));
+			Assert.AreEqual ("Val1Cat", ad.Properties.GetPropertyValue ("Prop1"));
+			Assert.AreEqual ("Val2", ad.Properties.GetPropertyValue ("Prop2","en-US"));
+			Assert.AreEqual ("Val2Cat", ad.Properties.GetPropertyValue ("Prop2"));
 		}
 	}
 }

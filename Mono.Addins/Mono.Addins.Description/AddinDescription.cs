@@ -268,7 +268,12 @@ namespace Mono.Addins.Description
 		/// The category.
 		/// </value>
 		public string Category {
-			get { return category != null ? category : string.Empty; }
+			get {
+				string val = Properties.GetPropertyValue ("Category");
+				if (val.Length > 0)
+					return val;
+				return category ?? string.Empty;
+			}
 			set { category = value; }
 		}
 		
@@ -731,8 +736,8 @@ namespace Mono.Addins.Description
 				elem.RemoveAttribute ("isroot");
 			
 			// Name will return the file name when HasUserId=false
-			if (Name.Length > 0)
-				elem.SetAttribute ("name", Name);
+			if (!string.IsNullOrEmpty (name))
+				elem.SetAttribute ("name", name);
 			else
 				elem.RemoveAttribute ("name");
 				
@@ -811,7 +816,8 @@ namespace Mono.Addins.Description
 					else
 						elem.AppendChild (oldHeader);
 				}
-				oldHeader.RemoveAll ();
+				else
+					oldHeader.RemoveAll ();
 				foreach (var prop in properties) {
 					XmlElement propElem = elem.OwnerDocument.CreateElement (prop.Name);
 					if (!string.IsNullOrEmpty (prop.Locale))

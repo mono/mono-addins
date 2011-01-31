@@ -80,6 +80,9 @@ namespace Mono.Addins
 		
 		public string Name {
 			get {
+				string s = Properties.GetPropertyValue ("Name");
+				if (s.Length > 0)
+					return s;
 				if (name != null && name.Length > 0)
 					return name;
 				string sid = id;
@@ -101,27 +104,52 @@ namespace Mono.Addins
 		}
 		
 		public string Author {
-			get { return author; }
+			get {
+				string s = Properties.GetPropertyValue ("Author");
+				if (s.Length > 0)
+					return s;
+				return author;
+			}
 			set { author = value; }
 		}
 		
 		public string Copyright {
-			get { return copyright; }
+			get {
+				string s = Properties.GetPropertyValue ("Copyright");
+				if (s.Length > 0)
+					return s;
+				return copyright;
+			}
 			set { copyright = value; }
 		}
 		
 		public string Url {
-			get { return url; }
+			get {
+				string s = Properties.GetPropertyValue ("Url");
+				if (s.Length > 0)
+					return s;
+				return url;
+			}
 			set { url = value; }
 		}
 		
 		public string Description {
-			get { return description; }
+			get {
+				string s = Properties.GetPropertyValue ("Description");
+				if (s.Length > 0)
+					return s;
+				return description;
+			}
 			set { description = value; }
 		}
 		
 		public string Category {
-			get { return category; }
+			get {
+				string s = Properties.GetPropertyValue ("Category");
+				if (s.Length > 0)
+					return s;
+				return category;
+			}
 			set { category = value; }
 		}
 		
