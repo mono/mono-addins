@@ -24,7 +24,9 @@ Global
 		StartupItem = HelloWorld\HelloWorld.csproj
 		Policies = $0
 		$0.ChangeLogPolicy = $1
-		$1.UpdateMode = Nearest
+		$1.UpdateMode = None
 		$1.inheritsSet = Mono
+		$0.VersionControlPolicy = $2
+		$2.inheritsSet = Mono
 	EndGlobalSection
 EndGlobal
