@@ -412,14 +412,16 @@ namespace Mono.Addins.Setup
 			
 			foreach (XmlNode nod in parent.ChildNodes) {
 				XmlElement elem = nod as XmlElement;
-				if (elem == null)
+				if (elem == null) {
+					todelete.Add (nod);
 					continue;
+				}
 				if (elem.LocalName == "Module")
 					CleanDescription (elem);
 				else if (elem.LocalName != "Dependencies" && elem.LocalName != "Runtime" && elem.LocalName != "Header")
 					todelete.Add (elem);
 			}
-			foreach (XmlElement e in todelete)
+			foreach (XmlNode e in todelete)
 				parent.RemoveChild (e);
 		}
 		
