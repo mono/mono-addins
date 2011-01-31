@@ -49,7 +49,7 @@ namespace Mono.Addins.Setup
 		string category = "";
 		DependencyCollection dependencies;
 		DependencyCollection optionalDependencies;
-		AddinPropertyCollection properties;
+		AddinPropertyCollectionImpl properties;
 		
 		public AddinInfo ()
 		{
@@ -133,7 +133,12 @@ namespace Mono.Addins.Setup
 			get { return optionalDependencies; }
 		}
 		
-		public AddinPropertyCollection Properties {
+		[XmlArrayItem ("Property", typeof(AddinProperty))]
+		public AddinPropertyCollectionImpl Properties {
+			get { return properties; }
+		}
+		
+		AddinPropertyCollection AddinHeader.Properties {
 			get { return properties; }
 		}
 		
@@ -217,7 +222,7 @@ namespace Mono.Addins.Setup
 			info.description = description.Description;
 			info.category = description.Category;
 			info.baseVersion = description.CompatVersion;
-			info.properties = description.Properties;
+			info.properties = new AddinPropertyCollectionImpl (description.Properties);
 			
 			foreach (Dependency dep in description.MainModule.Dependencies)
 				info.Dependencies.Add (dep);

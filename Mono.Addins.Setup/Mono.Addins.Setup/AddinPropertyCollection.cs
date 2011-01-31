@@ -31,6 +31,15 @@ namespace Mono.Addins.Setup
 {
 	class AddinPropertyCollectionImpl: List<AddinProperty>, AddinPropertyCollection
 	{
+		public AddinPropertyCollectionImpl ()
+		{
+		}
+		
+		public AddinPropertyCollectionImpl (AddinPropertyCollection col)
+		{
+			AddRange (col);
+		}
+		
 		public string GetPropertyValue (string name)
 		{
 			return GetPropertyValue (name, null);

@@ -1,31 +1,4 @@
-//
-// AddinSystemConfigurationReader.cs
-//
-// Author:
-//   Lluis Sanchez Gual
-//
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
-//
-// Permission is hereby granted, free of charge, to any person obtaining
-// a copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to
-// permit persons to whom the Software is furnished to do so, subject to
-// the following conditions:
-// 
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
-
+// It is automatically generated
 using System;
 using System.Xml;
 using System.Xml.Schema;
@@ -38,6 +11,11 @@ namespace Mono.Addins.Setup
 {
 	internal class AddinSystemConfigurationReader : XmlSerializationReader
 	{
+		static readonly System.Reflection.MethodInfo fromBinHexStringMethod = typeof (XmlConvert).GetMethod ("FromBinHexString", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic, null, new Type [] {typeof (string)}, null);
+		static byte [] FromBinHexString (string input)
+		{
+			return input == null ? null : (byte []) fromBinHexStringMethod.Invoke (null, new object [] {input});
+		}
 		public object ReadRoot_AddinSystemConfiguration ()
 		{
 			Reader.MoveToContent();
@@ -60,7 +38,7 @@ namespace Mono.Addins.Setup
 					throw CreateUnknownTypeException(t);
 			}
 
-			ob = new Mono.Addins.Setup.AddinSystemConfiguration ();
+			ob = (Mono.Addins.Setup.AddinSystemConfiguration) Activator.CreateInstance(typeof(Mono.Addins.Setup.AddinSystemConfiguration), true);
 
 			Reader.MoveToElement();
 
@@ -73,6 +51,7 @@ namespace Mono.Addins.Setup
 				}
 			}
 
+			Reader.MoveToElement ();
 			Reader.MoveToElement();
 			if (Reader.IsEmptyElement) {
 				Reader.Skip ();
@@ -103,9 +82,10 @@ namespace Mono.Addins.Setup
 								if (Reader.NodeType == System.Xml.XmlNodeType.Element) 
 								{
 									if (Reader.LocalName == "Addin" && Reader.NamespaceURI == "") {
+										string s5 = Reader.ReadElementString ();
 										if (((object)ob.@AddinPaths) == null)
 											throw CreateReadOnlyCollectionException ("System.Collections.Specialized.StringCollection");
-										ob.@AddinPaths.Add (Reader.ReadElementString ());
+										ob.@AddinPaths.Add (s5);
 										n4++;
 									}
 									else UnknownNode (null);
@@ -120,7 +100,8 @@ namespace Mono.Addins.Setup
 					}
 					else if (Reader.LocalName == "RepositoryIdCount" && Reader.NamespaceURI == "" && !b1) {
 						b1 = true;
-						ob.@RepositoryIdCount = Int32.Parse (Reader.ReadElementString (), CultureInfo.InvariantCulture);
+						string s6 = Reader.ReadElementString ();
+						ob.@RepositoryIdCount = Int32.Parse (s6, CultureInfo.InvariantCulture);
 					}
 					else if (Reader.LocalName == "DisabledAddins" && Reader.NamespaceURI == "" && !b2) {
 						if (((object)ob.@DisabledAddins) == null)
@@ -128,7 +109,7 @@ namespace Mono.Addins.Setup
 						if (Reader.IsEmptyElement) {
 							Reader.Skip();
 						} else {
-							int n5 = 0;
+							int n7 = 0;
 							Reader.ReadStartElement();
 							Reader.MoveToContent();
 
@@ -137,10 +118,11 @@ namespace Mono.Addins.Setup
 								if (Reader.NodeType == System.Xml.XmlNodeType.Element) 
 								{
 									if (Reader.LocalName == "Addin" && Reader.NamespaceURI == "") {
+										string s8 = Reader.ReadElementString ();
 										if (((object)ob.@DisabledAddins) == null)
 											throw CreateReadOnlyCollectionException ("System.Collections.Specialized.StringCollection");
-										ob.@DisabledAddins.Add (Reader.ReadElementString ());
-										n5++;
+										ob.@DisabledAddins.Add (s8);
+										n7++;
 									}
 									else UnknownNode (null);
 								}
@@ -158,7 +140,7 @@ namespace Mono.Addins.Setup
 						if (Reader.IsEmptyElement) {
 							Reader.Skip();
 						} else {
-							int n6 = 0;
+							int n9 = 0;
 							Reader.ReadStartElement();
 							Reader.MoveToContent();
 
@@ -170,7 +152,7 @@ namespace Mono.Addins.Setup
 										if (((object)ob.@Repositories) == null)
 											throw CreateReadOnlyCollectionException ("System.Collections.ArrayList");
 										ob.@Repositories.Add (ReadObject_RepositoryRecord (false, true));
-										n6++;
+										n9++;
 									}
 									else UnknownNode (null);
 								}
@@ -211,7 +193,7 @@ namespace Mono.Addins.Setup
 					throw CreateUnknownTypeException(t);
 			}
 
-			ob = new Mono.Addins.Setup.RepositoryRecord ();
+			ob = (Mono.Addins.Setup.RepositoryRecord) Activator.CreateInstance(typeof(Mono.Addins.Setup.RepositoryRecord), true);
 
 			Reader.MoveToElement();
 
@@ -227,6 +209,7 @@ namespace Mono.Addins.Setup
 				}
 			}
 
+			Reader.MoveToElement ();
 			Reader.MoveToElement();
 			if (Reader.IsEmptyElement) {
 				Reader.Skip ();
@@ -236,31 +219,36 @@ namespace Mono.Addins.Setup
 			Reader.ReadStartElement();
 			Reader.MoveToContent();
 
-			bool b7=false, b8=false, b9=false, b10=false, b11=false;
+			bool b10=false, b11=false, b12=false, b13=false, b14=false;
 
 			while (Reader.NodeType != System.Xml.XmlNodeType.EndElement) 
 			{
 				if (Reader.NodeType == System.Xml.XmlNodeType.Element) 
 				{
-					if (Reader.LocalName == "File" && Reader.NamespaceURI == "" && !b8) {
-						b8 = true;
-						ob.@File = Reader.ReadElementString ();
-					}
-					else if (Reader.LocalName == "IsReference" && Reader.NamespaceURI == "" && !b7) {
-						b7 = true;
-						ob.@IsReference = XmlConvert.ToBoolean (Reader.ReadElementString ());
-					}
-					else if (Reader.LocalName == "Name" && Reader.NamespaceURI == "" && !b10) {
-						b10 = true;
-						ob.@Name = Reader.ReadElementString ();
-					}
-					else if (Reader.LocalName == "Url" && Reader.NamespaceURI == "" && !b9) {
-						b9 = true;
-						ob.@Url = Reader.ReadElementString ();
-					}
-					else if (Reader.LocalName == "LastModified" && Reader.NamespaceURI == "" && !b11) {
+					if (Reader.LocalName == "File" && Reader.NamespaceURI == "" && !b11) {
 						b11 = true;
-						ob.@LastModified = XmlConvert.ToDateTime (Reader.ReadElementString ());
+						string s15 = Reader.ReadElementString ();
+						ob.@File = s15;
+					}
+					else if (Reader.LocalName == "IsReference" && Reader.NamespaceURI == "" && !b10) {
+						b10 = true;
+						string s16 = Reader.ReadElementString ();
+						ob.@IsReference = XmlConvert.ToBoolean (s16);
+					}
+					else if (Reader.LocalName == "Name" && Reader.NamespaceURI == "" && !b13) {
+						b13 = true;
+						string s17 = Reader.ReadElementString ();
+						ob.@Name = s17;
+					}
+					else if (Reader.LocalName == "Url" && Reader.NamespaceURI == "" && !b12) {
+						b12 = true;
+						string s18 = Reader.ReadElementString ();
+						ob.@Url = s18;
+					}
+					else if (Reader.LocalName == "LastModified" && Reader.NamespaceURI == "" && !b14) {
+						b14 = true;
+						string s19 = Reader.ReadElementString ();
+						ob.@LastModified = XmlConvert.ToDateTime (s19, XmlDateTimeSerializationMode.RoundtripKind);
 					}
 					else {
 						UnknownNode (ob);
@@ -290,6 +278,11 @@ namespace Mono.Addins.Setup
 	internal class AddinSystemConfigurationWriter : XmlSerializationWriter
 	{
 		const string xmlNamespace = "http://www.w3.org/2000/xmlns/";
+		static readonly System.Reflection.MethodInfo toBinHexStringMethod = typeof (XmlConvert).GetMethod ("ToBinHexString", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic, null, new Type [] {typeof (byte [])}, null);
+		static string ToBinHexString (byte [] input)
+		{
+			return input == null ? null : (string) toBinHexStringMethod.Invoke (null, new object [] {input});
+		}
 		public void WriteRoot_AddinSystemConfiguration (object o)
 		{
 			WriteStartDocument ();
@@ -322,23 +315,23 @@ namespace Mono.Addins.Setup
 
 			if (ob.@Repositories != null) {
 				WriteStartElement ("Repositories", "", ob.@Repositories);
-				for (int n12 = 0; n12 < ob.@Repositories.Count; n12++) {
-					WriteObject_RepositoryRecord (((Mono.Addins.Setup.RepositoryRecord) ob.@Repositories[n12]), "Repository", "", false, false, true);
+				for (int n20 = 0; n20 < ob.@Repositories.Count; n20++) {
+					WriteObject_RepositoryRecord (((Mono.Addins.Setup.RepositoryRecord) ob.@Repositories[n20]), "Repository", "", false, false, true);
 				}
 				WriteEndElement (ob.@Repositories);
 			}
 			WriteElementString ("RepositoryIdCount", "", ob.@RepositoryIdCount.ToString(CultureInfo.InvariantCulture));
 			if (ob.@DisabledAddins != null) {
 				WriteStartElement ("DisabledAddins", "", ob.@DisabledAddins);
-				for (int n13 = 0; n13 < ob.@DisabledAddins.Count; n13++) {
-					WriteElementString ("Addin", "", ob.@DisabledAddins[n13]);
+				for (int n21 = 0; n21 < ob.@DisabledAddins.Count; n21++) {
+					WriteElementString ("Addin", "", ob.@DisabledAddins[n21]);
 				}
 				WriteEndElement (ob.@DisabledAddins);
 			}
 			if (ob.@AddinPaths != null) {
 				WriteStartElement ("AddinPaths", "", ob.@AddinPaths);
-				for (int n14 = 0; n14 < ob.@AddinPaths.Count; n14++) {
-					WriteElementString ("Addin", "", ob.@AddinPaths[n14]);
+				for (int n22 = 0; n22 < ob.@AddinPaths.Count; n22++) {
+					WriteElementString ("Addin", "", ob.@AddinPaths[n22]);
 				}
 				WriteEndElement (ob.@AddinPaths);
 			}
@@ -373,15 +366,13 @@ namespace Mono.Addins.Setup
 			WriteElementString ("File", "", ob.@File);
 			WriteElementString ("Url", "", ob.@Url);
 			WriteElementString ("Name", "", ob.@Name);
-			WriteElementString ("LastModified", "", ob.@LastModified.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz", CultureInfo.InvariantCulture));
+			WriteElementString ("LastModified", "", XmlConvert.ToString (ob.@LastModified, XmlDateTimeSerializationMode.RoundtripKind));
 			if (writeWrappingElem) WriteEndElement (ob);
 		}
 
 		protected override void InitCallbacks ()
 		{
 		}
-
 	}
-
 }
 
