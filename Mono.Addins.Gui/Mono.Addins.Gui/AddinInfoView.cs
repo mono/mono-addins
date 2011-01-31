@@ -156,6 +156,7 @@ namespace Mono.Addins.Gui
 			AddinHeader sinfo = null;
 			Addin installed = null;
 			AddinHeader updateInfo = null;
+			string repo = "";
 			
 			if (data is Addin) {
 				installed = (Addin) data;
@@ -164,11 +165,14 @@ namespace Mono.Addins.Gui
 				selectedEntry.Clear ();
 			}
 			else if (data is AddinRepositoryEntry) {
-				sinfo = ((AddinRepositoryEntry)data).Addin;
+				AddinRepositoryEntry entry = (AddinRepositoryEntry) data;
+				sinfo = entry.Addin;
 				installed = AddinManager.Registry.GetAddin (Addin.GetIdName (sinfo.Id));
 				if (installed != null && Addin.CompareVersions (installed.Version, sinfo.Version) > 0)
 					updateInfo = sinfo;
-				selectedEntry.Add ((AddinRepositoryEntry)data);
+				selectedEntry.Add (entry);
+				string rname = !string.IsNullOrEmpty (entry.RepositoryName) ? entry.RepositoryName : entry.RepositoryUrl;
+				repo = Catalog.GetString ("<small>Available in repository:") + "\n" + GLib.Markup.EscapeText (rname) + "\n\n</small>";
 			} else
 				selectedEntry.Clear ();
 			
@@ -196,8 +200,8 @@ namespace Mono.Addins.Gui
 					version = sinfo.Version;
 				}
 				labelName.Markup = "<b><big>" + GLib.Markup.EscapeText(sinfo.Name) + "</big></b>";
-				labelVersion.Text = "Version " + version;
-				labelDesc.Text = sinfo.Description;
+				labelVersion.Markup = "<small>Version " + version + "</small>";
+				labelDesc.Markup = repo + GLib.Markup.EscapeText (sinfo.Description);
 			}
 		}
 		
