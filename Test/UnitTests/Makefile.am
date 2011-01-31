@@ -26,11 +26,13 @@ FILES =  \
 	ExtensionModel/NodeWithAttribute.cs \
 	ExtensionModel/ParameterInfoCondition.cs \
 	ExtensionModel/SimpleExtensionAttribute.cs \
+	TestAddinDescription.cs \
 	TestBase.cs \
 	TestConditions.cs \
 	TestEvents.cs \
 	TestExtensions.cs \
 	TestLoadUnload.cs \
+	TestLoadXmlAddinDescription.cs \
 	TestLocalization.cs \
 	TestSetup.cs 
 
@@ -46,6 +48,7 @@ REFERENCES =  \
 	-pkg:mono-nunit \
 	-pkg:nunit \
 	-r:System \
+	-r:System.Core \
 	-r:System.Xml
 
 DLL_REFERENCES = 

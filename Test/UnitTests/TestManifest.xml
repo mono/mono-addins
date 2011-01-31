@@ -1,0 +1,103 @@
+<Addin id          = "Core"
+       name        = "A simple application"
+       namespace   = "SimpleApp"
+       author      = "LSG"
+       copyright   = "GPL"
+       description = "Long description"
+	   category    = "SomeCategory"
+	   isroot      = "true"
+	   flags       = "CantUninstall, CantDisable, Hidden"
+       version     = "0.1.0"
+		url          = "http://somewhere.com"
+		defaultEnabled = "false"
+		compatVersion = "0.0.1">
+
+	<Header>
+		<TestProperty1>TestProp1</TestProperty1>
+		<TestProperty2 locale="ca">TestProp2</TestProperty2>
+		<TestProperty2 locale="es">TestProp3</TestProperty2>
+	</Header>
+	
+	<Runtime>
+		<Import assembly="UnitTests1.dll"/>
+		<Import assembly="UnitTests2.dll"/>
+		<Import file="File1"/>
+		<Import file="File2"/>
+	</Runtime>
+	
+	<Dependencies>
+		<Addin id="Dep1" version="1.0" />
+		<Addin id="Dep2" version="2.0" />
+		<Addin id="Other.Dep3" version="3.0" />
+		<Addin id="::Other.Dep4" version="4.0" />
+	</Dependencies>
+	
+	<!-- Extension sets -->
+	
+	<ExtensionNodeSet id = "TestSet" >
+		<ExtensionNode name="Type">
+			<Description>A type that implements IWriter</Description>
+		</ExtensionNode>
+	</ExtensionNodeSet>
+
+	<!-- New extension points -->
+	
+	<ConditionType id="TestCondition1" type="SimpleApp.TestCondition">
+		<Description>Test condition description</Description>
+	</ConditionType>
+	
+	<ConditionType id="TestCondition2" type="SimpleApp.TestCondition2">
+		<Description>Test condition description 2</Description>
+	</ConditionType>
+	
+	<ExtensionPoint path = "/SimpleApp/TestEP1" name = "TestEP1">
+		<Description>Test EP1.</Description>
+		<ExtensionNodeSet id = "TestSet" />
+		<ConditionType id = "TestCondition1" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SimpleApp/TestEP2" name = "TestEP2">
+		<Description>Test EP2.</Description>
+		<ExtensionNode name="Node">
+			<Description>Node description</Description>
+			<ExtensionNode name="Child" type="SomeNodeType" objectType="SomeObjectType" customAttributeType="SomeCustomAttrType">
+				<Description>Child description</Description>
+			</ExtensionNode>
+		</ExtensionNode>
+	</ExtensionPoint>
+	
+	<!-- Extensions -->
+	
+	<Extension path="/SimpleApp/TestEP2">
+		<Node id="node1" type="test">
+			<Child id="child1" type="test1" />
+			<Child id="child2" type="test2" />
+		</Node>
+	</Extension>
+	
+	<Extension path="/SimpleApp/TestEP1">
+	</Extension>
+	
+	<Module>
+		<Runtime>
+			<Import assembly="UnitTestsModule.dll"/>
+			<Import file="FileModule"/>
+		</Runtime>
+		<Dependencies>
+			<Addin id="Dep1" version="1.0" />
+		</Dependencies>
+		<Extension path="/SimpleApp/TestEP2">
+			<Node id="node1" type="test">
+				<Child id="child1" type="test1" />
+				<Child id="child2" type="test2" />
+			</Node>
+		</Extension>
+	</Module>
+	
+	<Module>
+		<Dependencies>
+			<Addin id="Dep2" version="1.0" />
+		</Dependencies>
+	</Module>
+	
+</Addin>
