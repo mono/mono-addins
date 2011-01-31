@@ -319,7 +319,7 @@ namespace Mono.Addins.Description
 		/// An index.
 		/// </param>
 		public string this [int n] {
-			get { return (string) list [n]; }
+			get { return ((string[])list [n])[0]; }
 		}
 		
 		/// <summary>
