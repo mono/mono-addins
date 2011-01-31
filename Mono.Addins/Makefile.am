@@ -83,6 +83,7 @@ FILES =  \
 	Mono.Addins/AddinLocalizerGettextAttribute.cs \
 	Mono.Addins/AddinManager.cs \
 	Mono.Addins/AddinModuleAttribute.cs \
+	Mono.Addins/AddinPropertyAttribute.cs \
 	Mono.Addins/AddinRegistry.cs \
 	Mono.Addins/AddinRootAttribute.cs \
 	Mono.Addins/ConditionType.cs \
@@ -121,6 +122,7 @@ EXTRAS =
 
 REFERENCES =  \
 	-r:System \
+	-r:System.Core \
 	-r:System.Xml
 
 DLL_REFERENCES = 

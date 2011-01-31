@@ -32,9 +32,7 @@ namespace Mono.Addins.Description
 	{
 		string GetPropertyValue (string name);
 		string GetPropertyValue (string name, string locale);
-		void SetPropertyValue (string name, string value);
-		void SetPropertyValue (string name, string value, string locale);
-		void RemoveProperty (string name);
+		void SetPropertyValue (string name, string locale, string value);
 		void RemoveProperty (string name, string locale);
 	}
 	
@@ -42,35 +40,61 @@ namespace Mono.Addins.Description
 	{
 		public string GetPropertyValue (string name)
 		{
-			return GetPropertyValue (name, null);
+			return GetPropertyValue (name, System.Threading.Thread.CurrentThread.CurrentCulture.ToString ());
 		}
 		
 		public string GetPropertyValue (string name, string locale)
 		{
+			locale = NormalizeLocale (locale);
+			string lang = GetLocaleLang (locale);
 			AddinProperty best = null;
+			AddinProperty defaultLoc = null;
 			foreach (var p in this) {
 				if (p.Name == name) {
-					if (best == null)
-						best = p;
-					else if (string.IsNullOrEmpty (p.Locale))
-						best = p;
 					if (p.Locale == locale)
 						return p.Value;
+					else if (GetLocaleLang (p.Locale) == lang)
+						best = p;
+					else if (p.Locale == null)
+						defaultLoc = p;
 				}
 			}
 			if (best != null)
 				return best.Value;
+			else if (defaultLoc != null)
+				return defaultLoc.Value;
 			else
 				return string.Empty;
 		}
 		
-		public void SetPropertyValue (string name, string value)
+		string NormalizeLocale (string loc)
 		{
-			SetPropertyValue (name, value, null);
+			if (string.IsNullOrEmpty (loc))
+				return null;
+			return loc.Replace ('_','-');
 		}
 		
-		public void SetPropertyValue (string name, string value, string locale)
+		string GetLocaleLang (string loc)
 		{
+			if (loc == null)
+				return null;
+			int i = loc.IndexOf ('-');
+			if (i != -1)
+				return loc.Substring (0, i);
+			else
+				return loc;
+		}
+		
+		public void SetPropertyValue (string name, string locale, string value)
+		{
+			if (string.IsNullOrEmpty (name))
+				throw new ArgumentException ("name can't be null or empty");
+			
+			if (value == null)
+				throw new ArgumentNullException ("value");
+			
+			locale = NormalizeLocale (locale);
+			
 			foreach (var p in this) {
 				if (p.Name == name && p.Locale == locale) {
 					p.Value = value;
@@ -84,13 +108,10 @@ namespace Mono.Addins.Description
 			Add (prop);
 		}
 		
-		public void RemoveProperty (string name)
-		{
-			RemoveProperty (name, null);
-		}
-		
 		public void RemoveProperty (string name, string locale)
 		{
+			locale = NormalizeLocale (locale);
+			
 			foreach (var p in this) {
 				if (p.Name == name && p.Locale == locale) {
 					Remove (p);

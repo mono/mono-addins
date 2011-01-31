@@ -1,5 +1,5 @@
 // 
-// AddinProperty.cs
+// AddinPropertyAttribute.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -24,35 +24,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Xml.Serialization;
-using Mono.Addins.Serialization;
 
-namespace Mono.Addins.Description
+namespace Mono.Addins
 {
-	public class AddinProperty: IBinaryXmlElement
+	[AttributeUsage (AttributeTargets.Assembly, AllowMultiple=true)]
+	public class AddinPropertyAttribute: Attribute
 	{
-		[XmlAttribute ("name")]
+		public AddinPropertyAttribute (string name, string value): this (name, null, value)
+		{
+		}
+		
+		public AddinPropertyAttribute (string name, string locale, string value)
+		{
+			Name = name;
+			Locale = locale;
+			Value = value;
+		}
+		
 		public string Name { get; set; }
 		
-		[XmlAttribute ("locale")]
 		public string Locale { get; set; }
 		
-		[XmlText]
 		public string Value { get; set; }
-		
-		void IBinaryXmlElement.Read (BinaryXmlReader reader)
-		{
-			Name = reader.ReadStringValue ("name");
-			Locale = reader.ReadStringValue ("locale");
-			Value = reader.ReadStringValue ("value");
-		}
-		
-		void IBinaryXmlElement.Write (BinaryXmlWriter writer)
-		{
-			writer.WriteValue ("name", Name);
-			writer.WriteValue ("locale", Locale);
-			writer.WriteValue ("value", Value);
-		}
 	}
 }
 

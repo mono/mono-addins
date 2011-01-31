@@ -809,9 +809,16 @@ namespace Mono.Addins.Database
 				module.Dependencies.Add (adep);
 			}
 			
-			// Get extension points
-			
 			if (isMainModule) {
+				
+				// Get properties
+				
+				object[] props = reflector.GetCustomAttributes (asm, typeof(AddinPropertyAttribute), false);
+				foreach (AddinPropertyAttribute prop in props)
+					config.Properties.SetPropertyValue (prop.Name, prop.Locale, prop.Value);
+			
+				// Get extension points
+				
 				object[] extPoints = reflector.GetCustomAttributes (asm, typeof(ExtensionPointAttribute), false);
 				foreach (ExtensionPointAttribute ext in extPoints) {
 					ExtensionPoint ep = config.AddExtensionPoint (ext.Path);

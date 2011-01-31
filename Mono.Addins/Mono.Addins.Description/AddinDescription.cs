@@ -98,6 +98,7 @@ namespace Mono.Addins.Description
 			typeMap.RegisterType (typeof(AssemblyDependency), "AssemblyDependency");
 			typeMap.RegisterType (typeof(NodeTypeAttribute), "NodeTypeAttribute");
 			typeMap.RegisterType (typeof(AddinFileInfo), "FileInfo");
+			typeMap.RegisterType (typeof(AddinProperty), "Property");
 		}
 		
 		internal AddinDatabase OwnerDatabase {
@@ -159,6 +160,9 @@ namespace Mono.Addins.Description
 		/// </value>
 		public string Name {
 			get {
+				string val = Properties.GetPropertyValue ("Name");
+				if (val.Length > 0)
+					return val;
 				if (name != null && name.Length > 0)
 					return name;
 				if (HasUserId)
@@ -200,7 +204,12 @@ namespace Mono.Addins.Description
 		/// The author.
 		/// </value>
 		public string Author {
-			get { return author != null ? author : string.Empty; }
+			get {
+				string val = Properties.GetPropertyValue ("Author");
+				if (val.Length > 0)
+					return val;
+				return author ?? string.Empty; 
+			}
 			set { author = value; }
 		}
 
@@ -211,7 +220,12 @@ namespace Mono.Addins.Description
 		/// The URL.
 		/// </value>
 		public string Url {
-			get { return url != null ? url : string.Empty; }
+			get {
+				string val = Properties.GetPropertyValue ("Url");
+				if (val.Length > 0)
+					return val;
+				return url ?? string.Empty;
+			}
 			set { url = value; }
 		}
 
@@ -222,7 +236,12 @@ namespace Mono.Addins.Description
 		/// The copyright.
 		/// </value>
 		public string Copyright {
-			get { return copyright != null ? copyright : string.Empty; }
+			get {
+				string val = Properties.GetPropertyValue ("Copyright");
+				if (val.Length > 0)
+					return val;
+				return copyright ?? string.Empty; 
+			}
 			set { copyright = value; }
 		}
 
@@ -233,7 +252,12 @@ namespace Mono.Addins.Description
 		/// The description.
 		/// </value>
 		public string Description {
-			get { return description != null ? description : string.Empty; }
+			get {
+				string val = Properties.GetPropertyValue ("Description");
+				if (val.Length > 0)
+					return val;
+				return description ?? string.Empty;
+			}
 			set { description = value; }
 		}
 
@@ -888,7 +912,7 @@ namespace Mono.Addins.Description
 					XmlElement prop = node as XmlElement;
 					if (prop == null)
 						continue;
-					config.Properties.SetPropertyValue (prop.LocalName, prop.InnerText, prop.GetAttribute ("locale"));
+					config.Properties.SetPropertyValue (prop.LocalName, prop.GetAttribute ("locale"), prop.InnerText);
 				}
 			}
 			
@@ -982,6 +1006,16 @@ namespace Mono.Addins.Description
 				errors.Add ("The attribute 'type' in the Location element is required.");
 			}
 			
+			// Ensure that there are no duplicated properties
+			
+			if (properties != null) {
+				HashSet<string> props = new HashSet<string> ();
+				foreach (var prop in properties) {
+					if (!props.Add (prop.Name + " " + prop.Locale))
+						errors.Add (string.Format ("Property {0} specified more than once", prop.Name + (prop.Locale != null ? " (" + prop.Locale + ")" : "")));
+				}
+			}
+			
 			return errors;
 		}
 		
@@ -1030,6 +1064,7 @@ namespace Mono.Addins.Description
 				AddinDescription tmp = desc1;
 				desc1 = desc2; desc2 = tmp;
 			}
+			((AddinPropertyCollectionImpl)desc1.Properties).AddRange (desc2.Properties);
 			desc1.ExtensionPoints.AddRange (desc2.ExtensionPoints);
 			desc1.ExtensionNodeSets.AddRange (desc2.ExtensionNodeSets);
 			desc1.ConditionTypes.AddRange (desc2.ConditionTypes);
