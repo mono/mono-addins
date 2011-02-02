@@ -619,10 +619,14 @@ namespace Mono.Addins
 					if (a is System.Reflection.Emit.AssemblyBuilder) {
 						continue;
 					}
-
-					if (a.Location == asmPath) {
-						asm = a;
-						break;
+					
+					try {
+						if (a.Location == asmPath) {
+							asm = a;
+							break;
+						}
+					} catch (NotSupportedException) {
+						// Some assemblies don't have a location
 					}
 				}
 
