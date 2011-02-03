@@ -688,11 +688,15 @@ namespace Mono.Addins.Setup
 		{
 			string rootPath = file.GetVariable ("MonoAddinsRoot");
 			string regPath = file.GetVariable ("MonoAddinsRegistry");
+			string addinsPath = file.GetVariable ("MonoAddinsInstallPath");
+			string databasePath = file.GetVariable ("MonoAddinsCachePath");
 			string testCmd = file.GetVariable ("MonoAddinsTestCommand");
 			if (string.IsNullOrEmpty (rootPath) || string.IsNullOrEmpty (regPath))
 				return;
 			pinfo.SetData ("MonoAddinsRoot", rootPath);
 			pinfo.SetData ("MonoAddinsRegistry", regPath);
+			pinfo.SetData ("MonoAddinsInstallPath", addinsPath);
+			pinfo.SetData ("MonoAddinsCachePath", databasePath);
 			pinfo.SetData ("MonoAddinsTestCommand", testCmd);
 		}
 	}
@@ -708,6 +712,8 @@ namespace Mono.Addins.Setup
 		string testCommand;
 		string startupPath;
 		string registryPath;
+		string addinsPath;
+		string databasePath;
 		
 		internal Application (PackageInfo pinfo)
 		{
@@ -715,6 +721,8 @@ namespace Mono.Addins.Setup
 			description = pinfo.Description;
 			startupPath = pinfo.GetData ("MonoAddinsRoot");
 			registryPath = pinfo.GetData ("MonoAddinsRegistry");
+			addinsPath = pinfo.GetData ("MonoAddinsInstallPath");
+			databasePath = pinfo.GetData ("MonoAddinsCachePath");
 			testCommand = pinfo.GetData ("MonoAddinsTestCommand");
 		}
 		
@@ -724,7 +732,7 @@ namespace Mono.Addins.Setup
 		public AddinRegistry Registry {
 			get {
 				if (registry == null)
-					registry = new AddinRegistry (RegistryPath, StartupPath);
+					registry = new AddinRegistry (RegistryPath, StartupPath, AddinsPath, AddinCachePath);
 				return registry;
 			}
 		}
@@ -771,6 +779,24 @@ namespace Mono.Addins.Setup
 		public string TestCommand {
 			get {
 				return testCommand;
+			}
+		}
+
+		/// <summary>
+		/// Path to the default add-ins directory for the aplpication
+		/// </summary>
+		public string AddinsPath {
+			get {
+				return addinsPath;
+			}
+		}
+
+		/// <summary>
+		/// Path to the add-in cache for the application
+		/// </summary>
+		public string AddinCachePath {
+			get {
+				return databasePath;
 			}
 		}
 	}

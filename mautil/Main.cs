@@ -15,10 +15,14 @@ namespace mautil
 				Console.WriteLine ("Usage: mautil [options] <command> [arguments]");
 				Console.WriteLine ();
 				Console.WriteLine ("Options:");
-				Console.WriteLine ("  --registry (-reg) Specify add-in registry path");
-				Console.WriteLine ("  --path (-p)       Specify startup path of the application");
-				Console.WriteLine ("  --package (-pkg)  Specify the package name of the application");
-				Console.WriteLine ("  -v                Verbose output");
+				Console.WriteLine ("  --path (-p)        Specify the startup path of the application");
+				Console.WriteLine ("  --registry (-reg)  Specify the add-in registry path");
+				Console.WriteLine ("  --addinspath (-ap) Specify the default add-ins path of the application");
+				Console.WriteLine ("                     The path can be absolute or relative to the registry path");
+				Console.WriteLine ("  --cachepath (-cp)  Specify add-in cache path for the application");
+				Console.WriteLine ("                     The path can be absolute or relative to the registry path");
+				Console.WriteLine ("  --package (-pkg)   Specify the package name of the application");
+				Console.WriteLine ("  -v                 Verbose output. Use multiple times to increase log level");
 			}
 			
 			int ppos = 0;
@@ -26,6 +30,8 @@ namespace mautil
 			int verbose = 1;
 			string path = null;
 			string startupPath = null;
+			string addinsPath = null;
+			string databasePath = null;
 			string package = null;
 			bool toolParam = true;
 			
@@ -47,6 +53,22 @@ namespace mautil
 					startupPath = args [ppos + 1];
 					ppos += 2;
 				}
+				else if (args [ppos] == "-ap" || args [ppos] == "--addinspath") {
+					if (ppos + 1 >= args.Length) {
+						Console.WriteLine ("Add-ins path not provided.");
+						return 1;
+					}
+					addinsPath = args [ppos + 1];
+					ppos += 2;
+				}
+				else if (args [ppos] == "-cp" || args [ppos] == "--cachepath") {
+					if (ppos + 1 >= args.Length) {
+						Console.WriteLine ("Add-ins cache path not provided.");
+						return 1;
+					}
+					databasePath = args [ppos + 1];
+					ppos += 2;
+				}
 				else if (args [ppos] == "-pkg" || args [ppos] == "--package") {
 					if (ppos + 1 >= args.Length) {
 						Console.WriteLine ("Package name not provided.");
@@ -65,8 +87,8 @@ namespace mautil
 			AddinRegistry reg;
 			
 			if (package != null) {
-				if (startupPath != null || path != null) {
-					Console.WriteLine ("The --registry and --path options can't be used when --package is specified.");
+				if (startupPath != null || path != null || addinsPath != null || databasePath != null) {
+					Console.WriteLine ("The --registry, --path, --cachepath and --addinspath options\ncan't be used when --package is specified.");
 					return 1;
 				}
 				Application app = SetupService.GetExtensibleApplication (package);
@@ -79,7 +101,7 @@ namespace mautil
 			else {
 				if (startupPath == null)
 					startupPath = Environment.CurrentDirectory;
-				reg = path != null ? new AddinRegistry (path, startupPath) : AddinRegistry.GetGlobalRegistry ();
+				reg = path != null ? new AddinRegistry (path, startupPath, addinsPath, databasePath) : AddinRegistry.GetGlobalRegistry ();
 			}
 			
 			try {
