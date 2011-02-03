@@ -11,6 +11,7 @@
     <RootNamespace>Mono.Addins.Gui</RootNamespace>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,7 +59,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Mono.Addins.Gui\AddinInfoDialog.cs" />
-    <Compile Include="Mono.Addins.Gui\AddinInstallDialog.cs" />
     <Compile Include="Mono.Addins.Gui\AddinManagerDialog.cs" />
     <Compile Include="Mono.Addins.Gui\AddinTreeWidget.cs" />
     <Compile Include="Mono.Addins.Gui\ManageSitesDialog.cs" />
@@ -68,7 +68,6 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\Mono.Addins.Gui.AddinInfoDialog.cs" />
     <Compile Include="gtk-gui\Mono.Addins.Gui.AddinManagerDialog.cs" />
-    <Compile Include="gtk-gui\Mono.Addins.Gui.AddinInstallDialog.cs" />
     <Compile Include="gtk-gui\Mono.Addins.Gui.ErrorDialog.cs" />
     <Compile Include="gtk-gui\Mono.Addins.Gui.ManageSitesDialog.cs" />
     <Compile Include="gtk-gui\Mono.Addins.Gui.NewSiteDialog.cs" />
@@ -86,6 +85,7 @@
     <Compile Include="Mono.Addins.Gui\HslColor.cs" />
     <Compile Include="Mono.Addins.Gui\SearchEntry.cs" />
     <Compile Include="Mono.Addins.Gui\HoverImageButton.cs" />
+    <Compile Include="Mono.Addins.Gui\InstallMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\package-x-generic.png">

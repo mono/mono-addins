@@ -23,7 +23,6 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/Mono.Addins.Gui.AddinInfoDialog.cs \
 	gtk-gui/Mono.Addins.Gui.AddinInfoView.cs \
-	gtk-gui/Mono.Addins.Gui.AddinInstallDialog.cs \
 	gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs \
 	gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs \
 	gtk-gui/Mono.Addins.Gui.ErrorDialog.cs \
@@ -33,7 +32,6 @@ FILES =  \
 	gtk-gui/Mono.Addins.Gui.ProgressDialog.cs \
 	Mono.Addins.Gui/AddinInfoDialog.cs \
 	Mono.Addins.Gui/AddinInfoView.cs \
-	Mono.Addins.Gui/AddinInstallDialog.cs \
 	Mono.Addins.Gui/AddinInstaller.cs \
 	Mono.Addins.Gui/AddinInstallerDialog.cs \
 	Mono.Addins.Gui/AddinManagerDialog.cs \
@@ -44,6 +42,7 @@ FILES =  \
 	Mono.Addins.Gui/HoverImageButton.cs \
 	Mono.Addins.Gui/HslColor.cs \
 	Mono.Addins.Gui/InstallDialog.cs \
+	Mono.Addins.Gui/InstallMonitor.cs \
 	Mono.Addins.Gui/ManageSitesDialog.cs \
 	Mono.Addins.Gui/NewSiteDialog.cs \
 	Mono.Addins.Gui/ProgressDialog.cs \
