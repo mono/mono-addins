@@ -165,7 +165,7 @@ namespace Mono.Addins.Setup
 		{
 			RepositoryRecord rep = FindRepositoryRecord (url);
 			if (rep == null)
-				throw new InstallException ("The repository at url '" + url + "' is not registered");
+				return; // Nothing to do
 			
 			foreach (RepositoryRecord rr in service.Configuration.Repositories) {
 				if (rr == rep) continue;
@@ -173,6 +173,8 @@ namespace Mono.Addins.Setup
 				if (newRep == null) continue;
 				foreach (ReferenceRepositoryEntry re in newRep.Repositories) {
 					if (re.Url == url) {
+						// The repository can't be removed because there is another
+						// repository depending on it. Just mark it as a reference.
 						rep.IsReference = true;
 						return;
 					}
