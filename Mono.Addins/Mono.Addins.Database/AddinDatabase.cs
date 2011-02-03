@@ -36,6 +36,7 @@ using System.Xml;
 using System.Reflection;
 using Mono.Addins.Description;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Mono.Addins.Database
 {
@@ -598,8 +599,9 @@ namespace Mono.Addins.Database
 
 			// Sort the add-ins, to make sure add-ins are processed before
 			// all their dependencies
-			ArrayList sorted = addinHash.GetSortedAddins ();
-
+			
+			var sorted = addinHash.GetSortedAddins ();
+			
 			// Register extension points and node sets
 			foreach (AddinDescription conf in sorted)
 				CollectExtensionPointData (conf, updateData);
@@ -612,7 +614,7 @@ namespace Mono.Addins.Database
 				if (changedAddins == null || changedAddins.ContainsKey (conf.AddinId)) {
 					if (monitor.LogLevel > 2)
 						monitor.Log ("- " + conf.AddinId + " (" + conf.Domain + ")");
-					CollectExtensionData (conf, updateData);
+					CollectExtensionData (monitor, addinHash, conf, updateData);
 				}
 			}
 			
@@ -631,7 +633,7 @@ namespace Mono.Addins.Database
 				monitor.Log ("  Node sets: " + updateData.RelNodeSetTypes);
 			}
 		}
-
+		
 		void ConsolidateExtensions (AddinDescription conf)
 		{
 			// Merges extensions with the same path
@@ -785,14 +787,50 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		void CollectExtensionData (AddinDescription conf, AddinUpdateData updateData)
+		void CollectExtensionData (IProgressStatus monitor, AddinIndex addinHash, AddinDescription conf, AddinUpdateData updateData)
 		{
-			foreach (ModuleDescription module in conf.AllModules) {
-				foreach (Extension ext in module.Extensions) {
-					updateData.RelExtensions++;
-					updateData.RegisterExtension (conf, module, ext);
-					AddChildExtensions (conf, module, updateData, ext.Path, ext.ExtensionNodes, false);
+			IEnumerable<string> missingDeps = addinHash.GetMissingDependencies (conf, conf.MainModule);
+			if (missingDeps.Any ()) {
+				string w = "The add-in '" + conf.AddinId + "' could not be updated because some of its dependencies are missing or not compatible:";
+				w += BuildMissingAddinsList (addinHash, conf, missingDeps);
+				monitor.ReportWarning (w);
+				return;
+			}
+			
+			CollectModuleExtensionData (conf, conf.MainModule, updateData);
+			
+			foreach (ModuleDescription module in conf.OptionalModules) {
+				missingDeps = addinHash.GetMissingDependencies (conf, module);
+				if (missingDeps.Any ()) {
+					if (monitor.LogLevel > 1) {
+						string w = "An optional module of the add-in '" + conf.AddinId + "' could not be updated because some of its dependencies are missing or not compatible:";
+						w += BuildMissingAddinsList (addinHash, conf, missingDeps);
+					}
 				}
+				else
+					CollectModuleExtensionData (conf, module, updateData);
+			}
+		}
+		
+		string BuildMissingAddinsList (AddinIndex addinHash, AddinDescription conf, IEnumerable<string> missingDeps)
+		{
+			string w = "";
+			foreach (string dep in missingDeps) {
+				var found = addinHash.GetSimilarExistingAddin (conf, dep);
+				if (found == null)
+					w += "\n  missing: " + dep;
+				else
+					w += "\n  required: " + dep + ", found: " + found.AddinId;
+			}
+			return w;
+		}
+		
+		void CollectModuleExtensionData (AddinDescription conf, ModuleDescription module, AddinUpdateData updateData)
+		{
+			foreach (Extension ext in module.Extensions) {
+				updateData.RelExtensions++;
+				updateData.RegisterExtension (conf, module, ext);
+				AddChildExtensions (conf, module, updateData, ext.Path, ext.ExtensionNodes, false);
 			}
 		}
 		
@@ -1612,29 +1650,27 @@ namespace Mono.Addins.Database
 	
 	class AddinIndex
 	{
-		Hashtable addins = new Hashtable ();
+		Dictionary<string, List<AddinDescription>> addins = new Dictionary<string, List<AddinDescription>> ();
 		
 		public void Add (AddinDescription desc)
 		{
 			string id = Addin.GetFullId (desc.Namespace, desc.LocalId, null);
-			ArrayList list = (ArrayList) addins [id];
-			if (list == null) {
-				list = new ArrayList (); 
-				addins [id] = list;
-			}
+			List<AddinDescription> list;
+			if (!addins.TryGetValue (id, out list))
+				addins [id] = list = new List<AddinDescription> ();
 			list.Add (desc);
 		}
 		
-		ArrayList FindDescriptions (string domain, string fullid)
+		List<AddinDescription> FindDescriptions (string domain, string fullid)
 		{
 			// Returns all registered add-ins which are compatible with the provided
 			// fullid. Compatible means that the id is the same and the version is within
 			// the range of compatible versions of the add-in.
 			
-			ArrayList res = new ArrayList ();
+			var res = new List<AddinDescription> ();
 			string id = Addin.GetIdName (fullid);
-			ArrayList list = (ArrayList) addins [id];
-			if (list == null)
+			List<AddinDescription> list;
+			if (!addins.TryGetValue (id, out list))
 				return res;
 			string version = Addin.GetIdVersion (fullid);
 			foreach (AddinDescription desc in list) {
@@ -1644,12 +1680,38 @@ namespace Mono.Addins.Database
 			return res;
 		}
 		
-		public ArrayList GetSortedAddins ()
+		public IEnumerable<string> GetMissingDependencies (AddinDescription desc, ModuleDescription mod)
 		{
-			Hashtable inserted = new Hashtable ();
-			Hashtable lists = new Hashtable ();
+			foreach (Dependency dep in mod.Dependencies) {
+				AddinDependency adep = dep as AddinDependency;
+				if (adep == null)
+					continue;
+				var descs = FindDescriptions (desc.Domain, adep.FullAddinId);
+				if (descs.Count == 0)
+					yield return adep.FullAddinId;
+			}
+		}
+		
+		public AddinDescription GetSimilarExistingAddin (AddinDescription conf, string addinId)
+		{
+			string domain = conf.Domain;
+			List<AddinDescription> list;
+			if (!addins.TryGetValue (Addin.GetIdName (addinId), out list))
+				return null;
+			string version = Addin.GetIdVersion (addinId);
+			foreach (AddinDescription desc in list) {
+				if ((desc.Domain == domain || domain == AddinDatabase.GlobalDomain) && !desc.SupportsVersion (version))
+					return desc;
+			}
+			return null;
+		}
+		
+		public List<AddinDescription> GetSortedAddins ()
+		{
+			var inserted = new HashSet<string> ();
+			var lists = new Dictionary<string,List<AddinDescription>> ();
 			
-			foreach (ArrayList dlist in addins.Values) {
+			foreach (List<AddinDescription> dlist in addins.Values) {
 				foreach (AddinDescription desc in dlist)
 					InsertSortedAddin (inserted, lists, desc);
 			}
@@ -1657,43 +1719,40 @@ namespace Mono.Addins.Database
 			// Merge all domain lists into a single list.
 			// Make sure the global domain is inserted the last
 			
-			ArrayList global = (ArrayList) lists [AddinDatabase.GlobalDomain];
+			List<AddinDescription> global;
+			lists.TryGetValue (AddinDatabase.GlobalDomain, out global);
 			lists.Remove (AddinDatabase.GlobalDomain);
 			
-			ArrayList list = new ArrayList ();
-			foreach (ArrayList dl in lists.Values) {
-				list.AddRange (dl);
+			List<AddinDescription> sortedAddins = new List<AddinDescription> ();
+			foreach (var dl in lists.Values) {
+				sortedAddins.AddRange (dl);
 			}
 			if (global != null)
-				list.AddRange (global);
-			return list;
+				sortedAddins.AddRange (global);
+			return sortedAddins;
 		}
 
-		void InsertSortedAddin (Hashtable inserted, Hashtable lists, AddinDescription desc)
+		void InsertSortedAddin (HashSet<string> inserted, Dictionary<string,List<AddinDescription>> lists, AddinDescription desc)
 		{
 			string sid = desc.AddinId + " " + desc.Domain;
-			if (inserted.ContainsKey (sid))
+			if (!inserted.Add (sid))
 				return;
-			inserted [sid] = desc;
+
 			foreach (ModuleDescription mod in desc.AllModules) {
 				foreach (Dependency dep in mod.Dependencies) {
 					AddinDependency adep = dep as AddinDependency;
 					if (adep == null)
 						continue;
-					ArrayList descs = FindDescriptions (desc.Domain, adep.FullAddinId);
+					var descs = FindDescriptions (desc.Domain, adep.FullAddinId);
 					if (descs.Count > 0) {
 						foreach (AddinDescription sd in descs)
 							InsertSortedAddin (inserted, lists, sd);
 					}
-//					else 
-//						Console.WriteLine ("NOT FOUND: " + adep.FullAddinId + " " + desc.Domain + " from " + sid);
 				}
 			}
-			ArrayList list = (ArrayList) lists [desc.Domain];
-			if (list == null) {
-				list = new ArrayList ();
-				lists [desc.Domain] = list;
-			}
+			List<AddinDescription> list;
+			if (!lists.TryGetValue (desc.Domain, out list))
+				lists [desc.Domain] = list = new List<AddinDescription> ();
 			
 			list.Add (desc);
 		}
