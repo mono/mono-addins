@@ -78,7 +78,8 @@ REFERENCES =  \
 	-pkg:gtk-sharp-2.0 \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
-	-r:System
+	-r:System \
+	-r:System.Core
 
 DLL_REFERENCES = 
 

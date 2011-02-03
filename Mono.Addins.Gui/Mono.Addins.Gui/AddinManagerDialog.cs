@@ -34,6 +34,7 @@ using Mono.Unix;
 using System.Threading;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Mono.Addins.Gui
 {
@@ -225,7 +226,7 @@ namespace Mono.Addins.Gui
 					AddinStatus st = AddinStatus.Installed;
 					if (addininfoInstalled.GetUpdate (ainfo) != null)
 						st = AddinStatus.HasUpdate;
-					tree.AddAddin (ah, ainfo, ainfo.Enabled, st);
+					tree.AddAddin (ah, ainfo, ainfo.Enabled && !Services.GetMissingDependencies (ainfo).Any(), st);
 					addinsFound = true;
 				}
 			}

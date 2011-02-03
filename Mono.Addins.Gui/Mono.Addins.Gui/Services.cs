@@ -31,6 +31,9 @@ using System;
 using Gtk;
 using Mono.Unix;
 using Mono.Addins.Setup;
+using Mono.Addins.Description;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Gui
 {
@@ -76,6 +79,27 @@ namespace Mono.Addins.Gui
 				dlg.Destroy ();
 			} else
 				dlg.Show ();
+		}
+		
+		public struct MissingDepInfo
+		{
+			public string Addin;
+			public string Required;
+			public string Found;
+		}
+		
+		public static IEnumerable<MissingDepInfo> GetMissingDependencies (Addin addin)
+		{
+			IEnumerable<Addin> allAddins = AddinManager.Registry.GetAddins ().Union (AddinManager.Registry.GetAddinRoots ());
+			foreach (var dep in addin.Description.MainModule.Dependencies) {
+				AddinDependency adep = dep as AddinDependency;
+				if (adep != null) {
+					if (!allAddins.Any (a => Addin.GetIdName (a.Id) == Addin.GetIdName (adep.FullAddinId) &&  a.SupportsVersion (adep.Version))) {
+						Addin found = allAddins.FirstOrDefault (a => Addin.GetIdName (a.Id) == Addin.GetIdName (adep.FullAddinId));
+						yield return new MissingDepInfo () { Addin = Addin.GetIdName (adep.FullAddinId), Required = adep.Version, Found = found != null ? found.Version : null };
+					}
+				}
+			}
 		}
 	}
 }

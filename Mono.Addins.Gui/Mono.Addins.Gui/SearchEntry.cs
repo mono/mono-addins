@@ -51,7 +51,11 @@ namespace Mono.Addins.Gui
 			iconClean = new HoverImageButton (IconSize.Menu, Gtk.Stock.Clear);
 			box.PackStart (iconClean, false, false, 0);
 			box.BorderWidth = 1;
-			Add (box);
+			
+			HeaderBox hbox = new HeaderBox (1,1,1,1);
+			hbox.Show ();
+			hbox.Add (box);
+			Add (hbox);
 			
 			ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));
 			iconClean.ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));

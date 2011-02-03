@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using Mono.Addins.Setup;
 using System.Text;
 using Mono.Unix;
+using System.Linq;
 
 namespace Mono.Addins.Gui
 {
@@ -37,6 +38,7 @@ namespace Mono.Addins.Gui
 		List<AddinRepositoryEntry> selectedEntry = new List<AddinRepositoryEntry> ();
 		List<Addin> selectedAddin = new List<Addin> ();
 		SetupService service;
+		HeaderBox topHeaderBox;
 		
 		public event EventHandler InstallClicked;
 		public event EventHandler UninstallClicked;
@@ -57,6 +59,13 @@ namespace Mono.Addins.Gui
 			hb.Show ();
 			hb.GradientBackround = true;
 			hb.Replace (eboxButs);
+			
+			hb = new HeaderBox (0,1,0,0);
+			hb.SetPadding (6,6,6,6);
+			hb.Show ();
+			hb.GradientBackround = true;
+			hb.Replace (boxHeader);
+			topHeaderBox = hb;
 		}
 		
 		public void Init (SetupService service)
@@ -83,6 +92,7 @@ namespace Mono.Addins.Gui
 			selectedEntry.Clear ();
 			selectedAddin.Clear ();
 			eboxButs.Visible = true;
+			topHeaderBox.Hide ();
 			
 			if (data.Length == 1) {
 				headerBox.Show ();
@@ -157,6 +167,7 @@ namespace Mono.Addins.Gui
 			Addin installed = null;
 			AddinHeader updateInfo = null;
 			string repo = "";
+			topHeaderBox.Hide ();
 			
 			if (data is Addin) {
 				installed = (Addin) data;
@@ -176,7 +187,10 @@ namespace Mono.Addins.Gui
 			} else
 				selectedEntry.Clear ();
 			
-			selectedAddin.Add (installed);
+			if (installed != null)
+				selectedAddin.Add (installed);
+			
+			string missingDepsTxt = null;
 			
 			if (sinfo == null) {
 				btnDisable.Visible = false;
@@ -184,6 +198,7 @@ namespace Mono.Addins.Gui
 				btnUpdate.Visible = false;
 			} else {
 				string version;
+				string newVersion = null;
 				if (installed != null) {
 					btnInstall.Visible = false;
 					btnUpdate.Visible = updateInfo != null && AllowInstall;
@@ -192,6 +207,25 @@ namespace Mono.Addins.Gui
 					btnDisable.Visible = installed.Description.CanDisable;
 					btnUninstall.Visible = installed.Description.CanUninstall;
 					version = installed.Version;
+					var missingDeps = Services.GetMissingDependencies (installed);
+					if (updateInfo != null) {
+						newVersion = updateInfo.Version;
+						labelHeader.Markup = "<b><span color='white'>" + Catalog.GetString ("Update available") + "</span></b>";
+						topHeaderBox.BackgroundColor = new Gdk.Color (0, 132, 208);
+						topHeaderBox.Show ();
+					}
+					else if (missingDeps.Any ()) {
+						labelHeader.Markup = "<b><span color='black'>" + Catalog.GetString ("This add-in can't be loaded due to missing dependencies") + "</span></b>";
+						topHeaderBox.BackgroundColor = new Gdk.Color (255, 176, 0);
+						topHeaderBox.Show ();
+						missingDepsTxt = "";
+						foreach (var mdep in missingDeps) {
+							if (mdep.Found != null)
+								missingDepsTxt += "\n" + string.Format (Catalog.GetString ("Required: {0} v{1}, found v{2}"), mdep.Addin, mdep.Required, mdep.Found);
+							else
+								missingDepsTxt += "\n" + string.Format (Catalog.GetString ("Missing: {0} v{1}"), mdep.Addin, mdep.Required);
+						}
+					}
 				} else {
 					btnInstall.Visible = AllowInstall;
 					btnUpdate.Visible = false;
@@ -200,8 +234,15 @@ namespace Mono.Addins.Gui
 					version = sinfo.Version;
 				}
 				labelName.Markup = "<b><big>" + GLib.Markup.EscapeText(sinfo.Name) + "</big></b>";
-				labelVersion.Markup = "<small>Version " + version + "</small>";
-				labelDesc.Markup = repo + GLib.Markup.EscapeText (sinfo.Description);
+				string ver = "<small>Version " + version + "</small>";
+				if (newVersion != null)
+					ver += "\n<small>New version available: " + newVersion + "</small>";
+				if (missingDepsTxt != null)
+					ver += "\n\n" + GLib.Markup.EscapeText (Catalog.GetString ("The following depedencies required by this add-in are not available:")) + missingDepsTxt;
+				labelVersion.Markup = ver;
+				
+				string desc = GLib.Markup.EscapeText (sinfo.Description);
+				labelDesc.Markup = repo + GLib.Markup.EscapeText (desc);
 			}
 		}
 		

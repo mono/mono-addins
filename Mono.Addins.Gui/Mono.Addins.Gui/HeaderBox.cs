@@ -41,6 +41,9 @@ namespace Mono.Addins.Gui
 		int leftPadding;
 		int rightPadding;
 		
+		bool useCustomColor;
+		Gdk.Color customColor;
+		
 		public HeaderBox ()
 		{
 		}
@@ -75,6 +78,16 @@ namespace Mono.Addins.Gui
 		}
 		
 		public bool GradientBackround { get; set; }
+		
+		public Gdk.Color BackgroundColor {
+			get { return customColor; }
+			set { customColor = value; useCustomColor = true; }
+		}
+		
+		public void ResetBackgroundColor ()
+		{
+			useCustomColor = false;
+		}
 
 		protected override void OnAdded (Widget widget)
 		{
@@ -115,7 +128,7 @@ namespace Mono.Addins.Gui
 			
 			if (GradientBackround) {
 				rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
-				HslColor gcol = Parent.Style.Background (Gtk.StateType.Normal);
+				HslColor gcol = useCustomColor ? customColor : Parent.Style.Background (Gtk.StateType.Normal);
 				
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
 					cr.NewPath ();
