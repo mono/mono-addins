@@ -60,6 +60,7 @@ namespace Mono.Addins.Gui
 		public void InitForUninstall (Addin[] info)
 		{
 			this.uninstallId = info[0].Id;
+			buttonOk.Label = Catalog.GetString ("Uninstall");
 			
 			StringBuilder sb = new StringBuilder ();
 			sb.Append ("<b>").Append (Catalog.GetString ("The following packages will be uninstalled:")).Append ("</b>\n\n");
