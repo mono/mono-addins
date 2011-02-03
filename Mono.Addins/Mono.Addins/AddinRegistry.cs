@@ -70,6 +70,8 @@ namespace Mono.Addins
 		string basePath;
 		string currentDomain;
 		string startupDirectory;
+		string addinsDir;
+		string databaseDir;
 		
 		/// <summary>
 		/// Initializes a new instance.
@@ -100,15 +102,44 @@ namespace Mono.Addins
 		{
 		}
 		
-		internal AddinRegistry (AddinEngine engine, string registryPath, string startupDirectory)
+		public AddinRegistry (string registryPath, string startupDirectory, string addinsDir): this (null, registryPath, startupDirectory, addinsDir, null)
+		{
+		}
+		
+		public AddinRegistry (string registryPath, string startupDirectory, string addinsDir, string databaseDir): this (null, registryPath, startupDirectory, addinsDir, databaseDir)
+		{
+		}
+		
+		internal AddinRegistry (AddinEngine engine, string registryPath, string startupDirectory, string addinsDir, string databaseDir)
 		{
 			basePath = Path.GetFullPath (Util.NormalizePath (registryPath));
-			database = new AddinDatabase (engine, this);
+			
+			if (addinsDir != null) {
+				addinsDir = Util.NormalizePath (addinsDir);
+				if (Path.IsPathRooted (addinsDir))
+					this.addinsDir = Path.GetFullPath (addinsDir);
+				else
+					this.addinsDir = Path.GetFullPath (Path.Combine (basePath, addinsDir));
+			} else
+				this.addinsDir = Path.Combine (basePath, "addins");
+			
+			if (databaseDir != null) {
+				databaseDir = Util.NormalizePath (databaseDir);
+				if (Path.IsPathRooted (databaseDir))
+					this.databaseDir = Path.GetFullPath (databaseDir);
+				else
+					this.databaseDir = Path.GetFullPath (Path.Combine (basePath, databaseDir));
+			}
+			else
+				this.databaseDir = Path.GetFullPath (basePath);
 
 			// Look for add-ins in the hosts directory and in the default
 			// addins directory
 			addinDirs = new StringCollection ();
 			addinDirs.Add (DefaultAddinsFolder);
+			
+			// Initialize the database after all paths have been set
+			database = new AddinDatabase (engine, this);
 			
 			// Get the domain corresponding to the startup folder
 			if (startupDirectory != null && startupDirectory.Length > 0) {
@@ -135,7 +166,7 @@ namespace Mono.Addins
 		
 		internal static AddinRegistry GetGlobalRegistry (AddinEngine engine, string startupDirectory)
 		{
-			AddinRegistry reg = new AddinRegistry (engine, GlobalRegistryPath, startupDirectory);
+			AddinRegistry reg = new AddinRegistry (engine, GlobalRegistryPath, startupDirectory, null, null);
 			string baseDir;
 			if (Util.IsWindows)
 				baseDir = Environment.GetFolderPath (Environment.SpecialFolder.CommonProgramFiles); 
@@ -506,9 +537,13 @@ namespace Mono.Addins
 		/// this folder will only contain .addins files referencing other more convenient locations for add-ins.
 		/// </remarks>
 		public string DefaultAddinsFolder {
-			get { return Path.Combine (basePath, "addins"); }
+			get { return addinsDir; }
 		}
 		
+		internal string AddinCachePath {
+			get { return databaseDir; }
+		}
+	
 		internal StringCollection GlobalAddinDirectories {
 			get { return addinDirs; }
 		}

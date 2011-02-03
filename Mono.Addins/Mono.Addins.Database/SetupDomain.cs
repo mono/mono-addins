@@ -40,7 +40,7 @@ namespace Mono.Addins.Database
 			RemoteProgressStatus remMonitor = new RemoteProgressStatus (monitor);
 			try {
 				RemoteSetupDomain rsd = GetDomain ();
-				rsd.Scan (remMonitor, registry.RegistryPath, registry.StartupDirectory, scanFolder, filesToIgnore);
+				rsd.Scan (remMonitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, scanFolder, filesToIgnore);
 			} catch (Exception ex) {
 				throw new ProcessFailedException (remMonitor.ProgessLog, ex);
 			} finally {
@@ -54,7 +54,7 @@ namespace Mono.Addins.Database
 			RemoteProgressStatus remMonitor = new RemoteProgressStatus (monitor);
 			try {
 				RemoteSetupDomain rsd = GetDomain ();
-				rsd.GetAddinDescription (remMonitor, registry.RegistryPath, registry.StartupDirectory, file, outFile);
+				rsd.GetAddinDescription (remMonitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, file, outFile);
 			} catch (Exception ex) {
 				throw new ProcessFailedException (remMonitor.ProgessLog, ex);
 			} finally {
@@ -93,20 +93,20 @@ namespace Mono.Addins.Database
 			return null;
 		}
 		
-		public void Scan (IProgressStatus monitor, string registryPath, string startupDir, string scanFolder, string[] filesToIgnore)
+		public void Scan (IProgressStatus monitor, string registryPath, string startupDir, string addinsDir, string databaseDir, string scanFolder, string[] filesToIgnore)
 		{
 			AddinDatabase.RunningSetupProcess = true;
-			AddinRegistry reg = new AddinRegistry (registryPath, startupDir);
+			AddinRegistry reg = new AddinRegistry (registryPath, startupDir, addinsDir, databaseDir);
 			StringCollection files = new StringCollection ();
 			for (int n=0; n<filesToIgnore.Length; n++)
 				files.Add (filesToIgnore[n]);
 			reg.ScanFolders (monitor, scanFolder, files);
 		}
 		
-		public void GetAddinDescription (IProgressStatus monitor, string registryPath, string startupDir, string file, string outFile)
+		public void GetAddinDescription (IProgressStatus monitor, string registryPath, string startupDir, string addinsDir, string databaseDir, string file, string outFile)
 		{
 			AddinDatabase.RunningSetupProcess = true;
-			AddinRegistry reg = new AddinRegistry (registryPath, startupDir);
+			AddinRegistry reg = new AddinRegistry (registryPath, startupDir, addinsDir, databaseDir);
 			reg.ParseAddin (monitor, file, outFile);
 		}
 	}

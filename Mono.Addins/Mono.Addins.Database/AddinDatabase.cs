@@ -68,7 +68,7 @@ namespace Mono.Addins.Database
 		{
 			this.addinEngine = addinEngine;
 			this.registry = registry;
-			addinDbDir = Path.Combine (registry.RegistryPath, "addin-db-" + VersionTag);
+			addinDbDir = Path.Combine (registry.AddinCachePath, "addin-db-" + VersionTag);
 			fileDatabase = new FileDatabase (AddinDbDir);
 		}
 		

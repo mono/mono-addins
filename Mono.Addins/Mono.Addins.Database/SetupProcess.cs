@@ -42,15 +42,15 @@ namespace Mono.Addins.Database
 	{
 		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, string[] filesToIgnore)
 		{
-			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, "scan", scanFolder, filesToIgnore);
+			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, "scan", scanFolder, filesToIgnore);
 		}
 		
 		public void GetAddinDescription (IProgressStatus monitor, AddinRegistry registry, string file, string outFile)
 		{
-			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, "get-desc", file, outFile);
+			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, "get-desc", file, outFile);
 		}
 		
-		internal static void ExecuteCommand (IProgressStatus monitor, string registryPath, string startupDir, string name, string arg1, params string[] args)
+		internal static void ExecuteCommand (IProgressStatus monitor, string registryPath, string startupDir, string addinsDir, string databaseDir, string name, string arg1, params string[] args)
 		{
 			string verboseParam = monitor.LogLevel.ToString ();
 			
@@ -83,6 +83,8 @@ namespace Mono.Addins.Database
 			
 				process.StandardInput.WriteLine (registryPath);
 				process.StandardInput.WriteLine (startupDir);
+				process.StandardInput.WriteLine (addinsDir);
+				process.StandardInput.WriteLine (databaseDir);
 				process.StandardInput.Flush ();
 	
 	//			string rr = process.StandardOutput.ReadToEnd ();
@@ -113,9 +115,11 @@ namespace Mono.Addins.Database
 			try {
 				string registryPath = Console.In.ReadLine ();
 				string startupDir = Console.In.ReadLine ();
+				string addinsDir = Console.In.ReadLine ();
+				string databaseDir = Console.In.ReadLine ();
 				
 				AddinDatabase.RunningSetupProcess = true;
-				AddinRegistry reg = new AddinRegistry (registryPath, startupDir);
+				AddinRegistry reg = new AddinRegistry (registryPath, startupDir, addinsDir, databaseDir);
 			
 				switch (args [1]) {
 				case "scan":

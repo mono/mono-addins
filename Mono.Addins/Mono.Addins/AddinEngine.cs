@@ -89,10 +89,30 @@ namespace Mono.Addins
 			
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			Initialize (configDir, asm);
+			Initialize (asm, configDir, null, null);
 		}
 		
-		internal void Initialize (string configDir, Assembly startupAsm)
+		public void Initialize (string configDir, string addinsDir)
+		{
+			if (initialized)
+				return;
+			
+			Assembly asm = Assembly.GetEntryAssembly ();
+			if (asm == null) asm = Assembly.GetCallingAssembly ();
+			Initialize (asm, configDir, addinsDir, null);
+		}
+		
+		public void Initialize (string configDir, string addinsDir, string databaseDir)
+		{
+			if (initialized)
+				return;
+			
+			Assembly asm = Assembly.GetEntryAssembly ();
+			if (asm == null) asm = Assembly.GetCallingAssembly ();
+			Initialize (asm, configDir, addinsDir, databaseDir);
+		}
+		
+		internal void Initialize (Assembly startupAsm, string configDir, string addinsDir, string databaseDir)
 		{
 			if (initialized)
 				return;
@@ -109,7 +129,7 @@ namespace Mono.Addins
 			if (configDir == null || configDir.Length == 0)
 				registry = AddinRegistry.GetGlobalRegistry (this, startupDirectory);
 			else
-				registry = new AddinRegistry (this, configDir, startupDirectory);
+				registry = new AddinRegistry (this, configDir, startupDirectory, addinsDir, databaseDir);
 
 			if (registry.CreateHostAddinsFile (asmFile) || registry.UnknownDomain)
 				registry.Update (new ConsoleProgressStatus (false));

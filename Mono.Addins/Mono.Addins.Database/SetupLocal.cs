@@ -32,7 +32,7 @@ namespace Mono.Addins.Database
 	{
 		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, string[] filesToIgnore)
 		{
-			AddinRegistry reg = new AddinRegistry (registry.RegistryPath, registry.StartupDirectory);
+			AddinRegistry reg = new AddinRegistry (registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath);
 			reg.CopyExtensionsFrom (registry);
 			StringCollection files = new StringCollection ();
 			for (int n=0; n<filesToIgnore.Length; n++)
