@@ -60,6 +60,12 @@ namespace Mono.Addins.Setup
 			set { file = value; }
 		}
 		
+		public string CachedFilesDir {
+			get {
+				return Path.Combine (Path.GetDirectoryName (File), Path.GetFileNameWithoutExtension (File) + "_files");
+			}
+		}
+		
 		public string Url {
 			get { return url; }
 			set { url = value; }
@@ -81,13 +87,18 @@ namespace Mono.Addins.Setup
 		
 		public Repository GetCachedRepository ()
 		{
-			return (Repository) AddinStore.ReadObject (File, typeof(Repository));
+			Repository repo = (Repository) AddinStore.ReadObject (File, typeof(Repository));
+			if (repo != null)
+				repo.CachedFilesDir = CachedFilesDir;
+			return repo;
 		}
 		
 		public void ClearCachedRepository ()
 		{
 			if (System.IO.File.Exists (File))
 				System.IO.File.Delete (File);
+			if (Directory.Exists (CachedFilesDir))
+				Directory.Delete (CachedFilesDir, true);
 		}
 		
 		internal void UpdateCachedRepository (Repository newRep)
@@ -98,6 +109,7 @@ namespace Mono.Addins.Setup
 			AddinStore.WriteObject (File, newRep);
 			if (name == null)
 				name = newRep.Name;
+			newRep.CachedFilesDir = CachedFilesDir;
 		}
 	}
 	

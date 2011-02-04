@@ -56,6 +56,7 @@ namespace Mono.Addins.Setup
 		string installDirectory;
 		AddinStore store;
 		AddinSystemConfiguration config;
+		const string addinFilesDir = "_addin_files";
 		
 		AddinRegistry registry;
 		
@@ -387,6 +388,15 @@ namespace Mono.Addins.Setup
 				list.Add (f);
 			}
 			
+			foreach (var prop in conf.Properties) {
+				try {
+					if (File.Exists (Path.Combine (basePath, prop.Value)))
+						list.Add (prop.Value);
+				} catch {
+					// Ignore errors
+				}
+			}
+			
 			monitor.Log ("Creating package " + Path.GetFileName (outFilePath));
 			
 			foreach (string file in list) {
@@ -461,32 +471,45 @@ namespace Mono.Addins.Setup
 			
 			string mainFile = Path.Combine (rootPath, relFilePath);
 			string mainPath = Path.GetDirectoryName (mainFile);
+			string supportFileDir = Path.Combine (mainPath, addinFilesDir);
 			
 			Repository mainrep = (Repository) AddinStore.ReadObject (mainFile, typeof(Repository));
 			if (mainrep == null) {
 				mainrep = new Repository ();
 			}
 			
+			ReferenceRepositoryEntry repEntry = (ReferenceRepositoryEntry) rootrep.FindEntry (relFilePath);
+			DateTime rootLastModified = repEntry != null ? repEntry.LastModified : DateTime.MinValue;
+			
 			bool modified = false;
 			
 			monitor.Log.WriteLine ("Checking directory: " + mainPath);
 			foreach (string file in Directory.GetFiles (mainPath, "*.mpack")) {
+				
+				DateTime date = File.GetLastWriteTime (file);
+				if (date > lastModified)
+					lastModified = date;
+				
 				string fname = Path.GetFileName (file);
 				PackageRepositoryEntry entry = (PackageRepositoryEntry) mainrep.FindEntry (fname);
+				if (date > rootLastModified) {
+					if (entry != null) {
+						mainrep.RemoveEntry (entry);
+						DeleteSupportFiles (supportFileDir, entry.Addin);
+						entry = null;
+					}
+				}
 				if (entry == null) {
 					entry = new PackageRepositoryEntry ();
 					AddinPackage p = (AddinPackage) Package.FromFile (file);
 					entry.Addin = (AddinInfo) p.Addin;
 					entry.Url = fname;
+					ExtractSupportFiles (supportFileDir, file, entry.Addin);
 					mainrep.AddEntry (entry);
 					modified = true;
 					monitor.Log.WriteLine ("Added addin: " + fname);
 				}
 				allAddins.Add (entry);
-				
-				DateTime date = File.GetLastWriteTime (file);
-				if (date > lastModified)
-					lastModified = date;
 			}
 			
 			ArrayList toRemove = new ArrayList ();
@@ -494,15 +517,16 @@ namespace Mono.Addins.Setup
 				if (!File.Exists (Path.Combine (mainPath, entry.Url)))
 					toRemove.Add (entry);
 					
-			foreach (PackageRepositoryEntry entry in toRemove)
+			foreach (PackageRepositoryEntry entry in toRemove) {
+				DeleteSupportFiles (supportFileDir, entry.Addin);
 				mainrep.RemoveEntry (entry);
+			}
 			
 			if (modified || toRemove.Count > 0) {
 				AddinStore.WriteObject (mainFile, mainrep);
 				monitor.Log.WriteLine ("Updated " + relFilePath);
 			}
 
-			ReferenceRepositoryEntry repEntry = (ReferenceRepositoryEntry) rootrep.FindEntry (relFilePath);
 			if (repEntry != null) {
 				if (repEntry.LastModified < lastModified)
 					repEntry.LastModified = lastModified;
@@ -514,8 +538,51 @@ namespace Mono.Addins.Setup
 			}
 			
 			foreach (string dir in Directory.GetDirectories (mainPath)) {
+				if (Path.GetFileName (dir) == addinFilesDir)
+					continue;
 				string based = dir.Substring (rootPath.Length + 1);
 				BuildRepository (monitor, rootrep, rootPath, Path.Combine (based, "main.mrep"), allAddins);
+			}
+		}
+		
+		void DeleteSupportFiles (string targetDir, AddinInfo ainfo)
+		{
+			foreach (var prop in ainfo.Properties) {
+				if (prop.Value.StartsWith (addinFilesDir + Path.DirectorySeparatorChar)) {
+					string file = Path.Combine (targetDir, Path.GetFileName (prop.Value));
+					if (File.Exists (file))
+						File.Delete (file);
+				}
+			}
+			if (Directory.Exists (targetDir) && Directory.GetFileSystemEntries (targetDir).Length == 0)
+				Directory.Delete (targetDir, true);
+		}
+		
+		void ExtractSupportFiles (string targetDir, string file, AddinInfo ainfo)
+		{
+			Random r = new Random ();
+			ZipFile zfile = new ZipFile (file);
+			foreach (var prop in ainfo.Properties) {
+				ZipEntry ze = zfile.GetEntry (prop.Value);
+				if (ze != null) {
+					string fname;
+					do {
+						fname = Path.Combine (targetDir, r.Next().ToString ("x") + Path.GetExtension (prop.Value));
+					} while (File.Exists (fname));
+					
+					if (!Directory.Exists (targetDir))
+						Directory.CreateDirectory (targetDir);
+					
+					using (var f = File.OpenWrite (fname)) {
+						using (Stream s = zfile.GetInputStream (ze)) {
+							byte[] buffer = new byte [8092];
+							int nr = 0;
+							while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
+								f.Write (buffer, 0, nr);
+						}
+					}
+					prop.Value = Path.Combine (addinFilesDir, Path.GetFileName (fname));
+				}
 			}
 		}
 		

@@ -27,6 +27,10 @@
 //
 
 using System;
+using System.Net;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 
 namespace Mono.Addins.Setup
 {
@@ -60,6 +64,16 @@ namespace Mono.Addins.Setup
 				return n1.CompareTo (n2);
 			else
 				return Mono.Addins.Addin.CompareVersions (rep.Addin.Version, Addin.Version);
+		}
+		
+		public IAsyncResult BeginDownloadSupportFile (string name, AsyncCallback cb, object state)
+		{
+			return Repository.BeginDownloadSupportFile (name, cb, state);
+		}
+		
+		public Stream EndDownloadSupportFile (IAsyncResult ares)
+		{
+			return Repository.EndDownloadSupportFile (ares);
 		}
 	}
 	
@@ -95,5 +109,9 @@ namespace Mono.Addins.Setup
 		string RepositoryName {
 			get;
 		}
+		
+		IAsyncResult BeginDownloadSupportFile (string name, AsyncCallback cb, object state);
+		
+		Stream EndDownloadSupportFile (IAsyncResult ares);
 	}
 }

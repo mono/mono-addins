@@ -30,6 +30,9 @@ using System;
 using System.Collections;
 using System.Xml;
 using System.Xml.Serialization;
+using System.IO;
+using System.Net;
+using System.Threading;
 
 namespace Mono.Addins.Setup
 {
@@ -49,6 +52,8 @@ namespace Mono.Addins.Setup
 			get { return url; }
 			set { url = value; }
 		}
+		
+		internal string CachedFilesDir { get; set; }
 	
 		[XmlElement ("Repository", Type = typeof(ReferenceRepositoryEntry))]
 		public RepositoryEntryCollection Repositories {
@@ -98,5 +103,107 @@ namespace Mono.Addins.Setup
 			else
 				Repositories.Remove (entry);
 		}
+		
+		public IAsyncResult BeginDownloadSupportFile (string name, AsyncCallback cb, object state)
+		{
+			FileAsyncResult res = new FileAsyncResult ();
+			res.AsyncState = state;
+			res.Callback = cb;
+			
+			string cachedFile = Path.Combine (CachedFilesDir, Path.GetFileName (name));
+			if (File.Exists (cachedFile)) {
+				res.FilePath = cachedFile;
+				res.CompletedSynchronously = true;
+				res.SetDone ();
+				return res;
+			}
+			
+			Uri u = new Uri (new Uri (Url), name);
+			if (u.Scheme == "file") {
+				res.FilePath = u.AbsolutePath;
+				res.CompletedSynchronously = true;
+				res.SetDone ();
+				return res;
+			}
+			else {
+				HttpWebRequest req = (HttpWebRequest) HttpWebRequest.Create (u);
+				res.FilePath = cachedFile;
+				res.Request = req;
+				req.BeginGetResponse (OnGotResponse, res);
+			}
+			return res;
+		}
+		
+		void OnGotResponse (IAsyncResult ares)
+		{
+			FileAsyncResult res = (FileAsyncResult) ares.AsyncState;
+			try {
+				WebResponse resp = res.Request.EndGetResponse (ares);
+				string dir = Path.GetDirectoryName (res.FilePath);
+				lock (this) {
+					if (!Directory.Exists (dir))
+						Directory.CreateDirectory (dir);
+				}
+				byte[] buffer = new byte [8092];
+				using (var s = resp.GetResponseStream ()) {
+					using (var f = File.OpenWrite (res.FilePath)) {
+						int nr = 0;
+						while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
+							f.Write (buffer, 0, nr);
+					}
+				}
+			} catch (Exception ex) {
+				res.Error = ex;
+			}
+			res.SetDone ();
+		}
+		
+		public Stream EndDownloadSupportFile (IAsyncResult ares)
+		{
+			FileAsyncResult res = ares as FileAsyncResult;
+			if (res == null)
+				throw new InvalidOperationException ("Invalid IAsyncResult instance");
+			if (res.Error != null)
+				throw res.Error;
+			return File.OpenRead (res.FilePath);
+		}
 	}
+
+	class FileAsyncResult: IAsyncResult
+	{
+		ManualResetEvent done;
+		
+		public string FilePath;
+		public HttpWebRequest Request;
+		public AsyncCallback Callback;
+		public Exception Error;
+		
+		public void SetDone ()
+		{
+			lock (this) {
+				IsCompleted = true;
+				if (done != null)
+					done.Set ();
+			}
+			if (Callback != null)
+				Callback (this);
+		}
+		
+		public object AsyncState { get; set; }
+	
+		public WaitHandle AsyncWaitHandle {
+			get {
+				lock (this) {
+					if (done == null)
+						done = new ManualResetEvent (IsCompleted);
+				}
+				return done;
+			}
+		}
+	
+		public bool CompletedSynchronously { get; set; }
+	
+		public bool IsCompleted { get; set; }
+	}
+	
 }
