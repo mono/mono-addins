@@ -15,7 +15,7 @@ namespace Mono.Addins.Gui
 		private global::Gtk.Label labelVersion;
 		private global::Gtk.ScrolledWindow scrolledwindow;
 		private global::Gtk.EventBox ebox2;
-		private global::Gtk.VBox vbox7;
+		private global::Gtk.VBox vboxDesc;
 		private global::Gtk.Label labelDesc;
 		private global::Gtk.EventBox eboxButs;
 		private global::Gtk.HBox hbox1;
@@ -110,22 +110,22 @@ namespace Mono.Addins.Gui
 			this.ebox2 = new global::Gtk.EventBox ();
 			this.ebox2.Name = "ebox2";
 			// Container child ebox2.Gtk.Container+ContainerChild
-			this.vbox7 = new global::Gtk.VBox ();
-			this.vbox7.Name = "vbox7";
-			this.vbox7.Spacing = 6;
-			// Container child vbox7.Gtk.Box+BoxChild
+			this.vboxDesc = new global::Gtk.VBox ();
+			this.vboxDesc.Name = "vboxDesc";
+			this.vboxDesc.Spacing = 6;
+			// Container child vboxDesc.Gtk.Box+BoxChild
 			this.labelDesc = new global::Gtk.Label ();
 			this.labelDesc.WidthRequest = 250;
 			this.labelDesc.Name = "labelDesc";
 			this.labelDesc.Xalign = 0F;
 			this.labelDesc.LabelProp = global::Mono.Unix.Catalog.GetString ("Long description of the add-in. Long description of the add-in. Long description of the add-in. Long description of the add-in. Long description of the add-in. Long description of the add-in. ");
 			this.labelDesc.Wrap = true;
-			this.vbox7.Add (this.labelDesc);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.labelDesc]));
+			this.vboxDesc.Add (this.labelDesc);
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vboxDesc [this.labelDesc]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;
-			this.ebox2.Add (this.vbox7);
+			this.ebox2.Add (this.vboxDesc);
 			w7.Add (this.ebox2);
 			this.scrolledwindow.Add (w7);
 			this.vbox3.Add (this.scrolledwindow);

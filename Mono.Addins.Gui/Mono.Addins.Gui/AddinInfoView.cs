@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.IO;
 using System.Collections.Generic;
 using Mono.Addins.Setup;
 using System.Text;
@@ -39,6 +40,7 @@ namespace Mono.Addins.Gui
 		List<Addin> selectedAddin = new List<Addin> ();
 		SetupService service;
 		HeaderBox topHeaderBox;
+		List<Gtk.Widget> previewImages = new List<Gtk.Widget> ();
 		
 		public event EventHandler InstallClicked;
 		public event EventHandler UninstallClicked;
@@ -93,6 +95,12 @@ namespace Mono.Addins.Gui
 			selectedAddin.Clear ();
 			eboxButs.Visible = true;
 			topHeaderBox.Hide ();
+			
+			foreach (var img in previewImages) {
+				((Gtk.Container)img.Parent).Remove (img);
+				img.Destroy ();
+			}
+			previewImages.Clear ();
 			
 			if (data.Length == 1) {
 				headerBox.Show ();
@@ -174,6 +182,10 @@ namespace Mono.Addins.Gui
 				sinfo = SetupService.GetAddinHeader (installed);
 				updateInfo = GetUpdate (installed);
 				selectedEntry.Clear ();
+				foreach (var prop in sinfo.Properties) {
+					if (prop.Name.StartsWith ("PreviewImage"))
+						previewImages.Add (new ImageContainer (installed, prop.Value));
+				}
 			}
 			else if (data is AddinRepositoryEntry) {
 				AddinRepositoryEntry entry = (AddinRepositoryEntry) data;
@@ -184,6 +196,10 @@ namespace Mono.Addins.Gui
 				selectedEntry.Add (entry);
 				string rname = !string.IsNullOrEmpty (entry.RepositoryName) ? entry.RepositoryName : entry.RepositoryUrl;
 				repo = Catalog.GetString ("<small>Available in repository:") + "\n" + GLib.Markup.EscapeText (rname) + "\n\n</small>";
+				foreach (var prop in sinfo.Properties) {
+					if (prop.Name.StartsWith ("PreviewImage"))
+						previewImages.Add (new ImageContainer (entry, prop.Value));
+				}
 			} else
 				selectedEntry.Clear ();
 			
@@ -243,6 +259,9 @@ namespace Mono.Addins.Gui
 				
 				string desc = GLib.Markup.EscapeText (sinfo.Description);
 				labelDesc.Markup = repo + GLib.Markup.EscapeText (desc);
+				
+				foreach (var img in previewImages)
+					vboxDesc.PackStart (img, false, false, 0);
 			}
 		}
 		
@@ -292,6 +311,68 @@ namespace Mono.Addins.Gui
 			ebox.ModifyBg (Gtk.StateType.Normal, gcol);
 			ebox2.ModifyBg (Gtk.StateType.Normal, gcol);
 			scrolledwindow.ModifyBg (Gtk.StateType.Normal, gcol);
+		}
+	}
+	
+	class ImageContainer: Gtk.EventBox
+	{
+		AddinRepositoryEntry aentry;
+		IAsyncResult aresult;
+		Gtk.Image image;
+		bool destroyed;
+		
+		ImageContainer ()
+		{
+			image = new Gtk.Image ();
+			Add (image);
+			Show ();
+		}
+		
+		public ImageContainer (AddinRepositoryEntry aentry, string fileName): this ()
+		{
+			this.aentry = aentry;
+			aresult = aentry.BeginDownloadSupportFile (fileName, ImageDownloaded, null);
+		}
+		
+		public ImageContainer (Addin addin, string fileName): this ()
+		{
+			string path = System.IO.Path.Combine (addin.Description.BasePath, fileName);
+			LoadImage (File.OpenRead (path));
+		}
+		
+		void ImageDownloaded (object state)
+		{
+			Gtk.Application.Invoke (delegate {
+				if (destroyed)
+					return;
+				try {
+					LoadImage (aentry.EndDownloadSupportFile (aresult));
+				} catch {
+					// ignore
+				}
+			});
+		}
+		
+		void LoadImage (Stream s)
+		{
+			using (s) {
+				Gdk.PixbufLoader loader = new Gdk.PixbufLoader (s);
+				Gdk.Pixbuf pix = image.Pixbuf = loader.Pixbuf;
+				loader.Dispose ();
+				if (pix.Width > 250) {
+					Gdk.Pixbuf spix = pix.ScaleSimple (250, (250 * pix.Height) / pix.Width, Gdk.InterpType.Hyper);
+					pix.Dispose ();
+					pix = spix;
+				}
+				image.Pixbuf = pix;
+				image.Show ();
+			}
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			destroyed = true;
+			base.OnDestroyed ();
 		}
 	}
 }

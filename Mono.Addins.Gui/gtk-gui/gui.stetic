@@ -1513,7 +1513,7 @@
                           <widget class="Gtk.EventBox" id="ebox2">
                             <property name="MemberName" />
                             <child>
-                              <widget class="Gtk.VBox" id="vbox7">
+                              <widget class="Gtk.VBox" id="vboxDesc">
                                 <property name="MemberName" />
                                 <property name="Spacing">6</property>
                                 <child>
