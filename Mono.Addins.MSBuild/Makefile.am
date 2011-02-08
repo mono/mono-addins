@@ -28,7 +28,7 @@ EXTRAS = \
 
 REFERENCES =  \
 	-r:Microsoft.Build.Framework \
-	-r:Microsoft.Build.Utilities.v3.5 \
+	-r:Microsoft.Build.Utilities \
 	-r:System
 
 DLL_REFERENCES = 
