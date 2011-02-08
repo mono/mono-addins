@@ -504,6 +504,7 @@ namespace Mono.Addins.Setup
 					AddinPackage p = (AddinPackage) Package.FromFile (file);
 					entry.Addin = (AddinInfo) p.Addin;
 					entry.Url = fname;
+					entry.Addin.Properties.SetPropertyValue ("DownloadSize", new FileInfo (file).Length.ToString ());
 					ExtractSupportFiles (supportFileDir, file, entry.Addin);
 					mainrep.AddEntry (entry);
 					modified = true;
