@@ -147,7 +147,7 @@ Global
 		{B051C84E-48CC-448D-B00C-1525EB64E4BE} = {0CE17344-E7E3-4620-B6D4-B04778EC5739}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Mono.Addins\Mono.Addins.csproj
+		StartupItem = mautil\mautil.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = Flat
