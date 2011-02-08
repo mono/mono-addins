@@ -99,7 +99,7 @@ namespace Mono.Addins.Setup
 			SetPropertyValue (name, value, null);
 		}
 		
-		public void SetPropertyValue (string name, string locale, string value)
+		public void SetPropertyValue (string name, string value, string locale)
 		{
 			if (string.IsNullOrEmpty (name))
 				throw new ArgumentException ("name can't be null or empty");
