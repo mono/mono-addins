@@ -94,6 +94,11 @@ namespace Mono.Addins.Setup
 				return loc;
 		}
 		
+		public void SetPropertyValue (string name, string value)
+		{
+			SetPropertyValue (name, value, null);
+		}
+		
 		public void SetPropertyValue (string name, string locale, string value)
 		{
 			if (string.IsNullOrEmpty (name))

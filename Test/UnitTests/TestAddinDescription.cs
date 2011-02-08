@@ -56,14 +56,14 @@ namespace UnitTests
 		{
 			AddinDescription desc = new AddinDescription ();
 			
-			desc.Properties.SetPropertyValue ("prop1", null, "val1");
+			desc.Properties.SetPropertyValue ("prop1", "val1");
 			Assert.AreEqual ("val1", desc.Properties.GetPropertyValue ("prop1"));
 			Assert.AreEqual ("val1", desc.Properties.GetPropertyValue ("prop1", "en"));
 			Assert.AreEqual ("val1", desc.Properties.GetPropertyValue ("prop1", "en-US"));
 			Assert.AreEqual ("val1", desc.Properties.GetPropertyValue ("prop1", "en_US"));
 			Assert.AreEqual ("val1", desc.Properties.GetPropertyValue ("prop1", null));
 			
-			desc.Properties.SetPropertyValue ("prop2", "ca", "valCa");
+			desc.Properties.SetPropertyValue ("prop2", "valCa", "ca");
 			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2"));
 			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca"));
 			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca-ES"));
@@ -75,7 +75,7 @@ namespace UnitTests
 			Assert.IsEmpty (desc.Properties.GetPropertyValue ("prop2", "en_US"));
 			Assert.IsEmpty (desc.Properties.GetPropertyValue ("prop2", null));
 			
-			desc.Properties.SetPropertyValue ("prop2", "ca_ES", "valCaEs");
+			desc.Properties.SetPropertyValue ("prop2", "valCaEs", "ca_ES");
 			Assert.AreEqual ("valCaEs", desc.Properties.GetPropertyValue ("prop2"));
 			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca"));
 			Assert.AreEqual ("valCaEs", desc.Properties.GetPropertyValue ("prop2", "ca-ES"));
@@ -87,7 +87,7 @@ namespace UnitTests
 			Assert.IsEmpty (desc.Properties.GetPropertyValue ("prop2", "en_US"));
 			Assert.IsEmpty (desc.Properties.GetPropertyValue ("prop2", null));
 			
-			desc.Properties.SetPropertyValue ("prop2", null, "val4");
+			desc.Properties.SetPropertyValue ("prop2", "val4", null);
 			Assert.AreEqual ("valCaEs", desc.Properties.GetPropertyValue ("prop2"));
 			Assert.AreEqual ("valCa", desc.Properties.GetPropertyValue ("prop2", "ca"));
 			Assert.AreEqual ("valCaEs", desc.Properties.GetPropertyValue ("prop2", "ca-ES"));

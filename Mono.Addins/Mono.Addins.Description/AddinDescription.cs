@@ -918,7 +918,7 @@ namespace Mono.Addins.Description
 					XmlElement prop = node as XmlElement;
 					if (prop == null)
 						continue;
-					config.Properties.SetPropertyValue (prop.LocalName, prop.GetAttribute ("locale"), prop.InnerText);
+					config.Properties.SetPropertyValue (prop.LocalName, prop.InnerText, prop.GetAttribute ("locale"));
 				}
 			}
 			

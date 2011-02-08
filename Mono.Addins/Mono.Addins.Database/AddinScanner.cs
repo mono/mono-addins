@@ -815,7 +815,7 @@ namespace Mono.Addins.Database
 				
 				object[] props = reflector.GetCustomAttributes (asm, typeof(AddinPropertyAttribute), false);
 				foreach (AddinPropertyAttribute prop in props)
-					config.Properties.SetPropertyValue (prop.Name, prop.Locale, prop.Value);
+					config.Properties.SetPropertyValue (prop.Name, prop.Value, prop.Locale);
 			
 				// Get extension points
 				

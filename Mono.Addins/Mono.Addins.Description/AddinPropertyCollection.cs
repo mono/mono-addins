@@ -32,7 +32,8 @@ namespace Mono.Addins.Description
 	{
 		string GetPropertyValue (string name);
 		string GetPropertyValue (string name, string locale);
-		void SetPropertyValue (string name, string locale, string value);
+		void SetPropertyValue (string name, string value);
+		void SetPropertyValue (string name, string value, string locale);
 		void RemoveProperty (string name, string locale);
 	}
 	
@@ -92,7 +93,12 @@ namespace Mono.Addins.Description
 				return loc;
 		}
 		
-		public void SetPropertyValue (string name, string locale, string value)
+		public void SetPropertyValue (string name, string value)
+		{
+			SetPropertyValue (name, value, null);
+		}
+		
+		public void SetPropertyValue (string name, string value, string locale)
 		{
 			if (string.IsNullOrEmpty (name))
 				throw new ArgumentException ("name can't be null or empty");
