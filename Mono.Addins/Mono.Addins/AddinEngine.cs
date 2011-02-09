@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Linq;
 using System.Xml;
 using System.Collections;
 using System.Reflection;
@@ -35,6 +36,7 @@ using System.Reflection;
 using Mono.Addins.Description;
 using Mono.Addins.Database;
 using Mono.Addins.Localization;
+using System.Collections.Generic;
 
 namespace Mono.Addins
 {
@@ -58,7 +60,7 @@ namespace Mono.Addins
 		
 		bool checkAssemblyLoadConflicts;
 		Hashtable loadedAddins = new Hashtable ();
-		Hashtable nodeSets = new Hashtable ();
+		Dictionary<string,ExtensionNodeSet> nodeSets = new Dictionary<string, ExtensionNodeSet> ();
 		Hashtable autoExtensionTypes = new Hashtable ();
 		Hashtable loadedAssemblies = new Hashtable ();
 		AddinLocalizer defaultLocalizer;
@@ -432,7 +434,7 @@ namespace Mono.Addins
 					// Load the extension points and other addin data
 					
 					foreach (ExtensionNodeSet rel in description.ExtensionNodeSets) {
-						RegisterNodeSet (rel);
+						RegisterNodeSet (iad.Id, rel);
 					}
 					
 					foreach (ConditionTypeDescription cond in description.ConditionTypes) {
@@ -529,14 +531,16 @@ namespace Mono.Addins
 			return true;
 		}
 		
-		internal void RegisterNodeSet (ExtensionNodeSet nset)
+		internal void RegisterNodeSet (string addinId, ExtensionNodeSet nset)
 		{
+			nset.SourceAddinId = addinId;
 			nodeSets [nset.Id] = nset;
 		}
 		
-		internal void UnregisterNodeSet (ExtensionNodeSet nset)
+		internal void UnregisterAddinNodeSets (string addinId)
 		{
-			nodeSets.Remove (nset.Id);
+			foreach (var nset in nodeSets.Values.Where (n => n.SourceAddinId == addinId).ToArray ())
+				nodeSets.Remove (nset.Id);
 		}
 		
 		internal string GetNodeTypeAddin (ExtensionNodeSet nset, string type, string callingAddinId)
@@ -559,8 +563,8 @@ namespace Mono.Addins
 			}
 			
 			foreach (string ns in nset.NodeSets) {
-				ExtensionNodeSet regSet = (ExtensionNodeSet) nodeSets [ns];
-				if (regSet == null) {
+				ExtensionNodeSet regSet;
+				if (!nodeSets.TryGetValue (ns, out regSet)) {
 					ReportError ("Unknown node set: " + ns, callingAddinId, null, false);
 					return null;
 				}

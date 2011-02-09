@@ -970,8 +970,7 @@ namespace Mono.Addins.Database
 				
 				if (domain != null) {
 					using (fileDatabase.LockRead ()) {
-						// Don't use AddinType.Addin here because it is too expensive
-						foreach (Addin ainfo in InternalGetInstalledAddins (domain, AddinType.All)) {
+						foreach (Addin ainfo in InternalGetInstalledAddins (domain, AddinType.Addin)) {
 							installed [ainfo.Id] = ainfo.Id;
 						}
 					}
@@ -990,7 +989,7 @@ namespace Mono.Addins.Database
 			// Update the currently loaded add-ins
 			if (changesFound && domain != null && addinEngine != null && addinEngine.IsInitialized) {
 				Hashtable newInstalled = new Hashtable ();
-				foreach (Addin ainfo in GetInstalledAddins (domain, AddinType.All)) {
+				foreach (Addin ainfo in GetInstalledAddins (domain, AddinType.Addin)) {
 					newInstalled [ainfo.Id] = ainfo.Id;
 				}
 				
@@ -998,8 +997,7 @@ namespace Mono.Addins.Database
 					if (!newInstalled.Contains (aid)) {
 						if (addinEngine.IsAddinLoaded (aid)) {
 							RuntimeAddin ra = addinEngine.GetAddin (aid);
-							if (!ra.Addin.Description.IsRoot)
-								addinEngine.UnloadAddin (aid);
+							addinEngine.UnloadAddin (aid);
 						}
 					}
 				}
@@ -1007,7 +1005,7 @@ namespace Mono.Addins.Database
 				foreach (string aid in newInstalled.Keys) {
 					if (!installed.Contains (aid)) {
 						Addin addin = addinEngine.Registry.GetAddin (aid);
-						if (addin != null && !addin.Description.IsRoot)
+						if (addin != null)
 							addinEngine.ActivateAddin (aid);
 					}
 				}

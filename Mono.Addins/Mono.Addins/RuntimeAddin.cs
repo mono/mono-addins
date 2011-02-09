@@ -640,12 +640,7 @@ namespace Mono.Addins
 		
 		internal void UnloadExtensions ()
 		{
-			// Create the extension points (but do not load them)
-			AddinDescription emap = Addin.Description;
-			if (emap == null) return;
-				
-			foreach (ExtensionNodeSet rel in emap.ExtensionNodeSets)
-				addinEngine.UnregisterNodeSet (rel);
+			addinEngine.UnregisterAddinNodeSets (id);
 		}
 		
 		bool CheckAddinDependencies (ModuleDescription module, bool forceLoadAssemblies)

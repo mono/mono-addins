@@ -52,6 +52,8 @@ namespace Mono.Addins.Description
 		bool missingNodeSetId;
 		ExtensionNodeTypeCollection cachedAllowedTypes;
 		
+		internal string SourceAddinId { get; set; }
+		
 		internal ExtensionNodeSet (XmlElement element)
 		{
 			Element = element;
