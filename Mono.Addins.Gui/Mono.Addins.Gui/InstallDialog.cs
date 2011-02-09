@@ -202,6 +202,7 @@ namespace Mono.Addins.Gui
 				foreach (string s in installMonitor.Warnings)
 					txt += GLib.Markup.EscapeText (s) + "\n";
 				response = Gtk.ResponseType.Ok;
+				buttonOk.Sensitive = true;
 			} else {
 				buttonCancel.Label = Gtk.Stock.Close;
 				buttonCancel.UseStock = true;
@@ -209,6 +210,7 @@ namespace Mono.Addins.Gui
 				foreach (string s in installMonitor.Errors)
 					txt += GLib.Markup.EscapeText (s) + "\n";
 				response = Gtk.ResponseType.Cancel;
+				buttonOk.Sensitive = true;
 			}
 			
 			ShowMessage (txt);
@@ -218,8 +220,8 @@ namespace Mono.Addins.Gui
 		{
 			try {
 				service.Install (installMonitor, packagesToInstall);
-			} catch {
-				// Nothing
+			} catch (Exception ex) {
+				installMonitor.Errors.Add (ex.Message);
 			} finally {
 				installMonitor.Dispose ();
 			}
@@ -229,8 +231,8 @@ namespace Mono.Addins.Gui
 		{
 			try {
 				service.Uninstall (installMonitor, uninstallId);
-			} catch {
-				// Nothing
+			} catch (Exception ex) {
+				installMonitor.Errors.Add (ex.Message);
 			} finally {
 				installMonitor.Dispose ();
 			}

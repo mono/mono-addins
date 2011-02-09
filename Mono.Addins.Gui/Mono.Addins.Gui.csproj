@@ -140,6 +140,12 @@
     <EmbeddedResource Include="icons\plugin-update-22.png">
       <LogicalName>plugin-update-22.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\software-update-available-overlay.png">
+      <LogicalName>software-update-available-overlay.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\software-update-available.png">
+      <LogicalName>software-update-available.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

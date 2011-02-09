@@ -101,5 +101,31 @@ namespace Mono.Addins.Gui
 				}
 			}
 		}
+		
+		public static Gdk.Pixbuf AddIconOverlay (Gdk.Pixbuf target, Gdk.Pixbuf overlay)
+		{
+			Gdk.Pixbuf res = new Gdk.Pixbuf (target.Colorspace, target.HasAlpha, target.BitsPerSample, target.Width, target.Height);
+			res.Fill (0);
+			target.CopyArea (0, 0, target.Width, target.Height, res, 0, 0);
+			overlay.Composite (res, 0, 0, overlay.Width, overlay.Height, 0, 0, 1, 1, Gdk.InterpType.Bilinear, 255);
+			return res;
+		}
+		
+		public static Gdk.Pixbuf DesaturateIcon (Gdk.Pixbuf source)
+		{
+			Gdk.Pixbuf dest = new Gdk.Pixbuf (source.Colorspace, source.HasAlpha, source.BitsPerSample, source.Width, source.Height);
+			dest.Fill (0);
+			source.SaturateAndPixelate (dest, 0, false);
+			return dest;
+		}
+		
+		public static Gdk.Pixbuf FadeIcon (Gdk.Pixbuf source)
+		{
+			Gdk.Pixbuf result = source.Copy ();
+			result.Fill (0);
+			result = result.AddAlpha (true, 0, 0, 0);
+			source.Composite (result, 0, 0, source.Width, source.Height, 0, 0, 1, 1, Gdk.InterpType.Bilinear, 128);
+			return result;
+		}
 	}
 }

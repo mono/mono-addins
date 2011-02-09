@@ -66,6 +66,8 @@ RESOURCES =  \
 	icons/plugin-update-16.png \
 	icons/plugin-update-22.png \
 	icons/plugin-update-32.png \
+	icons/software-update-available.png \
+	icons/software-update-available-overlay.png \
 	icons/system-software-update.png \
 	icons/system-software-update_22.png \
 	icons/user-package.png 

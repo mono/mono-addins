@@ -36,6 +36,7 @@ using Mono.Addins.Setup;
 using Mono.Unix;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace Mono.Addins.Gui
 {
@@ -48,11 +49,14 @@ namespace Mono.Addins.Gui
 		Hashtable addinData = new Hashtable ();
 		TreeViewColumn versionColumn;
 		string filter;
+		Dictionary<string,Gdk.Pixbuf> cachedIcons = new Dictionary<string, Gdk.Pixbuf> ();
+		bool disposed;
 		
 		Gdk.Pixbuf iconInstalled;
 		Gdk.Pixbuf iconNotInstalled;
 		Gdk.Pixbuf iconHasUpdate;
 		Gdk.Pixbuf iconDisabled;
+		Gdk.Pixbuf updateOverlay;
 		
 		public event EventHandler SelectionChanged;
 		
@@ -71,6 +75,7 @@ namespace Mono.Addins.Gui
 			iconNotInstalled = Gdk.Pixbuf.LoadFromResource ("plugin-avail-32.png");
 			iconHasUpdate = Gdk.Pixbuf.LoadFromResource ("plugin-update-32.png");
 			iconDisabled = Gdk.Pixbuf.LoadFromResource ("plugin-disabled-32.png");
+			updateOverlay = Gdk.Pixbuf.LoadFromResource ("software-update-available-overlay.png");
 			
 			this.treeView = treeView;
 			ArrayList list = new ArrayList ();
@@ -80,6 +85,15 @@ namespace Mono.Addins.Gui
 			treeView.Model = treeStore;
 			CreateColumns ();
 			ShowCategories = true;
+			
+			treeView.Destroyed += HandleTreeViewDestroyed;
+		}
+
+		void HandleTreeViewDestroyed (object sender, EventArgs e)
+		{
+			disposed = true;
+			foreach (var px in cachedIcons.Values)
+				if (px != null) px.Dispose ();
 		}
 		
 		internal void SetFilter (string text)
@@ -188,21 +202,11 @@ namespace Mono.Addins.Gui
 		
 		public TreeIter AddAddin (AddinHeader info, object dataItem, bool enabled, bool userDir)
 		{
-			return AddAddin (info, dataItem, enabled, AddinStatus.Installed);
+			return AddAddin (info, dataItem, enabled ? AddinStatus.Installed : AddinStatus.NotInstalled);
 		}
 		
-		public TreeIter AddAddin (AddinHeader info, object dataItem, bool enabled, AddinStatus status)
+		public TreeIter AddAddin (AddinHeader info, object dataItem, AddinStatus status)
 		{
-			Gdk.Pixbuf icon = null;
-			switch (status) {
-			case AddinStatus.HasUpdate: icon = iconHasUpdate; break;
-			case AddinStatus.Installed: icon = iconInstalled; break;
-			case AddinStatus.NotInstalled: icon = iconNotInstalled; break;
-			}
-			
-			if (!enabled)
-				icon = iconDisabled;
-
 			addinData [info] = dataItem;
 			TreeIter iter;
 			if (ShowCategories) {
@@ -217,11 +221,11 @@ namespace Mono.Addins.Gui
 			} else {
 				iter = treeStore.AppendNode ();
 			}
-			UpdateRow (iter, info, dataItem, enabled, icon);
+			UpdateRow (iter, info, dataItem, status);
 			return iter;
 		}
 		
-		protected virtual void UpdateRow (TreeIter iter, AddinHeader info, object dataItem, bool enabled, Gdk.Pixbuf icon)
+		protected virtual void UpdateRow (TreeIter iter, AddinHeader info, object dataItem, AddinStatus status)
 		{
 			bool sel = selected.Contains (info);
 			
@@ -237,7 +241,7 @@ namespace Mono.Addins.Gui
 				name += "\n<small><span foreground=\"darkgrey\">" + EscapeWithFilterMarker (desc) + "</span></small>";
 			}
 			
-			if (enabled) {
+			if (status != AddinStatus.Disabled) {
 				treeStore.SetValue (iter, ColName, name);
 				treeStore.SetValue (iter, ColVersion, info.Version);
 				treeStore.SetValue (iter, ColAllowSelection, allowSelection);
@@ -248,10 +252,98 @@ namespace Mono.Addins.Gui
 				treeStore.SetValue (iter, ColAllowSelection, false);
 			}
 			
-			treeStore.SetValue (iter, ColImage, icon);
 			treeStore.SetValue (iter, ColShowImage, true);
-			
 			treeStore.SetValue (iter, ColSelected, sel);
+			SetRowIcon (iter, info, dataItem, status);
+		}
+		
+		void SetRowIcon (TreeIter it, AddinHeader info, object dataItem, AddinStatus status)
+		{
+			string customIcom = info.Properties.GetPropertyValue ("Icon32");
+			string iconId = info.Id + " " + info.Version + " " + customIcom;
+			Gdk.Pixbuf customPix;
+			
+			if (customIcom.Length == 0) {
+				customPix = null;
+				iconId = "__";
+			}
+			else if (!cachedIcons.TryGetValue (iconId, out customPix)) {
+				
+				if (dataItem is Addin) {
+					string file = Path.Combine (((Addin)dataItem).Description.BasePath, customIcom);
+					if (File.Exists (file)) {
+						try {
+							customPix = new Gdk.Pixbuf (file);
+						} catch (Exception ex) {
+							Console.WriteLine (ex);
+						}
+					}
+					cachedIcons [iconId] = customPix;
+				}
+				else if (dataItem is AddinRepositoryEntry) {
+					AddinRepositoryEntry arep = (AddinRepositoryEntry) dataItem;
+					string tmpId = iconId;
+					arep.BeginDownloadSupportFile (customIcom, delegate (IAsyncResult res) {
+						Gtk.Application.Invoke (delegate {
+							LoadRemoteIcon (it, tmpId, arep, res, info, dataItem, status);
+						});
+					}, null);
+					iconId = "__";
+				}
+			}
+			
+			StoreIcon (it, iconId, customPix, status);
+		}
+		
+		Gdk.Pixbuf GetCachedIcon (string id, string effect, Func<Gdk.Pixbuf> pixbufGenerator)
+		{
+			Gdk.Pixbuf pix;
+			if (!cachedIcons.TryGetValue (id + "_" + effect, out pix))
+				cachedIcons [id + "_" + effect] = pix = pixbufGenerator ();
+			return pix;
+		}
+		
+		void StoreIcon (TreeIter it, string iconId, Gdk.Pixbuf customPix, AddinStatus status)
+		{
+			if ((status & AddinStatus.Installed) == 0) {
+				if (customPix == null)
+					customPix = iconNotInstalled;
+				else {
+					customPix = GetCachedIcon (iconId, "Fade", delegate {
+						return Services.FadeIcon (customPix);
+					});
+				}
+				treeStore.SetValue (it, ColImage, customPix);
+				return;
+			}
+			
+			if (customPix == null)
+				customPix = iconInstalled;
+			
+			if ((status & AddinStatus.Disabled) != 0) {
+				customPix = GetCachedIcon (iconId, "Desaturate", delegate { return Services.DesaturateIcon (customPix); });
+				iconId = iconId + "_Desaturate";
+			}
+			if ((status & AddinStatus.HasUpdate) != 0)
+				customPix = GetCachedIcon (iconId, "UpdateOverlay", delegate { return Services.AddIconOverlay (customPix, updateOverlay); });
+
+			treeStore.SetValue (it, ColImage, customPix);
+		}
+
+		
+		void LoadRemoteIcon (TreeIter it, string iconId, AddinRepositoryEntry arep, IAsyncResult res, AddinHeader info, object dataItem, AddinStatus status)
+		{
+			if (!disposed && treeStore.IterIsValid (it)) {
+				Gdk.Pixbuf customPix = null;
+				try {
+					Gdk.PixbufLoader loader = new Gdk.PixbufLoader (arep.EndDownloadSupportFile (res));
+					customPix = loader.Pixbuf;
+				} catch (Exception ex) {
+					Console.WriteLine (ex);
+				}
+				cachedIcons [iconId] = customPix;
+				StoreIcon (it, iconId, customPix, status);
+			}
 		}
 		
 		string EscapeWithFilterMarker (string txt)
@@ -473,10 +565,12 @@ namespace Mono.Addins.Gui
 		}
 	}
 	
+	[Flags]
 	public enum AddinStatus
 	{
-		NotInstalled,
-		Installed,
-		HasUpdate
+		NotInstalled = 0,
+		Installed = 1,
+		Disabled = 2,
+		HasUpdate = 4
 	}
 }

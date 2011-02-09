@@ -41,6 +41,8 @@ namespace Mono.Addins.Gui
 		SetupService service;
 		HeaderBox topHeaderBox;
 		List<Gtk.Widget> previewImages = new List<Gtk.Widget> ();
+		ImageContainer titleIcon;
+		int titleWidth;
 		
 		public event EventHandler InstallClicked;
 		public event EventHandler UninstallClicked;
@@ -51,6 +53,7 @@ namespace Mono.Addins.Gui
 		{
 			this.Build ();
 			AllowInstall = true;
+			titleWidth = labelName.SizeRequest ().Width;
 			
 			HeaderBox hb = new HeaderBox (1,1,1,1);
 			hb.Show ();
@@ -95,6 +98,12 @@ namespace Mono.Addins.Gui
 			selectedAddin.Clear ();
 			eboxButs.Visible = true;
 			topHeaderBox.Hide ();
+			
+			if (titleIcon != null) {
+				boxTitle.Remove (titleIcon);
+				titleIcon.Destroy ();
+				titleIcon = null;
+			}
 			
 			foreach (var img in previewImages) {
 				((Gtk.Container)img.Parent).Remove (img);
@@ -175,6 +184,8 @@ namespace Mono.Addins.Gui
 			Addin installed = null;
 			AddinHeader updateInfo = null;
 			string repo = "";
+			string downloadSize = null;
+			
 			topHeaderBox.Hide ();
 			
 			if (data is Addin) {
@@ -186,6 +197,9 @@ namespace Mono.Addins.Gui
 					if (prop.Name.StartsWith ("PreviewImage"))
 						previewImages.Add (new ImageContainer (installed, prop.Value));
 				}
+				string icon32 = sinfo.Properties.GetPropertyValue ("Icon32");
+				if (icon32.Length > 0)
+					titleIcon = new ImageContainer (installed, icon32);
 			}
 			else if (data is AddinRepositoryEntry) {
 				AddinRepositoryEntry entry = (AddinRepositoryEntry) data;
@@ -195,10 +209,18 @@ namespace Mono.Addins.Gui
 					updateInfo = sinfo;
 				selectedEntry.Add (entry);
 				string rname = !string.IsNullOrEmpty (entry.RepositoryName) ? entry.RepositoryName : entry.RepositoryUrl;
-				repo = Catalog.GetString ("<small>Available in repository:") + "\n" + GLib.Markup.EscapeText (rname) + "\n\n</small>";
+				repo = "<small><b>" + Catalog.GetString ("Available in repository:") + "</b>\n" + GLib.Markup.EscapeText (rname) + "\n\n</small>";
 				foreach (var prop in sinfo.Properties) {
 					if (prop.Name.StartsWith ("PreviewImage"))
 						previewImages.Add (new ImageContainer (entry, prop.Value));
+				}
+				string icon32 = sinfo.Properties.GetPropertyValue ("Icon32");
+				if (icon32.Length > 0)
+					titleIcon = new ImageContainer (entry, icon32);
+				int size;
+				if (int.TryParse (sinfo.Properties.GetPropertyValue ("DownloadSize"), out size)) {
+					float fs = ((float)size) / 1048576f;
+					downloadSize = fs.ToString ("0.00 MB");
 				}
 			} else
 				selectedEntry.Clear ();
@@ -226,13 +248,16 @@ namespace Mono.Addins.Gui
 					var missingDeps = Services.GetMissingDependencies (installed);
 					if (updateInfo != null) {
 						newVersion = updateInfo.Version;
-						labelHeader.Markup = "<b><span color='white'>" + Catalog.GetString ("Update available") + "</span></b>";
-						topHeaderBox.BackgroundColor = new Gdk.Color (0, 132, 208);
+						labelHeader.Markup = "<b><span color='black'>" + Catalog.GetString ("Update available") + "</span></b>";
+//						topHeaderBox.BackgroundColor = new Gdk.Color (0, 132, 208);
+						imageHeader.Pixbuf = Gdk.Pixbuf.LoadFromResource ("software-update-available.png");
+						topHeaderBox.BackgroundColor = new Gdk.Color (255, 176, 0);
 						topHeaderBox.Show ();
 					}
 					else if (missingDeps.Any ()) {
 						labelHeader.Markup = "<b><span color='black'>" + Catalog.GetString ("This add-in can't be loaded due to missing dependencies") + "</span></b>";
 						topHeaderBox.BackgroundColor = new Gdk.Color (255, 176, 0);
+						imageHeader.SetFromStock (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
 						topHeaderBox.Show ();
 						missingDepsTxt = "";
 						foreach (var mdep in missingDeps) {
@@ -250,9 +275,17 @@ namespace Mono.Addins.Gui
 					version = sinfo.Version;
 				}
 				labelName.Markup = "<b><big>" + GLib.Markup.EscapeText(sinfo.Name) + "</big></b>";
-				string ver = "<small>Version " + version + "</small>";
-				if (newVersion != null)
-					ver += "\n<small>New version available: " + newVersion + "</small>";
+				
+				string ver;
+				if (newVersion != null) {
+					ver =  "<small><b>" + Catalog.GetString ("Installed version") + ":</b> " + version + "</small>\n";
+					ver += "<small><b>" + Catalog.GetString ("Repository version") + ":</b> " + newVersion + "</small>";
+				}
+				else
+					ver = "<small><b>" + Catalog.GetString ("Version") + " " + version + "</b></small>";
+				
+				if (downloadSize != null)
+					ver += "\n<small><b>" + Catalog.GetString ("Download size") + ":</b> " + downloadSize + "</small>";
 				if (missingDepsTxt != null)
 					ver += "\n\n" + GLib.Markup.EscapeText (Catalog.GetString ("The following depedencies required by this add-in are not available:")) + missingDepsTxt;
 				labelVersion.Markup = ver;
@@ -262,6 +295,18 @@ namespace Mono.Addins.Gui
 				
 				foreach (var img in previewImages)
 					vboxDesc.PackStart (img, false, false, 0);
+				
+				if (titleIcon != null) {
+					boxTitle.PackEnd (titleIcon, false, false, 0);
+					labelName.WidthRequest = titleWidth - 32;
+					labelVersion.WidthRequest = titleWidth - 32;
+				} else {
+					labelName.WidthRequest = titleWidth;
+					labelVersion.WidthRequest = titleWidth;
+				}
+				
+				if (IsRealized)
+					SetComponentsBg ();
 			}
 		}
 		
@@ -311,6 +356,17 @@ namespace Mono.Addins.Gui
 			ebox.ModifyBg (Gtk.StateType.Normal, gcol);
 			ebox2.ModifyBg (Gtk.StateType.Normal, gcol);
 			scrolledwindow.ModifyBg (Gtk.StateType.Normal, gcol);
+			SetComponentsBg ();
+		}
+		
+		void SetComponentsBg ()
+		{
+			HslColor gcol = ebox.Style.Background (Gtk.StateType.Normal);
+			//gcol.L -= 0.03;
+			if (titleIcon != null)
+				titleIcon.ModifyBg (Gtk.StateType.Normal, gcol);
+			foreach (var i in previewImages)
+				i.ModifyBg (Gtk.StateType.Normal, gcol);
 		}
 	}
 	
@@ -325,6 +381,7 @@ namespace Mono.Addins.Gui
 		{
 			image = new Gtk.Image ();
 			Add (image);
+			image.SetAlignment (0.5f, 0f);
 			Show ();
 		}
 		

@@ -224,9 +224,11 @@ namespace Mono.Addins.Gui
 					if (IsFiltered (ah))
 						continue;
 					AddinStatus st = AddinStatus.Installed;
+					if (!ainfo.Enabled || Services.GetMissingDependencies (ainfo).Any())
+						st |= AddinStatus.Disabled;
 					if (addininfoInstalled.GetUpdate (ainfo) != null)
-						st = AddinStatus.HasUpdate;
-					tree.AddAddin (ah, ainfo, ainfo.Enabled && !Services.GetMissingDependencies (ainfo).Any(), st);
+						st |= AddinStatus.HasUpdate;
+					tree.AddAddin (ah, ainfo, st);
 					addinsFound = true;
 				}
 			}
@@ -292,12 +294,13 @@ namespace Mono.Addins.Gui
 				Addin sinfo = AddinManager.Registry.GetAddin (Addin.GetIdName (arep.Addin.Id));
 				
 				if (sinfo != null) {
+					status |= AddinStatus.Installed;
+					if (!sinfo.Enabled || Services.GetMissingDependencies (sinfo).Any())
+						status |= AddinStatus.Disabled;
 					if (Addin.CompareVersions (sinfo.Version, arep.Addin.Version) > 0)
-						status = AddinStatus.HasUpdate;
-					else
-						status = AddinStatus.Installed;
+						status |= AddinStatus.HasUpdate;
 				}
-				galleryTree.AddAddin (arep.Addin, arep, sinfo == null || sinfo.Enabled, status);
+				galleryTree.AddAddin (arep.Addin, arep, status);
 				addinsFound = true;
 			}
 			
@@ -334,7 +337,11 @@ namespace Mono.Addins.Gui
 				if (IsFiltered (arep.Addin))
 					continue;
 				
-				updatesTree.AddAddin (arep.Addin, arep, sinfo.Enabled, AddinStatus.HasUpdate);
+				AddinStatus status = AddinStatus.Installed;
+				if (!sinfo.Enabled || Services.GetMissingDependencies (sinfo).Any())
+					status |= AddinStatus.Disabled;
+				
+				updatesTree.AddAddin (arep.Addin, arep, status | AddinStatus.HasUpdate);
 				addinsFound = true;
 			}
 			

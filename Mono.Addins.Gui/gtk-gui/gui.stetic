@@ -1426,12 +1426,36 @@
               <widget class="Gtk.EventBox" id="boxHeader">
                 <property name="MemberName" />
                 <child>
-                  <widget class="Gtk.Label" id="labelHeader">
+                  <widget class="Gtk.HBox" id="hbox2">
                     <property name="MemberName" />
-                    <property name="WidthRequest">250</property>
-                    <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">label1</property>
-                    <property name="Wrap">True</property>
+                    <property name="Spacing">6</property>
+                    <child>
+                      <widget class="Gtk.Image" id="imageHeader">
+                        <property name="MemberName" />
+                        <property name="Pixbuf">stock:gtk-dialog-warning Menu</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.Label" id="labelHeader">
+                        <property name="MemberName" />
+                        <property name="WidthRequest">250</property>
+                        <property name="Xalign">0</property>
+                        <property name="LabelProp" translatable="yes">label1</property>
+                        <property name="Wrap">True</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
                   </widget>
                 </child>
               </widget>
@@ -1452,44 +1476,59 @@
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
                     <child>
-                      <widget class="Gtk.VBox" id="vbox4">
+                      <widget class="Gtk.HBox" id="boxTitle">
                         <property name="MemberName" />
-                        <property name="Spacing">3</property>
+                        <property name="Spacing">6</property>
                         <child>
-                          <widget class="Gtk.Label" id="labelName">
+                          <widget class="Gtk.VBox" id="vbox4">
                             <property name="MemberName" />
-                            <property name="WidthRequest">250</property>
-                            <property name="Xalign">0</property>
-                            <property name="LabelProp" translatable="yes">&lt;b&gt;&lt;big&gt;Some Addin&lt;/big&gt;&lt;/b&gt;</property>
-                            <property name="UseMarkup">True</property>
-                            <property name="Wrap">True</property>
+                            <property name="Spacing">3</property>
+                            <child>
+                              <widget class="Gtk.Label" id="labelName">
+                                <property name="MemberName" />
+                                <property name="WidthRequest">280</property>
+                                <property name="Xalign">0</property>
+                                <property name="LabelProp" translatable="yes">&lt;b&gt;&lt;big&gt;Some Addin&lt;/big&gt;&lt;/b&gt;</property>
+                                <property name="UseMarkup">True</property>
+                                <property name="Wrap">True</property>
+                              </widget>
+                              <packing>
+                                <property name="Position">0</property>
+                                <property name="AutoSize">False</property>
+                                <property name="Expand">False</property>
+                                <property name="Fill">False</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="Gtk.Label" id="labelVersion">
+                                <property name="MemberName" />
+                                <property name="WidthRequest">280</property>
+                                <property name="Xalign">0</property>
+                                <property name="LabelProp" translatable="yes">Version 2.6</property>
+                                <property name="Wrap">True</property>
+                              </widget>
+                              <packing>
+                                <property name="Position">1</property>
+                                <property name="AutoSize">False</property>
+                                <property name="Expand">False</property>
+                                <property name="Fill">False</property>
+                              </packing>
+                            </child>
                           </widget>
                           <packing>
                             <property name="Position">0</property>
-                            <property name="AutoSize">False</property>
+                            <property name="AutoSize">True</property>
                             <property name="Expand">False</property>
                             <property name="Fill">False</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.Label" id="labelVersion">
-                            <property name="MemberName" />
-                            <property name="WidthRequest">250</property>
-                            <property name="Xalign">0</property>
-                            <property name="LabelProp" translatable="yes">Version 2.6</property>
-                            <property name="Wrap">True</property>
-                          </widget>
-                          <packing>
-                            <property name="Position">1</property>
-                            <property name="AutoSize">False</property>
-                            <property name="Expand">False</property>
-                            <property name="Fill">False</property>
-                          </packing>
+                          <placeholder />
                         </child>
                       </widget>
                       <packing>
                         <property name="Position">0</property>
-                        <property name="AutoSize">False</property>
+                        <property name="AutoSize">True</property>
                       </packing>
                     </child>
                   </widget>
