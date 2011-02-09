@@ -530,7 +530,7 @@ namespace Mono.Addins.Setup
 	
 			foreach (string file in Directory.GetFiles (src)) {
 				if (Path.GetFileName (file) != "addin.info")
-					File.Copy (file, Path.Combine (destDir, Path.GetFileName (file)));
+					File.Copy (file, Path.Combine (destDir, Path.GetFileName (file)), true);
 			}
 	
 			foreach (string dir in Directory.GetDirectories (src))
