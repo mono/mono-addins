@@ -46,9 +46,12 @@ namespace Mono.Addins.Gui
 		{
 			Build ();
 			this.service = service;
-			treeStore = new Gtk.ListStore (typeof (string), typeof (string));
+			treeStore = new Gtk.ListStore (typeof (string), typeof (string), typeof(bool));
 			repoTree.Model = treeStore;
 			repoTree.HeadersVisible = false;
+			var crt = new Gtk.CellRendererToggle ();
+			crt.Toggled += HandleRepoToggled;
+			repoTree.AppendColumn ("", crt, "active", 2);
 			repoTree.AppendColumn ("", new Gtk.CellRendererText (), "markup", 1);
 			repoTree.Selection.Changed += new EventHandler(OnSelect);
 			
@@ -58,7 +61,7 @@ namespace Mono.Addins.Gui
 
 			btnRemove.Sensitive = false;
 		}
-		
+
 		public override void Dispose ()
 		{
 			base.Dispose ();
@@ -68,7 +71,7 @@ namespace Mono.Addins.Gui
 		void AppendRepository (AddinRepository rep)
 		{
 			string txt = GLib.Markup.EscapeText (rep.Title) + "\n<span color='darkgray'>" + GLib.Markup.EscapeText (rep.Url) + "</span>";
-			treeStore.AppendValues (rep.Url, txt);
+			treeStore.AppendValues (rep.Url, txt, rep.Enabled);
 		}
 		
 		protected void OnAdd (object sender, EventArgs e)
@@ -147,6 +150,19 @@ namespace Mono.Addins.Gui
 			treeStore.Remove (ref iter);
 		}
 
+		void HandleRepoToggled (object o, ToggledArgs args)
+		{
+			Gtk.TreeIter iter;
+			if (!repoTree.Selection.GetSelected (out iter))
+				return;
+			
+			bool newVal = !(bool) treeStore.GetValue (iter, 2);
+			string rep = (string) treeStore.GetValue (iter, 0);
+			service.Repositories.SetRepositoryEnabled (rep, newVal);
+			
+			treeStore.SetValue (iter, 2, newVal);
+		}
+		
 		protected void OnSelect(object sender, EventArgs e)
 		{
 			btnRemove.Sensitive = repoTree.Selection.CountSelectedRows() > 0;

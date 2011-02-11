@@ -1,0 +1,16 @@
+<configuration>
+	<serializer class="Mono.Addins.Setup.AddinSystemConfiguration" assembly="../../bin/Mono.Addins.Setup.dll">
+		<reader>AddinSystemConfigurationReader</reader>
+		<writer>AddinSystemConfigurationWriter</writer>
+		<namespace>Mono.Addins.Setup</namespace>
+		<outFileName>AddinSystemConfigurationReaderWriter.cs</outFileName>
+		<generateAsInternal>true</generateAsInternal>
+	</serializer>
+	<serializer class="Mono.Addins.Setup.Repository" assembly="../../bin/Mono.Addins.Setup.dll">
+		<reader>RepositoryReader</reader>
+		<writer>RepositoryWriter</writer>
+		<namespace>Mono.Addins.Setup</namespace>
+		<outFileName>RepositoryReaderWriter.cs</outFileName>
+		<generateAsInternal>true</generateAsInternal>
+	</serializer>
+</configuration>

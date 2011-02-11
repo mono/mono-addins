@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections;
 using Mono.Addins.Setup.ProgressMonitoring;
@@ -196,6 +197,21 @@ namespace Mono.Addins.Setup
 			repoList = null;
 		}
 		
+		public void SetRepositoryEnabled (string url, bool enabled)
+		{
+			RepositoryRecord rep = FindRepositoryRecord (url);
+			if (rep == null)
+				return; // Nothing to do
+			rep.Enabled = enabled;
+			Repository crep = rep.GetCachedRepository ();
+			if (crep != null) {
+				foreach (RepositoryEntry re in crep.Repositories)
+					SetRepositoryEnabled (new Uri (new Uri (url), re.Url).ToString (), enabled);
+			}
+				
+			service.SaveConfiguration ();
+		}
+		
 		/// <summary>
 		/// Checks if a repository is already subscribed.
 		/// </summary>
@@ -266,7 +282,7 @@ namespace Mono.Addins.Setup
 				int num = service.Configuration.Repositories.Count;
 				for (int n=0; n<num; n++) {
 					RepositoryRecord rr = (RepositoryRecord) service.Configuration.Repositories [n];
-					if ((url == null || rr.Url == url) && !rr.IsReference)
+					if (((url == null && rr.Enabled) || rr.Url == url) && !rr.IsReference)
 						UpdateRepository (monitor, new Uri (rr.Url), rr);
 					monitor.Step (1);
 				}
@@ -305,6 +321,7 @@ namespace Mono.Addins.Setup
 				RepositoryRecord refRep = FindRepositoryRecord (refRepUrl);
 				if (refRep == null)
 					refRep = RegisterRepository (refRepUrl, true);
+				refRep.Enabled = rr.Enabled;
 				if (refRep.LastModified < re.LastModified) {
 					UpdateRepository (monitor, refRepUri, refRep);
 				}
@@ -500,6 +517,8 @@ namespace Mono.Addins.Setup
 				ee = service.Configuration.Repositories;
 			
 			foreach (RepositoryRecord rr in ee) {
+				if (!rr.Enabled)
+					continue;
 				Repository rep = rr.GetCachedRepository();
 				if (rep == null) continue;
 				foreach (PackageRepositoryEntry addin in rep.Addins) {

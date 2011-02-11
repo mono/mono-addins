@@ -219,7 +219,7 @@ namespace Mono.Addins.Setup
 			Reader.ReadStartElement();
 			Reader.MoveToContent();
 
-			bool b10=false, b11=false, b12=false, b13=false, b14=false;
+			bool b10=false, b11=false, b12=false, b13=false, b14=false, b15=false;
 
 			while (Reader.NodeType != System.Xml.XmlNodeType.EndElement) 
 			{
@@ -227,28 +227,33 @@ namespace Mono.Addins.Setup
 				{
 					if (Reader.LocalName == "File" && Reader.NamespaceURI == "" && !b11) {
 						b11 = true;
-						string s15 = Reader.ReadElementString ();
-						ob.@File = s15;
+						string s16 = Reader.ReadElementString ();
+						ob.@File = s16;
+					}
+					else if (Reader.LocalName == "Enabled" && Reader.NamespaceURI == "" && !b15) {
+						b15 = true;
+						string s17 = Reader.ReadElementString ();
+						ob.@Enabled = XmlConvert.ToBoolean (s17);
 					}
 					else if (Reader.LocalName == "IsReference" && Reader.NamespaceURI == "" && !b10) {
 						b10 = true;
-						string s16 = Reader.ReadElementString ();
-						ob.@IsReference = XmlConvert.ToBoolean (s16);
+						string s18 = Reader.ReadElementString ();
+						ob.@IsReference = XmlConvert.ToBoolean (s18);
 					}
 					else if (Reader.LocalName == "Name" && Reader.NamespaceURI == "" && !b13) {
 						b13 = true;
-						string s17 = Reader.ReadElementString ();
-						ob.@Name = s17;
+						string s19 = Reader.ReadElementString ();
+						ob.@Name = s19;
 					}
 					else if (Reader.LocalName == "Url" && Reader.NamespaceURI == "" && !b12) {
 						b12 = true;
-						string s18 = Reader.ReadElementString ();
-						ob.@Url = s18;
+						string s20 = Reader.ReadElementString ();
+						ob.@Url = s20;
 					}
 					else if (Reader.LocalName == "LastModified" && Reader.NamespaceURI == "" && !b14) {
 						b14 = true;
-						string s19 = Reader.ReadElementString ();
-						ob.@LastModified = XmlConvert.ToDateTime (s19, XmlDateTimeSerializationMode.RoundtripKind);
+						string s21 = Reader.ReadElementString ();
+						ob.@LastModified = XmlConvert.ToDateTime (s21, XmlDateTimeSerializationMode.RoundtripKind);
 					}
 					else {
 						UnknownNode (ob);
@@ -315,23 +320,23 @@ namespace Mono.Addins.Setup
 
 			if (ob.@Repositories != null) {
 				WriteStartElement ("Repositories", "", ob.@Repositories);
-				for (int n20 = 0; n20 < ob.@Repositories.Count; n20++) {
-					WriteObject_RepositoryRecord (((Mono.Addins.Setup.RepositoryRecord) ob.@Repositories[n20]), "Repository", "", false, false, true);
+				for (int n22 = 0; n22 < ob.@Repositories.Count; n22++) {
+					WriteObject_RepositoryRecord (((Mono.Addins.Setup.RepositoryRecord) ob.@Repositories[n22]), "Repository", "", false, false, true);
 				}
 				WriteEndElement (ob.@Repositories);
 			}
 			WriteElementString ("RepositoryIdCount", "", ob.@RepositoryIdCount.ToString(CultureInfo.InvariantCulture));
 			if (ob.@DisabledAddins != null) {
 				WriteStartElement ("DisabledAddins", "", ob.@DisabledAddins);
-				for (int n21 = 0; n21 < ob.@DisabledAddins.Count; n21++) {
-					WriteElementString ("Addin", "", ob.@DisabledAddins[n21]);
+				for (int n23 = 0; n23 < ob.@DisabledAddins.Count; n23++) {
+					WriteElementString ("Addin", "", ob.@DisabledAddins[n23]);
 				}
 				WriteEndElement (ob.@DisabledAddins);
 			}
 			if (ob.@AddinPaths != null) {
 				WriteStartElement ("AddinPaths", "", ob.@AddinPaths);
-				for (int n22 = 0; n22 < ob.@AddinPaths.Count; n22++) {
-					WriteElementString ("Addin", "", ob.@AddinPaths[n22]);
+				for (int n24 = 0; n24 < ob.@AddinPaths.Count; n24++) {
+					WriteElementString ("Addin", "", ob.@AddinPaths[n24]);
 				}
 				WriteEndElement (ob.@AddinPaths);
 			}
@@ -367,6 +372,9 @@ namespace Mono.Addins.Setup
 			WriteElementString ("Url", "", ob.@Url);
 			WriteElementString ("Name", "", ob.@Name);
 			WriteElementString ("LastModified", "", XmlConvert.ToString (ob.@LastModified, XmlDateTimeSerializationMode.RoundtripKind));
+			if (ob.@Enabled != true) {
+				WriteElementString ("Enabled", "", (ob.@Enabled?"true":"false"));
+			}
 			if (writeWrappingElem) WriteEndElement (ob);
 		}
 

@@ -55,6 +55,7 @@ EXTRAS = \
 REFERENCES =  \
 	-r:ICSharpCode.SharpZipLib \
 	-r:System \
+	-r:System.Core \
 	-r:System.Xml
 
 DLL_REFERENCES = 

@@ -246,10 +246,11 @@ namespace Mono.Addins.Gui
 			int i = repoCombo.Active;
 			repoStore.Clear ();
 			
-			repoStore.AppendValues (Catalog.GetString ("All registered repositories"), AllRepoMarker);
+			repoStore.AppendValues (Catalog.GetString ("All repositories"), AllRepoMarker);
 			
 			foreach (AddinRepository rep in service.Repositories.GetRepositories ()) {
-				repoStore.AppendValues (rep.Title, rep.Url);
+				if (rep.Enabled)
+					repoStore.AppendValues (rep.Title, rep.Url);
 			}
 			repoStore.AppendValues ("---", "");
 			repoStore.AppendValues (Catalog.GetString ("Manage Repositories..."), ManageRepoMarker);

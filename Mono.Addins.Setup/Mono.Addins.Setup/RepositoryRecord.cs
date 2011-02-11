@@ -42,6 +42,7 @@ namespace Mono.Addins.Setup
 		string file;
 		string url;
 		string name;
+		bool enabled = true;
 		DateTime lastModified = new DateTime (1900,1,1);
 		
 		[XmlAttribute ("id")]
@@ -83,6 +84,12 @@ namespace Mono.Addins.Setup
 		public DateTime LastModified {
 			get { return lastModified; }
 			set { lastModified = value; }
+		}
+		
+		[System.ComponentModel.DefaultValue (true)]
+		public bool Enabled {
+			get { return this.enabled; }
+			set { enabled = value; }
 		}
 		
 		public Repository GetCachedRepository ()
@@ -147,6 +154,16 @@ namespace Mono.Addins.Setup
 		/// Last change timestamp
 		/// </summary>
 		DateTime LastModified {
+			get;
+		}
+		
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="Mono.Addins.Setup.AddinRepository"/> is enabled.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if enabled; otherwise, <c>false</c>.
+		/// </value>
+		bool Enabled {
 			get;
 		}
 	}
