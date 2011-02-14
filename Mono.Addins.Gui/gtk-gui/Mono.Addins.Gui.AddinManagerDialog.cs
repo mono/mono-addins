@@ -73,7 +73,7 @@ namespace Mono.Addins.Gui
 			this.notebook = new global::Gtk.Notebook ();
 			this.notebook.CanFocus = true;
 			this.notebook.Name = "notebook";
-			this.notebook.CurrentPage = 2;
+			this.notebook.CurrentPage = 1;
 			this.notebook.ShowBorder = false;
 			// Container child notebook.Gtk.Notebook+NotebookChild
 			this.hbox2 = new global::Gtk.HBox ();

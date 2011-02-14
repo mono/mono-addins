@@ -21,7 +21,6 @@ endif
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/Mono.Addins.Gui.AddinInfoDialog.cs \
 	gtk-gui/Mono.Addins.Gui.AddinInfoView.cs \
 	gtk-gui/Mono.Addins.Gui.AddinInstallerDialog.cs \
 	gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs \
@@ -30,7 +29,6 @@ FILES =  \
 	gtk-gui/Mono.Addins.Gui.ManageSitesDialog.cs \
 	gtk-gui/Mono.Addins.Gui.NewSiteDialog.cs \
 	gtk-gui/Mono.Addins.Gui.ProgressDialog.cs \
-	Mono.Addins.Gui/AddinInfoDialog.cs \
 	Mono.Addins.Gui/AddinInfoView.cs \
 	Mono.Addins.Gui/AddinInstaller.cs \
 	Mono.Addins.Gui/AddinInstallerDialog.cs \

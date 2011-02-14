@@ -59,7 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Mono.Addins.Gui\AddinInfoDialog.cs" />
     <Compile Include="Mono.Addins.Gui\AddinManagerDialog.cs" />
     <Compile Include="Mono.Addins.Gui\AddinTreeWidget.cs" />
     <Compile Include="Mono.Addins.Gui\ManageSitesDialog.cs" />
@@ -67,7 +66,6 @@
     <Compile Include="Mono.Addins.Gui\Services.cs" />
     <Compile Include="Mono.Addins.Gui\ErrorDialog.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="gtk-gui\Mono.Addins.Gui.AddinInfoDialog.cs" />
     <Compile Include="gtk-gui\Mono.Addins.Gui.AddinManagerDialog.cs" />
     <Compile Include="gtk-gui\Mono.Addins.Gui.ErrorDialog.cs" />
     <Compile Include="gtk-gui\Mono.Addins.Gui.ManageSitesDialog.cs" />
