@@ -34,9 +34,10 @@ namespace Mono.Addins.Gui
 {
 	partial class NewSiteDialog : Dialog
 	{
-		public NewSiteDialog ()
+		public NewSiteDialog (Gtk.Window parent)
 		{
 			Build ();
+			TransientFor = parent;
 			pathEntry.Sensitive = false;
 			CheckValues ();
 		}

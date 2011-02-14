@@ -76,7 +76,7 @@ namespace Mono.Addins.Gui
 		
 		protected void OnAdd (object sender, EventArgs e)
 		{
-			NewSiteDialog dlg = new NewSiteDialog ();
+			NewSiteDialog dlg = new NewSiteDialog (this);
 			try {
 				if (dlg.Run ()) {
 					string url = dlg.Url;
