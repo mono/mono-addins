@@ -27,7 +27,7 @@ namespace Mono.Addins.Gui
 		private global::Gtk.EventBox eventbox3;
 		private global::Mono.Addins.Gui.AddinInfoView addininfoUpdates;
 		private global::Gtk.Label label4;
-		private global::Gtk.HBox hbox4;
+		private global::Gtk.HBox hbox6;
 		private global::Gtk.VBox vboxGallery;
 		private global::Gtk.EventBox eboxRepo;
 		private global::Gtk.HBox hbox66;
@@ -39,6 +39,7 @@ namespace Mono.Addins.Gui
 		private global::Gtk.EventBox eventbox1;
 		private global::Mono.Addins.Gui.AddinInfoView addininfoGallery;
 		private global::Gtk.Label label8;
+		private global::Gtk.Button buttonInstallFromFile;
 		private global::Gtk.Button btnClose;
 
 		protected virtual void Build ()
@@ -73,7 +74,7 @@ namespace Mono.Addins.Gui
 			this.notebook = new global::Gtk.Notebook ();
 			this.notebook.CanFocus = true;
 			this.notebook.Name = "notebook";
-			this.notebook.CurrentPage = 1;
+			this.notebook.CurrentPage = 0;
 			this.notebook.ShowBorder = false;
 			// Container child notebook.Gtk.Notebook+NotebookChild
 			this.hbox2 = new global::Gtk.HBox ();
@@ -247,11 +248,11 @@ namespace Mono.Addins.Gui
 			this.notebook.SetTabLabel (this.boxUpdates, this.label4);
 			this.label4.ShowAll ();
 			// Container child notebook.Gtk.Notebook+NotebookChild
-			this.hbox4 = new global::Gtk.HBox ();
-			this.hbox4.Name = "hbox4";
-			this.hbox4.Spacing = 9;
-			this.hbox4.BorderWidth = ((uint)(9));
-			// Container child hbox4.Gtk.Box+BoxChild
+			this.hbox6 = new global::Gtk.HBox ();
+			this.hbox6.Name = "hbox6";
+			this.hbox6.Spacing = 9;
+			this.hbox6.BorderWidth = ((uint)(9));
+			// Container child hbox6.Gtk.Box+BoxChild
 			this.vboxGallery = new global::Gtk.VBox ();
 			this.vboxGallery.Name = "vboxGallery";
 			// Container child vboxGallery.Gtk.Box+BoxChild
@@ -320,10 +321,10 @@ namespace Mono.Addins.Gui
 			this.vboxGallery.Add (this.scrolledGallery);
 			global::Gtk.Box.BoxChild w49 = ((global::Gtk.Box.BoxChild)(this.vboxGallery [this.scrolledGallery]));
 			w49.Position = 1;
-			this.hbox4.Add (this.vboxGallery);
-			global::Gtk.Box.BoxChild w50 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.vboxGallery]));
+			this.hbox6.Add (this.vboxGallery);
+			global::Gtk.Box.BoxChild w50 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.vboxGallery]));
 			w50.Position = 0;
-			// Container child hbox4.Gtk.Box+BoxChild
+			// Container child hbox6.Gtk.Box+BoxChild
 			this.eventbox1 = new global::Gtk.EventBox ();
 			this.eventbox1.Name = "eventbox1";
 			// Container child eventbox1.Gtk.Container+ContainerChild
@@ -332,19 +333,19 @@ namespace Mono.Addins.Gui
 			this.addininfoGallery.Name = "addininfoGallery";
 			this.addininfoGallery.AllowInstall = false;
 			this.eventbox1.Add (this.addininfoGallery);
-			this.hbox4.Add (this.eventbox1);
-			global::Gtk.Box.BoxChild w52 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.eventbox1]));
+			this.hbox6.Add (this.eventbox1);
+			global::Gtk.Box.BoxChild w52 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.eventbox1]));
 			w52.Position = 1;
 			w52.Expand = false;
 			w52.Fill = false;
-			this.notebook.Add (this.hbox4);
-			global::Gtk.Notebook.NotebookChild w53 = ((global::Gtk.Notebook.NotebookChild)(this.notebook [this.hbox4]));
+			this.notebook.Add (this.hbox6);
+			global::Gtk.Notebook.NotebookChild w53 = ((global::Gtk.Notebook.NotebookChild)(this.notebook [this.hbox6]));
 			w53.Position = 2;
 			// Notebook tab
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Gallery");
-			this.notebook.SetTabLabel (this.hbox4, this.label8);
+			this.notebook.SetTabLabel (this.hbox6, this.label8);
 			this.label8.ShowAll ();
 			this.hbox72.Add (this.notebook);
 			global::Gtk.Box.BoxChild w54 = ((global::Gtk.Box.BoxChild)(this.hbox72 [this.notebook]));
@@ -363,7 +364,17 @@ namespace Mono.Addins.Gui
 			w58.Name = "dialog-action_area8";
 			w58.Spacing = 6;
 			w58.BorderWidth = ((uint)(5));
-			w58.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			w58.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(2));
+			// Container child dialog-action_area8.Gtk.ButtonBox+ButtonBoxChild
+			this.buttonInstallFromFile = new global::Gtk.Button ();
+			this.buttonInstallFromFile.CanFocus = true;
+			this.buttonInstallFromFile.Name = "buttonInstallFromFile";
+			this.buttonInstallFromFile.UseUnderline = true;
+			this.buttonInstallFromFile.Label = global::Mono.Unix.Catalog.GetString ("Install from file...");
+			w58.Add (this.buttonInstallFromFile);
+			global::Gtk.ButtonBox.ButtonBoxChild w59 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w58 [this.buttonInstallFromFile]));
+			w59.Expand = false;
+			w59.Fill = false;
 			// Container child dialog-action_area8.Gtk.ButtonBox+ButtonBoxChild
 			this.btnClose = new global::Gtk.Button ();
 			this.btnClose.CanDefault = true;
@@ -373,9 +384,10 @@ namespace Mono.Addins.Gui
 			this.btnClose.UseUnderline = true;
 			this.btnClose.Label = "gtk-close";
 			this.AddActionWidget (this.btnClose, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w59 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w58 [this.btnClose]));
-			w59.Expand = false;
-			w59.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w60 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w58 [this.btnClose]));
+			w60.Position = 1;
+			w60.Expand = false;
+			w60.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
@@ -396,6 +408,7 @@ namespace Mono.Addins.Gui
 			this.addininfoGallery.UninstallClicked += new global::System.EventHandler (this.OnUninstallClicked);
 			this.addininfoGallery.UpdateClicked += new global::System.EventHandler (this.OnUpdateClicked);
 			this.addininfoGallery.EnableDisableClicked += new global::System.EventHandler (this.OnEnableDisableClicked);
+			this.buttonInstallFromFile.Clicked += new global::System.EventHandler (this.OnButtonInstallFromFileClicked);
 		}
 	}
 }

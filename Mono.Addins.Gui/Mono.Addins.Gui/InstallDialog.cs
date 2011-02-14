@@ -34,6 +34,7 @@ namespace Mono.Addins.Gui
 {
 	internal partial class InstallDialog : Gtk.Dialog
 	{
+		string[] filesToInstall;
 		AddinRepositoryEntry[] addinsToInstall;
 		PackageCollection packagesToInstall;
 		SetupService service;
@@ -54,6 +55,12 @@ namespace Mono.Addins.Gui
 		public void InitForInstall (AddinRepositoryEntry[] addinsToInstall)
 		{
 			this.addinsToInstall = addinsToInstall;
+			FillSummaryPage ();
+		}
+		
+		public void InitForInstall (string[] filesToInstall)
+		{
+			this.filesToInstall = filesToInstall;
 			FillSummaryPage ();
 		}
 		
@@ -78,8 +85,16 @@ namespace Mono.Addins.Gui
 		void FillSummaryPage ()
 		{
 			PackageCollection packs = new PackageCollection ();
-			foreach (AddinRepositoryEntry arep in addinsToInstall) {
-				packs.Add (Package.FromRepository (arep));
+			
+			if (filesToInstall != null) {
+				foreach (string file in filesToInstall) {
+					packs.Add (Package.FromFile (file));
+				}
+			}
+			else {
+				foreach (AddinRepositoryEntry arep in addinsToInstall) {
+					packs.Add (Package.FromRepository (arep));
+				}
 			}
 			
 			packagesToInstall = new PackageCollection (packs);
@@ -219,7 +234,10 @@ namespace Mono.Addins.Gui
 		void RunInstall ()
 		{
 			try {
-				service.Install (installMonitor, packagesToInstall);
+				if (filesToInstall != null)
+					service.Install (installMonitor, filesToInstall);
+				else
+					service.Install (installMonitor, packagesToInstall);
 			} catch (Exception ex) {
 				installMonitor.Errors.Add (ex.Message);
 			} finally {

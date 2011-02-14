@@ -154,7 +154,7 @@
     <property name="BorderWidth">6</property>
     <property name="DefaultWidth">700</property>
     <property name="DefaultHeight">550</property>
-    <property name="Buttons">1</property>
+    <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog-vbox8">
@@ -178,7 +178,7 @@
                       <widget class="Gtk.Notebook" id="notebook">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="CurrentPage">1</property>
+                        <property name="CurrentPage">0</property>
                         <property name="ShowBorder">False</property>
                         <child>
                           <widget class="Gtk.HBox" id="hbox2">
@@ -380,7 +380,7 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.HBox" id="hbox4">
+                          <widget class="Gtk.HBox" id="hbox6">
                             <property name="MemberName" />
                             <property name="Spacing">9</property>
                             <property name="BorderWidth">9</property>
@@ -536,8 +536,23 @@
         <property name="MemberName" />
         <property name="Spacing">6</property>
         <property name="BorderWidth">5</property>
-        <property name="Size">1</property>
-        <property name="LayoutStyle">End</property>
+        <property name="Size">2</property>
+        <property name="LayoutStyle">Edge</property>
+        <child>
+          <widget class="Gtk.Button" id="buttonInstallFromFile">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">Install from file...</property>
+            <property name="UseUnderline">True</property>
+            <property name="ResponseId">-1</property>
+            <signal name="Clicked" handler="OnButtonInstallFromFileClicked" />
+          </widget>
+          <packing>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
         <child>
           <widget class="Gtk.Button" id="btnClose">
             <property name="MemberName" />
@@ -550,6 +565,7 @@
             <property name="label">gtk-close</property>
           </widget>
           <packing>
+            <property name="Position">1</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>

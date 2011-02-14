@@ -502,5 +502,48 @@ namespace Mono.Addins.Gui
 				dlg.Destroy ();
 			}
 		}
+		
+		static string lastFolder;
+		
+		protected virtual void OnButtonInstallFromFileClicked (object sender, System.EventArgs e)
+		{
+			string[] files;
+			Gtk.FileChooserDialog dlg = new Gtk.FileChooserDialog (Catalog.GetString ("Install Add-in Package"), this, FileChooserAction.Open);
+			try {
+				if (lastFolder != null)
+					dlg.SetCurrentFolder (lastFolder);
+				else
+					dlg.SetCurrentFolder (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
+				dlg.SelectMultiple = true;
+				
+				Gtk.FileFilter f = new Gtk.FileFilter ();
+				f.AddPattern ("*.mpack");
+				f.Name = Catalog.GetString ("Add-in packages");
+				dlg.AddFilter (f);
+				
+				f = new Gtk.FileFilter ();
+				f.AddPattern ("*");
+				f.Name = Catalog.GetString ("All files");
+				dlg.AddFilter (f);
+				
+				dlg.AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
+				dlg.AddButton (Gtk.Stock.Open, ResponseType.Ok);
+				if (dlg.Run () != (int) Gtk.ResponseType.Ok)
+					return;
+				files = dlg.Filenames;
+				lastFolder = dlg.CurrentFolder;
+			} finally {
+				dlg.Destroy ();
+			}
+			
+			InstallDialog idlg = new InstallDialog (this, service);
+			try {
+				idlg.InitForInstall (files);
+				if (idlg.Run () == (int) Gtk.ResponseType.Ok)
+					LoadAll ();
+			} finally {
+				idlg.Destroy ();
+			}
+		}
 	}
 }

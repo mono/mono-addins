@@ -54,8 +54,6 @@ namespace Mono.Addins.Gui
 		
 		Gdk.Pixbuf iconInstalled;
 		Gdk.Pixbuf iconNotInstalled;
-		Gdk.Pixbuf iconHasUpdate;
-		Gdk.Pixbuf iconDisabled;
 		Gdk.Pixbuf updateOverlay;
 		
 		public event EventHandler SelectionChanged;
@@ -73,8 +71,6 @@ namespace Mono.Addins.Gui
 		{
 			iconInstalled = Gdk.Pixbuf.LoadFromResource ("plugin-32.png");
 			iconNotInstalled = Gdk.Pixbuf.LoadFromResource ("plugin-avail-32.png");
-			iconHasUpdate = Gdk.Pixbuf.LoadFromResource ("plugin-update-32.png");
-			iconDisabled = Gdk.Pixbuf.LoadFromResource ("plugin-disabled-32.png");
 			updateOverlay = Gdk.Pixbuf.LoadFromResource ("software-update-available-overlay.png");
 			
 			this.treeView = treeView;
@@ -134,6 +130,7 @@ namespace Mono.Addins.Gui
 			col.AddAttribute (pr, "visible", ColShowImage);
 			
 			CellRendererText crt = new CellRendererText ();
+			crt.Ellipsize = Pango.EllipsizeMode.End;
 			col.PackStart (crt, true);
 			
 			col.AddAttribute (crt, "markup", ColName);
