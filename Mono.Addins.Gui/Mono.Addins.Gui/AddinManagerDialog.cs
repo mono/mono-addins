@@ -48,7 +48,9 @@ namespace Mono.Addins.Gui
 		ListStore repoStore;
 		int lastRepoActive;
 		SearchEntry filterEntry;
+		Label installedTabLabel;
 		Label updatesTabLabel;
+		Label galleryTabLabel;
 		
 		const string AllRepoMarker = "__ALL";
 		const string ManageRepoMarker = "__MANAGE";
@@ -106,7 +108,8 @@ namespace Mono.Addins.Gui
 			
 			HBox tab = new HBox (false, 3);
 			tab.PackStart (new Image (Gdk.Pixbuf.LoadFromResource ("plugin-22.png")), false, false, 0);
-			tab.PackStart (new Label (Catalog.GetString ("Installed")), true, true, 0);
+			installedTabLabel = new Label (Catalog.GetString ("Installed"));
+			tab.PackStart (installedTabLabel, true, true, 0);
 			tab.BorderWidth = 3;
 			tab.ShowAll ();
 			notebook.SetTabLabel (notebook.GetNthPage (0), tab);
@@ -121,7 +124,8 @@ namespace Mono.Addins.Gui
 			
 			tab = new HBox (false, 3);
 			tab.PackStart (new Image (Gdk.Pixbuf.LoadFromResource ("system-software-update_22.png")), false, false, 0);
-			tab.PackStart (new Label (Catalog.GetString ("Gallery")), true, true, 0);
+			galleryTabLabel = new Label (Catalog.GetString ("Gallery"));
+			tab.PackStart (galleryTabLabel, true, true, 0);
 			tab.BorderWidth = 3;
 			tab.ShowAll ();
 			notebook.SetTabLabel (notebook.GetNthPage (2), tab);
@@ -216,7 +220,7 @@ namespace Mono.Addins.Gui
 		{
 			object s = tree.SaveStatus ();
 			
-			bool addinsFound = false;
+			int count = 0;
 			tree.Clear ();
 			foreach (Addin ainfo in AddinManager.Registry.GetAddins ()) {
 				if (Services.InApplicationNamespace (service, ainfo.Id) && !ainfo.Description.IsHidden) {
@@ -229,16 +233,21 @@ namespace Mono.Addins.Gui
 					if (addininfoInstalled.GetUpdate (ainfo) != null)
 						st |= AddinStatus.HasUpdate;
 					tree.AddAddin (ah, ainfo, st);
-					addinsFound = true;
+					count++;
 				}
 			}
 			
-			if (addinsFound)
+			if (count > 0)
 				tree.RestoreStatus (s);
 			else
 				tree.ShowEmptyMessage ();
 			
 			UpdateAddinInfo ();
+			
+			installedTabLabel.Text = Catalog.GetString ("Installed");
+			
+			if (filterEntry.Text.Length != 0 && count > 0)
+				installedTabLabel.Text += " (" + count + ")";
 		}
 		
 		void FillRepos ()
@@ -279,7 +288,7 @@ namespace Mono.Addins.Gui
 			else
 				reps = service.Repositories.GetAvailableAddins (rep);
 			
-			bool addinsFound = false;
+			int count = 0;
 			
 			foreach (AddinRepositoryEntry arep in reps)
 			{
@@ -302,13 +311,18 @@ namespace Mono.Addins.Gui
 						status |= AddinStatus.HasUpdate;
 				}
 				galleryTree.AddAddin (arep.Addin, arep, status);
-				addinsFound = true;
+				count++;
 			}
 			
-			if (addinsFound)
+			if (count > 0)
 				galleryTree.RestoreStatus (s);
 			else
 				galleryTree.ShowEmptyMessage ();
+			
+			galleryTabLabel.Text = Catalog.GetString ("Gallery");
+			
+			if (filterEntry.Text.Length != 0 && count > 0)
+				galleryTabLabel.Text += " (" + count + ")";
 		}
 		
 		void LoadUpdates ()
@@ -321,7 +335,6 @@ namespace Mono.Addins.Gui
 			reps = service.Repositories.GetAvailableAddins ();
 			
 			int count = 0;
-			bool addinsFound = false;
 			
 			foreach (AddinRepositoryEntry arep in reps)
 			{
@@ -333,8 +346,6 @@ namespace Mono.Addins.Gui
 				if (sinfo == null || Addin.CompareVersions (sinfo.Version, arep.Addin.Version) <= 0)
 					continue;
 				
-				count++;
-				
 				if (IsFiltered (arep.Addin))
 					continue;
 				
@@ -343,7 +354,7 @@ namespace Mono.Addins.Gui
 					status |= AddinStatus.Disabled;
 				
 				updatesTree.AddAddin (arep.Addin, arep, status | AddinStatus.HasUpdate);
-				addinsFound = true;
+				count++;
 			}
 			
 			labelUpdates.Text = string.Format (Catalog.GetPluralString ("{0} update available", "{0} updates available", count), count);
@@ -353,7 +364,7 @@ namespace Mono.Addins.Gui
 			
 			buttonUpdateAll.Visible = count > 0;
 			
-			if (addinsFound)
+			if (count > 0)
 				updatesTree.RestoreStatus (s);
 			else
 				updatesTree.ShowEmptyMessage ();
