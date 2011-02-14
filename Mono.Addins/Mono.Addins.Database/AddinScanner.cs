@@ -831,11 +831,8 @@ namespace Mono.Addins.Database
 			
 			// Look for extension nodes declared using assembly attributes
 			
-			foreach (CustomAttribute att in reflector.GetRawCustomAttributes (asm, typeof(CustomExtensionAttribute), true)) {
-				ExtensionNodeDescription elem = module.AddExtensionNode ("%" + att.TypeName, "Type");
-				foreach (KeyValuePair<string,string> prop in att)
-					elem.SetAttribute (prop.Key, prop.Value);
-			}
+			foreach (CustomAttribute att in reflector.GetRawCustomAttributes (asm, typeof(CustomExtensionAttribute), true))
+				AddCustomAttributeExtension (module, att, "Type");
 			
 			// Get extensions or extension points applied to types
 			
@@ -932,16 +929,26 @@ namespace Mono.Addins.Database
 					else {
 						// Look for custom extension attribtues
 						foreach (CustomAttribute att in reflector.GetRawCustomAttributes (t, typeof(CustomExtensionAttribute), false)) {
-							ExtensionNodeDescription elem = module.AddExtensionNode ("%" + att.TypeName, "Type");
-							foreach (KeyValuePair<string,string> prop in att)
-								elem.SetAttribute (prop.Key, prop.Value);
-							elem.SetAttribute ("type", typeFullName);
+							ExtensionNodeDescription elem = AddCustomAttributeExtension (module, att, "Type");
 							if (string.IsNullOrEmpty (elem.GetAttribute ("id")))
 								elem.SetAttribute ("id", typeFullName);
 						}
 					}
 				}
 			}
+		}
+		
+		ExtensionNodeDescription AddCustomAttributeExtension (ModuleDescription module, CustomAttribute att, string nameName)
+		{
+			string path;
+			if (!att.TryGetValue (CustomExtensionAttribute.PathFieldKey, out path))
+				path = "%" + att.TypeName;
+			ExtensionNodeDescription elem = module.AddExtensionNode (path, nameName);
+			foreach (KeyValuePair<string,string> prop in att) {
+				if (prop.Key != CustomExtensionAttribute.PathFieldKey)
+					elem.SetAttribute (prop.Key, prop.Value);
+			}
+			return elem;
 		}
 		
 		void ScanNodeSet (IAssemblyReflector reflector, AddinDescription config, ExtensionNodeSet nset, ArrayList assemblies, Hashtable internalNodeSets)

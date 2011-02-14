@@ -40,6 +40,9 @@ namespace Mono.Addins
 		string id;
 		string insertBefore;
 		string insertAfter;
+		string path;
+		
+		internal const string PathFieldKey = "__path";
 		
 		/// <summary>
 		/// Identifier of the node
@@ -68,6 +71,18 @@ namespace Mono.Addins
 			set { insertAfter = value; }
 		}
 		
+		/// <summary>
+		/// Path of the extension point being extended.
+		/// </summary>
+		/// <remarks>
+		/// This property is optional and useful only when there are several extension points which allow
+		/// using this custom attribute to define extensions.
+		/// </remarks>
+		[NodeAttributeAttribute ("__path")]
+		public string Path {
+			get { return path; }
+			set { path = value; }
+		}
 	}
 }
 
