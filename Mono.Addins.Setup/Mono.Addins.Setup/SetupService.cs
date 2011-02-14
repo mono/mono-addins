@@ -473,6 +473,9 @@ namespace Mono.Addins.Setup
 			string mainPath = Path.GetDirectoryName (mainFile);
 			string supportFileDir = Path.Combine (mainPath, addinFilesDir);
 			
+			if (File.Exists (mainFile))
+				lastModified = File.GetLastWriteTime (mainFile);
+			
 			Repository mainrep = (Repository) AddinStore.ReadObject (mainFile, typeof(Repository));
 			if (mainrep == null) {
 				mainrep = new Repository ();
@@ -487,18 +490,15 @@ namespace Mono.Addins.Setup
 			foreach (string file in Directory.GetFiles (mainPath, "*.mpack")) {
 				
 				DateTime date = File.GetLastWriteTime (file);
-				if (date > lastModified)
-					lastModified = date;
-				
 				string fname = Path.GetFileName (file);
 				PackageRepositoryEntry entry = (PackageRepositoryEntry) mainrep.FindEntry (fname);
-				if (date > rootLastModified) {
-					if (entry != null) {
-						mainrep.RemoveEntry (entry);
-						DeleteSupportFiles (supportFileDir, entry.Addin);
-						entry = null;
-					}
+				
+				if (entry != null && date > rootLastModified) {
+					mainrep.RemoveEntry (entry);
+					DeleteSupportFiles (supportFileDir, entry.Addin);
+					entry = null;
 				}
+
 				if (entry == null) {
 					entry = new PackageRepositoryEntry ();
 					AddinPackage p = (AddinPackage) Package.FromFile (file);
@@ -526,6 +526,7 @@ namespace Mono.Addins.Setup
 			if (modified || toRemove.Count > 0) {
 				AddinStore.WriteObject (mainFile, mainrep);
 				monitor.Log.WriteLine ("Updated " + relFilePath);
+				lastModified = File.GetLastWriteTime (mainFile);
 			}
 
 			if (repEntry != null) {
