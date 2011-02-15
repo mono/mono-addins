@@ -1,7 +1,8 @@
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-pkglibdir=@libdir@/mono/@PACKAGE@
-Libraries=  ${pkglibdir}/@MONO_ADDINS_MSBUILD_DEFAULT_LIB@
+prefix=${pcfiledir}/../..
+exec_prefix=${prefix}
+pkglibdir=${prefix}/lib/mono/@PACKAGE@
+
+Libraries=${pkglibdir}/@MONO_ADDINS_MSBUILD_DEFAULT_LIB@
 
 Name: Mono.Addins.MSBuild
 Description: 
