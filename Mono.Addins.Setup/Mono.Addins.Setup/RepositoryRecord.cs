@@ -141,6 +141,7 @@ namespace Mono.Addins.Setup
 		/// </summary>
 		string Name {
 			get;
+			set;
 		}
 		
 		/// <summary>
