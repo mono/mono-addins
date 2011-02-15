@@ -1,0 +1,19 @@
+/bin
+*policy*config
+*.pc
+*.dll
+/mautil/mautil
+/mono-addins.spec
+
+.DS_Store
+
+#autotools stuff
+Makefile
+Makefile.in
+/aclocal.m4
+/autom4te.cache
+/config.log
+/config.status
+/configure
+/install-sh
+/missing
