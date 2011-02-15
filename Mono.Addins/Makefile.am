@@ -22,7 +22,6 @@ FILES =  \
 	Mono.Addins.Database/AddinScanResult.cs \
 	Mono.Addins.Database/AddinUpdateData.cs \
 	Mono.Addins.Database/DatabaseConfiguration.cs \
-	Mono.Addins.Database/DefaultAddinFileSystem.cs \
 	Mono.Addins.Database/DefaultAssemblyReflector.cs \
 	Mono.Addins.Database/FileDatabase.cs \
 	Mono.Addins.Database/IAssemblyReflector.cs \

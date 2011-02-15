@@ -23,6 +23,7 @@
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <ConsolePause>false</ConsolePause>
     <GenerateDocumentation>true</GenerateDocumentation>
+    <NoWarn>1574</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -132,7 +133,6 @@
     <Compile Include="Mono.Addins\ImportAddinAssemblyAttribute.cs" />
     <Compile Include="Mono.Addins\AddinModuleAttribute.cs" />
     <Compile Include="Mono.Addins\AddinEngine.cs" />
-    <Compile Include="Mono.Addins.Database\DefaultAddinFileSystem.cs" />
     <Compile Include="Mono.Addins.Database\AddinFileSystemExtension.cs" />
     <Compile Include="Mono.Addins.Database\SetupLocal.cs" />
     <Compile Include="Mono.Addins\ContentType.cs" />

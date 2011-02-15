@@ -995,10 +995,8 @@ namespace Mono.Addins.Database
 				
 				foreach (string aid in installed.Keys) {
 					if (!newInstalled.Contains (aid)) {
-						if (addinEngine.IsAddinLoaded (aid)) {
-							RuntimeAddin ra = addinEngine.GetAddin (aid);
+						if (addinEngine.IsAddinLoaded (aid))
 							addinEngine.UnloadAddin (aid);
-						}
 					}
 				}
 				

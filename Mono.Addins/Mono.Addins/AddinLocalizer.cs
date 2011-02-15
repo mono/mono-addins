@@ -123,7 +123,7 @@ namespace Mono.Addins
 		/// <summary>
 		/// Gets a localized and formatted plural form for a message identifier
 		/// </summary>
-		/// <param name="msgid">
+		/// <param name="singular">
 		/// Message identifier for the singular form (can contain string format placeholders)
 		/// </param>
 		/// <param name="defaultPlural">
@@ -146,7 +146,7 @@ namespace Mono.Addins
 		/// <summary>
 		/// Gets a localized and formatted plural form for a message identifier
 		/// </summary>
-		/// <param name="msgid">
+		/// <param name="singular">
 		/// Message identifier for the singular form (can contain string format placeholders)
 		/// </param>
 		/// <param name="defaultPlural">

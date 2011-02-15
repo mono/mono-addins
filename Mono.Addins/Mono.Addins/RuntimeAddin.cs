@@ -102,7 +102,13 @@ namespace Mono.Addins
 		internal Addin Addin {
 			get { return ainfo; }
 		}
-		
+
+		/// <summary>
+		/// Returns a string that represents the current RuntimeAddin.
+		/// </summary>
+		/// <returns>
+		/// A string that represents the current RuntimeAddin.
+		/// </returns>
 		public override string ToString ()
 		{
 			return ainfo.ToString ();

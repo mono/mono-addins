@@ -31,6 +31,9 @@ using System;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// Delegate to be used in add-in engine events
+	/// </summary>
 	public delegate void AddinEventHandler (object sender, AddinEventArgs args);
 	
 	/// <summary>
@@ -39,7 +42,13 @@ namespace Mono.Addins
 	public class AddinEventArgs: EventArgs
 	{
 		string addinId;
-		
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.AddinEventArgs"/> class.
+		/// </summary>
+		/// <param name='addinId'>
+		/// Add-in identifier.
+		/// </param>
 		public AddinEventArgs (string addinId)
 		{
 			this.addinId = addinId;

@@ -29,14 +29,26 @@ using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// An add-in property.
+	/// </summary>
 	public class AddinProperty: IBinaryXmlElement
 	{
+		/// <summary>
+		/// Name of the property
+		/// </summary>
 		[XmlAttribute ("name")]
 		public string Name { get; set; }
-		
+
+		/// <summary>
+		/// Locale of the property. It is null if the property is not localized.
+		/// </summary>
 		[XmlAttribute ("locale")]
 		public string Locale { get; set; }
-		
+
+		/// <summary>
+		/// Value of the property.
+		/// </summary>
 		[XmlText]
 		public string Value { get; set; }
 		

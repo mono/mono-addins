@@ -31,6 +31,9 @@ using System;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// Delegate to be used in add-in error subscriptions
+	/// </summary>
 	public delegate void AddinErrorEventHandler (object sender, AddinErrorEventArgs args);
 	
 	/// <summary>
@@ -40,7 +43,19 @@ namespace Mono.Addins
 	{
 		Exception exception;
 		string message;
-		
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.AddinErrorEventArgs"/> class.
+		/// </summary>
+		/// <param name='message'>
+		/// Error message
+		/// </param>
+		/// <param name='addinId'>
+		/// Add-in identifier.
+		/// </param>
+		/// <param name='exception'>
+		/// Exception that caused the error.
+		/// </param>
 		public AddinErrorEventArgs (string message, string addinId, Exception exception): base (addinId)
 		{
 			this.message = message;

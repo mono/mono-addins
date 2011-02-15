@@ -52,7 +52,7 @@ namespace Mono.Addins
 		/// </summary>
 		/// <remarks>
 		/// The add-in engine needs to be initialized before doing any add-in operation.
-		/// When initialized with this method, it will look for add-in in the global add-in registry.
+		/// When initialized with this method, it will look for add-ins in the global add-in registry.
 		/// </remarks>
 		public static void Initialize ()
 		{
@@ -70,8 +70,15 @@ namespace Mono.Addins
 		/// </param>
 		/// <remarks>
 		/// The add-in engine needs to be initialized before doing any add-in operation.
-		/// When initialized with this method, it will look for add-in in the add-in
-		/// registry located in the specified path.
+		/// Configuration information about the add-in registry will be stored in the
+		/// provided location. The add-in engine will look for add-ins in an 'addins'
+		/// subdirectory of the provided directory.
+		/// 
+		/// When specifying a path, it is possible to use a special folder name as root.
+		/// For example: [Personal]/.config/MyApp. In this case, [Personal] will be replaced
+		/// by the location of the Environment.SpecialFolder.Personal folder. Any value
+		/// of the Environment.SpecialFolder enumeration can be used (always between square
+		/// brackets)
 		/// </remarks>
 		public static void Initialize (string configDir)
 		{
@@ -80,6 +87,28 @@ namespace Mono.Addins
 			AddinEngine.Initialize (asm, configDir, null, null);
 		}
 		
+		/// <summary>
+		/// Initializes the add-in engine.
+		/// </summary>
+		/// <param name='configDir'>
+		/// Location of the add-in registry.
+		/// </param>
+		/// <param name='addinsDir'>
+		/// Add-ins directory. If the path is relative, it is considered to be relative
+		/// to the configDir directory.
+		/// </param>
+		/// <remarks>
+		/// The add-in engine needs to be initialized before doing any add-in operation.
+		/// Configuration information about the add-in registry will be stored in the
+		/// provided location. The add-in engine will look for add-ins in the provided
+		/// 'addinsDir' directory.
+		/// 
+		/// When specifying a path, it is possible to use a special folder name as root.
+		/// For example: [Personal]/.config/MyApp. In this case, [Personal] will be replaced
+		/// by the location of the Environment.SpecialFolder.Personal folder. Any value
+		/// of the Environment.SpecialFolder enumeration can be used (always between square
+		/// brackets)
+		/// </remarks>
 		public static void Initialize (string configDir, string addinsDir)
 		{
 			Assembly asm = Assembly.GetEntryAssembly ();
@@ -87,6 +116,33 @@ namespace Mono.Addins
 			AddinEngine.Initialize (asm, configDir, addinsDir, null);
 		}
 		
+		/// <summary>
+		/// Initializes the add-in engine.
+		/// </summary>
+		/// <param name='configDir'>
+		/// Location of the add-in registry.
+		/// </param>
+		/// <param name='addinsDir'>
+		/// Add-ins directory. If the path is relative, it is considered to be relative
+		/// to the configDir directory.
+		/// </param>
+		/// <param name='databaseDir'>
+		/// Location of the add-in database. If the path is relative, it is considered to be relative
+		/// to the configDir directory.
+		/// </param>
+		/// <remarks>
+		/// The add-in engine needs to be initialized before doing any add-in operation.
+		/// Configuration information about the add-in registry will be stored in the
+		/// provided location. The add-in engine will look for add-ins in the provided
+		/// 'addinsDir' directory. Cached information about add-ins will be stored in
+		/// the 'databaseDir' directory.
+		/// 
+		/// When specifying a path, it is possible to use a special folder name as root.
+		/// For example: [Personal]/.config/MyApp. In this case, [Personal] will be replaced
+		/// by the location of the Environment.SpecialFolder.Personal folder. Any value
+		/// of the Environment.SpecialFolder enumeration can be used (always between square
+		/// brackets)
+		/// </remarks>
 		public static void Initialize (string configDir, string addinsDir, string databaseDir)
 		{
 			Assembly asm = Assembly.GetEntryAssembly ();

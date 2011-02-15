@@ -66,10 +66,24 @@ namespace Mono.Addins
 		AddinLocalizer defaultLocalizer;
 		IProgressStatus defaultProgressStatus = new ConsoleProgressStatus (false);
 		
+		/// <summary>
+		/// Raised when there is an error while loading an add-in
+		/// </summary>
 		public static event AddinErrorEventHandler AddinLoadError;
+		
+		/// <summary>
+		/// Raised when an add-in is loaded
+		/// </summary>
 		public static event AddinEventHandler AddinLoaded;
+		
+		/// <summary>
+		/// Raised when an add-in is unloaded
+		/// </summary>
 		public static event AddinEventHandler AddinUnloaded;
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.AddinEngine"/> class.
+		/// </summary>
 		public AddinEngine ()
 		{
 		}
@@ -94,6 +108,28 @@ namespace Mono.Addins
 			Initialize (asm, configDir, null, null);
 		}
 		
+		/// <summary>
+		/// Initializes the add-in engine.
+		/// </summary>
+		/// <param name='configDir'>
+		/// Location of the add-in registry.
+		/// </param>
+		/// <param name='addinsDir'>
+		/// Add-ins directory. If the path is relative, it is considered to be relative
+		/// to the configDir directory.
+		/// </param>
+		/// <remarks>
+		/// The add-in engine needs to be initialized before doing any add-in operation.
+		/// Configuration information about the add-in registry will be stored in the
+		/// provided location. The add-in engine will look for add-ins in the provided
+		/// 'addinsDir' directory.
+		/// 
+		/// When specifying a path, it is possible to use a special folder name as root.
+		/// For example: [Personal]/.config/MyApp. In this case, [Personal] will be replaced
+		/// by the location of the Environment.SpecialFolder.Personal folder. Any value
+		/// of the Environment.SpecialFolder enumeration can be used (always between square
+		/// brackets)
+		/// </remarks>
 		public void Initialize (string configDir, string addinsDir)
 		{
 			if (initialized)
@@ -104,6 +140,33 @@ namespace Mono.Addins
 			Initialize (asm, configDir, addinsDir, null);
 		}
 		
+		/// <summary>
+		/// Initializes the add-in engine.
+		/// </summary>
+		/// <param name='configDir'>
+		/// Location of the add-in registry.
+		/// </param>
+		/// <param name='addinsDir'>
+		/// Add-ins directory. If the path is relative, it is considered to be relative
+		/// to the configDir directory.
+		/// </param>
+		/// <param name='databaseDir'>
+		/// Location of the add-in database. If the path is relative, it is considered to be relative
+		/// to the configDir directory.
+		/// </param>
+		/// <remarks>
+		/// The add-in engine needs to be initialized before doing any add-in operation.
+		/// Configuration information about the add-in registry will be stored in the
+		/// provided location. The add-in engine will look for add-ins in the provided
+		/// 'addinsDir' directory. Cached information about add-ins will be stored in
+		/// the 'databaseDir' directory.
+		/// 
+		/// When specifying a path, it is possible to use a special folder name as root.
+		/// For example: [Personal]/.config/MyApp. In this case, [Personal] will be replaced
+		/// by the location of the Environment.SpecialFolder.Personal folder. Any value
+		/// of the Environment.SpecialFolder enumeration can be used (always between square
+		/// brackets)
+		/// </remarks>
 		public void Initialize (string configDir, string addinsDir, string databaseDir)
 		{
 			if (initialized)
@@ -155,7 +218,7 @@ namespace Mono.Addins
 			registry.Dispose ();
 			registry = null;
 			startupDirectory = null;
-			Clear ();
+			ClearContext ();
 		}
 		
 		/// <summary>

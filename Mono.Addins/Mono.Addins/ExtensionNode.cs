@@ -364,6 +364,17 @@ namespace Mono.Addins
 			return list.ToArray (arrayElementType);
 		}
 		
+		/// <summary>
+		/// Reads the extension node data
+		/// </summary>
+		/// <param name='elem'>
+		/// The element containing the extension data
+		/// </param>
+		/// <remarks>
+		/// This method can be overriden to provide a custom method for reading extension node data from an element.
+		/// The default implementation reads the attributes if the element and assigns the values to the fields
+		/// and properties of the extension node that have the corresponding [NodeAttribute] decoration.
+		/// </remarks>
 		internal protected virtual void Read (NodeElement elem)
 		{
 			if (nodeType == null)

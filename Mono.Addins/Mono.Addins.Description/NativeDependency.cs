@@ -34,6 +34,7 @@ using Mono.Addins.Description;
 
 namespace Mono.Addins.Description
 {
+#pragma warning disable 1591
 	[Obsolete]
 	[XmlType ("NativeReference")]
 	public class NativeDependency: Dependency
@@ -47,4 +48,5 @@ namespace Mono.Addins.Description
 			return false;
 		}
 	}
+#pragma warning restore 1591
 }

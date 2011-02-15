@@ -100,6 +100,12 @@ namespace Mono.Addins
 	/// </summary>
 	public interface NodeElementCollection: IList, ICollection, IEnumerable
 	{
+		/// <summary>
+		/// Gets the <see cref="Mono.Addins.NodeElement"/> at the specified index
+		/// </summary>
+		/// <param name='n'>
+		/// Index
+		/// </param>
 		new NodeElement this [int n] { get; }
 	}
 }

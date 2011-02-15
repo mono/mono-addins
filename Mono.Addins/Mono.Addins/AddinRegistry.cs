@@ -81,6 +81,14 @@ namespace Mono.Addins
 		/// </param>
 		/// <remarks>
 		/// Creates a new add-in registry located in the provided path.
+		/// The add-in registry will look for add-ins in an 'addins'
+		/// subdirectory of the provided registryPath.
+		/// 
+		/// When specifying a path, it is possible to use a special folder name as root.
+		/// For example: [Personal]/.config/MyApp. In this case, [Personal] will be replaced
+		/// by the location of the Environment.SpecialFolder.Personal folder. Any value
+		/// of the Environment.SpecialFolder enumeration can be used (always between square
+		/// brackets)
 		/// </remarks>
 		public AddinRegistry (string registryPath): this (null, registryPath, null)
 		{
@@ -97,15 +105,78 @@ namespace Mono.Addins
 		/// </param>
 		/// <remarks>
 		/// Creates a new add-in registry located in the provided path.
+		/// The add-in registry will look for add-ins in an 'addins'
+		/// subdirectory of the provided registryPath.
+		/// 
+		/// When specifying a path, it is possible to use a special folder name as root.
+		/// For example: [Personal]/.config/MyApp. In this case, [Personal] will be replaced
+		/// by the location of the Environment.SpecialFolder.Personal folder. Any value
+		/// of the Environment.SpecialFolder enumeration can be used (always between square
+		/// brackets)
 		/// </remarks>
 		public AddinRegistry (string registryPath, string startupDirectory): this (null, registryPath, startupDirectory)
 		{
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.AddinRegistry"/> class.
+		/// </summary>
+		/// <param name='registryPath'>
+		/// Location of the add-in registry.
+		/// </param>
+		/// <param name='startupDirectory'>
+		/// Location of the application.
+		/// </param>
+		/// <param name='addinsDir'>
+		/// Add-ins directory. If the path is relative, it is considered to be relative
+		/// to the configDir directory.
+		/// </param>
+		/// <remarks>
+		/// Creates a new add-in registry located in the provided path.
+		/// Configuration information about the add-in registry will be stored in
+		/// 'registryPath'. The add-in registry will look for add-ins in the provided
+		/// 'addinsDir' directory.
+		/// 
+		/// When specifying a path, it is possible to use a special folder name as root.
+		/// For example: [Personal]/.config/MyApp. In this case, [Personal] will be replaced
+		/// by the location of the Environment.SpecialFolder.Personal folder. Any value
+		/// of the Environment.SpecialFolder enumeration can be used (always between square
+		/// brackets)
+		/// </remarks>
 		public AddinRegistry (string registryPath, string startupDirectory, string addinsDir): this (null, registryPath, startupDirectory, addinsDir, null)
 		{
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.AddinRegistry"/> class.
+		/// </summary>
+		/// <param name='registryPath'>
+		/// Location of the add-in registry.
+		/// </param>
+		/// <param name='startupDirectory'>
+		/// Location of the application.
+		/// </param>
+		/// <param name='addinsDir'>
+		/// Add-ins directory. If the path is relative, it is considered to be relative
+		/// to the configDir directory.
+		/// </param>
+		/// <param name='databaseDir'>
+		/// Location of the add-in database. If the path is relative, it is considered to be relative
+		/// to the configDir directory.
+		/// </param>
+		/// <remarks>
+		/// Creates a new add-in registry located in the provided path.
+		/// Configuration information about the add-in registry will be stored in
+		/// 'registryPath'. The add-in registry will look for add-ins in the provided
+		/// 'addinsDir' directory. Cached information about add-ins will be stored in
+		/// the 'databaseDir' directory.
+		/// 
+		/// When specifying a path, it is possible to use a special folder name as root.
+		/// For example: [Personal]/.config/MyApp. In this case, [Personal] will be replaced
+		/// by the location of the Environment.SpecialFolder.Personal folder. Any value
+		/// of the Environment.SpecialFolder enumeration can be used (always between square
+		/// brackets)
+		/// </remarks>
 		public AddinRegistry (string registryPath, string startupDirectory, string addinsDir, string databaseDir): this (null, registryPath, startupDirectory, addinsDir, databaseDir)
 		{
 		}
@@ -491,11 +562,23 @@ namespace Mono.Addins
 			database.Repair (monitor, currentDomain);
 		}
 		
+		/// <summary>
+		/// Registers an extension. Only AddinFileSystemExtension extensions are supported right now.
+		/// </summary>
+		/// <param name='extension'>
+		/// The extension to register
+		/// </param>
 		public void RegisterExtension (object extension)
 		{
 			database.RegisterExtension (extension);
 		}
 		
+		/// <summary>
+		/// Unregisters an extension.
+		/// </summary>
+		/// <param name='extension'>
+		/// The extension to unregister
+		/// </param>
 		public void UnregisterExtension (object extension)
 		{
 			database.UnregisterExtension (extension);
@@ -597,6 +680,7 @@ namespace Mono.Addins
 			return true;
 		}
 		
+#pragma warning disable 1591
 		[Obsolete]
 		public static string[] GetRegisteredStartupFolders (string registryPath)
 		{
@@ -625,5 +709,6 @@ namespace Mono.Addins
 			}
 			return (string[]) dirs.ToArray (typeof(string));
 		}
+#pragma warning restore 1591
 	}
 }

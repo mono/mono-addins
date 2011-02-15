@@ -69,6 +69,10 @@ namespace Mono.Addins
 		/// </remarks>
 		public event ExtensionEventHandler ExtensionChanged;
 		
+		/// <summary>
+		/// Releases unmanaged resources and performs other cleanup operations before the
+		/// ExtensionContext is reclaimed by garbage collection.
+		/// </summary>
 		~ExtensionContext ()
 		{
 			if (parentContext != null)
@@ -80,8 +84,16 @@ namespace Mono.Addins
 			fireEvents = false;
 			tree = new ExtensionTree (addinEngine, this);
 		}
-		
+
+#pragma warning disable 1591
+		[ObsoleteAttribute]
 		protected void Clear ()
+		{
+		}
+#pragma warning restore 1591
+
+		
+		internal void ClearContext ()
 		{
 			conditionTypes.Clear ();
 			conditionsToNodes.Clear ();
@@ -1208,8 +1220,14 @@ namespace Mono.Addins
 	}
 
 	
-	
+	/// <summary>
+	/// Delegate to be used in extension point subscriptions
+	/// </summary>
 	public delegate void ExtensionEventHandler (object sender, ExtensionEventArgs args);
+	
+	/// <summary>
+	/// Delegate to be used in extension point subscriptions
+	/// </summary>
 	public delegate void ExtensionNodeEventHandler (object sender, ExtensionNodeEventArgs args);
 	
 	/// <summary>

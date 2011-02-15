@@ -48,7 +48,10 @@ namespace Mono.Addins
 		string insertAfter;
 		string typeName;
 		Type type;
-		
+
+		/// <summary>
+		/// Initializes a new instance of the ExtensionAttribute class.
+		/// </summary>
 		public ExtensionAttribute ()
 		{
 		}

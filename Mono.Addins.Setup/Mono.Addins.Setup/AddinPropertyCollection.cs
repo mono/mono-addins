@@ -122,6 +122,11 @@ namespace Mono.Addins.Setup
 			Add (prop);
 		}
 		
+		public void RemoveProperty (string name)
+		{
+			RemoveProperty (name, null);
+		}
+		
 		public void RemoveProperty (string name, string locale)
 		{
 			locale = NormalizeLocale (locale);

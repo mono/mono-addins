@@ -37,15 +37,42 @@ namespace Mono.Addins
 		string catalog;
 		string location;
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.AddinLocalizerGettextAttribute"/> class.
+		/// </summary>
 		public AddinLocalizerGettextAttribute ()
 		{
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.AddinLocalizerGettextAttribute"/> class.
+		/// </summary>
+		/// <param name='catalog'>
+		/// Name of the catalog which contains the strings.
+		/// </param>
 		public AddinLocalizerGettextAttribute (string catalog)
 		{
 			this.catalog = catalog;
 		}
-
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.AddinLocalizerGettextAttribute"/> class.
+		/// </summary>
+		/// <param name='catalog'>
+		/// Name of the catalog which contains the strings.
+		/// </param>
+		/// <param name='location'>
+		/// Relative path to the location of the catalog. This path must be relative to the add-in location.
+		/// </param>
+		/// <remarks>
+		/// The location path must contain a directory structure like this:
+		/// 
+		/// {language-id}/LC_MESSAGES/{Catalog}.mo
+		/// 
+		/// For example, the catalog for spanish strings would be located at:
+		/// 
+		/// locale/es/LC_MESSAGES/some-addin.mo
+		/// </remarks>
 		public AddinLocalizerGettextAttribute (string catalog, string location)
 		{
 			this.catalog = catalog;

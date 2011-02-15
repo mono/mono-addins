@@ -28,12 +28,85 @@ using System.Collections.Generic;
 
 namespace Mono.Addins.Description
 {
+	/// <summary>
+	/// A collection of add-in properties
+	/// </summary>
 	public interface AddinPropertyCollection: IEnumerable<AddinProperty>
 	{
+		/// <summary>
+		/// Gets the value of a property
+		/// </summary>
+		/// <returns>
+		/// The property value.
+		/// </returns>
+		/// <param name='name'>
+		/// Name of the property.
+		/// </param>
+		/// <remarks>
+		/// If the property is localized, it will return the value for the current language if exists, or the
+		/// default value if it doesn't.
+		/// </remarks>
 		string GetPropertyValue (string name);
+		
+		/// <summary>
+		/// Gets the value of a property
+		/// </summary>
+		/// <returns>
+		/// The property value.
+		/// </returns>
+		/// <param name='name'>
+		/// Name of the property.
+		/// </param>
+		/// <param name='locale'>
+		/// Locale for which the value must be returned.
+		/// </param>
 		string GetPropertyValue (string name, string locale);
+		
+		/// <summary>
+		/// Sets the value of a property
+		/// </summary>
+		/// <param name='name'>
+		/// Name of the property
+		/// </param>
+		/// <param name='value'>
+		/// New value.
+		/// </param>
 		void SetPropertyValue (string name, string value);
+		
+		/// <summary>
+		/// Sets the value of a property for a specific locale
+		/// </summary>
+		/// <param name='name'>
+		/// Name of the property.
+		/// </param>
+		/// <param name='value'>
+		/// New value.
+		/// </param>
+		/// <param name='locale'>
+		/// Locale of the property to be set.
+		/// </param>
 		void SetPropertyValue (string name, string value, string locale);
+		
+		/// <summary>
+		/// Removes a property.
+		/// </summary>
+		/// <param name='name'>
+		/// Name of the property.
+		/// </param>
+		/// <remarks>
+		/// This method only removes properties which have no locale set.
+		/// </remarks>
+		void RemoveProperty (string name);
+		
+		/// <summary>
+		/// Removes a property with a specified locale
+		/// </summary>
+		/// <param name='name'>
+		/// Name of the property
+		/// </param>
+		/// <param name='locale'>
+		/// Locale of the property
+		/// </param>
 		void RemoveProperty (string name, string locale);
 	}
 	
@@ -119,6 +192,11 @@ namespace Mono.Addins.Description
 			prop.Value = value;
 			prop.Locale = locale;
 			Add (prop);
+		}
+		
+		public void RemoveProperty (string name)
+		{
+			RemoveProperty (name, null);
 		}
 		
 		public void RemoveProperty (string name, string locale)

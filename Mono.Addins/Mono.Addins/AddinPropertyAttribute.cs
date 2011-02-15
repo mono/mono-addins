@@ -27,13 +27,37 @@ using System;
 
 namespace Mono.Addins
 {
+	/// <summary>
+	/// Defines an add-in property
+	/// </summary>
 	[AttributeUsage (AttributeTargets.Assembly, AllowMultiple=true)]
 	public class AddinPropertyAttribute: Attribute
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.AddinPropertyAttribute"/> class.
+		/// </summary>
+		/// <param name='name'>
+		/// Name of the property
+		/// </param>
+		/// <param name='value'>
+		/// Value of the property
+		/// </param>
 		public AddinPropertyAttribute (string name, string value): this (name, null, value)
 		{
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.AddinPropertyAttribute"/> class.
+		/// </summary>
+		/// <param name='name'>
+		/// Name of the property
+		/// </param>
+		/// <param name='locale'>
+		/// Locale of the property. It can be null if the property is not bound to a locale.
+		/// </param>
+		/// <param name='value'>
+		/// Value of the property
+		/// </param>
 		public AddinPropertyAttribute (string name, string locale, string value)
 		{
 			Name = name;
@@ -41,10 +65,19 @@ namespace Mono.Addins
 			Value = value;
 		}
 		
+		/// <summary>
+		/// Name of the property
+		/// </summary>
 		public string Name { get; set; }
 		
+		/// <summary>
+		/// Locale of the property. It can be null if the property is not bound to a locale.
+		/// </summary>
 		public string Locale { get; set; }
 		
+		/// <summary>
+		/// Value of the property
+		/// </summary>
 		public string Value { get; set; }
 	}
 }

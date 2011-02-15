@@ -86,6 +86,9 @@ namespace Mono.Addins
 			get { return this.AddinInfo.Version; }
 		}
 		
+		/// <summary>
+		/// Display name of the add-in
+		/// </summary>
 		public string Name {
 			get { return this.AddinInfo.Name; }
 		}
@@ -117,7 +120,13 @@ namespace Mono.Addins
 		{
 			return AddinInfo.SupportsVersion (version);
 		}
-		
+
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents the current <see cref="Mono.Addins.Addin"/>.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String"/> that represents the current <see cref="Mono.Addins.Addin"/>.
+		/// </returns>
 		public override string ToString ()
 		{
 			return Id;
@@ -228,7 +237,18 @@ namespace Mono.Addins
 			addin = null;
 		}
 			
-		// returns -1 if v1 > v2
+		/// <summary>
+		/// Compares two add-in versions
+		/// </summary>
+		/// <returns>
+		/// -1 if v1 is greater than v2, 0 if v1 == v2, 1 if v1 less than v2
+		/// </returns>
+		/// <param name='v1'>
+		/// A version
+		/// </param>
+		/// <param name='v2'>
+		/// A version
+		/// </param>
 		public static int CompareVersions (string v1, string v2)
 		{
 			string[] a1 = v1.Split ('.');
@@ -257,7 +277,22 @@ namespace Mono.Addins
 				return 1;
 			return 0;
 		}
-		
+
+		/// <summary>
+		/// Returns the identifier of an add-in
+		/// </summary>
+		/// <returns>
+		/// The full identifier.
+		/// </returns>
+		/// <param name='ns'>
+		/// Namespace of the add-in
+		/// </param>
+		/// <param name='id'>
+		/// Name of the add-in
+		/// </param>
+		/// <param name='version'>
+		/// Version of the add-in
+		/// </param>
 		public static string GetFullId (string ns, string id, string version)
 		{
 			string res;
@@ -273,7 +308,13 @@ namespace Mono.Addins
 			else
 				return res;
 		}
-		
+
+		/// <summary>
+		/// Given a full add-in identifier, returns the namespace and name of the add-in (it removes the version number)
+		/// </summary>
+		/// <param name='addinId'>
+		/// Add-in identifier.
+		/// </param>
 		public static string GetIdName (string addinId)
 		{
 			int i = addinId.IndexOf (',');
@@ -283,6 +324,12 @@ namespace Mono.Addins
 				return addinId;
 		}
 		
+		/// <summary>
+		/// Given a full add-in identifier, returns the version the add-in
+		/// </summary>
+		/// <returns>
+		/// The version.
+		/// </returns>
 		public static string GetIdVersion (string addinId)
 		{
 			int i = addinId.IndexOf (',');
@@ -292,6 +339,18 @@ namespace Mono.Addins
 				return string.Empty;
 		}
 		
+		/// <summary>
+		/// Splits a full add-in identifier in name and version
+		/// </summary>
+		/// <param name='addinId'>
+		/// Add-in identifier.
+		/// </param>
+		/// <param name='name'>
+		/// The resulting name
+		/// </param>
+		/// <param name='version'>
+		/// The resulting version
+		/// </param>
 		public static void GetIdParts (string addinId, out string name, out string version)
 		{
 			int i = addinId.IndexOf (',');

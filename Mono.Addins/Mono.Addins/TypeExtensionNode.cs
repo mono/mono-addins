@@ -61,6 +61,17 @@ namespace Mono.Addins
 		string typeName;
 		Type type;
 		
+		/// <summary>
+		/// Reads the extension node data
+		/// </summary>
+		/// <param name='elem'>
+		/// The element containing the extension data
+		/// </param>
+		/// <remarks>
+		/// This method can be overriden to provide a custom method for reading extension node data from an element.
+		/// The default implementation reads the attributes if the element and assigns the values to the fields
+		/// and properties of the extension node that have the corresponding [NodeAttribute] decoration.
+		/// </remarks>
 		internal protected override void Read (NodeElement elem)
 		{
 			base.Read (elem);
@@ -71,6 +82,12 @@ namespace Mono.Addins
 				typeName = elem.GetAttribute ("id");
 		}
 		
+		/// <summary>
+		/// Creates a new extension object
+		/// </summary>
+		/// <returns>
+		/// The extension object
+		/// </returns>
 		public override object CreateInstance ()
 		{
 			return Activator.CreateInstance (Type);

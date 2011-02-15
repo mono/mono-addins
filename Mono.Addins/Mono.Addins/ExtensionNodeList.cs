@@ -80,7 +80,10 @@ namespace Mono.Addins
 				}
 			}
 		}
-		
+
+		/// <summary>
+		/// Gets an enumerator which enumerates all nodes in the list
+		/// </summary>
 		public IEnumerator GetEnumerator () 
 		{
 			if (list == null)
@@ -94,7 +97,16 @@ namespace Mono.Addins
 		public int Count {
 			get { return list == null ? 0 : list.Count; }
 		}
-		
+
+		/// <summary>
+		/// Copies all nodes to an array
+		/// </summary>
+		/// <param name='array'>
+		/// The target array
+		/// </param>
+		/// <param name='index'>
+		/// Initial index where to copy to
+		/// </param>
 		public void CopyTo (ExtensionNode[] array, int index)
 		{
 			if (list != null)
@@ -150,6 +162,9 @@ namespace Mono.Addins
 			}
 		}
 		
+		/// <summary>
+		/// Gets an enumerator which enumerates all nodes in the list
+		/// </summary>
 		public IEnumerator<T> GetEnumerator () 
 		{
 			if (list == null)
@@ -172,6 +187,15 @@ namespace Mono.Addins
 			get { return list == null ? 0 : list.Count; }
 		}
 		
+		/// <summary>
+		/// Copies all nodes to an array
+		/// </summary>
+		/// <param name='array'>
+		/// The target array
+		/// </param>
+		/// <param name='index'>
+		/// Initial index where to copy to
+		/// </param>
 		public void CopyTo (T[] array, int index)
 		{
 			if (list != null)

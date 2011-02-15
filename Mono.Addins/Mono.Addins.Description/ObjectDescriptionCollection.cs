@@ -112,6 +112,7 @@ namespace Mono.Addins.Description
 			return List.Contains (ob);
 		}
 		
+#pragma warning disable 1591
 		protected override void OnRemove (int index, object value)
 		{
 			ObjectDescription ep = (ObjectDescription) value;
@@ -144,6 +145,7 @@ namespace Mono.Addins.Description
 					ob.SetParent (null);
 			}
 		}
+#pragma warning restore 1591
 
 		
 		internal void SaveXml (XmlElement parent)

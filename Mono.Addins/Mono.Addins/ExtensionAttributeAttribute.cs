@@ -43,12 +43,33 @@ namespace Mono.Addins
 		string val;
 		string path;
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.ExtensionAttributeAttribute"/> class.
+		/// </summary>
+		/// <param name='name'>
+		/// Name of the attribute
+		/// </param>
+		/// <param name='value'>
+		/// Value of the attribute
+		/// </param>
 		public ExtensionAttributeAttribute (string name, string value)
 		{
 			Name = name;
 			Value = value;
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.ExtensionAttributeAttribute"/> class.
+		/// </summary>
+		/// <param name='type'>
+		/// Type of the extension for which the attribute value is being set
+		/// </param>
+		/// <param name='name'>
+		/// Name of the attribute
+		/// </param>
+		/// <param name='value'>
+		/// Value of the attribute
+		/// </param>
 		public ExtensionAttributeAttribute (Type type, string name, string value)
 		{
 			Name = name;
@@ -56,6 +77,18 @@ namespace Mono.Addins
 			Type = type;
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.ExtensionAttributeAttribute"/> class.
+		/// </summary>
+		/// <param name='path'>
+		/// Path of the extension for which the attribute value is being set
+		/// </param>
+		/// <param name='name'>
+		/// Name of the attribute
+		/// </param>
+		/// <param name='value'>
+		/// Value of the attribute
+		/// </param>
 		public ExtensionAttributeAttribute (string path, string name, string value)
 		{
 			Name = name;

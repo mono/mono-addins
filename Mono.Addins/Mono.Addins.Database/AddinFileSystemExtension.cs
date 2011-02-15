@@ -29,53 +29,141 @@ using System.Reflection;
 
 namespace Mono.Addins.Database
 {
+	/// <summary>
+	/// An add-in file system extension.
+	/// </summary>
+	/// <remarks>
+	/// File system extensions can override the behavior of the add-in scanner and provide custom rules for
+	/// locating and scanning assemblies.
+	/// </remarks>
 	public class AddinFileSystemExtension
 	{
 		IAssemblyReflector reflector;
 		
+		/// <summary>
+		/// Called when the add-in scan is about to start
+		/// </summary>
 		public virtual void ScanStarted ()
 		{
 		}
 		
+		/// <summary>
+		/// Called when the add-in scan has finished
+		/// </summary>
 		public virtual void ScanFinished ()
 		{
 		}
 		
+		/// <summary>
+		/// Checks if a directory exists
+		/// </summary>
+		/// <returns>
+		/// 'true' if the directory exists
+		/// </returns>
+		/// <param name='path'>
+		/// Directory path
+		/// </param>
 		public virtual bool DirectoryExists (string path)
 		{
 			return Directory.Exists (path);
 		}
-
+		
+		/// <summary>
+		/// Checks if a file exists
+		/// </summary>
+		/// <returns>
+		/// 'true' if the file exists
+		/// </returns>
+		/// <param name='path'>
+		/// Path to the file
+		/// </param>
 		public virtual bool FileExists (string path)
 		{
 			return File.Exists (path);
 		}
-
+		
+		/// <summary>
+		/// Gets the files in a directory
+		/// </summary>
+		/// <returns>
+		/// The full path of the files in the directory
+		/// </returns>
+		/// <param name='path'>
+		/// Directory path
+		/// </param>
 		public virtual System.Collections.Generic.IEnumerable<string> GetFiles (string path)
 		{
 			return Directory.GetFiles (path);
 		}
-
+		
+		/// <summary>
+		/// Gets the subdirectories of a directory
+		/// </summary>
+		/// <returns>
+		/// The subdirectories.
+		/// </returns>
+		/// <param name='path'>
+		/// The directory
+		/// </param>
 		public virtual System.Collections.Generic.IEnumerable<string> GetDirectories (string path)
 		{
 			return Directory.GetDirectories (path);
 		}
 
+		/// <summary>
+		/// Gets the last write time of a file
+		/// </summary>
+		/// <returns>
+		/// The last write time.
+		/// </returns>
+		/// <param name='filePath'>
+		/// File path.
+		/// </param>
 		public virtual DateTime GetLastWriteTime (string filePath)
 		{
 			return File.GetLastWriteTime (filePath);
 		}
-
+		
+		/// <summary>
+		/// Opens a text file
+		/// </summary>
+		/// <returns>
+		/// The text file stream
+		/// </returns>
+		/// <param name='path'>
+		/// File path.
+		/// </param>
 		public virtual System.IO.StreamReader OpenTextFile (string path)
 		{
 			return new StreamReader (path);
 		}
-
+		
+		/// <summary>
+		/// Opens a file.
+		/// </summary>
+		/// <returns>
+		/// The file stream.
+		/// </returns>
+		/// <param name='path'>
+		/// The file path.
+		/// </param>
 		public virtual System.IO.Stream OpenFile (string path)
 		{
 			return File.OpenRead (path);
 		}
-
+		
+		/// <summary>
+		/// Gets an assembly reflector for a file.
+		/// </summary>
+		/// <returns>
+		/// The reflector for the file.
+		/// </returns>
+		/// <param name='locator'>
+		/// An assembly locator
+		/// </param>
+		/// <param name='path'>
+		/// A file path
+		/// </param>
 		public virtual IAssemblyReflector GetReflectorForFile (IAssemblyLocator locator, string path)
 		{
 			if (reflector != null)
@@ -103,6 +191,12 @@ namespace Mono.Addins.Database
 			return reflector;
 		}
 		
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="Mono.Addins.Database.AddinFileSystemExtension"/> needs to be isolated from the main execution process
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if requires isolation; otherwise, <c>false</c>.
+		/// </value>
 		public virtual bool RequiresIsolation {
 			get { return true; }
 		}
