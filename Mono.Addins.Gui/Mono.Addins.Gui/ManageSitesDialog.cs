@@ -153,7 +153,7 @@ namespace Mono.Addins.Gui
 		void HandleRepoToggled (object o, ToggledArgs args)
 		{
 			Gtk.TreeIter iter;
-			if (!repoTree.Selection.GetSelected (out iter))
+			if (!treeStore.GetIterFromString (out iter, args.Path))
 				return;
 			
 			bool newVal = !(bool) treeStore.GetValue (iter, 2);
