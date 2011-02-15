@@ -55,6 +55,7 @@ namespace Mono.Addins.Gui
 		Gdk.Pixbuf iconInstalled;
 		Gdk.Pixbuf iconNotInstalled;
 		Gdk.Pixbuf updateOverlay;
+		Gdk.Pixbuf installedOverlay;
 		
 		public event EventHandler SelectionChanged;
 		
@@ -72,6 +73,7 @@ namespace Mono.Addins.Gui
 			iconInstalled = Gdk.Pixbuf.LoadFromResource ("plugin-32.png");
 			iconNotInstalled = Gdk.Pixbuf.LoadFromResource ("plugin-avail-32.png");
 			updateOverlay = Gdk.Pixbuf.LoadFromResource ("software-update-available-overlay.png");
+			installedOverlay = Gdk.Pixbuf.LoadFromResource ("installed-overlay.png");
 			
 			this.treeView = treeView;
 			ArrayList list = new ArrayList ();
@@ -300,22 +302,20 @@ namespace Mono.Addins.Gui
 			return pix;
 		}
 		
+		internal bool ShowInstalledMarkers = true;
+		
 		void StoreIcon (TreeIter it, string iconId, Gdk.Pixbuf customPix, AddinStatus status)
 		{
-			if ((status & AddinStatus.Installed) == 0) {
-				if (customPix == null)
-					customPix = iconNotInstalled;
-				else {
-					customPix = GetCachedIcon (iconId, "Fade", delegate {
-						return Services.FadeIcon (customPix);
-					});
-				}
-				treeStore.SetValue (it, ColImage, customPix);
-				return;
-			}
-			
 			if (customPix == null)
 				customPix = iconInstalled;
+			
+			if ((status & AddinStatus.Installed) == 0) {
+				treeStore.SetValue (it, ColImage, customPix);
+				return;
+			} else if (ShowInstalledMarkers && (status & AddinStatus.HasUpdate) == 0) {
+				customPix = GetCachedIcon (iconId, "InstalledOverlay", delegate { return Services.AddIconOverlay (customPix, installedOverlay); });
+				iconId = iconId + "_Installed";
+			}
 			
 			if ((status & AddinStatus.Disabled) != 0) {
 				customPix = GetCachedIcon (iconId, "Desaturate", delegate { return Services.DesaturateIcon (customPix); });

@@ -52,6 +52,7 @@ DATA_FILES =
 RESOURCES =  \
 	gtk-gui/gui.stetic \
 	icons/download.png \
+	icons/installed-overlay.png \
 	icons/package-x-generic.png \
 	icons/package-x-generic_16.png \
 	icons/package-x-generic_22.png \

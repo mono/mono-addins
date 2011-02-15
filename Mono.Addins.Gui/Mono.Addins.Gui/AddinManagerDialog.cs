@@ -77,6 +77,7 @@ namespace Mono.Addins.Gui
 			tree = new AddinTreeWidget (addinTree);
 			addinTree.Selection.Changed += OnSelectionChanged;
 			tree.VersionVisible = false;
+			tree.ShowInstalledMarkers = false;
 			
 			galleryTreeView.Selection.Mode = SelectionMode.Multiple;
 			galleryTree = new AddinTreeWidget (galleryTreeView);

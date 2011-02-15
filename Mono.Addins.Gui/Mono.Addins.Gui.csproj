@@ -144,6 +144,9 @@
     <EmbeddedResource Include="icons\software-update-available.png">
       <LogicalName>software-update-available.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\installed-overlay.png">
+      <LogicalName>installed-overlay.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
