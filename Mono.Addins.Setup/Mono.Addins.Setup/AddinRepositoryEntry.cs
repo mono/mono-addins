@@ -110,8 +110,37 @@ namespace Mono.Addins.Setup
 			get;
 		}
 		
+		/// <summary>
+		/// Begins downloading a support file
+		/// </summary>
+		/// <returns>
+		/// Result of the asynchronous operation, to be used when calling EndDownloadSupportFile to
+		/// get the download result.
+		/// </returns>
+		/// <param name='name'>
+		/// Name of the file.
+		/// </param>
+		/// <param name='cb'>
+		/// Callback to be called when the download operation ends.
+		/// </param>
+		/// <param name='state'>
+		/// Custom state object provided by the caller.
+		/// </param>
+		/// <remarks>
+		/// This method can be used to get the contents of a support file of an add-in.
+		/// A support file is a file referenced in the custom properties of an add-in.
+		/// </remarks>
 		IAsyncResult BeginDownloadSupportFile (string name, AsyncCallback cb, object state);
 		
+		/// <summary>
+		/// Gets the result of the asynchronous download of a file
+		/// </summary>
+		/// <returns>
+		/// The downloaded file.
+		/// </returns>
+		/// <param name='ares'>
+		/// The async result object returned by BeginDownloadSupportFile.
+		/// </param>
 		Stream EndDownloadSupportFile (IAsyncResult ares);
 	}
 }

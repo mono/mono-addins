@@ -125,6 +125,9 @@ namespace Mono.Addins.Setup
 	/// </summary>
 	public interface AddinRepository
 	{
+		/// <summary>
+		/// Path to the cached add-in repository file
+		/// </summary>
 		string File {
 			get;
 		}

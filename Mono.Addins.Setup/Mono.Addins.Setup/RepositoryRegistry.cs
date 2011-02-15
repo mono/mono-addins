@@ -197,6 +197,18 @@ namespace Mono.Addins.Setup
 			repoList = null;
 		}
 		
+		/// <summary>
+		/// Enables or disables a repository
+		/// </summary>
+		/// <param name='url'>
+		/// URL of the repository
+		/// </param>
+		/// <param name='enabled'>
+		/// 'true' if the repository has to be enabled.
+		/// </param>
+		/// <remarks>
+		/// Disabled repositories are ignored when calling UpdateAllRepositories.
+		/// </remarks>
 		public void SetRepositoryEnabled (string url, bool enabled)
 		{
 			RepositoryRecord rep = FindRepositoryRecord (url);
@@ -369,6 +381,7 @@ namespace Mono.Addins.Setup
 			return GetAvailableAddin (repositoryUrl, null, null, true);
 		}
 		
+#pragma warning disable 1591
 		[Obsolete ("Use GetAvailableAddinUpdates (id) instead")]
 		public AddinRepositoryEntry[] GetAvailableUpdates (string id, string version)
 		{
@@ -380,6 +393,7 @@ namespace Mono.Addins.Setup
 		{
 			return GetAvailableAddin (repositoryUrl, id, version, true);
 		}
+#pragma warning restore 1591
 		
 		/// <summary>
 		/// Gets a list of available updates for an add-in.

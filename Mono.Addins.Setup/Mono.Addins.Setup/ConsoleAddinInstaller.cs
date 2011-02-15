@@ -40,6 +40,9 @@ namespace Mono.Addins.Setup
 		bool repoUpdated;
 		int logLevel = 1;
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.Setup.ConsoleAddinInstaller"/> class.
+		/// </summary>
 		public ConsoleAddinInstaller ()
 		{
 		}
