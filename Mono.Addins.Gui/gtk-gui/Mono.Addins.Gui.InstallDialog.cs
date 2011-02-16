@@ -135,7 +135,7 @@ namespace Mono.Addins.Gui
 			this.DefaultWidth = 494;
 			this.DefaultHeight = 239;
 			this.insSeparator.Hide ();
-			this.Show ();
+			this.Hide ();
 			this.buttonCancel.Clicked += new global::System.EventHandler (this.OnButtonCancelClicked);
 			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);
 		}

@@ -193,8 +193,7 @@ namespace Mono.Addins.Gui
 		
 		internal void OnManageRepos (object sender, EventArgs e)
 		{
-			ManageSitesDialog dlg = new ManageSitesDialog (service);
-			dlg.TransientFor = this;
+			ManageSitesDialog dlg = new ManageSitesDialog (this, service);
 			try {
 				dlg.Run ();
 			} finally {
@@ -386,8 +385,7 @@ namespace Mono.Addins.Gui
 		
 		void ManageSites ()
 		{
-			ManageSitesDialog dlg = new ManageSitesDialog (service);
-			dlg.TransientFor = this;
+			ManageSitesDialog dlg = new ManageSitesDialog (this, service);
 			try {
 				dlg.Run ();
 				repoCombo.Active = lastRepoActive;

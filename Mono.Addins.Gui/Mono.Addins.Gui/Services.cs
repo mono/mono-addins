@@ -127,5 +127,26 @@ namespace Mono.Addins.Gui
 			source.Composite (result, 0, 0, source.Width, source.Height, 0, 0, 1, 1, Gdk.InterpType.Bilinear, 128);
 			return result;
 		}
+		
+		/// <summary>
+		/// Positions a dialog relative to its parent on platforms where default placement is known to be poor.
+		/// </summary>
+		public static void PlaceDialog (Window child, Window parent)
+		{
+			CenterWindow (child, parent);
+		}
+		
+		/// <summary>Centers a window relative to its parent.</summary>
+		static void CenterWindow (Window child, Window parent)
+		{
+			child.Child.Show ();
+			int w, h, winw, winh, x, y, winx, winy;
+			child.GetSize (out w, out h);
+			parent.GetSize (out winw, out winh);
+			parent.GetPosition (out winx, out winy);
+			x = System.Math.Max (0, (winw - w) /2) + winx;
+			y = System.Math.Max (0, (winh - h) /2) + winy;
+			child.Move (x, y);
+		}
 	}
 }

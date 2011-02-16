@@ -58,12 +58,14 @@ namespace Mono.Addins.Gui
 		{
 			this.addinsToInstall = addinsToInstall;
 			FillSummaryPage ();
+			Services.PlaceDialog (this, TransientFor);
 		}
 		
 		public void InitForInstall (string[] filesToInstall)
 		{
 			this.filesToInstall = filesToInstall;
 			FillSummaryPage ();
+			Services.PlaceDialog (this, TransientFor);
 		}
 		
 		public void InitForUninstall (Addin[] info)
@@ -82,6 +84,7 @@ namespace Mono.Addins.Gui
 					sb.Append (si.Description.Name + "\n");
 			}
 			ShowMessage (sb.ToString ());
+			Services.PlaceDialog (this, TransientFor);
 		}
 		
 		void FillSummaryPage ()

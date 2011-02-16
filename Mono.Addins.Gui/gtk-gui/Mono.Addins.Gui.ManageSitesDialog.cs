@@ -102,7 +102,7 @@ namespace Mono.Addins.Gui
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.Show ();
+			this.Hide ();
 			this.btnAdd.Clicked += new global::System.EventHandler (this.OnAdd);
 			this.btnRemove.Clicked += new global::System.EventHandler (this.OnRemove);
 		}

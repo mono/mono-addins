@@ -38,6 +38,7 @@ namespace Mono.Addins.Gui
 		{
 			Build ();
 			TransientFor = parent;
+			Services.PlaceDialog (this, parent);
 			pathEntry.Sensitive = false;
 			CheckValues ();
 		}

@@ -575,6 +575,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="Mono.Addins.Gui.ManageSitesDialog" design-size="538 357">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Add-in Repository Management</property>
     <property name="TypeHint">Dialog</property>
@@ -692,6 +693,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="Mono.Addins.Gui.NewSiteDialog" design-size="576 249">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Add New Repository</property>
     <property name="TypeHint">Dialog</property>
@@ -727,7 +729,6 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Register an on-line repository</property>
-                <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
@@ -1181,6 +1182,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="Mono.Addins.Gui.InstallDialog" design-size="494 239">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>

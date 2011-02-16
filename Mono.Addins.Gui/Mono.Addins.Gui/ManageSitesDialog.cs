@@ -42,9 +42,11 @@ namespace Mono.Addins.Gui
 		ListStore treeStore;
 		SetupService service;
 		
-		public ManageSitesDialog (SetupService service)
+		public ManageSitesDialog (Gtk.Window parent, SetupService service)
 		{
 			Build ();
+			TransientFor = parent;
+			Services.PlaceDialog (this, parent);
 			this.service = service;
 			treeStore = new Gtk.ListStore (typeof (string), typeof (string), typeof(bool));
 			repoTree.Model = treeStore;
