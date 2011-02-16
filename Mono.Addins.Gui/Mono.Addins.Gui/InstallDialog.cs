@@ -42,6 +42,7 @@ namespace Mono.Addins.Gui
 		string uninstallId;
 		InstallMonitor installMonitor;
 		bool installing;
+		const int MaxHeight = 350;
 		
 		public InstallDialog (Gtk.Window parent, SetupService service)
 		{
@@ -50,6 +51,7 @@ namespace Mono.Addins.Gui
 			TransientFor = parent;
 			WindowPosition = Gtk.WindowPosition.CenterOnParent;
 			boxProgress.Visible = false;
+			Resizable = false;
 		}
 		
 		public void InitForInstall (AddinRepositoryEntry[] addinsToInstall)
@@ -152,9 +154,14 @@ namespace Mono.Addins.Gui
 		
 		void ShowMessage (string txt)
 		{
-			labelInfo.Markup = txt;
-			if (labelInfo.SizeRequest ().Height > 400)
+			labelInfo.Markup = txt.TrimEnd ('\n','\t',' ');
+			if (labelInfo.SizeRequest ().Height > MaxHeight) {
 				scrolledwindow1.VscrollbarPolicy = Gtk.PolicyType.Automatic;
+				scrolledwindow1.HeightRequest = MaxHeight;
+			}
+			else {
+				scrolledwindow1.HeightRequest = labelInfo.SizeRequest ().Height;
+			}
 		}
 		
 		protected virtual void OnButtonOkClicked (object sender, System.EventArgs e)
@@ -177,6 +184,7 @@ namespace Mono.Addins.Gui
 		
 		void Install ()
 		{
+			insSeparator.Visible = true;
 			boxProgress.Visible = true;
 			buttonOk.Sensitive = false;
 			

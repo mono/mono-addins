@@ -727,6 +727,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Register an on-line repository</property>
+                <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
@@ -1178,7 +1179,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="Mono.Addins.Gui.InstallDialog" design-size="494 217">
+  <widget class="Gtk.Dialog" id="Mono.Addins.Gui.InstallDialog" design-size="494 239">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -1191,7 +1192,7 @@
         <child>
           <widget class="Gtk.VBox" id="vbox3">
             <property name="MemberName" />
-            <property name="Spacing">6</property>
+            <property name="Spacing">9</property>
             <property name="BorderWidth">9</property>
             <child>
               <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
@@ -1234,6 +1235,18 @@
               </packing>
             </child>
             <child>
+              <widget class="Gtk.HSeparator" id="insSeparator">
+                <property name="MemberName" />
+                <property name="Visible">False</property>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
               <widget class="Gtk.VBox" id="boxProgress">
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
@@ -1263,7 +1276,7 @@
                 </child>
               </widget>
               <packing>
-                <property name="Position">1</property>
+                <property name="Position">2</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>

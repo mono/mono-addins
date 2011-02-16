@@ -8,6 +8,7 @@ namespace Mono.Addins.Gui
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		private global::Gtk.VBox vbox4;
 		private global::Gtk.Label labelInfo;
+		private global::Gtk.HSeparator insSeparator;
 		private global::Gtk.VBox boxProgress;
 		private global::Gtk.Label globalProgressLabel;
 		private global::Gtk.ProgressBar mainProgressBar;
@@ -27,7 +28,7 @@ namespace Mono.Addins.Gui
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.vbox3 = new global::Gtk.VBox ();
 			this.vbox3.Name = "vbox3";
-			this.vbox3.Spacing = 6;
+			this.vbox3.Spacing = 9;
 			this.vbox3.BorderWidth = ((uint)(9));
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.scrolledwindow1 = new global::Gtk.ScrolledWindow ();
@@ -61,6 +62,14 @@ namespace Mono.Addins.Gui
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.scrolledwindow1]));
 			w6.Position = 0;
 			// Container child vbox3.Gtk.Box+BoxChild
+			this.insSeparator = new global::Gtk.HSeparator ();
+			this.insSeparator.Name = "insSeparator";
+			this.vbox3.Add (this.insSeparator);
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.insSeparator]));
+			w7.Position = 1;
+			w7.Expand = false;
+			w7.Fill = false;
+			// Container child vbox3.Gtk.Box+BoxChild
 			this.boxProgress = new global::Gtk.VBox ();
 			this.boxProgress.Name = "boxProgress";
 			this.boxProgress.Spacing = 6;
@@ -70,32 +79,32 @@ namespace Mono.Addins.Gui
 			this.globalProgressLabel.Xalign = 0F;
 			this.globalProgressLabel.Ellipsize = ((global::Pango.EllipsizeMode)(3));
 			this.boxProgress.Add (this.globalProgressLabel);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.boxProgress [this.globalProgressLabel]));
-			w7.Position = 0;
-			w7.Expand = false;
-			w7.Fill = false;
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.boxProgress [this.globalProgressLabel]));
+			w8.Position = 0;
+			w8.Expand = false;
+			w8.Fill = false;
 			// Container child boxProgress.Gtk.Box+BoxChild
 			this.mainProgressBar = new global::Gtk.ProgressBar ();
 			this.mainProgressBar.Name = "mainProgressBar";
 			this.boxProgress.Add (this.mainProgressBar);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.boxProgress [this.mainProgressBar]));
-			w8.Position = 1;
-			w8.Expand = false;
-			w8.Fill = false;
-			this.vbox3.Add (this.boxProgress);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.boxProgress]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.boxProgress [this.mainProgressBar]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;
+			this.vbox3.Add (this.boxProgress);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.boxProgress]));
+			w10.Position = 2;
+			w10.Expand = false;
+			w10.Fill = false;
 			w1.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox3]));
-			w10.Position = 0;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox3]));
+			w11.Position = 0;
 			// Internal child Mono.Addins.Gui.InstallDialog.ActionArea
-			global::Gtk.HButtonBox w11 = this.ActionArea;
-			w11.Name = "dialog1_ActionArea";
-			w11.Spacing = 10;
-			w11.BorderWidth = ((uint)(5));
-			w11.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w12 = this.ActionArea;
+			w12.Name = "dialog1_ActionArea";
+			w12.Spacing = 10;
+			w12.BorderWidth = ((uint)(5));
+			w12.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -104,10 +113,10 @@ namespace Mono.Addins.Gui
 			this.buttonCancel.UseStock = true;
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
-			w11.Add (this.buttonCancel);
-			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonCancel]));
-			w12.Expand = false;
-			w12.Fill = false;
+			w12.Add (this.buttonCancel);
+			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonCancel]));
+			w13.Expand = false;
+			w13.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -115,16 +124,17 @@ namespace Mono.Addins.Gui
 			this.buttonOk.Name = "buttonOk";
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = global::Mono.Unix.Catalog.GetString ("Install");
-			w11.Add (this.buttonOk);
-			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonOk]));
-			w13.Position = 1;
-			w13.Expand = false;
-			w13.Fill = false;
+			w12.Add (this.buttonOk);
+			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonOk]));
+			w14.Position = 1;
+			w14.Expand = false;
+			w14.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.DefaultWidth = 494;
-			this.DefaultHeight = 217;
+			this.DefaultHeight = 239;
+			this.insSeparator.Hide ();
 			this.Show ();
 			this.buttonCancel.Clicked += new global::System.EventHandler (this.OnButtonCancelClicked);
 			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);
