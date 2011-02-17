@@ -454,9 +454,8 @@ namespace Mono.Addins.Setup
 			ArrayList allAddins = new ArrayList ();
 			
 			Repository rootrep = (Repository) AddinStore.ReadObject (mainPath, typeof(Repository));
-			if (rootrep == null) {
+			if (rootrep == null)
 				rootrep = new Repository ();
-			}
 			
 			IProgressMonitor monitor = ProgressStatusMonitor.GetProgressMonitor (statusMonitor);
 			BuildRepository (monitor, rootrep, path, "root.mrep", allAddins);
@@ -514,16 +513,19 @@ namespace Mono.Addins.Setup
 			}
 			
 			ArrayList toRemove = new ArrayList ();
-			foreach (PackageRepositoryEntry entry in mainrep.Addins)
-				if (!File.Exists (Path.Combine (mainPath, entry.Url)))
+			foreach (PackageRepositoryEntry entry in mainrep.Addins) {
+				if (!File.Exists (Path.Combine (mainPath, entry.Url))) {
 					toRemove.Add (entry);
+					modified = true;
+				}
+			}
 					
 			foreach (PackageRepositoryEntry entry in toRemove) {
 				DeleteSupportFiles (supportFileDir, entry.Addin);
 				mainrep.RemoveEntry (entry);
 			}
 			
-			if (modified || toRemove.Count > 0) {
+			if (modified) {
 				AddinStore.WriteObject (mainFile, mainrep);
 				monitor.Log.WriteLine ("Updated " + relFilePath);
 				lastModified = File.GetLastWriteTime (mainFile);
@@ -532,7 +534,7 @@ namespace Mono.Addins.Setup
 			if (repEntry != null) {
 				if (repEntry.LastModified < lastModified)
 					repEntry.LastModified = lastModified;
-			} else {
+			} else if (modified) {
 				repEntry = new ReferenceRepositoryEntry ();
 				repEntry.LastModified = lastModified;
 				repEntry.Url = relFilePath;
