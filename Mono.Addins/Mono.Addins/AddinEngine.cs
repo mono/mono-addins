@@ -667,7 +667,7 @@ namespace Mono.Addins
 		
 		void CheckHostAssembly (Assembly asm)
 		{
-			if (AddinDatabase.RunningSetupProcess || asm is System.Reflection.Emit.AssemblyBuilder)
+			if (AddinDatabase.RunningSetupProcess || asm is System.Reflection.Emit.AssemblyBuilder || !Uri.IsWellFormedUriString (asm.CodeBase, UriKind.Absolute))
 				return;
 			string asmFile = new Uri (asm.CodeBase).LocalPath;
 			Addin ainfo = Registry.GetAddinForHostAssembly (asmFile);
