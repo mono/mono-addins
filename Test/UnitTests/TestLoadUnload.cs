@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Mono.Addins;
 using System.IO;
 using SimpleApp;
+using System.Xml.Serialization;
 
 namespace UnitTests
 {
@@ -191,6 +192,20 @@ namespace UnitTests
 			
 			IWriter w = (IWriter) node.CreateInstance ();
 			Assert.AreEqual ("SimpleApp.HelloWorldExtension,0.1.0", w.Test ("currentAddin"));
+		}
+		
+		public class TestClass
+		{
+			public string Value;
+		}
+		
+		[Test]
+		public void TestAddinAssemblyLoading ()
+		{
+			// Test for bug 672858 - Mono.Addins causes error in XML serializer
+			Environment.SetEnvironmentVariable ("MONO_XMLSERIALIZER_THS","0");
+			XmlSerializer ser = new XmlSerializer (typeof(TestClass));
+			ser.Serialize (new StringWriter (), new TestClass ());
 		}
 	}
 }
