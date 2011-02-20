@@ -90,7 +90,7 @@ namespace Mono.Addins
 		/// of the Environment.SpecialFolder enumeration can be used (always between square
 		/// brackets)
 		/// </remarks>
-		public AddinRegistry (string registryPath): this (null, registryPath, null)
+		public AddinRegistry (string registryPath): this (null, registryPath, null, null, null)
 		{
 		}
 		
@@ -114,7 +114,7 @@ namespace Mono.Addins
 		/// of the Environment.SpecialFolder enumeration can be used (always between square
 		/// brackets)
 		/// </remarks>
-		public AddinRegistry (string registryPath, string startupDirectory): this (null, registryPath, startupDirectory)
+		public AddinRegistry (string registryPath, string startupDirectory): this (null, registryPath, startupDirectory, null, null)
 		{
 		}
 		
