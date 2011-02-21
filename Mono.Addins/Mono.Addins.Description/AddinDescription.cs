@@ -658,6 +658,33 @@ namespace Mono.Addins.Description
 			return false;
 		}
 		
+		void TransferCoreProperties (bool removeProperties)
+		{
+			string val = properties.ExtractCoreProperty ("Id", removeProperties);
+			if (val != null)
+				id = val;
+			
+			val = properties.ExtractCoreProperty ("Namespace", removeProperties);
+			if (val != null)
+				ns = val;
+			
+			val = properties.ExtractCoreProperty ("Version", removeProperties);
+			if (val != null)
+				version = val;
+			
+			val = properties.ExtractCoreProperty ("EnabledByDefault", removeProperties);
+			if (val != null)
+				defaultEnabled = GetBool (val, true);
+			
+			val = properties.ExtractCoreProperty ("IsRoot", removeProperties);
+			if (val != null)
+				isroot = GetBool (val, true);
+			
+			val = properties.ExtractCoreProperty ("Flags", removeProperties);
+			if (val != null)
+				flags = (AddinFlags) Enum.Parse (typeof(AddinFlags), val);
+		}
+		
 		/// <summary>
 		/// Saves the add-in description.
 		/// </summary>
@@ -722,18 +749,10 @@ namespace Mono.Addins.Description
 			
 			elem = configDoc.DocumentElement;
 			
-			if (HasUserId)
-				elem.SetAttribute ("id", id);
-			else
-				elem.RemoveAttribute ("id");
-			
-			elem.SetAttribute ("version", version);
-			elem.SetAttribute ("namespace", ns);
-			
-			if (isroot)
-				elem.SetAttribute ("isroot", "true");
-			else
-				elem.RemoveAttribute ("isroot");
+			SaveCoreProperty (elem, HasUserId ? id : null, "id", "Id");
+			SaveCoreProperty (elem, version, "version", "Version");
+			SaveCoreProperty (elem, ns, "namespace", "Namespace");
+			SaveCoreProperty (elem, isroot ? "true" : null, "isroot", "IsRoot");
 			
 			// Name will return the file name when HasUserId=false
 			if (!string.IsNullOrEmpty (name))
@@ -741,20 +760,9 @@ namespace Mono.Addins.Description
 			else
 				elem.RemoveAttribute ("name");
 				
-			if (compatVersion != null && compatVersion.Length > 0)
-				elem.SetAttribute ("compatVersion", compatVersion);
-			else
-				elem.RemoveAttribute ("compatVersion");
-			
-			if (defaultEnabled)
-				elem.RemoveAttribute ("defaultEnabled");
-			else
-				elem.SetAttribute ("defaultEnabled", "false");
-			
-			if (flags != AddinFlags.None)
-				elem.RemoveAttribute ("flags");
-			else
-				elem.SetAttribute ("flags", flags.ToString ());
+			SaveCoreProperty (elem, compatVersion, "compatVersion", "CompatVersion");
+			SaveCoreProperty (elem, defaultEnabled ? null : "false", "defaultEnabled", "DefaultEnabled");
+			SaveCoreProperty (elem, flags != AddinFlags.None ? flags.ToString () : null, "flags", "Flags");
 			
 			if (author != null && author.Length > 0)
 				elem.SetAttribute ("author", author);
@@ -826,6 +834,21 @@ namespace Mono.Addins.Description
 					oldHeader.AppendChild (propElem);
 				}
 			}
+		}
+		
+		void SaveCoreProperty (XmlElement elem, string val, string attr, string prop)
+		{
+			if (properties.HasProperty (prop)) {
+				elem.RemoveAttribute (attr);
+				if (!string.IsNullOrEmpty (val))
+					properties.SetPropertyValue (prop, val);
+				else
+					properties.RemoveProperty (prop);
+			}
+			else if (string.IsNullOrEmpty (val))
+				elem.RemoveAttribute (attr);
+			else
+				elem.SetAttribute (attr, val);
 		}
 		
 
@@ -921,6 +944,8 @@ namespace Mono.Addins.Description
 					config.Properties.SetPropertyValue (prop.LocalName, prop.InnerText, prop.GetAttribute ("locale"));
 				}
 			}
+			
+			config.TransferCoreProperties (false);
 			
 			if (config.id.Length > 0)
 				config.hasUserId = true;
@@ -1091,6 +1116,7 @@ namespace Mono.Addins.Description
 		
 		void IBinaryXmlElement.Write (BinaryXmlWriter writer)
 		{
+			TransferCoreProperties (true);
 			writer.WriteValue ("id", id);
 			writer.WriteValue ("ns", ns);
 			writer.WriteValue ("isroot", isroot);

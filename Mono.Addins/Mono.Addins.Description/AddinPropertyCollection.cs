@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Mono.Addins.Description
@@ -209,6 +210,23 @@ namespace Mono.Addins.Description
 					return;
 				}
 			}
+		}
+		
+		internal bool HasProperty (string name)
+		{
+			return this.Any (p => p.Name == name);
+		}
+		
+		internal string ExtractCoreProperty (string name, bool removeProperty)
+		{
+			foreach (var p in this) {
+				if (p.Name == name && p.Locale == null) {
+					if (removeProperty)
+						Remove (p);
+					return p.Value;
+				}
+			}
+			return null;
 		}
 	}
 }
