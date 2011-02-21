@@ -74,6 +74,7 @@ FILES =  \
 	Mono.Addins/AddinAttribute.cs \
 	Mono.Addins/AddinAuthorAttribute.cs \
 	Mono.Addins/AddinDependencyAttribute.cs \
+	Mono.Addins/AddinDescriptionAttribute.cs \
 	Mono.Addins/AddinEngine.cs \
 	Mono.Addins/AddinErrorEventArgs.cs \
 	Mono.Addins/AddinEventArgs.cs \
@@ -82,6 +83,7 @@ FILES =  \
 	Mono.Addins/AddinLocalizerGettextAttribute.cs \
 	Mono.Addins/AddinManager.cs \
 	Mono.Addins/AddinModuleAttribute.cs \
+	Mono.Addins/AddinNameAttribute.cs \
 	Mono.Addins/AddinPropertyAttribute.cs \
 	Mono.Addins/AddinRegistry.cs \
 	Mono.Addins/AddinRootAttribute.cs \

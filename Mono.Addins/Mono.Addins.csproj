@@ -139,6 +139,8 @@
     <Compile Include="Mono.Addins.Description\AddinProperty.cs" />
     <Compile Include="Mono.Addins.Description\AddinPropertyCollection.cs" />
     <Compile Include="Mono.Addins\AddinPropertyAttribute.cs" />
+    <Compile Include="Mono.Addins\AddinNameAttribute.cs" />
+    <Compile Include="Mono.Addins\AddinDescriptionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Mono.Addins.dll.config">

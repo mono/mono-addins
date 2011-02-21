@@ -114,6 +114,14 @@ namespace UnitTests
 			Assert.AreEqual ("Val1Cat", ad.Properties.GetPropertyValue ("Prop1"));
 			Assert.AreEqual ("Val2", ad.Properties.GetPropertyValue ("Prop2","en-US"));
 			Assert.AreEqual ("Val2Cat", ad.Properties.GetPropertyValue ("Prop2"));
+			
+			oldc = System.Threading.Thread.CurrentThread.CurrentCulture;
+			System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("es-ES");
+			
+			Assert.AreEqual ("Una aplicación simple", ad.Name);
+			Assert.AreEqual ("Descripción de SimpleApp", ad.Description.Description);
+			
+			System.Threading.Thread.CurrentThread.CurrentCulture = oldc;
 		}
 	}
 }

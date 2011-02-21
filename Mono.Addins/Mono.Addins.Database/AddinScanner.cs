@@ -265,7 +265,7 @@ namespace Mono.Addins.Database
 					}
 					
 					// Check errors in the description
-					StringCollection errors = config.Verify ();
+					StringCollection errors = config.Verify (fs);
 					
 					if (database.IsGlobalRegistry && config.AddinId.IndexOf ('.') == -1) {
 						errors.Add ("Add-ins registered in the global registry must have a namespace.");
@@ -742,11 +742,29 @@ namespace Mono.Addins.Database
 					config.Author += ", " + author.Name;
 			}
 			
+			// Name
+			
+			atts = reflector.GetCustomAttributes (asm, typeof(AddinNameAttribute), false);
+			foreach (AddinNameAttribute at in atts) {
+				if (string.IsNullOrEmpty (at.Locale))
+					config.Name = at.Name;
+				else
+					config.Properties.SetPropertyValue ("Name", at.Name, at.Locale);
+			}
+			
 			// Description
 			
 			object catt = reflector.GetCustomAttribute (asm, typeof(AssemblyDescriptionAttribute), false);
 			if (catt != null && config.Description.Length == 0)
 				config.Description = ((AssemblyDescriptionAttribute)catt).Description;
+			
+			atts = reflector.GetCustomAttributes (asm, typeof(AddinDescriptionAttribute), false);
+			foreach (AddinDescriptionAttribute at in atts) {
+				if (string.IsNullOrEmpty (at.Locale))
+					config.Description = at.Description;
+				else
+					config.Properties.SetPropertyValue ("Description", at.Description, at.Locale);
+			}
 			
 			// Copyright
 			

@@ -174,7 +174,7 @@ namespace Mono.Addins.Description
 			}
 			set { name = value; }
 		}
-
+		
 		/// <summary>
 		/// Gets or sets the version.
 		/// </summary>
@@ -969,6 +969,11 @@ namespace Mono.Addins.Description
 		/// </remarks>
 		public StringCollection Verify ()
 		{
+			return Verify (new AddinFileSystemExtension ());
+		}
+		
+		internal StringCollection Verify (AddinFileSystemExtension fs)
+		{
 			StringCollection errors = new StringCollection ();
 			
 			if (IsRoot) {
@@ -1003,7 +1008,7 @@ namespace Mono.Addins.Description
 			if (bp != null) {
 				foreach (string file in AllFiles) {
 					string asmFile = Path.Combine (bp, file);
-					if (!File.Exists (asmFile))
+					if (!fs.FileExists (asmFile))
 						errors.Add ("The file '" + asmFile + "' referenced in the manifest could not be found.");
 				}
 			}
