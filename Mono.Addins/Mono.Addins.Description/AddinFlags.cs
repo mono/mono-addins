@@ -32,6 +32,7 @@ namespace Mono.Addins.Description
 	/// <summary>
 	/// Add-in flags
 	/// </summary>
+	[Flags]
 	public enum AddinFlags
 	{
 		/// <summary>
