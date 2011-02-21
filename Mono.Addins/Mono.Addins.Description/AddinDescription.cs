@@ -660,6 +660,9 @@ namespace Mono.Addins.Description
 		
 		void TransferCoreProperties (bool removeProperties)
 		{
+			if (properties == null)
+				return;
+			
 			string val = properties.ExtractCoreProperty ("Id", removeProperties);
 			if (val != null)
 				id = val;
@@ -672,7 +675,11 @@ namespace Mono.Addins.Description
 			if (val != null)
 				version = val;
 			
-			val = properties.ExtractCoreProperty ("EnabledByDefault", removeProperties);
+			val = properties.ExtractCoreProperty ("CompatVersion", removeProperties);
+			if (val != null)
+				compatVersion = val;
+			
+			val = properties.ExtractCoreProperty ("DefaultEnabled", removeProperties);
 			if (val != null)
 				defaultEnabled = GetBool (val, true);
 			
@@ -838,7 +845,7 @@ namespace Mono.Addins.Description
 		
 		void SaveCoreProperty (XmlElement elem, string val, string attr, string prop)
 		{
-			if (properties.HasProperty (prop)) {
+			if (properties != null && properties.HasProperty (prop)) {
 				elem.RemoveAttribute (attr);
 				if (!string.IsNullOrEmpty (val))
 					properties.SetPropertyValue (prop, val);
