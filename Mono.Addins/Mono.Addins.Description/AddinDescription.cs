@@ -827,7 +827,7 @@ namespace Mono.Addins.Description
 				if (oldHeader == null) {
 					oldHeader = elem.OwnerDocument.CreateElement ("Header");
 					if (elem.FirstChild != null)
-						elem.InsertBefore (elem, elem.FirstChild);
+						elem.InsertBefore (oldHeader, elem.FirstChild);
 					else
 						elem.AppendChild (oldHeader);
 				}
