@@ -47,7 +47,7 @@ namespace UnitTests
 		string repoBaseUrl;
 		
 		[SetUp]
-		public void Setup ()
+		public void TestSetup ()
 		{
 			setup = new SetupService ();
 			baseDir = Path.GetDirectoryName (new Uri (typeof(TestBase).Assembly.CodeBase).LocalPath);

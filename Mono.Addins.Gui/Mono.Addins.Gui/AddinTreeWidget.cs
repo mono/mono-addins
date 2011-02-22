@@ -53,7 +53,6 @@ namespace Mono.Addins.Gui
 		bool disposed;
 		
 		Gdk.Pixbuf iconInstalled;
-		Gdk.Pixbuf iconNotInstalled;
 		Gdk.Pixbuf updateOverlay;
 		Gdk.Pixbuf installedOverlay;
 		
@@ -71,7 +70,6 @@ namespace Mono.Addins.Gui
 		public AddinTreeWidget (Gtk.TreeView treeView)
 		{
 			iconInstalled = Gdk.Pixbuf.LoadFromResource ("plugin-32.png");
-			iconNotInstalled = Gdk.Pixbuf.LoadFromResource ("plugin-avail-32.png");
 			updateOverlay = Gdk.Pixbuf.LoadFromResource ("software-update-available-overlay.png");
 			installedOverlay = Gdk.Pixbuf.LoadFromResource ("installed-overlay.png");
 			
