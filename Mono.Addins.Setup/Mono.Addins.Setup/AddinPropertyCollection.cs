@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using Mono.Addins.Description;
+using System.Linq;
 
 namespace Mono.Addins.Setup
 {
@@ -137,6 +138,23 @@ namespace Mono.Addins.Setup
 					return;
 				}
 			}
+		}
+		
+		internal bool HasProperty (string name)
+		{
+			return this.Any (p => p.Name == name);
+		}
+		
+		internal string ExtractCoreProperty (string name, bool removeProperty)
+		{
+			foreach (var p in this) {
+				if (p.Name == name && p.Locale == null) {
+					if (removeProperty)
+						Remove (p);
+					return p.Value;
+				}
+			}
+			return null;
 		}
 	}
 }

@@ -191,10 +191,8 @@ namespace Mono.Addins.Setup
 			info.baseVersion = doc.DocumentElement.GetAttribute ("compatVersion");
 			AddinPropertyCollectionImpl props = new AddinPropertyCollectionImpl ();
 			info.properties = props;
-			
-			ReadHeader (props, doc.DocumentElement);
+			ReadHeader (info, props, doc.DocumentElement);
 			ReadDependencies (info.Dependencies, info.OptionalDependencies, doc.DocumentElement);
-		
 			return info;
 		}
 		
@@ -220,7 +218,7 @@ namespace Mono.Addins.Setup
 				ReadDependencies (opDeps, opDeps, mod);
 		}
 		
-		static void ReadHeader (AddinPropertyCollectionImpl properties, XmlElement elem)
+		static void ReadHeader (AddinInfo info, AddinPropertyCollectionImpl properties, XmlElement elem)
 		{
 			elem = elem.SelectSingleNode ("Header") as XmlElement;
 			if (elem == null)
@@ -228,12 +226,20 @@ namespace Mono.Addins.Setup
 			foreach (XmlNode xprop in elem.ChildNodes) {
 				XmlElement prop = xprop as XmlElement;
 				if (prop != null) {
-					AddinProperty aprop = new AddinProperty ();
-					aprop.Name = prop.LocalName;
-					if (prop.HasAttribute ("locale"))
-						aprop.Locale = prop.GetAttribute ("locale");
-					aprop.Value = prop.InnerText;
-					properties.Add (aprop);
+					switch (prop.LocalName) {
+					case "Id": info.id = prop.InnerText; break;
+					case "Namespace": info.namspace = prop.InnerText; break;
+					case "Version": info.version = prop.InnerText; break;
+					case "CompatVersion": info.baseVersion = prop.InnerText; break;
+					default: {
+						AddinProperty aprop = new AddinProperty ();
+						aprop.Name = prop.LocalName;
+						if (prop.HasAttribute ("locale"))
+							aprop.Locale = prop.GetAttribute ("locale");
+						aprop.Value = prop.InnerText;
+						properties.Add (aprop);
+						break;
+					}}
 				}
 			}
 		}
