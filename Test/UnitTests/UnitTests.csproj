@@ -45,6 +45,10 @@
       <Project>{42D1CE65-A14B-4218-B787-58AD7AA68513}</Project>
       <Name>Mono.Addins.CecilReflector</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Mono.Addins.Setup\Mono.Addins.Setup.csproj">
+      <Project>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</Project>
+      <Name>Mono.Addins.Setup</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestExtensions.cs" />
@@ -69,6 +73,8 @@
     <Compile Include="TestVerifyAddinDescription.cs" />
     <Compile Include="TestAddinDescription.cs" />
     <Compile Include="ExtensionModel\Properties.cs" />
+    <Compile Include="Util.cs" />
+    <Compile Include="TestSetupService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SimpleApp.addin.xml">
@@ -81,6 +87,9 @@
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="TestManifest.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SupportFile.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -106,5 +115,16 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="ExtensionModel\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TestManifest2.xml">
+      <LogicalName>TestManifest2.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestManifest3.xml">
+      <LogicalName>TestManifest3.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestManifest2-bis.xml">
+      <LogicalName>TestManifest2-bis.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

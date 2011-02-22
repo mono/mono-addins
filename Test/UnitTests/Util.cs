@@ -1,5 +1,5 @@
 // 
-// TestLoadXmlAddinDescription.cs
+// Util.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -24,33 +24,58 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using NUnit.Framework;
-using System.IO;
-using Mono.Addins.Description;
 using System.Xml;
+using System.Text;
+using System.Collections;
+using System.IO;
 
 namespace UnitTests
 {
-	[TestFixture]
-	public class TestLoadXmlAddinDescription: TestVerifyAddinDescription
+	public static class Util
 	{
-		[SetUp]
-		public void Load ()
+		public static string Infoset (XmlNode nod)
 		{
-			string path = Path.GetFullPath ("TestManifest.xml");
-			desc = AddinDescription.Read (path);
+			StringBuilder sb = new StringBuilder ();
+			GetInfoset (nod, sb);
+			return sb.ToString ();
 		}
-		
-		[Test]
-		public void TestSave ()
+
+		static void GetInfoset (XmlNode nod, StringBuilder sb)
 		{
-			string path = Path.GetFullPath ("TestManifest.xml");
-			XmlDocument doc1 = new XmlDocument ();
-			doc1.Load (path);
-			
-			XmlDocument doc2 = desc.SaveToXml ();
-			
-			Assert.AreEqual (Util.Infoset (doc1), Util.Infoset (doc2));
+			switch (nod.NodeType) {
+			case XmlNodeType.Document:
+				GetInfoset (((XmlDocument)nod).DocumentElement, sb);
+				break;
+			case XmlNodeType.Attribute:
+				if (nod.LocalName == "xmlns" && nod.NamespaceURI == "http://www.w3.org/2000/xmlns/") return;
+				sb.Append (" " + nod.NamespaceURI + ":" + nod.LocalName + "='" + nod.Value + "'");
+				break;
+
+			case XmlNodeType.Element:
+				XmlElement elem = (XmlElement) nod;
+				sb.Append ("<" + elem.NamespaceURI + ":" + elem.LocalName);
+
+				ArrayList ats = new ArrayList ();
+				foreach (XmlAttribute at in elem.Attributes)
+					ats.Add (at.LocalName + " " + at.NamespaceURI);
+
+				ats.Sort ();
+
+				foreach (string name in ats) {
+					string[] nn = name.Split (' ');
+					GetInfoset (elem.Attributes[nn[0], nn[1]], sb);
+				}
+
+				sb.Append (">");
+				foreach (XmlNode cn in elem.ChildNodes)
+					GetInfoset (cn, sb);
+				sb.Append ("</>");
+				break;
+
+			default:
+				sb.Append (nod.OuterXml);
+				break;
+			}
 		}
 	}
 }

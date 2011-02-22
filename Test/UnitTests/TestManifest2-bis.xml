@@ -1,0 +1,9 @@
+<Addin>
+	<Header>
+		<Id>Core2</Id>
+		<Version>0.2.0</Version>
+		<Namespace>SimpleApp2</Namespace>
+		<Flags>CantUninstall</Flags>
+		<CompatVersion>0.0.2</CompatVersion>
+	</Header>
+</Addin>

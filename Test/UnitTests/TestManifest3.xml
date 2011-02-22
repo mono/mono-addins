@@ -1,0 +1,14 @@
+<Addin id          = "Core"
+       name        = "A simple application"
+       namespace   = "SimpleApp"
+       author      = "LSG"
+       copyright   = "GPL"
+       description = "Long description"
+	   category    = "SomeCategory"
+	   isroot      = "true"
+	   flags       = "CantUninstall, CantDisable, Hidden"
+       version     = "0.1.0"
+       url          = "http://somewhere.com"
+       defaultEnabled = "false"
+       compatVersion = "0.0.1">
+</Addin>

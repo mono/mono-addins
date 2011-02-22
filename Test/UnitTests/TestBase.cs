@@ -25,9 +25,6 @@ namespace UnitTests
 			AddinManager.AddinLoaded += OnLoad;
 			AddinManager.AddinUnloaded += OnUnload;
 			
-			string dir = new Uri (GetType().Assembly.CodeBase).LocalPath;
-			dir = Path.Combine (Path.GetDirectoryName (dir), "registry");
-			
 			if (firstRun) {
 				if (Directory.Exists (TempDir))
 					Directory.Delete (TempDir, true);

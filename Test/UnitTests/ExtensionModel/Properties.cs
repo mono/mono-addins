@@ -28,6 +28,7 @@ using Mono.Addins;
 
 [assembly:AddinProperty ("Prop2", "Val2")]
 [assembly:AddinProperty ("Prop2", "ca-ES", "Val2Cat")]
+[assembly:AddinProperty ("Prop3", "SupportFile.txt")]
 
 [assembly:AddinName ("Una aplicación simple", "es")]
 [assembly:AddinDescription ("Descripción de SimpleApp", "es")]

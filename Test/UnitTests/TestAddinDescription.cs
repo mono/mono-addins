@@ -29,6 +29,7 @@ using System.IO;
 using Mono.Addins.Description;
 using System.Globalization;
 using Mono.Addins;
+using System.Xml;
 
 namespace UnitTests
 {
@@ -38,7 +39,7 @@ namespace UnitTests
 		CultureInfo oldc;
 		
 		[SetUp]
-		public void Setup ()
+		public void TestSetup ()
 		{
 			oldc = System.Threading.Thread.CurrentThread.CurrentCulture;
 			CultureInfo ci = CultureInfo.GetCultureInfo("ca-ES");
@@ -46,7 +47,7 @@ namespace UnitTests
 		}
 		
 		[TearDown]
-		public void Teardown ()
+		public void TestTeardown ()
 		{
 			System.Threading.Thread.CurrentThread.CurrentCulture = oldc;
 		}
@@ -122,6 +123,68 @@ namespace UnitTests
 			Assert.AreEqual ("Descripción de SimpleApp", ad.Description.Description);
 			
 			System.Threading.Thread.CurrentThread.CurrentCulture = oldc;
+		}
+		
+		AddinDescription DescFromResource (string res)
+		{
+			using (Stream s = GetType().Assembly.GetManifestResourceStream (res)) {
+				return AddinDescription.Read (s, ".");
+			}
+		}
+		
+		XmlDocument XmlFromResource (string res)
+		{
+			using (Stream s = GetType().Assembly.GetManifestResourceStream (res)) {
+				XmlDocument doc = new XmlDocument ();
+				doc.Load (s);
+				return doc;
+			}
+		}
+		
+		[Test]
+		public void ReadCoreProperties ()
+		{
+			AddinDescription desc = DescFromResource ("TestManifest2.xml");
+			
+			Assert.AreEqual ("Core", desc.LocalId);
+			Assert.AreEqual ("0.1.0", desc.Version);
+			Assert.AreEqual ("0.0.1", desc.CompatVersion);
+			Assert.AreEqual (false, desc.EnabledByDefault);
+			Assert.AreEqual (AddinFlags.CantDisable | AddinFlags.CantUninstall | AddinFlags.Hidden, desc.Flags);
+			Assert.AreEqual (true, desc.IsRoot);
+			Assert.AreEqual ("SimpleApp", desc.Namespace);
+		}
+		
+		[Test]
+		public void WriteCorePropertiesAsElems ()
+		{
+			AddinDescription desc = DescFromResource ("TestManifest2.xml");
+			XmlDocument doc1 = XmlFromResource ("TestManifest2.xml");
+			
+			XmlDocument doc2 = desc.SaveToXml ();
+			Assert.AreEqual (Util.Infoset (doc1), Util.Infoset (doc2));
+			
+			desc.LocalId = "Core2";
+			desc.Version = "0.2.0";
+			desc.CompatVersion = "0.0.2";
+			desc.EnabledByDefault = true;
+			desc.Flags = AddinFlags.CantUninstall;
+			desc.IsRoot = false;
+			desc.Namespace = "SimpleApp2";
+			
+			doc1 = XmlFromResource ("TestManifest2-bis.xml");
+			doc2 = desc.SaveToXml ();
+			
+			Assert.AreEqual (Util.Infoset (doc1), Util.Infoset (doc2));
+		}
+		
+		[Test]
+		public void WriteCorePropertiesAsProps ()
+		{
+			AddinDescription desc = DescFromResource ("TestManifest3.xml");
+			XmlDocument doc1 = XmlFromResource ("TestManifest3.xml");
+			XmlDocument doc2 = desc.SaveToXml ();
+			Assert.AreEqual (Util.Infoset (doc1), Util.Infoset (doc2));
 		}
 	}
 }

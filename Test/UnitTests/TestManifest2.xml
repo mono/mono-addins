@@ -1,0 +1,11 @@
+<Addin>
+	<Header>
+		<Id>Core</Id>
+		<Version>0.1.0</Version>
+		<Namespace>SimpleApp</Namespace>
+		<IsRoot>true</IsRoot>
+		<Flags>CantUninstall, CantDisable, Hidden</Flags>
+		<DefaultEnabled>false</DefaultEnabled>
+		<CompatVersion>0.0.1</CompatVersion>
+	</Header>
+</Addin>

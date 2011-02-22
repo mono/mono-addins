@@ -4,7 +4,8 @@ ASSEMBLY = ./bin/Debug/UnitTests.dll
 COMPILE_TARGET = library
 PROJECT_REFERENCES =  \
 	../../bin/Mono.Addins.CecilReflector.dll \
-	../../bin/Mono.Addins.dll
+	../../bin/Mono.Addins.dll \
+	../../bin/Mono.Addins.Setup.dll
 BUILD_DIR = ./bin/Debug
 NOINSTALL=yes
 
@@ -36,13 +37,18 @@ FILES =  \
 	TestLoadXmlAddinDescription.cs \
 	TestLocalization.cs \
 	TestSetup.cs \
-	TestVerifyAddinDescription.cs 
+	TestSetupService.cs \
+	TestVerifyAddinDescription.cs \
+	Util.cs 
 
 DATA_FILES =  \
 	SimpleApp.addin.xml \
 	test.addins 
 
-RESOURCES = 
+RESOURCES =  \
+	TestManifest2.xml \
+	TestManifest2-bis.xml \
+	TestManifest3.xml 
 
 EXTRAS = 
 

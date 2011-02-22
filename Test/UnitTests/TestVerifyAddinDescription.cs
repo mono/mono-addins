@@ -206,7 +206,6 @@ namespace UnitTests
 		[Test]
 		public void ModuleExtensions ()
 		{
-			ModuleDescription mod = desc.OptionalModules [0];
 			Assert.AreEqual (2, desc.MainModule.Extensions.Count);
 			Extension ex = desc.MainModule.Extensions [0];
 			Assert.AreEqual ("/SimpleApp/TestEP2", ex.Path);
