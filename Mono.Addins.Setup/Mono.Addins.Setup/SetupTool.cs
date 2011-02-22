@@ -385,22 +385,65 @@ namespace Mono.Addins.Setup
 				service.Repositories.RegisterRepository (new ConsoleProgressStatus (verbose), rep);
 		}
 		
+		string GetRepositoryUrl (string url)
+		{
+			AddinRepository[] reps = GetRepositoryList ();
+			int nr;
+			if (int.TryParse (url, out nr)) {
+				if (nr < 0 || nr >= reps.Length)
+					throw new InstallException ("Invalid repository number.");
+				return reps[nr].Url;
+			} else {
+				if (!service.Repositories.ContainsRepository (url))
+					throw new InstallException ("Repository not registered.");
+				return url;
+			}
+		}
+		
 		void RemoveRepository (string[] args)
 		{
+			foreach (string rep in args) {
+				service.Repositories.RemoveRepository (GetRepositoryUrl (rep));
+			}
+		}
+		
+		void EnableRepository (string[] args)
+		{
 			foreach (string rep in args)
-				service.Repositories.RemoveRepository (rep);
+				service.Repositories.SetRepositoryEnabled (GetRepositoryUrl(rep), true);
+		}
+		
+		void DisableRepository (string[] args)
+		{
+			foreach (string rep in args)
+				service.Repositories.SetRepositoryEnabled (GetRepositoryUrl(rep), false);
+		}
+		
+		AddinRepository[] GetRepositoryList ()
+		{
+			AddinRepository[] reps = service.Repositories.GetRepositories ();
+			Array.Sort (reps, (r1,r2) => r1.Title.CompareTo(r2.Title));
+			return reps;
 		}
 		
 		void ListRepositories (string[] args)
 		{
-			AddinRepository[] reps = service.Repositories.GetRepositories ();
+			AddinRepository[] reps = GetRepositoryList ();
 			if (reps.Length == 0) {
 				Console.WriteLine ("No repositories have been registered.");
 				return;
 			}
+			int n = 0;
 			Console.WriteLine ("Registered repositories:");
 			foreach (RepositoryRecord rep in reps) {
-				Console.WriteLine (" - " + rep.Title);
+				string num = n.ToString ();
+				Console.Write (num + ") ");
+				if (!rep.Enabled)
+					Console.Write ("(Disabled) ");
+				Console.WriteLine (rep.Title);
+				if (rep.Title != rep.Url)
+					Console.WriteLine (new string (' ', num.Length + 2) + rep.Url);
+				n++;
 			}
 		}
 		
@@ -876,6 +919,8 @@ namespace Mono.Addins.Setup
 			if (parms.Length == 0) {
 				string lastCat = null;
 				foreach (SetupCommand cmd in commands) {
+					if (cmd.Command == "help")
+						continue;
 					if (lastCat != cmd.Category) {
 						Console.WriteLine ();
 						Console.WriteLine (cmd.Category + ":");
@@ -899,7 +944,11 @@ namespace Mono.Addins.Setup
 					Console.WriteLine ();
 					Console.WriteLine ("Usage: {0}{1}", setupAppName, cmd.Usage);
 					Console.WriteLine ();
-					Console.WriteLine (cmd.LongDescription);
+					
+					TextFormatter fm = new TextFormatter ();
+					fm.Wrap = WrappingType.Word;
+					fm.Append (cmd.LongDescription);
+					Console.WriteLine (fm.ToString ());
 				}
 				else
 					Console.WriteLine ("Unknown command: " + parms [0]);
@@ -917,7 +966,7 @@ namespace Mono.Addins.Setup
 			cmd.Usage = "[package-name|package-file] ...";
 			cmd.AppendDesc ("Installs an add-in or set of addins. The command argument is a list");
 			cmd.AppendDesc ("of files and/or package names. If a package name is provided");
-			cmd.AppendDesc ("the package will be looked out in the registered repositories.");
+			cmd.AppendDesc ("the package will be looked up in the registered repositories.");
 			cmd.AppendDesc ("A specific add-in version can be specified by appending it to.");
 			cmd.AppendDesc ("the package name using '/' as a separator, like in this example:");
 			cmd.AppendDesc ("MonoDevelop.SourceEditor/0.9.1");
@@ -971,8 +1020,28 @@ namespace Mono.Addins.Setup
 
 			cmd = new SetupCommand (cat, "rep-remove", "rr", new SetupCommandHandler (RemoveRepository));
 			cmd.Description = "Unregisters repositories.";
-			cmd.Usage = "<url> ...";
+			cmd.Usage = "<url or number> ...";
 			cmd.AppendDesc ("Unregisters an add-in repository. Several URLs can be provided.");
+			cmd.AppendDesc ("Instead of an url, a repository number can be used (repository numbers are");
+			cmd.AppendDesc ("shown by the rep-list command.");
+			commands.Add (cmd);
+
+			cmd = new SetupCommand (cat, "rep-enable", "re", new SetupCommandHandler (EnableRepository));
+			cmd.Description = "Enables repositories.";
+			cmd.Usage = "<url or number> ...";
+			cmd.AppendDesc ("Enables an add-in repository which has been disabled. Several URLs can be");
+			cmd.AppendDesc ("provided. Instead of an url, a repository number can be used (repository");
+			cmd.AppendDesc ("numbers are shown by the rep-list command.");
+			commands.Add (cmd);
+
+			cmd = new SetupCommand (cat, "rep-disable", "rd", new SetupCommandHandler (DisableRepository));
+			cmd.Description = "Disables repositories.";
+			cmd.Usage = "<url> ...";
+			cmd.AppendDesc ("Disables an add-in repository. Several URLs can be provided");
+			cmd.AppendDesc ("When a repository is disabled, it will be ignored when using the update and");
+			cmd.AppendDesc ("install commands.");
+			cmd.AppendDesc ("Instead of an url, a repository number can be used (repository numbers are");
+			cmd.AppendDesc ("shown by the rep-list command.");
 			commands.Add (cmd);
 
 			cmd = new SetupCommand (cat, "rep-update", "ru", new SetupCommandHandler (UpdateAvailableAddins));
@@ -1001,10 +1070,10 @@ namespace Mono.Addins.Setup
 			cmd = new SetupCommand (cat, "info", null, new SetupCommandHandler (PrintAddinInfo));
 			cmd.Usage = "[addin-id|addin-file] [--xml] [--all] [--full] [--namespace <namespace>]";
 			cmd.Description = "Prints information about add-ins.";
-			cmd.AppendDesc ("Prints information about add-ins. Options:");
-			cmd.AppendDesc (" --xml: Dump the information using an XML format.");
-			cmd.AppendDesc (" --all: Dump information from all add-ins.");
-			cmd.AppendDesc (" --full: Include add-ins which don't define extension points.");
+			cmd.AppendDesc ("Prints information about add-ins. Options:\n");
+			cmd.AppendDesc (" --xml: Dump the information using an XML format.\n");
+			cmd.AppendDesc (" --all: Dump information from all add-ins.\n");
+			cmd.AppendDesc (" --full: Include add-ins which don't define extension points.\n");
 			cmd.AppendDesc (" --namespace ns: Include only add-ins from the specified 'ns' namespace.");
 			commands.Add (cmd);
 
@@ -1072,7 +1141,7 @@ namespace Mono.Addins.Setup
 		
 		public void AppendDesc (string s)
 		{
-			LongDescription += s + "\n";
+			LongDescription += s + " ";
 		}
 		
 		public string Category;

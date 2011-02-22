@@ -79,6 +79,7 @@
     <Compile Include="Mono.Addins.Setup\ConsoleAddinInstaller.cs" />
     <Compile Include="Mono.Addins.Setup\PcFileCache.cs" />
     <Compile Include="Mono.Addins.Setup\AddinPropertyCollection.cs" />
+    <Compile Include="Mono.Addins.Setup\TextFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

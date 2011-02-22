@@ -43,7 +43,8 @@ FILES =  \
 	Mono.Addins.Setup/RepositoryRegistry.cs \
 	Mono.Addins.Setup/RepositorySerializer.cs \
 	Mono.Addins.Setup/SetupService.cs \
-	Mono.Addins.Setup/SetupTool.cs
+	Mono.Addins.Setup/SetupTool.cs \
+	Mono.Addins.Setup/TextFormatter.cs
 
 DATA_FILES = 
 
