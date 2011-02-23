@@ -148,6 +148,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="Mono.Addins.Gui.AddinManagerDialog" design-size="840 534">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Add-in Manager</property>
     <property name="TypeHint">Dialog</property>
