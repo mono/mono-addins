@@ -20,6 +20,8 @@ namespace Mono.Addins.Gui
 		private global::Gtk.EventBox ebox2;
 		private global::Gtk.VBox vboxDesc;
 		private global::Gtk.Label labelDesc;
+		private global::Gtk.HBox hbox3;
+		private global::Gtk.Button urlButton;
 		private global::Gtk.EventBox eboxButs;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Button btnInstall;
@@ -155,15 +157,52 @@ namespace Mono.Addins.Gui
 			w11.Position = 0;
 			w11.Expand = false;
 			w11.Fill = false;
+			// Container child vboxDesc.Gtk.Box+BoxChild
+			this.hbox3 = new global::Gtk.HBox ();
+			this.hbox3.Name = "hbox3";
+			this.hbox3.Spacing = 6;
+			// Container child hbox3.Gtk.Box+BoxChild
+			this.urlButton = new global::Gtk.Button ();
+			this.urlButton.CanFocus = true;
+			this.urlButton.Name = "urlButton";
+			this.urlButton.UseUnderline = true;
+			this.urlButton.Relief = ((global::Gtk.ReliefStyle)(2));
+			// Container child urlButton.Gtk.Container+ContainerChild
+			global::Gtk.Alignment w12 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
+			// Container child GtkAlignment.Gtk.Container+ContainerChild
+			global::Gtk.HBox w13 = new global::Gtk.HBox ();
+			w13.Spacing = 2;
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Image w14 = new global::Gtk.Image ();
+			w14.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("web.png");
+			w13.Add (w14);
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Label w16 = new global::Gtk.Label ();
+			w16.LabelProp = global::Mono.Unix.Catalog.GetString ("More information");
+			w16.UseUnderline = true;
+			w13.Add (w16);
+			w12.Add (w13);
+			this.urlButton.Add (w12);
+			this.hbox3.Add (this.urlButton);
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.urlButton]));
+			w20.Position = 0;
+			w20.Expand = false;
+			w20.Fill = false;
+			this.vboxDesc.Add (this.hbox3);
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vboxDesc [this.hbox3]));
+			w21.PackType = ((global::Gtk.PackType)(1));
+			w21.Position = 2;
+			w21.Expand = false;
+			w21.Fill = false;
 			this.ebox2.Add (this.vboxDesc);
 			w10.Add (this.ebox2);
 			this.scrolledwindow.Add (w10);
 			this.vbox3.Add (this.scrolledwindow);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.scrolledwindow]));
-			w15.Position = 1;
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.scrolledwindow]));
+			w25.Position = 1;
 			this.vbox6.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.vbox3]));
-			w16.Position = 1;
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.vbox3]));
+			w26.Position = 1;
 			// Container child vbox6.Gtk.Box+BoxChild
 			this.eboxButs = new global::Gtk.EventBox ();
 			this.eboxButs.Name = "eboxButs";
@@ -177,52 +216,52 @@ namespace Mono.Addins.Gui
 			this.btnInstall.Name = "btnInstall";
 			this.btnInstall.UseUnderline = true;
 			// Container child btnInstall.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w17 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
+			global::Gtk.Alignment w27 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w18 = new global::Gtk.HBox ();
-			w18.Spacing = 2;
+			global::Gtk.HBox w28 = new global::Gtk.HBox ();
+			w28.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w19 = new global::Gtk.Image ();
-			w19.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("download.png");
-			w18.Add (w19);
+			global::Gtk.Image w29 = new global::Gtk.Image ();
+			w29.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("download.png");
+			w28.Add (w29);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w21 = new global::Gtk.Label ();
-			w21.LabelProp = global::Mono.Unix.Catalog.GetString ("Install...");
-			w21.UseUnderline = true;
-			w18.Add (w21);
-			w17.Add (w18);
-			this.btnInstall.Add (w17);
+			global::Gtk.Label w31 = new global::Gtk.Label ();
+			w31.LabelProp = global::Mono.Unix.Catalog.GetString ("Install...");
+			w31.UseUnderline = true;
+			w28.Add (w31);
+			w27.Add (w28);
+			this.btnInstall.Add (w27);
 			this.hbox1.Add (this.btnInstall);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnInstall]));
-			w25.Position = 0;
-			w25.Expand = false;
-			w25.Fill = false;
+			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnInstall]));
+			w35.Position = 0;
+			w35.Expand = false;
+			w35.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.btnUpdate = new global::Gtk.Button ();
 			this.btnUpdate.CanFocus = true;
 			this.btnUpdate.Name = "btnUpdate";
 			this.btnUpdate.UseUnderline = true;
 			// Container child btnUpdate.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w26 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
+			global::Gtk.Alignment w36 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w27 = new global::Gtk.HBox ();
-			w27.Spacing = 2;
+			global::Gtk.HBox w37 = new global::Gtk.HBox ();
+			w37.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w28 = new global::Gtk.Image ();
-			w28.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("download.png");
-			w27.Add (w28);
+			global::Gtk.Image w38 = new global::Gtk.Image ();
+			w38.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("download.png");
+			w37.Add (w38);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w30 = new global::Gtk.Label ();
-			w30.LabelProp = global::Mono.Unix.Catalog.GetString ("Update");
-			w30.UseUnderline = true;
-			w27.Add (w30);
-			w26.Add (w27);
-			this.btnUpdate.Add (w26);
+			global::Gtk.Label w40 = new global::Gtk.Label ();
+			w40.LabelProp = global::Mono.Unix.Catalog.GetString ("Update");
+			w40.UseUnderline = true;
+			w37.Add (w40);
+			w36.Add (w37);
+			this.btnUpdate.Add (w36);
 			this.hbox1.Add (this.btnUpdate);
-			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnUpdate]));
-			w34.Position = 1;
-			w34.Expand = false;
-			w34.Fill = false;
+			global::Gtk.Box.BoxChild w44 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnUpdate]));
+			w44.Position = 1;
+			w44.Expand = false;
+			w44.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.btnDisable = new global::Gtk.Button ();
 			this.btnDisable.CanFocus = true;
@@ -230,10 +269,10 @@ namespace Mono.Addins.Gui
 			this.btnDisable.UseUnderline = true;
 			this.btnDisable.Label = global::Mono.Unix.Catalog.GetString ("Disable");
 			this.hbox1.Add (this.btnDisable);
-			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnDisable]));
-			w35.Position = 2;
-			w35.Expand = false;
-			w35.Fill = false;
+			global::Gtk.Box.BoxChild w45 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnDisable]));
+			w45.Position = 2;
+			w45.Expand = false;
+			w45.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.btnUninstall = new global::Gtk.Button ();
 			this.btnUninstall.CanFocus = true;
@@ -241,22 +280,23 @@ namespace Mono.Addins.Gui
 			this.btnUninstall.UseUnderline = true;
 			this.btnUninstall.Label = global::Mono.Unix.Catalog.GetString ("_Uninstall...");
 			this.hbox1.Add (this.btnUninstall);
-			global::Gtk.Box.BoxChild w36 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnUninstall]));
-			w36.Position = 3;
-			w36.Expand = false;
-			w36.Fill = false;
+			global::Gtk.Box.BoxChild w46 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnUninstall]));
+			w46.Position = 3;
+			w46.Expand = false;
+			w46.Fill = false;
 			this.eboxButs.Add (this.hbox1);
 			this.vbox6.Add (this.eboxButs);
-			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.eboxButs]));
-			w38.Position = 2;
-			w38.Expand = false;
-			w38.Fill = false;
+			global::Gtk.Box.BoxChild w48 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.eboxButs]));
+			w48.Position = 2;
+			w48.Expand = false;
+			w48.Fill = false;
 			this.ebox.Add (this.vbox6);
 			this.Add (this.ebox);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
+			this.urlButton.Clicked += new global::System.EventHandler (this.OnUrlButtonClicked);
 			this.btnInstall.Clicked += new global::System.EventHandler (this.OnBtnInstallClicked);
 			this.btnUpdate.Clicked += new global::System.EventHandler (this.OnBtnUpdateClicked);
 			this.btnDisable.Clicked += new global::System.EventHandler (this.OnBtnDisableClicked);

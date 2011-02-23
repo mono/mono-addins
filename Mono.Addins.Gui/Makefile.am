@@ -69,7 +69,8 @@ RESOURCES =  \
 	icons/software-update-available-overlay.png \
 	icons/system-software-update.png \
 	icons/system-software-update_22.png \
-	icons/user-package.png 
+	icons/user-package.png \
+	icons/web.png 
 
 EXTRAS = \
 	./Makefile.am 
