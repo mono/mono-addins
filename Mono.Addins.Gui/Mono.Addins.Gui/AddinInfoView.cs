@@ -43,6 +43,7 @@ namespace Mono.Addins.Gui
 		List<Gtk.Widget> previewImages = new List<Gtk.Widget> ();
 		ImageContainer titleIcon;
 		int titleWidth;
+		string infoUrl;
 		
 		public event EventHandler InstallClicked;
 		public event EventHandler UninstallClicked;
@@ -98,6 +99,7 @@ namespace Mono.Addins.Gui
 			selectedAddin.Clear ();
 			eboxButs.Visible = true;
 			topHeaderBox.Hide ();
+			urlButton.Hide ();
 			
 			if (titleIcon != null) {
 				boxTitle.Remove (titleIcon);
@@ -296,6 +298,9 @@ namespace Mono.Addins.Gui
 				foreach (var img in previewImages)
 					vboxDesc.PackStart (img, false, false, 0);
 				
+				urlButton.Visible = !string.IsNullOrEmpty (sinfo.Url);
+				infoUrl = sinfo.Url;
+				
 				if (titleIcon != null) {
 					boxTitle.PackEnd (titleIcon, false, false, 0);
 					labelName.WidthRequest = titleWidth - 32;
@@ -367,6 +372,11 @@ namespace Mono.Addins.Gui
 				titleIcon.ModifyBg (Gtk.StateType.Normal, gcol);
 			foreach (var i in previewImages)
 				i.ModifyBg (Gtk.StateType.Normal, gcol);
+		}
+		
+		protected virtual void OnUrlButtonClicked (object sender, System.EventArgs e)
+		{
+			System.Diagnostics.Process.Start (infoUrl);
 		}
 	}
 	

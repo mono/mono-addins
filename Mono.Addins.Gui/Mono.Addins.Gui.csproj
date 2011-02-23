@@ -147,6 +147,9 @@
     <EmbeddedResource Include="icons\installed-overlay.png">
       <LogicalName>installed-overlay.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\web.png">
+      <LogicalName>web.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
