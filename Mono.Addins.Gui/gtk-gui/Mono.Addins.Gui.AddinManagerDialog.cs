@@ -391,7 +391,7 @@ namespace Mono.Addins.Gui
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.Show ();
+			this.Hide ();
 			this.addininfoInstalled.InstallClicked += new global::System.EventHandler (this.OnInstallClicked);
 			this.addininfoInstalled.UninstallClicked += new global::System.EventHandler (this.OnUninstallClicked);
 			this.addininfoInstalled.UpdateClicked += new global::System.EventHandler (this.OnUpdateClicked);

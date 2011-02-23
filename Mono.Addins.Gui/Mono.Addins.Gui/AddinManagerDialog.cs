@@ -69,6 +69,7 @@ namespace Mono.Addins.Gui
 			Build ();
 			TransientFor = parent;
 			HasSeparator = false;
+			Services.PlaceDialog (this, parent);
 			
 			addininfoInstalled.Init (service);
 			addininfoGallery.Init (service);
