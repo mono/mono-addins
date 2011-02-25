@@ -1351,7 +1351,8 @@ namespace Mono.Addins.Database
 			if (file != null)
 				return Util.LoadAssemblyForReflection (file);
 			else {
-				Console.WriteLine ("Assembly not found: " + args.Name);
+				if (!args.Name.StartsWith ("Mono.Addins.CecilReflector"))
+					Console.WriteLine ("Assembly not found: " + args.Name);
 				return null;
 			}
 		}
