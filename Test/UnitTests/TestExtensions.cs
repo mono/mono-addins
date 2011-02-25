@@ -162,8 +162,12 @@ namespace UnitTests
 			Assert.IsNotNull (n2);
 			Assert.AreEqual ("meta1", n1.Data.Name, "t1");
 			Assert.AreEqual (1, n1.Data.Version, "t2");
+			IWriterWithMetadata md = (IWriterWithMetadata) n1.CreateInstance ();
+			Assert.AreEqual ("mt1", md.Write ());
 			Assert.AreEqual ("meta2", n2.Data.Name, "t3");
 			Assert.AreEqual (2, n2.Data.Version, "t4");
+			md = (IWriterWithMetadata) n2.CreateInstance ();
+			Assert.AreEqual ("mt2", md.Write ());
 		}
 		
 		[Test()]
