@@ -29,7 +29,7 @@ using SimpleApp;
 
 namespace HelloWorldExtension
 {
-	[WriterWithMetadata ("meta1", 1)]
+	[WriterWithMetadata ("meta1", 1, Id="xxx")]
 	public class HelloWriterWithMetadata: IWriterWithMetadata
 	{
 		public string Write ()
