@@ -172,12 +172,6 @@
     <Compile Include="Mono.Addins.CecilReflector\Reflector.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="NOTES.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="mono.snk" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
