@@ -143,11 +143,6 @@
     <Compile Include="Mono.Addins\AddinDescriptionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Mono.Addins.dll.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="ChangeLog" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
