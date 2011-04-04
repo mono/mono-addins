@@ -159,7 +159,7 @@ namespace Mono.Addins.Gui
 			filterEntry = new SearchEntry ();
 			filterEntry.Entry.SetSizeRequest (200, filterEntry.Entry.SizeRequest ().Height);
 			filterEntry.Parent = notebook;
-			filterEntry.Show ();
+			filterEntry.ShowAll ();
 			notebook.SizeAllocated += delegate {
 				RepositionFilter ();
 			};
@@ -223,7 +223,7 @@ namespace Mono.Addins.Gui
 			
 			int count = 0;
 			tree.Clear ();
-			foreach (Addin ainfo in AddinManager.Registry.GetAddins ()) {
+			foreach (Addin ainfo in AddinManager.Registry.GetModules (AddinSearchFlags.IncludeAddins | AddinSearchFlags.LatestVersionsOnly)) {
 				if (Services.InApplicationNamespace (service, ainfo.Id) && !ainfo.Description.IsHidden) {
 					AddinHeader ah = SetupService.GetAddinHeader (ainfo);
 					if (IsFiltered (ah))
@@ -285,9 +285,9 @@ namespace Mono.Addins.Gui
 			
 			AddinRepositoryEntry[] reps;
 			if (rep == AllRepoMarker)
-				reps = service.Repositories.GetAvailableAddins ();
+				reps = service.Repositories.GetAvailableAddins (RepositorySearchFlags.LatestVersionsOnly);
 			else
-				reps = service.Repositories.GetAvailableAddins (rep);
+				reps = service.Repositories.GetAvailableAddins (rep, RepositorySearchFlags.LatestVersionsOnly);
 			
 			int count = 0;
 			
@@ -333,7 +333,7 @@ namespace Mono.Addins.Gui
 			updatesTree.Clear ();
 			
 			AddinRepositoryEntry[] reps;
-			reps = service.Repositories.GetAvailableAddins ();
+			reps = service.Repositories.GetAvailableAddins (RepositorySearchFlags.LatestVersionsOnly);
 			
 			int count = 0;
 			
@@ -344,7 +344,7 @@ namespace Mono.Addins.Gui
 				
 				// Find whatever version is installed
 				Addin sinfo = AddinManager.Registry.GetAddin (Addin.GetIdName (arep.Addin.Id));
-				if (sinfo == null || Addin.CompareVersions (sinfo.Version, arep.Addin.Version) <= 0)
+				if (sinfo == null || !sinfo.Enabled || Addin.CompareVersions (sinfo.Version, arep.Addin.Version) <= 0)
 					continue;
 				
 				if (IsFiltered (arep.Addin))
