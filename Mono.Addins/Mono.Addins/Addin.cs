@@ -49,6 +49,7 @@ namespace Mono.Addins
 		WeakReference desc;
 		AddinDatabase database;
 		bool? isLatestVersion;
+		bool? isUserAddin;
 		
 		internal Addin (AddinDatabase database, string file)
 		{
@@ -191,7 +192,19 @@ namespace Mono.Addins
 		/// Returns 'true' if the add-in is installed in the user's personal folder
 		/// </summary>
 		public bool IsUserAddin {
-			get { return configFile.StartsWith (Environment.GetFolderPath (Environment.SpecialFolder.Personal)); }
+			get {
+				if (isUserAddin == null)
+					SetIsUserAddin (Description);
+				return isUserAddin.Value;
+			}
+		}
+		
+		void SetIsUserAddin (AddinDescription adesc)
+		{
+			string installPath = database.Registry.DefaultAddinsFolder;
+			if (installPath [installPath.Length - 1] != Path.DirectorySeparatorChar)
+				installPath += Path.DirectorySeparatorChar;
+			isUserAddin = adesc != null && Path.GetFullPath (adesc.AddinFile).StartsWith (installPath);
 		}
 		
 		/// <summary>
@@ -247,6 +260,9 @@ namespace Mono.Addins
 					addin = AddinInfo.ReadFromDescription (m);
 					sourceFile = m.AddinFile;
 				}
+				SetIsUserAddin (m);
+				if (!isUserAddin.Value)
+					m.Flags |= AddinFlags.CantUninstall;
 				desc = new WeakReference (m);
 				return m;
 			}

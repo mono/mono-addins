@@ -110,6 +110,12 @@ namespace Mono.Addins.Database
 			}
 		}
 		
+		public AddinRegistry Registry {
+			get {
+				return this.registry;
+			}
+		}
+		
 		public void Clear ()
 		{
 			if (Directory.Exists (AddinCachePath))
