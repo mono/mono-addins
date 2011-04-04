@@ -411,7 +411,7 @@ namespace Mono.Addins.Setup
 				AddinPackage ap = p as AddinPackage;
 				if (ap != null) {
 					Addin ia = service.Registry.GetAddin (ap.Addin.Id);
-					if (File.Exists (ia.AddinFile) && !HasWriteAccess (ia.AddinFile)) {
+					if (File.Exists (ia.AddinFile) && !HasWriteAccess (ia.AddinFile) && IsUserAddin (ia.AddinFile)) {
 						monitor.ReportError (GetUninstallErrorNoRoot (ap.Addin), null);
 						return false;
 					}
@@ -665,6 +665,14 @@ namespace Mono.Addins.Setup
 				}
 			} else
 				return false;
+		}
+		
+		internal bool IsUserAddin (string addinFile)
+		{
+			string installPath = service.InstallDirectory;
+			if (installPath [installPath.Length - 1] != Path.DirectorySeparatorChar)
+				installPath += Path.DirectorySeparatorChar;
+			return Path.GetFullPath (addinFile).StartsWith (installPath);
 		}
 		
 		internal static string GetUninstallErrorNoRoot (AddinHeader ainfo)

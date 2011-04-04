@@ -48,6 +48,7 @@ namespace Mono.Addins.Setup
 		string packFile;
 		string url;
 		string tempFolder;
+		bool disablingOnUninstall;
 		string configFile;
 		bool installed;
 		Addin iaddin;
@@ -226,6 +227,12 @@ namespace Mono.Addins.Setup
 				return;
 			}
 			
+			// The add-in is a core application add-in. It can't be uninstalled, so it will be disabled.
+			if (!service.IsUserAddin (iaddin.AddinFile)) {
+				disablingOnUninstall = true;
+				return;
+			}
+			
 			if (!service.HasWriteAccess (iaddin.AddinFile))
 				throw new InstallException (AddinStore.GetUninstallErrorNoRoot (info));
 
@@ -243,12 +250,19 @@ namespace Mono.Addins.Setup
 		
 		internal override void CommitUninstall (IProgressMonitor monitor, AddinStore service)
 		{
+			if (disablingOnUninstall) {
+				disablingOnUninstall = false;
+				service.Registry.DisableAddin (info.Id);
+				return;
+			}
+			
 			if (tempFolder == null)
 				return;
 
 			monitor.Log.WriteLine ("Uninstalling " + info.Name + " v" + info.Version);
 			
 			AddinDescription conf = iaddin.Description;
+			
 			string basePath = Path.GetDirectoryName (conf.AddinFile);
 			
 			foreach (string relPath in conf.AllFiles) {
@@ -282,6 +296,7 @@ namespace Mono.Addins.Setup
 		
 		internal override void RollbackUninstall (IProgressMonitor monitor, AddinStore service)
 		{
+			disablingOnUninstall = false;
 			if (tempFolder != null) {
 				AddinDescription conf = iaddin.Description;
 				string configFile = Path.Combine (tempFolder, Path.GetFileName (iaddin.AddinFile));
