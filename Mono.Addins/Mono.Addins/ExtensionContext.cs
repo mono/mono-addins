@@ -1090,7 +1090,7 @@ namespace Mono.Addins
 				AddinEngine.ReportError ("Required add-in not found", id, null, false);
 				return null;
 			}
-			if (!pinfo.Enabled)
+			if (!pinfo.Enabled || pinfo.Version != Addin.GetIdVersion (id))
 				return null;
 				
 			// Loads extensions defined in each module

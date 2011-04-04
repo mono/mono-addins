@@ -47,9 +47,9 @@ namespace Mono.Addins.Database
 		
 		public const string VersionTag = "001";
 
-		ArrayList allSetupInfos;
-		ArrayList addinSetupInfos;
-		ArrayList rootSetupInfos;
+		List<Addin> allSetupInfos;
+		List<Addin> addinSetupInfos;
+		List<Addin> rootSetupInfos;
 		internal static bool RunningSetupProcess;
 		bool fatalDatabseError;
 		Hashtable cachedAddinSetupInfos = new Hashtable ();
@@ -176,53 +176,71 @@ namespace Mono.Addins.Database
 			return null;
 		}
 		
-		public ArrayList GetInstalledAddins (string domain, AddinType type)
+		public IEnumerable<Addin> GetInstalledAddins (string domain, AddinSearchFlags flags)
 		{
-			if (type == AddinType.All) {
+			if (domain == null)
+				domain = registry.CurrentDomain;
+			
+			// Get the cached list if the add-in list has already been loaded.
+			// The domain doesn't have to be checked again, since it is always the same
+			
+			IEnumerable<Addin> result = null;
+			
+			if ((flags & AddinSearchFlags.IncludeAll) == AddinSearchFlags.IncludeAll) {
 				if (allSetupInfos != null)
-					return allSetupInfos;
+					result = allSetupInfos;
 			}
-			else if (type == AddinType.Addin) {
+			else if ((flags & AddinSearchFlags.IncludeAddins) == AddinSearchFlags.IncludeAddins) {
 				if (addinSetupInfos != null)
-					return addinSetupInfos;
+					result = addinSetupInfos;
 			}
 			else {
 				if (rootSetupInfos != null)
-					return rootSetupInfos;
+					result = rootSetupInfos;
 			}
-		
-			InternalCheck (domain);
 			
-			using (fileDatabase.LockRead ()) {
-				return InternalGetInstalledAddins (domain, null, type);
+			if (result == null) {
+				InternalCheck (domain);
+				using (fileDatabase.LockRead ()) {
+					result = InternalGetInstalledAddins (domain, null, flags & ~AddinSearchFlags.LatestVersionsOnly);
+				}
 			}
+			
+			if ((flags & AddinSearchFlags.LatestVersionsOnly) == AddinSearchFlags.LatestVersionsOnly)
+				return result.Where (a => a.IsLatestVersion);
+			else
+				return result;
 		}
 		
-		ArrayList InternalGetInstalledAddins (string domain, AddinType type)
+		IEnumerable<Addin> InternalGetInstalledAddins (string domain, AddinSearchFlags type)
 		{
 			return InternalGetInstalledAddins (domain, null, type);
 		}
 		
-		ArrayList InternalGetInstalledAddins (string domain, string idFilter, AddinType type)
+		IEnumerable<Addin> InternalGetInstalledAddins (string domain, string idFilter, AddinSearchFlags type)
 		{
+			if ((type & AddinSearchFlags.LatestVersionsOnly) != 0)
+				throw new InvalidOperationException ("LatestVersionsOnly flag not supported here");
+			
 			if (allSetupInfos == null) {
-				ArrayList alist = new ArrayList ();
+				List<Addin> alist = new List<Addin> ();
 
 				// Global add-ins are valid for any private domain
 				if (domain != AddinDatabase.GlobalDomain)
 					FindInstalledAddins (alist, AddinDatabase.GlobalDomain, idFilter);
 
 				FindInstalledAddins (alist, domain, idFilter);
+				UpdateLastVersionFlags (alist);
 				if (idFilter != null)
 					return alist;
 				allSetupInfos = alist;
 			}
-			if (type == AddinType.All)
+			if ((type & AddinSearchFlags.IncludeAll) == AddinSearchFlags.IncludeAll)
 				return FilterById (allSetupInfos, idFilter);
 			
-			if (type == AddinType.Addin) {
+			if ((type & AddinSearchFlags.IncludeAddins) == AddinSearchFlags.IncludeAddins) {
 				if (addinSetupInfos == null) {
-					addinSetupInfos = new ArrayList ();
+					addinSetupInfos = new List<Addin> ();
 					foreach (Addin adn in allSetupInfos)
 						if (!adn.Description.IsRoot)
 							addinSetupInfos.Add (adn);
@@ -231,7 +249,7 @@ namespace Mono.Addins.Database
 			}
 			else {
 				if (rootSetupInfos == null) {
-					rootSetupInfos = new ArrayList ();
+					rootSetupInfos = new List<Addin> ();
 					foreach (Addin adn in allSetupInfos)
 						if (adn.Description.IsRoot)
 							rootSetupInfos.Add (adn);
@@ -240,19 +258,14 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		ArrayList FilterById (ArrayList addins, string id)
+		IEnumerable<Addin> FilterById (List<Addin> addins, string id)
 		{
 			if (id == null)
 				return addins;
-			ArrayList list = new ArrayList ();
-			foreach (Addin adn in addins) {
-				if (Addin.GetIdName (adn.Id) == id)
-					list.Add (adn);
-			}
-			return list;
+			return addins.Where (a => Addin.GetIdName (a.Id) == id);
 		}
 
-		void FindInstalledAddins (ArrayList result, string domain, string idFilter)
+		void FindInstalledAddins (List<Addin> result, string domain, string idFilter)
 		{
 			if (idFilter == null) 
 				idFilter = "*";
@@ -262,6 +275,23 @@ namespace Mono.Addins.Database
 					string id = Path.GetFileNameWithoutExtension (file);
 					result.Add (GetInstalledDomainAddin (domain, id, true, false, false));
 				}
+			}
+		}
+		
+		void UpdateLastVersionFlags (List<Addin> addins)
+		{
+			Dictionary<string,string> versions = new Dictionary<string, string> ();
+			foreach (Addin a in addins) {
+				string last;
+				string id, version;
+				Addin.GetIdParts (a.Id, out id, out version);
+				if (!versions.TryGetValue (id, out last) || Addin.CompareVersions (last, version) > 0)
+					versions [id] = version;
+			}
+			foreach (Addin a in addins) {
+				string id, version;
+				Addin.GetIdParts (a.Id, out id, out version);
+				a.IsLatestVersion = versions [id] == version;
 			}
 		}
 
@@ -329,7 +359,7 @@ namespace Mono.Addins.Database
 					string version, name, bestVersion = null;
 					Addin.GetIdParts (id, out name, out version);
 					
-					foreach (Addin ia in InternalGetInstalledAddins (domain, name, AddinType.All)) 
+					foreach (Addin ia in InternalGetInstalledAddins (domain, name, AddinSearchFlags.IncludeAll)) 
 					{
 						if ((!enabledOnly || ia.Enabled) &&
 						    (version.Length == 0 || ia.SupportsVersion (version)) && 
@@ -450,7 +480,7 @@ namespace Mono.Addins.Database
 			try {
 				string idName = Addin.GetIdName (id);
 				
-				foreach (Addin ainfo in GetInstalledAddins (domain, AddinType.Addin)) {
+				foreach (Addin ainfo in GetInstalledAddins (domain, AddinSearchFlags.IncludeAddins)) {
 					foreach (Dependency dep in ainfo.AddinInfo.Dependencies) {
 						AddinDependency adep = dep as AddinDependency;
 						if (adep == null)
@@ -970,7 +1000,7 @@ namespace Mono.Addins.Database
 				
 				if (domain != null) {
 					using (fileDatabase.LockRead ()) {
-						foreach (Addin ainfo in InternalGetInstalledAddins (domain, AddinType.Addin)) {
+						foreach (Addin ainfo in InternalGetInstalledAddins (domain, AddinSearchFlags.IncludeAddins)) {
 							installed [ainfo.Id] = ainfo.Id;
 						}
 					}
@@ -989,7 +1019,7 @@ namespace Mono.Addins.Database
 			// Update the currently loaded add-ins
 			if (changesFound && domain != null && addinEngine != null && addinEngine.IsInitialized) {
 				Hashtable newInstalled = new Hashtable ();
-				foreach (Addin ainfo in GetInstalledAddins (domain, AddinType.Addin)) {
+				foreach (Addin ainfo in GetInstalledAddins (domain, AddinSearchFlags.IncludeAddins)) {
 					newInstalled [ainfo.Id] = ainfo.Id;
 				}
 				
@@ -1753,13 +1783,6 @@ namespace Mono.Addins.Database
 			
 			list.Add (desc);
 		}
-	}
-	
-	enum AddinType
-	{
-		Addin,
-		Root,
-		All
 	}
 }
 

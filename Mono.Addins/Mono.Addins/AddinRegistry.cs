@@ -34,6 +34,8 @@ using System.Collections;
 using System.Collections.Specialized;
 using Mono.Addins.Database;
 using Mono.Addins.Description;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Mono.Addins
 {
@@ -264,6 +266,10 @@ namespace Mono.Addins
 			}
 		}
 		
+		internal string CurrentDomain {
+			get { return currentDomain; }
+		}
+		
 		/// <summary>
 		/// Location of the add-in registry.
 		/// </summary>
@@ -323,6 +329,22 @@ namespace Mono.Addins
 		}
 		
 		/// <summary>
+		/// Gets all add-ins or add-in roots registered in the registry.
+		/// </summary>
+		/// <returns>
+		/// The addins.
+		/// </returns>
+		/// <param name='flags'>
+		/// Flags.
+		/// </param>
+		public Addin[] GetModules (AddinSearchFlags flags)
+		{
+			if (currentDomain == AddinDatabase.UnknownDomain)
+				return new Addin [0];
+			return database.GetInstalledAddins (currentDomain, flags).ToArray ();
+		}
+		
+		/// <summary>
 		/// Gets all add-ins registered in the registry.
 		/// </summary>
 		/// <returns>
@@ -330,10 +352,7 @@ namespace Mono.Addins
 		/// </returns>
 		public Addin[] GetAddins ()
 		{
-			if (currentDomain == AddinDatabase.UnknownDomain)
-				return new Addin [0];
-			ArrayList list = database.GetInstalledAddins (currentDomain, AddinType.Addin);
-			return (Addin[]) list.ToArray (typeof(Addin));
+			return GetModules (AddinSearchFlags.IncludeAddins);
 		}
 		
 		/// <summary>
@@ -344,10 +363,7 @@ namespace Mono.Addins
 		/// </returns>
 		public Addin[] GetAddinRoots ()
 		{
-			if (currentDomain == AddinDatabase.UnknownDomain)
-				return new Addin [0];
-			ArrayList list = database.GetInstalledAddins (currentDomain, AddinType.Root);
-			return (Addin[]) list.ToArray (typeof(Addin));
+			return GetModules (AddinSearchFlags.IncludeRoots);
 		}
 		
 		/// <summary>
@@ -710,5 +726,29 @@ namespace Mono.Addins
 			return (string[]) dirs.ToArray (typeof(string));
 		}
 #pragma warning restore 1591
+	}
+	
+	/// <summary>
+	/// Addin search flags.
+	/// </summary>
+	[Flags]
+	public enum AddinSearchFlags
+	{
+		/// <summary>
+		/// Add-ins are included in the search
+		/// </summary>
+		IncludeAddins = 1,
+		/// <summary>
+		/// Add-in roots are included in the search
+		/// </summary>
+		IncludeRoots = 1 << 1,
+		/// <summary>
+		/// Both add-in and add-in roots are included in the search
+		/// </summary>
+		IncludeAll = IncludeAddins | IncludeRoots,
+		/// <summary>
+		/// Only the latest version of every add-in or add-in root is included in the search
+		/// </summary>
+		LatestVersionsOnly = 1 << 3
 	}
 }

@@ -34,6 +34,7 @@ using System.Xml.Serialization;
 using System.Collections.Specialized;
 using Mono.Addins.Description;
 using Mono.Addins.Database;
+using System.Linq;
 
 namespace Mono.Addins
 {
@@ -47,6 +48,7 @@ namespace Mono.Addins
 		string sourceFile;
 		WeakReference desc;
 		AddinDatabase database;
+		bool? isLatestVersion;
 		
 		internal Addin (AddinDatabase database, string file)
 		{
@@ -157,12 +159,31 @@ namespace Mono.Addins
 		/// in memory will be properly updated to include or exclude extensions from the add-in.
 		/// </remarks>
 		public bool Enabled {
-			get { return AddinInfo.IsRoot ? true : database.IsAddinEnabled (Description.Domain, AddinInfo.Id, true); }
+			get {
+				if (!IsLatestVersion)
+					return false;
+				return AddinInfo.IsRoot ? true : database.IsAddinEnabled (Description.Domain, AddinInfo.Id, true);
+			}
 			set {
 				if (value)
 					database.EnableAddin (Description.Domain, AddinInfo.Id, true);
 				else
 					database.DisableAddin (Description.Domain, AddinInfo.Id);
+			}
+		}
+		
+		internal bool IsLatestVersion {
+			get {
+				if (isLatestVersion == null) {
+					string id, version;
+					Addin.GetIdParts (AddinInfo.Id, out id, out version);
+					var addins = database.GetInstalledAddins (null, AddinSearchFlags.IncludeAll | AddinSearchFlags.LatestVersionsOnly);
+					isLatestVersion = addins.Where (a => Addin.GetIdName (a.Id) == id && a.Version == version).Any ();
+				}
+				return isLatestVersion.Value;
+			}
+			set {
+				isLatestVersion = value;
 			}
 		}
 		
