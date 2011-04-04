@@ -193,8 +193,11 @@ namespace Mono.Addins.Gui
 			if (data is Addin) {
 				installed = (Addin) data;
 				sinfo = SetupService.GetAddinHeader (installed);
-				updateInfo = GetUpdate (installed);
-				selectedEntry.Clear ();
+				var entry = GetUpdate (installed);
+				if (entry != null) {
+					updateInfo = entry.Addin;
+					selectedEntry.Add (entry);
+				}
 				foreach (var prop in sinfo.Properties) {
 					if (prop.Name.StartsWith ("PreviewImage"))
 						previewImages.Add (new ImageContainer (installed, prop.Value));
@@ -315,14 +318,14 @@ namespace Mono.Addins.Gui
 			}
 		}
 		
-		public AddinHeader GetUpdate (Addin a)
+		public AddinRepositoryEntry GetUpdate (Addin a)
 		{
 			AddinRepositoryEntry[] updates = service.Repositories.GetAvailableAddinUpdates (Addin.GetIdName (a.Id));
-			AddinHeader best = null;
+			AddinRepositoryEntry best = null;
 			string bestVersion = a.Version;
 			foreach (AddinRepositoryEntry e in updates) {
 				if (Addin.CompareVersions (bestVersion, e.Addin.Version) > 0) {
-					best = e.Addin;
+					best = e;
 					bestVersion = e.Addin.Version;
 				}
 			}
