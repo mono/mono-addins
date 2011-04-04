@@ -238,6 +238,72 @@ namespace UnitTests
 			
 			setup.Repositories.RemoveRepository (repoUrl);
 		}
+		
+		[Test]
+		public void UpgradeCoreAddin ()
+		{
+			InitRepository ();
+			CreateTestPackage ("10.3");
+			CreateTestPackage ("10.4");
+			
+			ExtensionNodeList list = AddinManager.GetExtensionNodes ("/SimpleApp/InstallUninstallTest");
+			Assert.AreEqual (1, list.Count);
+			Assert.AreEqual ("10.2", ((ItemSetNode)list[0]).Label);
+			
+			Addin adn = AddinManager.Registry.GetAddin ("SimpleApp.AddRemoveTest,10.2");
+			Assert.IsTrue (adn.Enabled);
+			Assert.IsFalse (adn.Description.CanUninstall); // Core add-in can't be uninstalled
+			
+			setup.Repositories.RegisterRepository (monitor, repoUrl, true);
+			
+			var pkg = setup.Repositories.GetAvailableAddinUpdates ("SimpleApp.AddRemoveTest", RepositorySearchFlags.LatestVersionsOnly).FirstOrDefault ();
+			Assert.IsNotNull (pkg);
+			Assert.AreEqual ("SimpleApp.AddRemoveTest,10.4", pkg.Addin.Id);
+			
+			// Install the add-in
+			
+			setup.Install (new ConsoleProgressStatus (true), pkg);
+			
+			adn = AddinManager.Registry.GetAddin ("SimpleApp.AddRemoveTest,10.2");
+			Assert.IsFalse (adn.Enabled);
+			
+			list = AddinManager.GetExtensionNodes ("/SimpleApp/InstallUninstallTest");
+			Assert.AreEqual (1, list.Count);
+			Assert.AreEqual ("10.4", ((ItemSetNode)list[0]).Label);
+			
+			adn = AddinManager.Registry.GetAddin ("SimpleApp.AddRemoveTest");
+			Assert.IsTrue (adn.Enabled);
+			Assert.IsTrue (adn.Description.CanUninstall);
+			
+			// Uninstall the add-in
+			
+			setup.Uninstall (new ConsoleProgressStatus (true), "SimpleApp.AddRemoveTest,10.4");
+			
+			list = AddinManager.GetExtensionNodes ("/SimpleApp/InstallUninstallTest");
+			Assert.AreEqual (0, list.Count);
+			
+			adn = AddinManager.Registry.GetAddin ("SimpleApp.AddRemoveTest");
+			Assert.IsFalse (adn.Enabled);
+			
+			adn.Enabled = true;
+			
+			list = AddinManager.GetExtensionNodes ("/SimpleApp/InstallUninstallTest");
+			Assert.AreEqual (1, list.Count);
+			Assert.AreEqual ("10.2", ((ItemSetNode)list[0]).Label);
+		}
+		
+		void CreateTestPackage (string newVersion)
+		{
+			string file = AddinManager.CurrentAddin.GetFilePath (Path.Combine ("SampleAddins","AddRemoveTest1.addin.xml"));
+			string txt = File.ReadAllText (file);
+			txt = txt.Replace ("10.1", newVersion);
+			
+			string tmpFile = Path.Combine (TempDir, "AddRemoveTest_" + newVersion + ".addin.xml");
+			File.WriteAllText (tmpFile, txt);
+			
+			setup.BuildPackage (monitor, repoDir, tmpFile);
+			setup.BuildRepository (monitor, repoDir);
+		}
 	}
 }
 

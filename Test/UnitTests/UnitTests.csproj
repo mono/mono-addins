@@ -92,6 +92,12 @@
     <None Include="SupportFile.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="SampleAddins\AddRemoveTest1.addin.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SampleAddins\AddRemoveTest2.addin.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -115,6 +121,7 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="ExtensionModel\" />
+    <Folder Include="SampleAddins\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestManifest2.xml">

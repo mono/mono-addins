@@ -207,5 +207,13 @@ namespace UnitTests
 			XmlSerializer ser = new XmlSerializer (typeof(TestClass));
 			ser.Serialize (new StringWriter (), new TestClass ());
 		}
+		
+		[Test()]
+		public void TestLoadLatestVersion ()
+		{
+			ExtensionNodeList list = AddinManager.GetExtensionNodes ("/SimpleApp/InstallUninstallTest");
+			Assert.AreEqual (1, list.Count);
+			Assert.AreEqual ("10.2", ((ItemSetNode)list[0]).Label);
+		}
 	}
 }

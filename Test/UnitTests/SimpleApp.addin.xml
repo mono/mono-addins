@@ -54,6 +54,10 @@
 		<ExtensionNode name="WithAtt" type="UnitTests.NodeWithAttribute" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/SimpleApp/InstallUninstallTest">
+		<ExtensionNode name="Node" type="UnitTests.ItemSetNode" />
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 	
 	<Extension path="/SimpleApp/NodeWithChildren">

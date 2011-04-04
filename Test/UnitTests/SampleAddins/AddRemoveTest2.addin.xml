@@ -1,0 +1,9 @@
+<Addin id="AddRemoveTest" namespace = "SimpleApp" version = "10.2">
+	<Dependencies>
+		<Addin id="Core" version="0.1.0" />
+	</Dependencies>
+	<Extension path="/SimpleApp/InstallUninstallTest">
+		<Node label="10.2" />
+	</Extension>
+</Addin>
+
