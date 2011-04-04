@@ -78,6 +78,10 @@ namespace Mono.Addins
 			module.RuntimeAddin = this;
 		}
 		
+		internal ModuleDescription Module {
+			get { return module; }
+		}
+		
 		internal Assembly[] Assemblies {
 			get {
 				EnsureAssembliesLoaded ();

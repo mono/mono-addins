@@ -1024,10 +1024,11 @@ namespace Mono.Addins.Database
 				}
 				
 				foreach (string aid in installed.Keys) {
-					if (!newInstalled.Contains (aid)) {
-						if (addinEngine.IsAddinLoaded (aid))
-							addinEngine.UnloadAddin (aid);
-					}
+					// Always try to unload, event if the add-in was not currently loaded.
+					// Required since the add-ins has to be marked as 'disabled', to avoid
+					// extensions from this add-in to be loaded
+					if (!newInstalled.Contains (aid))
+						addinEngine.UnloadAddin (aid);
 				}
 				
 				foreach (string aid in newInstalled.Keys) {

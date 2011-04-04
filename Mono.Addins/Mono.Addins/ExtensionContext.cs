@@ -950,10 +950,14 @@ namespace Mono.Addins
 				// The event is called for all extensions, even for those not loaded. This is for coherence,
 				// although that something that it doesn't make much sense to do (subcribing the ExtensionChanged
 				// event without first getting the list of nodes that may change).
-				Addin addin = AddinEngine.Registry.GetAddin (id);
+				
+				// We get the runtime add-in because the add-in may already have been deleted from the registry
+				RuntimeAddin addin = AddinEngine.GetAddin (id);
 				if (addin != null) {
 					ArrayList paths = new ArrayList ();
-					foreach (ModuleDescription mod in addin.Description.AllModules) {
+					// Using addin.Module.ParentAddinDescription here because addin.Addin.Description may not
+					// have a valid reference (the description is lazy loaded and may already have been removed from the registry)
+					foreach (ModuleDescription mod in addin.Module.ParentAddinDescription.AllModules) {
 						foreach (Extension ext in mod.Extensions) {
 							if (!paths.Contains (ext.Path))
 								paths.Add (ext.Path);
