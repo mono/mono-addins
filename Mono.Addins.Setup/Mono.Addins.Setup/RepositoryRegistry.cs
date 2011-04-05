@@ -90,8 +90,14 @@ namespace Mono.Addins.Setup
 		/// </returns>
 		public AddinRepository RegisterRepository (IProgressStatus monitor, string url, bool updateNow)
 		{
-			if (!url.EndsWith (".mrep"))
-				url = url + "/main.mrep";
+			if (string.IsNullOrEmpty (url))
+				throw new ArgumentException ("Emtpy url");
+			
+			if (!url.EndsWith (".mrep")) {
+				if (url [url.Length - 1] != '/')
+					url += "/";
+				url = url + "main.mrep";
+			}
 			
 			RepositoryRecord rr = FindRepositoryRecord (url);
 			if (rr != null)
