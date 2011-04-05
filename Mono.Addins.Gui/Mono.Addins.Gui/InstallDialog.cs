@@ -50,6 +50,7 @@ namespace Mono.Addins.Gui
 			this.service = service;
 			TransientFor = parent;
 			WindowPosition = Gtk.WindowPosition.CenterOnParent;
+			Services.PlaceDialog (this, parent);
 			boxProgress.Visible = false;
 			Resizable = false;
 		}

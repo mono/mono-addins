@@ -93,7 +93,7 @@ namespace Mono.Addins.Gui
 					}
 					
 					if (!service.Repositories.ContainsRepository (url)) {
-						ProgressDialog pdlg = new ProgressDialog ();
+						ProgressDialog pdlg = new ProgressDialog (this);
 						pdlg.Show ();
 						pdlg.SetMessage (AddinManager.CurrentLocalizer.GetString ("Registering repository"));
 						

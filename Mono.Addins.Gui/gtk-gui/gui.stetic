@@ -730,6 +730,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Register an on-line repository</property>
+                <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
@@ -1072,8 +1073,9 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="Mono.Addins.Gui.ProgressDialog" design-size="513 165">
+  <widget class="Gtk.Dialog" id="Mono.Addins.Gui.ProgressDialog" design-size="513 156">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Progress</property>
     <property name="WindowPosition">CenterOnParent</property>

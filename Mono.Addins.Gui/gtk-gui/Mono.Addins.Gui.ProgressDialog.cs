@@ -94,8 +94,8 @@ namespace Mono.Addins.Gui
 				this.Child.ShowAll ();
 			}
 			this.DefaultWidth = 513;
-			this.DefaultHeight = 165;
-			this.Show ();
+			this.DefaultHeight = 156;
+			this.Hide ();
 			this.buttonCancel.Clicked += new global::System.EventHandler (this.OnButtonCancelClicked);
 		}
 	}

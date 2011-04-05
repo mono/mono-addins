@@ -34,9 +34,10 @@ namespace Mono.Addins.Gui
 		bool cancelled;
 		bool hadError;
 		
-		public ProgressDialog()
+		public ProgressDialog (Gtk.Window parent)
 		{
 			this.Build();
+			Services.PlaceDialog (this, parent);
 		}
 
 		public bool IsCanceled {

@@ -413,7 +413,7 @@ namespace Mono.Addins.Gui
 		
 		protected virtual void OnButtonRefreshClicked (object sender, System.EventArgs e)
 		{
-			ProgressDialog pdlg = new ProgressDialog ();
+			ProgressDialog pdlg = new ProgressDialog (this);
 			pdlg.Show ();
 			pdlg.SetMessage (AddinManager.CurrentLocalizer.GetString ("Updating repository"));
 			bool updateDone = false;
