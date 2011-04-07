@@ -153,6 +153,20 @@ namespace Mono.Addins.Database
 				return File.Create (fileName);
 		}
 		
+		public void Rename (string fileName, string newName)
+		{
+			if (inTransaction) {
+				deletedFiles.Remove (newName);
+				deletedDirs.Remove (Path.GetDirectoryName (newName));
+				foldersToUpdate [Path.GetDirectoryName (newName)] = null;
+				string s = File.Exists (fileName + ".new") ? fileName + ".new" : fileName;
+				File.Copy (s, newName + ".new");
+				Delete (fileName);
+			}
+			else
+				File.Move (fileName, newName);
+		}
+		
 		public Stream OpenRead (string fileName)
 		{
 			if (inTransaction) {

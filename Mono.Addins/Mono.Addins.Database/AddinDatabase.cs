@@ -229,13 +229,14 @@ namespace Mono.Addins.Database
 				throw new InvalidOperationException ("LatestVersionsOnly flag not supported here");
 			
 			if (allSetupInfos == null) {
-				List<Addin> alist = new List<Addin> ();
+				Dictionary<string,Addin> adict = new Dictionary<string, Addin> ();
 
 				// Global add-ins are valid for any private domain
 				if (domain != AddinDatabase.GlobalDomain)
-					FindInstalledAddins (alist, AddinDatabase.GlobalDomain, idFilter);
+					FindInstalledAddins (adict, AddinDatabase.GlobalDomain, idFilter);
 
-				FindInstalledAddins (alist, domain, idFilter);
+				FindInstalledAddins (adict, domain, idFilter);
+				List<Addin> alist = new List<Addin> (adict.Values);
 				UpdateLastVersionFlags (alist);
 				if (idFilter != null)
 					return alist;
@@ -271,7 +272,7 @@ namespace Mono.Addins.Database
 			return addins.Where (a => Addin.GetIdName (a.Id) == id);
 		}
 
-		void FindInstalledAddins (List<Addin> result, string domain, string idFilter)
+		void FindInstalledAddins (Dictionary<string,Addin> result, string domain, string idFilter)
 		{
 			if (idFilter == null) 
 				idFilter = "*";
@@ -279,7 +280,11 @@ namespace Mono.Addins.Database
 			if (Directory.Exists (dir)) {
 				foreach (string file in fileDatabase.GetDirectoryFiles (dir, idFilter + ",*.maddin")) {
 					string id = Path.GetFileNameWithoutExtension (file);
-					result.Add (GetInstalledDomainAddin (domain, id, true, false, false));
+					if (!result.ContainsKey (id)) {
+						var adesc = GetInstalledDomainAddin (domain, id, true, false, false);
+						if (adesc != null)
+							result.Add (id, adesc);
+					}
 				}
 			}
 		}
@@ -541,7 +546,7 @@ namespace Mono.Addins.Database
 				Update (null, domain);
 		}
 		
-		void GenerateAddinExtensionMapsInternal (IProgressStatus monitor, ArrayList addinsToUpdate, ArrayList addinsToUpdateRelations, ArrayList removedAddins)
+		void GenerateAddinExtensionMapsInternal (IProgressStatus monitor, List<string> addinsToUpdate, List<string> addinsToUpdateRelations, List<string> removedAddins)
 		{
 			AddinUpdateData updateData = new AddinUpdateData (this, monitor);
 			
@@ -570,7 +575,10 @@ namespace Mono.Addins.Database
 				if (monitor.LogLevel > 2)
 					monitor.Log ("Doing a partial registry update.\nAdd-ins to be updated:");
 				// Get the files and ids of all add-ins that have to be updated
-				foreach (string sa in addinsToUpdate) {
+				// Include removed add-ins: if there are several instances of the same add-in, removing one of
+				// them will make other instances to show up. If there is a single instance, its files are
+				// already removed.
+				foreach (string sa in addinsToUpdate.Union (removedAddins)) {
 					changedAddins [sa] = sa;
 					if (monitor.LogLevel > 2)
 						monitor.Log (" - " + sa);
@@ -600,9 +608,6 @@ namespace Mono.Addins.Database
 						}
 					}
 				}
-				
-				foreach (string s in removedAddins)
-					changedAddins [s] = s;
 			}
 			else {
 				foreach (string dom in domains)
@@ -1342,7 +1347,7 @@ namespace Mono.Addins.Database
 					AddinFileInfo afi = finfo.GetAddinFileInfo (file);
 					if (afi != null && afi.IsAddin) {
 						AddinDescription adesc;
-						GetAddinDescription (progressStatus, afi.Domain, afi.AddinId, out adesc);
+						GetAddinDescription (progressStatus, afi.Domain, afi.AddinId, file, out adesc);
 						if (adesc != null)
 							adesc.Save (outFile);
 						return;
@@ -1406,36 +1411,102 @@ namespace Mono.Addins.Database
 			return Path.Combine (AddinFolderCachePath, s + ".data");
 		}
 		
-		internal void UninstallAddin (IProgressStatus monitor, string domain, string addinId, AddinScanResult scanResult)
+		internal void UninstallAddin (IProgressStatus monitor, string domain, string addinId, string addinFile, AddinScanResult scanResult)
 		{
-			scanResult.AddRemovedAddin (addinId);
-			string file = GetDescriptionPath (domain, addinId);
-			if (!fileDatabase.Exists (file)) {
+			AddinDescription desc;
+			
+			if (!GetAddinDescription (monitor, domain, addinId, addinFile, out desc)) {
+				// If we can't get information about the old assembly, just regenerate all relation data
+				scanResult.RegenerateRelationData = true;
 				return;
 			}
 			
-			// Add-in already existed. The dependencies of the old add-in need to be re-analized
+			// If the add-in didn't exist, there is nothing left to do
+			
+			if (desc == null)
+				return;
+			
+			// If the add-in already existed, the dependencies of the old add-in need to be re-analized
+			
+			Util.AddDependencies (desc, scanResult);
+			if (desc.IsRoot)
+				scanResult.HostIndex.RemoveHostData (desc.AddinId, desc.AddinFile);
 
-			AddinDescription desc;
-			if (ReadAddinDescription (monitor, file, out desc)) {
-				Util.AddDependencies (desc, scanResult);
-				if (desc.IsRoot)
-					scanResult.HostIndex.RemoveHostData (desc.AddinId, desc.AddinFile);
-			} else
-				// If we can't get information about the old assembly, just regenerate all relation data
-				scanResult.RegenerateRelationData = true;
+			RemoveAddinDescriptionFile (monitor, desc.FileName);
+		}
+		
+		public bool GetAddinDescription (IProgressStatus monitor, string domain, string addinId, string addinFile, out AddinDescription description)
+		{
+			// If the same add-in is installed in different folders (in the same domain) there will be several .maddin files for it,
+			// using the suffix "_X" where X is a number > 1 (for example: someAddin,1.0.maddin, someAddin,1.0.maddin_2, someAddin,1.0.maddin_3, ...)
+			// We need to return the .maddin whose AddinFile matches the one being requested
+			
+			addinFile = Path.GetFullPath (addinFile);
+			int altNum = 1;
+			string baseFile = GetDescriptionPath (domain, addinId);
+			string file = baseFile;
+			bool failed = false;
+			
+			do {
+				if (!ReadAddinDescription (monitor, file, out description)) {
+					// Remove the AddinDescription here since it is corrupted.
+					// Avoids creating alternate versions of corrupted files when later calling SaveDescription.
+					RemoveAddinDescriptionFile (monitor, file);
+					failed = true;
+					continue;
+				}
+				if (description == null)
+					break;
+				if (Path.GetFullPath (description.AddinFile) == addinFile)
+					return true;
+				file = baseFile + "_" + (++altNum);
+			}
+			while (fileDatabase.Exists (file));
+			
+			// File not found. Return false only if there has been any read error.
+			description = null;
+			return failed;
+		}
+		
+		bool RemoveAddinDescriptionFile (IProgressStatus monitor, string file)
+		{
+			// Removes an add-in description and shifts up alternate instances of the description file
+			// (so xxx,1.0.maddin_2 will become xxx,1.0.maddin, xxx,1.0.maddin_3 -> xxx,1.0.maddin_2, etc)
+			
+			if (!SafeDelete (monitor, file))
+				return false;
+			
+			int dversion;
+			if (file.EndsWith (".maddin"))
+				dversion = 2;
+			else {
+				int i = file.LastIndexOf ('_');
+				dversion = 1 + int.Parse (file.Substring (i + 1));
+				file = file.Substring (0, i);
+			}
 
-			SafeDelete (monitor, file);
+			while (fileDatabase.Exists (file + "_" + dversion)) {
+				string newFile = dversion == 2 ? file : file + "_" + (dversion-1);
+				try {
+					fileDatabase.Rename (file + "_" + dversion, newFile);
+				} catch (Exception ex) {
+					if (monitor.LogLevel > 1) {
+						monitor.Log ("Could not rename file '" + file + "_" + dversion + "' to '" + newFile + "'");
+						monitor.Log (ex.ToString ());
+					}
+				}
+				dversion++;
+			}
 			string dir = Path.GetDirectoryName (file);
 			if (fileDatabase.DirectoryIsEmpty (dir))
 				SafeDeleteDir (monitor, dir);
-			SafeDeleteDir (monitor, Path.Combine (AddinPrivateDataPath, Path.GetFileNameWithoutExtension (file)));
-		}
-		
-		public bool GetAddinDescription (IProgressStatus monitor, string domain, string addinId, out AddinDescription description)
-		{
-			string file = GetDescriptionPath (domain, addinId);
-			return ReadAddinDescription (monitor, file, out description);
+			
+			if (dversion == 2) {
+				// All versions of the add-in removed.
+				SafeDeleteDir (monitor, Path.Combine (AddinPrivateDataPath, Path.GetFileNameWithoutExtension (file)));
+			}
+			
+			return true;
 		}
 		
 		public bool ReadAddinDescription (IProgressStatus monitor, string file, out AddinDescription description)
@@ -1465,6 +1536,14 @@ namespace Mono.Addins.Database
 					string dir = Path.GetDirectoryName (file);
 					if (!fileDatabase.DirExists (dir))
 						fileDatabase.CreateDir (dir);
+					if (fileDatabase.Exists (file)) {
+						// Another AddinDescription already exists with the same name.
+						// Create an alternate AddinDescription file
+						int altNum = 2;
+						while (fileDatabase.Exists (file + "_" + altNum))
+							altNum++;
+						file = file + "_" + altNum;
+					}
 					desc.SaveBinary (fileDatabase, file);
 				}
 				return true;

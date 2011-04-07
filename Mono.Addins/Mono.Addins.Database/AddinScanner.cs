@@ -179,7 +179,7 @@ namespace Mono.Addins.Database
 					return;
 					
 				foreach (AddinFileInfo info in missing) {
-					database.UninstallAddin (monitor, info.Domain, info.AddinId, scanResult);
+					database.UninstallAddin (monitor, info.Domain, info.AddinId, info.File, scanResult);
 				}
 			}
 		}
@@ -288,7 +288,7 @@ namespace Mono.Addins.Database
 					// Also, the dependencies of the old add-in need to be re-analized
 					
 					AddinDescription existingDescription = null;
-					bool res = database.GetAddinDescription (monitor, folderInfo.Domain, config.AddinId, out existingDescription);
+					bool res = database.GetAddinDescription (monitor, folderInfo.Domain, config.AddinId, config.AddinFile, out existingDescription);
 					
 					// If we can't get information about the old assembly, just regenerate all relation data
 					if (!res)
@@ -306,7 +306,7 @@ namespace Mono.Addins.Database
 					// If the scanned file results in an add-in version different from the one obtained from
 					// previous scans, the old add-in needs to be uninstalled.
 					if (fi != null && fi.IsAddin && fi.AddinId != config.AddinId) {
-						database.UninstallAddin (monitor, folderInfo.Domain, fi.AddinId, scanResult);
+						database.UninstallAddin (monitor, folderInfo.Domain, fi.AddinId, fi.File, scanResult);
 						
 						// If the add-in version has changed, regenerate everything again since old data can't be reused
 						if (Addin.GetIdName (fi.AddinId) == Addin.GetIdName (config.AddinId))

@@ -28,24 +28,23 @@
 
 
 using System;
-using System.Reflection;
-using System.IO;
 using System.Collections;
-using System.Collections.Specialized;
-using Mono.Addins.Description;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 
 namespace Mono.Addins.Database
 {
 	internal class AddinScanResult: MarshalByRefObject, IAssemblyLocator
 	{
 		internal ArrayList AddinsToScan = new ArrayList ();
-		internal ArrayList AddinsToUpdateRelations = new ArrayList ();
-		internal ArrayList AddinsToUpdate = new ArrayList ();
+		internal List<string> AddinsToUpdateRelations = new List<string> ();
+		internal List<string> AddinsToUpdate = new List<string> ();
 		internal ArrayList FilesToScan = new ArrayList ();
 		internal ArrayList ModifiedFolderInfos = new ArrayList ();
 		internal ArrayList FilesWithScanFailure = new ArrayList ();
 		internal AddinHostIndex HostIndex;
-		internal ArrayList RemovedAddins = new ArrayList ();
+		internal List<string> RemovedAddins = new List<string> ();
 		Hashtable visitedFolders = new Hashtable ();
 		
 		Hashtable assemblyLocations = new Hashtable ();
