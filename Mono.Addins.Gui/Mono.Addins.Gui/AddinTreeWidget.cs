@@ -136,6 +136,7 @@ namespace Mono.Addins.Gui
 			col.AddAttribute (crt, "markup", ColName);
 			col.AddAttribute (crtog, "visible", ColAllowSelection);
 			col.AddAttribute (crtog, "active", ColSelected);
+			col.Expand = true;
 			treeView.AppendColumn (col);
 			
 			col = new TreeViewColumn ();
@@ -199,7 +200,7 @@ namespace Mono.Addins.Gui
 		
 		public TreeIter AddAddin (AddinHeader info, object dataItem, bool enabled, bool userDir)
 		{
-			return AddAddin (info, dataItem, enabled ? AddinStatus.Installed : AddinStatus.NotInstalled);
+			return AddAddin (info, dataItem, enabled ? AddinStatus.Installed : AddinStatus.Disabled | AddinStatus.Installed);
 		}
 		
 		public TreeIter AddAddin (AddinHeader info, object dataItem, AddinStatus status)
@@ -300,7 +301,7 @@ namespace Mono.Addins.Gui
 			return pix;
 		}
 		
-		internal bool ShowInstalledMarkers = true;
+		internal bool ShowInstalledMarkers = false;
 		
 		void StoreIcon (TreeIter it, string iconId, Gdk.Pixbuf customPix, AddinStatus status)
 		{

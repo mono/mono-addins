@@ -79,17 +79,18 @@ namespace Mono.Addins.Gui
 			tree = new AddinTreeWidget (addinTree);
 			addinTree.Selection.Changed += OnSelectionChanged;
 			tree.VersionVisible = false;
-			tree.ShowInstalledMarkers = false;
 			
 			galleryTreeView.Selection.Mode = SelectionMode.Multiple;
 			galleryTree = new AddinTreeWidget (galleryTreeView);
 			galleryTree.VersionVisible = false;
+			galleryTree.ShowInstalledMarkers = true;
 			galleryTreeView.Selection.Changed += OnGallerySelectionChanged;
 			
 			updatesTreeView.Selection.Mode = SelectionMode.Multiple;
 			updatesTree = new AddinTreeWidget (updatesTreeView);
 			updatesTree.VersionVisible = false;
 			updatesTree.ShowCategories = false;
+			updatesTree.ShowInstalledMarkers = true;
 			updatesTreeView.Selection.Changed += OnGallerySelectionChanged;
 			
 			repoStore = new ListStore (typeof(string), typeof(string));
