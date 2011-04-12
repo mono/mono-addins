@@ -39,6 +39,7 @@ using System.Net;
 using ICSharpCode.SharpZipLib.Zip;
 using Mono.Addins;
 using Mono.Addins.Description;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Setup
 {
@@ -49,6 +50,7 @@ namespace Mono.Addins.Setup
 		string url;
 		string tempFolder;
 		bool disablingOnUninstall;
+		bool uninstallingLoaded;
 		string configFile;
 		bool installed;
 		Addin iaddin;
@@ -118,6 +120,8 @@ namespace Mono.Addins.Setup
 		
 		internal override void PrepareInstall (IProgressMonitor monitor, AddinStore service)
 		{
+			if (service.Registry.IsRegisteredForUninstall (info.Id))
+				throw new InstallException ("The addin " + info.Name + " v" + info.Version + " is scheduled for uninstallation. Please restart the application before trying to install it again.");
 			if (service.Registry.GetAddin (Mono.Addins.Addin.GetFullId (info.Namespace, info.Id, info.Version), true) != null)
 				throw new InstallException ("The addin " + info.Name + " v" + info.Version + " is already installed.");
 						
@@ -220,7 +224,6 @@ namespace Mono.Addins.Setup
 				throw new InstallException (string.Format ("The add-in '{0}' is not installed.", info.Name));
 
 			AddinDescription conf = iaddin.Description;
-			string basePath = Path.GetDirectoryName (conf.AddinFile);
 			
 			if (!File.Exists (iaddin.AddinFile)) {
 				monitor.ReportWarning (string.Format ("The add-in '{0}' is scheduled for uninstalling, but the add-in file could not be found.", info.Name));
@@ -233,19 +236,44 @@ namespace Mono.Addins.Setup
 				return;
 			}
 			
+			HashSet<string> files = new HashSet<string> (GetInstalledFiles (conf));
+			if (AddinManager.CheckAssembliesLoaded (files)) {
+				uninstallingLoaded = true;
+				return;
+			}
+			
 			if (!service.HasWriteAccess (iaddin.AddinFile))
 				throw new InstallException (AddinStore.GetUninstallErrorNoRoot (info));
 
-			foreach (string relPath in conf.AllFiles) {
-				string path = Path.Combine (basePath, relPath);
-				if (!File.Exists (path))
-					continue;
+			foreach (string path in GetInstalledFiles (conf)) {
 				if (!service.HasWriteAccess (path))
 					throw new InstallException (AddinStore.GetUninstallErrorNoRoot (info));
 			}
 			
 			tempFolder = CreateTempFolder ();
 			CopyAddinFiles (monitor, conf, iaddin.AddinFile, tempFolder);
+		}
+		
+		IEnumerable<string> GetInstalledFiles (AddinDescription conf)
+		{
+			string basePath = Path.GetDirectoryName (conf.AddinFile);
+			foreach (string relPath in conf.AllFiles) {
+				string afile = Path.Combine (basePath, relPath);
+				if (File.Exists (afile))
+					yield return afile;
+			}
+			foreach (var p in conf.Properties) {
+				string file;
+				try {
+					file = Path.Combine (basePath, p.Value);
+					if (!File.Exists (file))
+						file = null;
+				} catch {
+					file = null;
+				}
+				if (file != null)
+					yield return file;
+			}
 		}
 		
 		internal override void CommitUninstall (IProgressMonitor monitor, AddinStore service)
@@ -256,21 +284,26 @@ namespace Mono.Addins.Setup
 				return;
 			}
 			
+			AddinDescription conf = iaddin.Description;
+			
+			string basePath = Path.GetDirectoryName (conf.AddinFile);
+			
+			if (uninstallingLoaded) {
+				List<string> files = new List<string> ();
+				files.Add (iaddin.AddinFile);
+				foreach (string f in GetInstalledFiles (conf))
+					files.Add (f);
+				service.Registry.RegisterForUninstall (info.Id, files);
+				return;
+			}
+			
 			if (tempFolder == null)
 				return;
 
 			monitor.Log.WriteLine ("Uninstalling " + info.Name + " v" + info.Version);
 			
-			AddinDescription conf = iaddin.Description;
-			
-			string basePath = Path.GetDirectoryName (conf.AddinFile);
-			
-			foreach (string relPath in conf.AllFiles) {
-				string path = Path.Combine (basePath, relPath);
-				if (!File.Exists (path))
-					continue;
+			foreach (string path in GetInstalledFiles (conf))
 				File.Delete (path);
-			}
 			
 			File.Delete (iaddin.AddinFile);
 			
