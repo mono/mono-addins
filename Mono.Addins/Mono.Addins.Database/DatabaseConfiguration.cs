@@ -97,7 +97,11 @@ namespace Mono.Addins.Database
 		
 		public bool IsRegisteredForUninstall (string addinId)
 		{
-			return addinStatus.ContainsKey (addinId);
+			AddinStatus s;
+			if (addinStatus.TryGetValue (addinId, out s))
+				return s.Uninstalled;
+			else
+				return false;
 		}
 		
 		public bool HasPendingUninstalls {
