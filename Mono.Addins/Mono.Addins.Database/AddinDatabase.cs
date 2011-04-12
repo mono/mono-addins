@@ -1771,6 +1771,8 @@ namespace Mono.Addins.Database
 		{
 			if (File.Exists (ConfigFile))
 				File.Delete (ConfigFile);
+			config = null;
+			ResetCachedData ();
 		}
 		
 		DatabaseConfiguration Configuration {
