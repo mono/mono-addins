@@ -29,6 +29,8 @@ using Mono.Addins.Description;
 using System.Text;
 using Mono.Unix;
 using System.Threading;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Gui
 {
@@ -39,7 +41,7 @@ namespace Mono.Addins.Gui
 		PackageCollection packagesToInstall;
 		SetupService service;
 		Gtk.ResponseType response = Gtk.ResponseType.None;
-		string uninstallId;
+		IEnumerable<string> uninstallIds;
 		InstallMonitor installMonitor;
 		bool installing;
 		const int MaxHeight = 350;
@@ -71,19 +73,24 @@ namespace Mono.Addins.Gui
 		
 		public void InitForUninstall (Addin[] info)
 		{
-			this.uninstallId = info[0].Id;
+			this.uninstallIds = info.Select (a => a.Id);
 			buttonOk.Label = Catalog.GetString ("Uninstall");
+			
+			HashSet<Addin> sinfos = new HashSet<Addin> ();
 			
 			StringBuilder sb = new StringBuilder ();
 			sb.Append ("<b>").Append (Catalog.GetString ("The following packages will be uninstalled:")).Append ("</b>\n\n");
-			sb.Append (info[0].Name + "\n\n");
+			foreach (var a in info) {
+				sb.Append (a.Name + "\n\n");
+				sinfos.UnionWith (service.GetDependentAddins (a.Id, true));
+			}
 			
-			Addin[] sinfos = service.GetDependentAddins (uninstallId, true);
-			if (sinfos.Length > 0) {
+			if (sinfos.Count > 0) {
 				sb.Append ("<b>").Append (Catalog.GetString ("There are other add-ins that depend on the previous ones which will also be uninstalled:")).Append ("</b>\n\n");
 				foreach (Addin si in sinfos)
 					sb.Append (si.Description.Name + "\n");
 			}
+			
 			ShowMessage (sb.ToString ());
 			Services.PlaceDialog (this, TransientFor);
 		}
@@ -198,7 +205,7 @@ namespace Mono.Addins.Gui
 			
 			ThreadStart oper;
 				
-			if (uninstallId == null) {
+			if (uninstallIds == null) {
 				installMonitor = new InstallMonitor (globalProgressLabel, mainProgressBar, Catalog.GetString ("Installing Add-ins"));
 				oper = new ThreadStart (RunInstall);
 				errmessage = Catalog.GetString ("The installation failed!");
@@ -260,7 +267,7 @@ namespace Mono.Addins.Gui
 		void RunUninstall ()
 		{
 			try {
-				service.Uninstall (installMonitor, uninstallId);
+				service.Uninstall (installMonitor, uninstallIds);
 			} catch (Exception ex) {
 				installMonitor.Errors.Add (ex.Message);
 			} finally {
