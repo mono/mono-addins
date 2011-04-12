@@ -270,6 +270,20 @@ namespace Mono.Addins.Setup
 		}
 		
 		/// <summary>
+		/// Uninstalls a set of add-ins
+		/// </summary>
+		/// <param name='statusMonitor'>
+		/// Progress monitor where to show progress status
+		/// </param>
+		/// <param name='ids'>
+		/// Full identifiers of the add-ins to uninstall.
+		/// </param>
+		public void Uninstall (IProgressStatus statusMonitor, IEnumerable<string> ids)
+		{
+			store.Uninstall (statusMonitor, ids);
+		}
+		
+		/// <summary>
 		/// Gets information about an add-in
 		/// </summary>
 		/// <param name="addin">
