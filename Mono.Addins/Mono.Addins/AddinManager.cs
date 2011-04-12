@@ -816,6 +816,25 @@ namespace Mono.Addins
 			add { AddinEngine.AddinUnloaded += value; }
 			remove { AddinEngine.AddinUnloaded -= value; }
 		}
+		
+		internal static bool CheckAssembliesLoaded (HashSet<string> files)
+		{
+			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies ()) {
+				if (asm is System.Reflection.Emit.AssemblyBuilder)
+					continue;
+				try {
+					Uri u;
+					if (!Uri.TryCreate (asm.CodeBase, UriKind.Absolute, out u))
+						continue;
+					string asmFile = u.LocalPath;
+					if (files.Contains (Path.GetFullPath (asmFile)))
+						return true;
+				} catch {
+					// Ignore
+				}
+			}
+			return false;
+		}
 	}
 
 }

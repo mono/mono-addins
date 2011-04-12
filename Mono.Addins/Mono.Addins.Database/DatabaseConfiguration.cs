@@ -28,84 +28,114 @@
 
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace Mono.Addins.Database
 {
 	internal class DatabaseConfiguration
 	{
-		Hashtable addinStatus = new Hashtable ();
+		Dictionary<string,AddinStatus> addinStatus = new Dictionary<string,AddinStatus> ();
+		
+		internal class AddinStatus
+		{
+			public AddinStatus (string addinId)
+			{
+				this.AddinId = addinId;
+			}
+
+			public string AddinId;
+			public bool Enabled;
+			public bool Uninstalled;
+			public List<string> Files;
+		}
 		
 		public bool IsEnabled (string addinId, bool defaultValue)
 		{
-			if (addinStatus.Contains (addinId))
-				return addinStatus [addinId] != null;
+			AddinStatus s;
+			if (addinStatus.TryGetValue (addinId, out s))
+				return s.Enabled && !s.Uninstalled;
 			else
 				return defaultValue;
 		}
 		
 		public void SetStatus (string addinId, bool enabled, bool defaultValue)
 		{
-			if (enabled == defaultValue)
+			AddinStatus s;
+			addinStatus.TryGetValue (addinId, out s);
+			
+			if (s != null && s.Uninstalled)
+				return;
+			
+			if (enabled == defaultValue) {
 				addinStatus.Remove (addinId);
-			else if (enabled)
-				addinStatus [addinId] = this;
-			else
-				addinStatus [addinId] = null;
+				return;
+			}
+			if (s == null)
+				s = addinStatus [addinId] = new AddinStatus (addinId);
+			s.Enabled = enabled;
+		}
+		
+		public void RegisterForUninstall (string addinId, IEnumerable<string> files)
+		{
+			AddinStatus s;
+			if (!addinStatus.TryGetValue (addinId, out s))
+				s = addinStatus [addinId] = new AddinStatus (addinId);
+			
+			s.Enabled = false;
+			s.Uninstalled = true;
+			s.Files = new List<string> (files);
+		}
+		
+		public void UnregisterForUninstall (string addinId)
+		{
+			addinStatus.Remove (addinId);
+		}
+		
+		public bool IsRegisteredForUninstall (string addinId)
+		{
+			return addinStatus.ContainsKey (addinId);
+		}
+		
+		public bool HasPendingUninstalls {
+			get { return addinStatus.Values.Where (s => s.Uninstalled).Any (); }
+		}
+		
+		public AddinStatus[] GetPendingUninstalls ()
+		{
+			return addinStatus.Values.Where (s => s.Uninstalled).ToArray ();
 		}
 		
 		public static DatabaseConfiguration Read (string file)
 		{
 			DatabaseConfiguration config = new DatabaseConfiguration ();
+			XmlDocument doc = new XmlDocument ();
+			doc.Load (file);
 			
-			StreamReader s = new StreamReader (file);
-			using (s) {
-				XmlTextReader tr = new XmlTextReader (s);
-				tr.MoveToContent ();
-				if (tr.IsEmptyElement)
-					return config;
-				
-				tr.ReadStartElement ("Configuration");
-				tr.MoveToContent ();
-				
-				while (tr.NodeType != XmlNodeType.EndElement) {
-					
-					if (tr.NodeType != XmlNodeType.Element || tr.IsEmptyElement) {
-						tr.Skip ();
+			XmlElement disabledElem = (XmlElement) doc.DocumentElement.SelectSingleNode ("DisabledAddins");
+			if (disabledElem != null) {
+				// For back compatibility
+				foreach (XmlElement elem in disabledElem.SelectNodes ("Addin"))
+					config.SetStatus (elem.InnerText, false, true);
+				return config;
+			}
+			
+			XmlElement statusElem = (XmlElement) doc.DocumentElement.SelectSingleNode ("AddinStatus");
+			if (statusElem != null) {
+				foreach (XmlElement elem in statusElem.SelectNodes ("Addin")) {
+					AddinStatus status = new AddinStatus (elem.GetAttribute ("id"));
+					string senabled = elem.GetAttribute ("enabled");
+					status.Enabled = senabled.Length == 0 || senabled == "True";
+					status.Uninstalled = elem.GetAttribute ("uninstalled") == "True";
+					config.addinStatus [status.AddinId] = status;
+					foreach (XmlElement fileElem in elem.SelectNodes ("File")) {
+						if (status.Files == null)
+							status.Files = new List<string> ();
+						status.Files.Add (fileElem.InnerText);
 					}
-					else if (tr.LocalName == "DisabledAddins") {
-						// For back compatibility
-						tr.ReadStartElement ();
-						tr.MoveToContent ();
-						while (tr.NodeType != XmlNodeType.EndElement) {
-							if (tr.NodeType == XmlNodeType.Element && tr.LocalName == "Addin")
-								config.addinStatus [tr.ReadElementString ()] = null;
-							else
-								tr.Skip ();
-							tr.MoveToContent ();
-						}
-						tr.ReadEndElement ();
-					}
-					else if (tr.LocalName == "AddinStatus") {
-						tr.ReadStartElement ();
-						tr.MoveToContent ();
-						while (tr.NodeType != XmlNodeType.EndElement) {
-							if (tr.NodeType == XmlNodeType.Element && tr.LocalName == "Addin") {
-								string aid = tr.GetAttribute ("id");
-								string senabled = tr.GetAttribute ("enabled");
-								if (senabled.Length == 0 || senabled == "True")
-									config.addinStatus [aid] = config;
-								else
-									config.addinStatus [aid] = null;
-							}
-							tr.Skip ();
-							tr.MoveToContent ();
-						}
-						tr.ReadEndElement ();
-					}
-					tr.MoveToContent ();
 				}
 			}
 			return config;
@@ -118,15 +148,22 @@ namespace Mono.Addins.Database
 				XmlTextWriter tw = new XmlTextWriter (s);
 				tw.Formatting = Formatting.Indented;
 				tw.WriteStartElement ("Configuration");
+				
 				tw.WriteStartElement ("AddinStatus");
-				foreach (DictionaryEntry e in addinStatus) {
+				foreach (AddinStatus e in addinStatus.Values) {
 					tw.WriteStartElement ("Addin");
-					tw.WriteAttributeString ("id", (string)e.Key);
-					tw.WriteAttributeString ("enabled", (e.Value != null).ToString ());
+					tw.WriteAttributeString ("id", e.AddinId);
+					tw.WriteAttributeString ("enabled", e.Enabled.ToString ());
+					if (e.Uninstalled)
+						tw.WriteAttributeString ("uninstalled", "True");
+					if (e.Files != null && e.Files.Count > 0) {
+						foreach (var f in e.Files)
+							tw.WriteElementString ("File", f);
+					}
 					tw.WriteEndElement ();
 				}
-				tw.WriteEndElement ();
-				tw.WriteEndElement ();
+				tw.WriteEndElement (); // AddinStatus
+				tw.WriteEndElement (); // Configuration
 			}
 		}
 	}

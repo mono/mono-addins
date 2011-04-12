@@ -301,7 +301,10 @@ namespace Mono.Addins
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)
 				return null;
-			return database.GetInstalledAddin (currentDomain, id);
+			Addin ad = database.GetInstalledAddin (currentDomain, id);
+			if (ad != null && IsRegisteredForUninstall (ad.Id))
+				return null;
+			return ad;
 		}
 		
 		/// <summary>
@@ -325,7 +328,10 @@ namespace Mono.Addins
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)
 				return null;
-			return database.GetInstalledAddin (currentDomain, id, exactVersionMatch);
+			Addin ad = database.GetInstalledAddin (currentDomain, id, exactVersionMatch);
+			if (ad != null && IsRegisteredForUninstall (ad.Id))
+				return null;
+			return ad;
 		}
 		
 		/// <summary>
@@ -341,7 +347,8 @@ namespace Mono.Addins
 		{
 			if (currentDomain == AddinDatabase.UnknownDomain)
 				return new Addin [0];
-			return database.GetInstalledAddins (currentDomain, flags).ToArray ();
+			AddinSearchFlagsInternal f = (AddinSearchFlagsInternal)(int)flags;
+			return database.GetInstalledAddins (currentDomain, f | AddinSearchFlagsInternal.ExcludePendingUninstall).ToArray ();
 		}
 		
 		/// <summary>
@@ -502,6 +509,47 @@ namespace Mono.Addins
 			if (currentDomain == AddinDatabase.UnknownDomain)
 				return;
 			database.DisableAddin (currentDomain, id);
+		}
+
+		/// <summary>
+		/// Registers a set of add-ins for uninstallation.
+		/// </summary>
+		/// <param name='id'>
+		/// Identifier of the add-in
+		/// </param>
+		/// <param name='files'>
+		/// Files to be uninstalled
+		/// </param>
+		/// <remarks>
+		/// This method can be used to instruct the add-in manager to uninstall
+		/// an add-in the next time the registry is updated. This is useful
+		/// when an add-in manager can't delete an add-in because if it is
+		/// loaded.
+		/// </remarks>
+		public void RegisterForUninstall (string id, IEnumerable<string> files)
+		{
+			database.RegisterForUninstall (currentDomain, id, files);
+		}
+		
+		/// <summary>
+		/// Determines whether an add-in is registered for uninstallation
+		/// </summary>
+		/// <returns>
+		/// <c>true</c> if the add-in is registered for uninstallation
+		/// </returns>
+		/// <param name='addinId'>
+		/// Identifier of the add-in
+		/// </param>
+		public bool IsRegisteredForUninstall (string addinId)
+		{
+			return database.IsRegisteredForUninstall (currentDomain, addinId);
+		}
+		
+		/// <summary>
+		/// Gets a value indicating whether there are pending add-ins to be uninstalled installed
+		/// </summary>
+		public bool HasPendingUninstalls {
+			get { return database.HasPendingUninstalls (currentDomain); }
 		}
 		
 		/// <summary>

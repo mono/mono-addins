@@ -182,7 +182,7 @@ namespace Mono.Addins.Database
 			return null;
 		}
 		
-		public IEnumerable<Addin> GetInstalledAddins (string domain, AddinSearchFlags flags)
+		public IEnumerable<Addin> GetInstalledAddins (string domain, AddinSearchFlagsInternal flags)
 		{
 			if (domain == null)
 				domain = registry.CurrentDomain;
@@ -192,11 +192,11 @@ namespace Mono.Addins.Database
 			
 			IEnumerable<Addin> result = null;
 			
-			if ((flags & AddinSearchFlags.IncludeAll) == AddinSearchFlags.IncludeAll) {
+			if ((flags & AddinSearchFlagsInternal.IncludeAll) == AddinSearchFlagsInternal.IncludeAll) {
 				if (allSetupInfos != null)
 					result = allSetupInfos;
 			}
-			else if ((flags & AddinSearchFlags.IncludeAddins) == AddinSearchFlags.IncludeAddins) {
+			else if ((flags & AddinSearchFlagsInternal.IncludeAddins) == AddinSearchFlagsInternal.IncludeAddins) {
 				if (addinSetupInfos != null)
 					result = addinSetupInfos;
 			}
@@ -208,24 +208,27 @@ namespace Mono.Addins.Database
 			if (result == null) {
 				InternalCheck (domain);
 				using (fileDatabase.LockRead ()) {
-					result = InternalGetInstalledAddins (domain, null, flags & ~AddinSearchFlags.LatestVersionsOnly);
+					result = InternalGetInstalledAddins (domain, null, flags & ~AddinSearchFlagsInternal.LatestVersionsOnly);
 				}
 			}
 			
-			if ((flags & AddinSearchFlags.LatestVersionsOnly) == AddinSearchFlags.LatestVersionsOnly)
-				return result.Where (a => a.IsLatestVersion);
-			else
-				return result;
+			if ((flags & AddinSearchFlagsInternal.LatestVersionsOnly) == AddinSearchFlagsInternal.LatestVersionsOnly)
+				result = result.Where (a => a.IsLatestVersion);
+			
+			if ((flags & AddinSearchFlagsInternal.ExcludePendingUninstall) == AddinSearchFlagsInternal.ExcludePendingUninstall)
+				result = result.Where (a => !IsRegisteredForUninstall (a.Description.Domain, a.Id));
+			
+			return result;
 		}
 		
-		IEnumerable<Addin> InternalGetInstalledAddins (string domain, AddinSearchFlags type)
+		IEnumerable<Addin> InternalGetInstalledAddins (string domain, AddinSearchFlagsInternal type)
 		{
 			return InternalGetInstalledAddins (domain, null, type);
 		}
 		
-		IEnumerable<Addin> InternalGetInstalledAddins (string domain, string idFilter, AddinSearchFlags type)
+		IEnumerable<Addin> InternalGetInstalledAddins (string domain, string idFilter, AddinSearchFlagsInternal type)
 		{
-			if ((type & AddinSearchFlags.LatestVersionsOnly) != 0)
+			if ((type & AddinSearchFlagsInternal.LatestVersionsOnly) != 0)
 				throw new InvalidOperationException ("LatestVersionsOnly flag not supported here");
 			
 			if (allSetupInfos == null) {
@@ -242,10 +245,10 @@ namespace Mono.Addins.Database
 					return alist;
 				allSetupInfos = alist;
 			}
-			if ((type & AddinSearchFlags.IncludeAll) == AddinSearchFlags.IncludeAll)
+			if ((type & AddinSearchFlagsInternal.IncludeAll) == AddinSearchFlagsInternal.IncludeAll)
 				return FilterById (allSetupInfos, idFilter);
 			
-			if ((type & AddinSearchFlags.IncludeAddins) == AddinSearchFlags.IncludeAddins) {
+			if ((type & AddinSearchFlagsInternal.IncludeAddins) == AddinSearchFlagsInternal.IncludeAddins) {
 				if (addinSetupInfos == null) {
 					addinSetupInfos = new List<Addin> ();
 					foreach (Addin adn in allSetupInfos)
@@ -370,7 +373,7 @@ namespace Mono.Addins.Database
 					string version, name, bestVersion = null;
 					Addin.GetIdParts (id, out name, out version);
 					
-					foreach (Addin ia in InternalGetInstalledAddins (domain, name, AddinSearchFlags.IncludeAll)) 
+					foreach (Addin ia in InternalGetInstalledAddins (domain, name, AddinSearchFlagsInternal.IncludeAll)) 
 					{
 						if ((!enabledOnly || ia.Enabled) &&
 						    (version.Length == 0 || ia.SupportsVersion (version)) && 
@@ -491,7 +494,7 @@ namespace Mono.Addins.Database
 			try {
 				string idName = Addin.GetIdName (id);
 				
-				foreach (Addin ainfo in GetInstalledAddins (domain, AddinSearchFlags.IncludeAddins)) {
+				foreach (Addin ainfo in GetInstalledAddins (domain, AddinSearchFlagsInternal.IncludeAddins)) {
 					foreach (Dependency dep in ainfo.AddinInfo.Dependencies) {
 						AddinDependency adep = dep as AddinDependency;
 						if (adep == null)
@@ -523,8 +526,25 @@ namespace Mono.Addins.Database
 
 			if (addinEngine != null && addinEngine.IsInitialized)
 				addinEngine.UnloadAddin (id);
-		}		
+		}
+		
+		public void RegisterForUninstall (string domain, string id, IEnumerable<string> files)
+		{
+			DisableAddin (domain, id);
+			Configuration.RegisterForUninstall (id, files);
+			SaveConfiguration ();
+		}
 
+		public bool IsRegisteredForUninstall (string domain, string addinId)
+		{
+			return Configuration.IsRegisteredForUninstall (addinId);
+		}
+		
+		internal bool HasPendingUninstalls (string domain)
+		{
+			return Configuration.HasPendingUninstalls;
+		}
+		
 		internal string GetDescriptionPath (string domain, string id)
 		{
 			return Path.Combine (Path.Combine (AddinCachePath, domain), id + ".maddin");
@@ -996,6 +1016,8 @@ namespace Mono.Addins.Database
 			
 			DateTime tim = DateTime.Now;
 			
+			RunPendingUninstalls (monitor);
+			
 			Hashtable installed = new Hashtable ();
 			bool changesFound = CheckFolders (monitor, domain);
 			
@@ -1011,7 +1033,7 @@ namespace Mono.Addins.Database
 				
 				if (domain != null) {
 					using (fileDatabase.LockRead ()) {
-						foreach (Addin ainfo in InternalGetInstalledAddins (domain, AddinSearchFlags.IncludeAddins)) {
+						foreach (Addin ainfo in InternalGetInstalledAddins (domain, AddinSearchFlagsInternal.IncludeAddins)) {
 							installed [ainfo.Id] = ainfo.Id;
 						}
 					}
@@ -1030,7 +1052,7 @@ namespace Mono.Addins.Database
 			// Update the currently loaded add-ins
 			if (changesFound && domain != null && addinEngine != null && addinEngine.IsInitialized) {
 				Hashtable newInstalled = new Hashtable ();
-				foreach (Addin ainfo in GetInstalledAddins (domain, AddinSearchFlags.IncludeAddins)) {
+				foreach (Addin ainfo in GetInstalledAddins (domain, AddinSearchFlagsInternal.IncludeAddins)) {
 					newInstalled [ainfo.Id] = ainfo.Id;
 				}
 				
@@ -1050,6 +1072,52 @@ namespace Mono.Addins.Database
 					}
 				}
 			}
+		}
+		
+		void RunPendingUninstalls (IProgressStatus monitor)
+		{
+			bool changesDone = false;
+			
+			foreach (var adn in Configuration.GetPendingUninstalls ()) {
+				HashSet<string> files = new HashSet<string> (adn.Files);
+				if (AddinManager.CheckAssembliesLoaded (files))
+					continue;
+				
+				if (monitor.LogLevel > 1)
+					monitor.Log ("Uninstalling " + adn.AddinId);
+				
+				// Make sure all files can be deleted before doing so
+				bool canUninstall = true;
+				foreach (string f in adn.Files) {
+					if (!File.Exists (f))
+						continue;
+					try {
+						File.OpenWrite (f).Close ();
+					} catch {
+						canUninstall = false;
+						break;
+					}
+				}
+				
+				if (!canUninstall)
+					continue;
+				
+				foreach (string f in adn.Files) {
+					try {
+						if (File.Exists (f))
+							File.Delete (f);
+					} catch {
+						canUninstall = false;
+					}
+				}
+				
+				if (canUninstall) {
+					Configuration.UnregisterForUninstall (adn.AddinId);
+					changesDone = true;
+				}
+			}
+			if (changesDone)
+				SaveConfiguration ();
 		}
 		
 		void RunScannerProcess (IProgressStatus monitor)
@@ -1420,6 +1488,8 @@ namespace Mono.Addins.Database
 				scanResult.RegenerateRelationData = true;
 				return;
 			}
+			
+			scanResult.AddRemovedAddin (addinId);
 			
 			// If the add-in didn't exist, there is nothing left to do
 			
@@ -1869,6 +1939,16 @@ namespace Mono.Addins.Database
 			
 			list.Add (desc);
 		}
+	}
+	
+	// Keep in sync with AddinSearchFlags
+	enum AddinSearchFlagsInternal
+	{
+		IncludeAddins = 1,
+		IncludeRoots = 1 << 1,
+		IncludeAll = IncludeAddins | IncludeRoots,
+		LatestVersionsOnly = 1 << 3,
+		ExcludePendingUninstall = 1 << 4
 	}
 }
 
