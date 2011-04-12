@@ -137,10 +137,12 @@ namespace Mono.Addins
 		internal void DisposeChildContext (ExtensionContext ctx)
 		{
 			lock (conditionTypes) {
-				foreach (WeakReference wref in childContexts) {
-					if (wref.Target == ctx) {
-						childContexts.Remove (wref);
-						return;
+				if (childContexts != null) {
+					foreach (WeakReference wref in childContexts) {
+						if (wref.Target == ctx) {
+							childContexts.Remove (wref);
+							return;
+						}
 					}
 				}
 			}
