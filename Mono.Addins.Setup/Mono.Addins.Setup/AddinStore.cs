@@ -43,6 +43,8 @@ using Mono.Addins;
 using Mono.Addins.Setup.ProgressMonitoring;
 using Mono.Addins.Description;
 using Mono.Addins.Serialization;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Mono.Addins.Setup
 {
@@ -120,7 +122,7 @@ namespace Mono.Addins.Setup
 						throw new InstallException ("Installation cancelled.");
 					monitor.Step (1);
 				} catch (Exception ex) {
-					monitor.ReportError (null, ex);
+					ReportException (monitor, ex);
 					rollback = true;
 					break;
 				}
@@ -136,7 +138,7 @@ namespace Mono.Addins.Setup
 					prepared.Add (mpack);
 					monitor.Step (1);
 				} catch (Exception ex) {
-					monitor.ReportError (null, ex);
+					ReportException (monitor, ex);
 					rollback = true;
 					break;
 				}
@@ -156,7 +158,7 @@ namespace Mono.Addins.Setup
 							throw new InstallException ("Installation cancelled.");
 						monitor.Step (1);
 					} catch (Exception ex) {
-						monitor.ReportError (null, ex);
+						ReportException (monitor, ex);
 						rollback = true;
 						break;
 					}
@@ -173,7 +175,7 @@ namespace Mono.Addins.Setup
 							throw new InstallException ("Installation cancelled.");
 						monitor.Step (1);
 					} catch (Exception ex) {
-						monitor.ReportError (null, ex);
+						ReportException (monitor, ex);
 						rollback = true;
 						break;
 					}
@@ -195,7 +197,7 @@ namespace Mono.Addins.Setup
 						mpack.RollbackInstall (monitor, this);
 						monitor.Step (1);
 					} catch (Exception ex) {
-						monitor.ReportError (null, ex);
+						ReportException (monitor, ex);
 					}
 				}
 			
@@ -204,7 +206,7 @@ namespace Mono.Addins.Setup
 						mpack.RollbackUninstall (monitor, this);
 						monitor.Step (1);
 					} catch (Exception ex) {
-						monitor.ReportError (null, ex);
+						ReportException (monitor, ex);
 					}
 				}
 			} else
@@ -245,79 +247,98 @@ namespace Mono.Addins.Setup
 			return !rollback;
 		}
 		
+		void ReportException (IProgressMonitor statusMonitor, Exception ex)
+		{
+			if (ex is InstallException)
+				statusMonitor.ReportError (ex.Message, null);
+			else
+				statusMonitor.ReportError (null, ex);
+		}
+		
 		public void Uninstall (IProgressStatus statusMonitor, string id)
 		{
-			IProgressMonitor monitor = ProgressStatusMonitor.GetProgressMonitor (statusMonitor);
+			Uninstall (statusMonitor, new string[] { id });
+		}
 		
-			bool rollback = false;
-			ArrayList toUninstall = new ArrayList ();
-			ArrayList uninstallPrepared = new ArrayList ();
+		public void Uninstall (IProgressStatus statusMonitor, IEnumerable<string> ids)
+		{
+			IProgressMonitor monitor = ProgressStatusMonitor.GetProgressMonitor (statusMonitor);
+			monitor.BeginTask ("Uninstalling add-ins", ids.Count ());
 			
-			Addin ia = service.Registry.GetAddin (id);
-			if (ia == null)
-				throw new InstallException ("The add-in '" + id + "' is not installed.");
-
-			toUninstall.Add (AddinPackage.FromInstalledAddin (ia));
-
-			Addin[] deps = GetDependentAddins (id, true);
-			foreach (Addin dep in deps)
-				toUninstall.Add (AddinPackage.FromInstalledAddin (dep));
-			
-			monitor.BeginTask ("Deleting files", toUninstall.Count*2 + uninstallPrepared.Count + 1);
-			
-			// Prepare install
-			
-			foreach (Package mpack in toUninstall) {
-				try {
-					mpack.PrepareUninstall (monitor, this);
-					monitor.Step (1);
-					uninstallPrepared.Add (mpack);
-				} catch (Exception ex) {
-					monitor.ReportError (null, ex);
-					rollback = true;
-					break;
-				}
-			}
-			
-			// Commit install
-			
-			if (!rollback) {
+			foreach (string id in ids) {
+				bool rollback = false;
+				ArrayList toUninstall = new ArrayList ();
+				ArrayList uninstallPrepared = new ArrayList ();
+				
+				Addin ia = service.Registry.GetAddin (id);
+				if (ia == null)
+					throw new InstallException ("The add-in '" + id + "' is not installed.");
+	
+				toUninstall.Add (AddinPackage.FromInstalledAddin (ia));
+	
+				Addin[] deps = GetDependentAddins (id, true);
+				foreach (Addin dep in deps)
+					toUninstall.Add (AddinPackage.FromInstalledAddin (dep));
+				
+				monitor.BeginTask ("Deleting files", toUninstall.Count*2 + uninstallPrepared.Count + 1);
+				
+				// Prepare install
+				
 				foreach (Package mpack in toUninstall) {
 					try {
-						mpack.CommitUninstall (monitor, this);
+						mpack.PrepareUninstall (monitor, this);
 						monitor.Step (1);
+						uninstallPrepared.Add (mpack);
 					} catch (Exception ex) {
-						monitor.ReportError (null, ex);
+						ReportException (monitor, ex);
 						rollback = true;
 						break;
 					}
 				}
-			}
-			
-			// Rollback if failed
-			
-			if (rollback) {
-				monitor.BeginTask ("Rolling back uninstall", uninstallPrepared.Count);
-				foreach (Package mpack in uninstallPrepared) {
-					try {
-						mpack.RollbackUninstall (monitor, this);
-					} catch (Exception ex) {
-						monitor.ReportError (null, ex);
+				
+				// Commit install
+				
+				if (!rollback) {
+					foreach (Package mpack in toUninstall) {
+						try {
+							mpack.CommitUninstall (monitor, this);
+							monitor.Step (1);
+						} catch (Exception ex) {
+							ReportException (monitor, ex);
+							rollback = true;
+							break;
+						}
 					}
 				}
-				monitor.EndTask ();
-			}
-			monitor.Step (1);
-
-			// Cleanup
-			
-			foreach (Package mpack in uninstallPrepared) {
-				try {
-					mpack.EndUninstall (monitor, this);
-					monitor.Step (1);
-				} catch (Exception ex) {
-					monitor.Log.WriteLine (ex);
+				
+				// Rollback if failed
+				
+				if (rollback) {
+					monitor.BeginTask ("Rolling back uninstall", uninstallPrepared.Count);
+					foreach (Package mpack in uninstallPrepared) {
+						try {
+							mpack.RollbackUninstall (monitor, this);
+						} catch (Exception ex) {
+							ReportException (monitor, ex);
+						}
+					}
+					monitor.EndTask ();
 				}
+				monitor.Step (1);
+	
+				// Cleanup
+				
+				foreach (Package mpack in uninstallPrepared) {
+					try {
+						mpack.EndUninstall (monitor, this);
+						monitor.Step (1);
+					} catch (Exception ex) {
+						monitor.Log.WriteLine (ex);
+					}
+				}
+				
+				monitor.EndTask ();
+				monitor.Step (1);
 			}
 			
 			// Update the extension maps
@@ -455,6 +476,16 @@ namespace Mono.Addins.Setup
 						}
 						break;
 					}
+				}
+			}
+			
+			// Don't allow installing add-ins which are scheduled for uninstall
+			
+			foreach (Package p in packages) {
+				AddinPackage ap = p as AddinPackage;
+				if (ap != null && Registry.IsRegisteredForUninstall (ap.Addin.Id)) {
+					error = true;
+					monitor.ReportError ("The addin " + ap.Addin.Name + " v" + ap.Addin.Version + " is scheduled for uninstallation. Please restart the application before trying to re-install it.", null);
 				}
 			}
 			
