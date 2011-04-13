@@ -217,11 +217,8 @@ namespace Mono.Addins.Gui
 				warnmessage = Catalog.GetString ("The uninstallation has completed with warnings.");
 			}
 			
-			Thread t = new Thread (oper);
-			t.Start ();
-			
 			installing = true;
-			installMonitor.WaitForCompleted ();
+			oper ();
 			installing = false;
 			
 			buttonCancel.Visible = false;

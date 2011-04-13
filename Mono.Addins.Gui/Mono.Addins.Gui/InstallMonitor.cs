@@ -61,12 +61,14 @@ namespace Mono.Addins.Gui
 		{
 			if (progressLabel != null)
 				progressLabel.Markup = "<b>" + GLib.Markup.EscapeText (mainOperation) + "</b>\n" + GLib.Markup.EscapeText (msg);
+			RunPendingEvents ();
 		}
 		
 		public void SetProgress (double progress)
 		{
 			if (progressBar != null)
 				progressBar.Fraction = progress;
+			RunPendingEvents ();
 		}
 		
 		public void Log (string msg)
@@ -113,14 +115,19 @@ namespace Mono.Addins.Gui
 		public void WaitForCompleted ()
 		{
 			while (!done) {
-				while (Gtk.Application.EventsPending ())
-					Gtk.Application.RunIteration ();
+				RunPendingEvents ();
 				Thread.Sleep (50);
 			}
 		}
 		
 		public bool Success {
 			get { return errors.Count == 0; }
+		}
+		
+		void RunPendingEvents ()
+		{
+			while (Gtk.Application.EventsPending ())
+				Gtk.Application.RunIteration ();
 		}
 	}
 }
