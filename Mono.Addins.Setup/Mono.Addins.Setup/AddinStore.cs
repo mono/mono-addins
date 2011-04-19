@@ -675,27 +675,8 @@ namespace Mono.Addins.Setup
 			
 		internal bool HasWriteAccess (string file)
 		{
-			if (File.Exists (file)) {
-				try {
-					File.OpenWrite (file).Close ();
-					return true;
-				} catch {
-					return false;
-				}
-			}
-			else if (Directory.Exists (file)) {
-				string tpath = Path.Combine (file, ".test");
-				int n = 0;
-				while (Directory.Exists (tpath + n)) n++;
-				try {
-					Directory.CreateDirectory (tpath + n);
-					Directory.Delete (tpath + n);
-					return true;
-				} catch {
-					return false;
-				}
-			} else
-				return false;
+			FileInfo f = new FileInfo (file);
+			return !f.Exists || !f.IsReadOnly;
 		}
 		
 		internal bool IsUserAddin (string addinFile)
