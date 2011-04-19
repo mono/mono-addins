@@ -40,6 +40,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using Mono.Addins;
 using Mono.Addins.Description;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Mono.Addins.Setup
 {
@@ -236,8 +237,9 @@ namespace Mono.Addins.Setup
 				return;
 			}
 			
+			// If the add-in assemblies are loaded, or if there is any file with a write lock, delay the uninstallation
 			HashSet<string> files = new HashSet<string> (GetInstalledFiles (conf));
-			if (AddinManager.CheckAssembliesLoaded (files)) {
+			if (AddinManager.CheckAssembliesLoaded (files) || files.Any (f => HasWriteLock (f))) {
 				uninstallingLoaded = true;
 				return;
 			}
@@ -252,6 +254,18 @@ namespace Mono.Addins.Setup
 			
 			tempFolder = CreateTempFolder ();
 			CopyAddinFiles (monitor, conf, iaddin.AddinFile, tempFolder);
+		}
+		
+		bool HasWriteLock (string file)
+		{
+			if (!File.Exists (file))
+				return false;
+			try {
+				File.OpenWrite (file).Close ();
+				return false;
+			} catch {
+				return true;
+			}
 		}
 		
 		IEnumerable<string> GetInstalledFiles (AddinDescription conf)
