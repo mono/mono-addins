@@ -105,8 +105,12 @@ namespace Mono.Addins.Serialization
 
 			byte[] bytes = new byte [len];
 			int n = 0;
-			while (n < len)
-				n += reader.Read (bytes, n, len - n); 
+			while (n < len) {
+				int read = reader.Read (bytes, n, len - n);
+				if (read == 0)
+					throw new InvalidOperationException ("Length too high for string: " + len);
+				n += read;
+			}
 			string s = Encoding.UTF8.GetString (bytes);
 			stringTable.Add (s);
 			return s;
