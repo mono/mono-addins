@@ -1,13 +1,26 @@
+#Autosave files
+*~
+
+# Build stuff
 /bin
 *policy*config
 *.pc
 *.dll
+
+# Ide stuff
+*.pidb
+*.userprefs
+*.usertasks
+*.sln.cache
+
+# Generated stuff
 /mautil/mautil
 /mono-addins.spec
 
+# Mac stuff
 .DS_Store
 
-#autotools stuff
+# Autotools stuff
 Makefile
 Makefile.in
 /aclocal.m4
