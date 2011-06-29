@@ -35,6 +35,7 @@ using Mono.Addins.Setup.ProgressMonitoring;
 using Mono.Addins.Setup;
 using System.IO;
 using Mono.Addins.Description;
+using System.Linq;
 
 namespace Mono.Addins.Setup
 {
@@ -167,27 +168,30 @@ namespace Mono.Addins.Setup
 		
 		void Install (string[] args)
 		{
-			if (args.Length < 1) {
+			bool prompt = !args.Any (a => a == "-y");
+			var addins = args.Where (a => a != "-y");
+			
+			if (!addins.Any ()) {
 				PrintHelp ("install");
 				return;
 			}
 			
 			PackageCollection packs = new PackageCollection ();
-			for (int n=0; n<args.Length; n++) {
-				if (File.Exists (args [n])) { 
-					packs.Add (AddinPackage.FromFile (args [n]));
+			foreach (string arg in addins) {
+				if (File.Exists (arg)) { 
+					packs.Add (AddinPackage.FromFile (arg));
 				} else {
-					string aname = Addin.GetIdName (GetFullId (args[n]));
-					string aversion = Addin.GetIdVersion (args[n]);
+					string aname = Addin.GetIdName (GetFullId (arg));
+					string aversion = Addin.GetIdVersion (arg);
 					if (aversion.Length == 0) aversion = null;
 					
 					AddinRepositoryEntry[] ads = service.Repositories.GetAvailableAddin (aname, aversion);
 					if (ads.Length == 0)
-						throw new InstallException ("The addin '" + args[n] + "' is not available for install.");
+						throw new InstallException ("The addin '" + arg + "' is not available for install.");
 					packs.Add (AddinPackage.FromRepository (ads[ads.Length-1]));
 				}
 			}
-			Install (packs, !HasOption ("y"));
+			Install (packs, prompt);
 		}
 		
 		void CheckInstall (string[] args)
@@ -252,19 +256,25 @@ namespace Mono.Addins.Setup
 		
 		void Uninstall (string[] args)
 		{
-			if (args.Length < 1)
+			bool prompt = !args.Any (a => a == "-y");
+			var addins = args.Where (a => a != "-y");
+			
+			if (!addins.Any ())
 				throw new InstallException ("The add-in id is required.");
+			if (addins.Count () > 1)
+				throw new InstallException ("Only one add-in id can be provided.");
 			
-			Addin ads = registry.GetAddin (GetFullId (args[0]));
+			string id = addins.First ();
+			Addin ads = registry.GetAddin (GetFullId (id));
 			if (ads == null)
-				throw new InstallException ("The add-in '" + args[0] + "' is not installed.");
+				throw new InstallException ("The add-in '" + id + "' is not installed.");
 			if (!ads.Description.CanUninstall)
-				throw new InstallException ("The add-in '" + args[0] + "' is protected and can't be uninstalled.");
+				throw new InstallException ("The add-in '" + id + "' is protected and can't be uninstalled.");
 			
-			if (!HasOption ("y")) {
+			if (prompt) {
 				Console.WriteLine ("The following add-ins will be uninstalled:");
 				Console.WriteLine (" - " + ads.Description.Name);
-				foreach (Addin si in service.GetDependentAddins (args[0], true))
+				foreach (Addin si in service.GetDependentAddins (id, true))
 					Console.WriteLine (" - " + si.Description.Name);
 				
 				Console.WriteLine ();
