@@ -187,7 +187,7 @@ namespace Mono.Addins.Setup
 					packs.Add (AddinPackage.FromRepository (ads[ads.Length-1]));
 				}
 			}
-			Install (packs, true);
+			Install (packs, !HasOption ("y"));
 		}
 		
 		void CheckInstall (string[] args)
@@ -261,16 +261,19 @@ namespace Mono.Addins.Setup
 			if (!ads.Description.CanUninstall)
 				throw new InstallException ("The add-in '" + args[0] + "' is protected and can't be uninstalled.");
 			
-			Console.WriteLine ("The following add-ins will be uninstalled:");
-			Console.WriteLine (" - " + ads.Description.Name);
-			foreach (Addin si in service.GetDependentAddins (args[0], true))
-				Console.WriteLine (" - " + si.Description.Name);
-			
-			Console.WriteLine ();
-			Console.Write ("Are you sure you want to continue? (y/N): ");
-			string res = Console.ReadLine ();
-			if (res == "y" || res == "Y")
-				service.Uninstall (new ConsoleProgressStatus (verbose), ads.Id);
+			if (!HasOption ("y")) {
+				Console.WriteLine ("The following add-ins will be uninstalled:");
+				Console.WriteLine (" - " + ads.Description.Name);
+				foreach (Addin si in service.GetDependentAddins (args[0], true))
+					Console.WriteLine (" - " + si.Description.Name);
+				
+				Console.WriteLine ();
+				Console.Write ("Are you sure you want to continue? (y/N): ");
+				string res = Console.ReadLine ();
+				if (res != "y" && res != "Y")
+					return;
+			}
+			service.Uninstall (new ConsoleProgressStatus (verbose), ads.Id);
 		}
 		
 		bool IsHidden (Addin ainfo)
@@ -963,20 +966,22 @@ namespace Mono.Addins.Setup
 			
 			cmd = new SetupCommand (cat, "install", "i", new SetupCommandHandler (Install));
 			cmd.Description = "Installs add-ins.";
-			cmd.Usage = "[package-name|package-file] ...";
+			cmd.Usage = "[-y] [package-name|package-file] ...";
 			cmd.AppendDesc ("Installs an add-in or set of addins. The command argument is a list");
 			cmd.AppendDesc ("of files and/or package names. If a package name is provided");
 			cmd.AppendDesc ("the package will be looked up in the registered repositories.");
 			cmd.AppendDesc ("A specific add-in version can be specified by appending it to.");
 			cmd.AppendDesc ("the package name using '/' as a separator, like in this example:");
-			cmd.AppendDesc ("MonoDevelop.SourceEditor/0.9.1");
+			cmd.AppendDesc ("MonoDevelop.SourceEditor/0.9.1\n");
+			cmd.AppendDesc ("-y: Don't ask for confirmation.");
 			commands.Add (cmd);
 			
 			cmd = new SetupCommand (cat, "uninstall", "u", new SetupCommandHandler (Uninstall));
 			cmd.Description = "Uninstalls add-ins.";
-			cmd.Usage = "<package-name>";
+			cmd.Usage = "[-y] <package-name>";
 			cmd.AppendDesc ("Uninstalls an add-in. The command argument is the name");
-			cmd.AppendDesc ("of the add-in to uninstall.");
+			cmd.AppendDesc ("of the add-in to uninstall.\n");
+			cmd.AppendDesc ("-y: Don't ask for confirmation.");
 			commands.Add (cmd);
 			
 			cmd = new SetupCommand (cat, "check-install", "ci", new SetupCommandHandler (CheckInstall));
