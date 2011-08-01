@@ -940,12 +940,17 @@ namespace Mono.Addins.Database
 			}
 			return lastDomainId.ToString ();
 		}
-		
-		internal void ResetCachedData ()
+
+		internal void ResetBasicCachedData ()
 		{
 			allSetupInfos = null;
 			addinSetupInfos = null;
 			rootSetupInfos = null;
+		}
+
+		internal void ResetCachedData ()
+		{
+			ResetBasicCachedData ();
 			hostIndex = null;
 			cachedAddinSetupInfos.Clear ();
 			if (addinEngine != null)
@@ -1001,6 +1006,8 @@ namespace Mono.Addins.Database
 					monitor.ReportError ("The add-in registry could not be rebuilt. It may be due to lack of write permissions to the directory: " + AddinDbDir, ex);
 				}
 			}
+			ResetBasicCachedData ();
+			
 			Update (monitor, domain);
 		}
 		
