@@ -21,7 +21,7 @@ src-zip:
 	unix2dos $(SRC_PACKAGE_DIR)/AUTHORS.txt
 	unix2dos $(SRC_PACKAGE_DIR)/COPYING.txt
 	rm -rf $(SRC_PACKAGE_DIR)/Test
-	rm $(SRC_PACKAGE_DIR)/configure.ac
+	rm -f $(SRC_PACKAGE_DIR)/configure.ac
 	cd $(SRC_PACKAGE_DIR) && for fi in `find  . -name Makefile.am`; do rm $$fi; done
 	cd $(SRC_PACKAGE_DIR) && zip -r ../$(SRC_PACKAGE_DIR).zip *
 	
