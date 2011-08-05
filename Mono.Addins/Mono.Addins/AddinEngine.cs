@@ -669,8 +669,14 @@ namespace Mono.Addins
 		{
 			if (AddinDatabase.RunningSetupProcess || asm is System.Reflection.Emit.AssemblyBuilder)
 				return;
+			string codeBase;
+			try {
+				codeBase = asm.CodeBase;
+			} catch {
+				return;
+			}
 			Uri u;
-			if (!Uri.TryCreate (asm.CodeBase, UriKind.Absolute, out u))
+			if (!Uri.TryCreate (codeBase, UriKind.Absolute, out u))
 				return;
 			string asmFile = u.LocalPath;
 			Addin ainfo = Registry.GetAddinForHostAssembly (asmFile);
