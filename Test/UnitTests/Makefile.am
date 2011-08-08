@@ -54,7 +54,6 @@ EXTRAS =
 
 REFERENCES =  \
 	-pkg:mono-nunit \
-	-pkg:nunit \
 	-r:System \
 	-r:System.Core \
 	-r:System.Xml
