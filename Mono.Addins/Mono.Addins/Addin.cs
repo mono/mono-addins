@@ -50,6 +50,7 @@ namespace Mono.Addins
 		AddinDatabase database;
 		bool? isLatestVersion;
 		bool? isUserAddin;
+		string id;
 		
 		internal Addin (AddinDatabase database, string file)
 		{
@@ -62,8 +63,11 @@ namespace Mono.Addins
 		/// </summary>
 		public string Id {
 			get {
-				if (configFile != null)
-					return Path.GetFileNameWithoutExtension (configFile);
+				if (configFile != null) {
+					if (id == null)
+						id = Path.GetFileNameWithoutExtension (configFile);
+					return id;
+				}
 				return this.AddinInfo.Id; 
 			}
 		}
