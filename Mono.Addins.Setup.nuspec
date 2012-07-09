@@ -2,14 +2,14 @@
 <package>
   <metadata>
     <id>Mono.Addins.Setup</id>
-    <version>0.6.2</version>
+    <version>1.0</version>
     <authors>Lluis Sanchez</authors>
     <description>Mono.Addins is a framework for creating extensible applications, and for creating add-ins which extend applications. Mono.Addins.Setup provides an API for managing add-ins, creating add-in packages and publishing add-ins in on-line repositories.</description>
     <language>en-US</language>
     <projectUrl>http://monoaddins.codeplex.com</projectUrl>
     <licenseUrl>http://monoaddins.codeplex.com/license</licenseUrl>
 	<dependencies>
-		<dependency id="Mono.Addins" version="0.6.2" />
+		<dependency id="Mono.Addins" version="1.0" />
 	</dependencies>
   </metadata>
   <files>

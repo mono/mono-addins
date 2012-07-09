@@ -1,7 +1,7 @@
 dnl Warning: This is an automatically generated file, do not edit!
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.54])
-AC_INIT([mono-addins], [0.6.2])
+AC_INIT([mono-addins], [1.0])
 AM_INIT_AUTOMAKE([foreign tar-ustar])
 AM_MAINTAINER_MODE
 
@@ -11,9 +11,9 @@ if test "x$PKG_CONFIG" = "xno"; then
         AC_MSG_ERROR([You need to install pkg-config])
 fi
 
-API_VERSION=0.6.0.0
+API_VERSION=1.0.0.0
 AC_SUBST(API_VERSION)
-POLICY_VERSIONS="0.2 0.3 0.4 0.5"
+POLICY_VERSIONS="0.2 0.3 0.4 0.5 0.6"
 AC_SUBST(POLICY_VERSIONS)
 
 AC_PROG_INSTALL
