@@ -1,7 +1,7 @@
 
 SUBDIRS =  Mono.Addins Mono.Addins.CecilReflector Mono.Addins.Setup Mono.Addins.MSBuild Mono.Addins.Gui mautil Test docs
 
-EXTRA_DIST = COPYING mono-addins.snk
+EXTRA_DIST = COPYING mono-addins.snk Mono.Addins.sln
 
 SRC_PACKAGE_DIR=Mono.Addins-source-@VERSION@
 BIN_PACKAGE_DIR=Mono.Addins-binary-@VERSION@
