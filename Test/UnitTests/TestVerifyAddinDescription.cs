@@ -32,7 +32,7 @@ using System.IO;
 
 namespace UnitTests
 {
-	public class TestVerifyAddinDescription
+	public abstract class TestVerifyAddinDescription
 	{
 		protected AddinDescription desc;
 		
