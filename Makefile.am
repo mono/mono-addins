@@ -38,7 +38,9 @@ bin-zip:
 	unix2dos $(BIN_PACKAGE_DIR)/COPYING.txt
 	cp bin/mautil.exe $(BIN_PACKAGE_DIR)
 	cp bin/Mono.Addins.dll $(BIN_PACKAGE_DIR)
+	cp bin/Mono.Addins.xml $(BIN_PACKAGE_DIR)
 	cp bin/Mono.Addins.Setup.dll $(BIN_PACKAGE_DIR)
+	cp bin/Mono.Addins.Setup.xml $(BIN_PACKAGE_DIR)
 	cp bin/Mono.Addins.CecilReflector.dll $(BIN_PACKAGE_DIR)
 	cp support/ICSharpCode.SharpZipLib.license.txt $(BIN_PACKAGE_DIR)
 	cp support/ICSharpCode.SharpZipLib.dll $(BIN_PACKAGE_DIR)
