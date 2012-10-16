@@ -17,6 +17,7 @@ src-zip:
 	cp support/README-src $(SRC_PACKAGE_DIR)/README.txt
 	cp AUTHORS $(SRC_PACKAGE_DIR)/AUTHORS.txt
 	cp COPYING $(SRC_PACKAGE_DIR)/COPYING.txt
+	cp mono-addins.snk $(SRC_PACKAGE_DIR)/mono-addins.snk
 	unix2dos $(SRC_PACKAGE_DIR)/README.txt
 	unix2dos $(SRC_PACKAGE_DIR)/AUTHORS.txt
 	unix2dos $(SRC_PACKAGE_DIR)/COPYING.txt
