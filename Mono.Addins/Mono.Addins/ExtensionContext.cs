@@ -49,7 +49,7 @@ namespace Mono.Addins
 	{
 		Hashtable conditionTypes = new Hashtable ();
 		Hashtable conditionsToNodes = new Hashtable ();
-		ArrayList childContexts;
+		List<WeakReference> childContexts;
 		ExtensionContext parentContext;
 		ExtensionTree tree;
 		bool fireEvents = false;
@@ -68,16 +68,6 @@ namespace Mono.Addins
 		/// AddinManager.GetExtensionNodes() and then update whatever needs to be updated.
 		/// </remarks>
 		public event ExtensionEventHandler ExtensionChanged;
-		
-		/// <summary>
-		/// Releases unmanaged resources and performs other cleanup operations before the
-		/// ExtensionContext is reclaimed by garbage collection.
-		/// </summary>
-		~ExtensionContext ()
-		{
-			if (parentContext != null)
-				parentContext.DisposeChildContext (this);
-		}
 		
 		internal void Initialize (AddinEngine addinEngine)
 		{
@@ -107,6 +97,12 @@ namespace Mono.Addins
 		internal AddinEngine AddinEngine {
 			get { return tree.AddinEngine; }
 		}
+
+		void CleanDisposedChildContexts ()
+		{
+			if (childContexts != null)
+				childContexts.RemoveAll (w => w.Target == null);
+		}
 		
 		internal virtual void ResetCachedData ()
 		{
@@ -124,7 +120,9 @@ namespace Mono.Addins
 		{
 			lock (conditionTypes) {
 				if (childContexts == null)
-					childContexts = new ArrayList ();
+					childContexts = new List<WeakReference> ();
+				else
+					CleanDisposedChildContexts ();
 				ExtensionContext ctx = new ExtensionContext ();
 				ctx.Initialize (AddinEngine);
 				ctx.parentContext = this;
@@ -133,21 +131,7 @@ namespace Mono.Addins
 				return ctx;
 			}
 		}
-		
-		internal void DisposeChildContext (ExtensionContext ctx)
-		{
-			lock (conditionTypes) {
-				if (childContexts != null) {
-					foreach (WeakReference wref in childContexts) {
-						if (wref.Target == ctx) {
-							childContexts.Remove (wref);
-							return;
-						}
-					}
-				}
-			}
-		}
-		
+
 		/// <summary>
 		/// Registers a new condition in the extension context.
 		/// </summary>
@@ -805,6 +789,7 @@ namespace Mono.Addins
 			// Notify child contexts
 			lock (conditionTypes) {
 				if (childContexts != null) {
+					CleanDisposedChildContexts ();
 					foreach (WeakReference wref in childContexts) {
 						ExtensionContext ctx = wref.Target as ExtensionContext;
 						if (ctx != null)
@@ -830,6 +815,7 @@ namespace Mono.Addins
 
 			lock (conditionTypes) {
 				if (childContexts != null) {
+					CleanDisposedChildContexts ();
 					foreach (WeakReference wref in childContexts) {
 						ExtensionContext ctx = wref.Target as ExtensionContext;
 						if (ctx != null)
@@ -913,6 +899,7 @@ namespace Mono.Addins
 			
 			lock (conditionTypes) {
 				if (childContexts != null) {
+					CleanDisposedChildContexts ();
 					foreach (WeakReference wref in childContexts) {
 						ExtensionContext ctx = wref.Target as ExtensionContext;
 						if (ctx != null)
