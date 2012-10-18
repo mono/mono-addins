@@ -5,15 +5,19 @@
        copyright   = "GPL"
        description = "SystemInfoExtension"
 	   category    = "SimpleApp/Extensions"
-       version     = "0.1.0">
+       version     = "$(Version)">
 
+	<Variables>
+		<Version>0.1.0</Version>
+	</Variables>
+	
 	<Runtime>
 		<Import assembly="SystemInfoExtension.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="0.1.0" />
-		<Addin id="CommandExtension" version="0.1.0" />
+		<Addin id="Core" version="$(Version)" />
+		<Addin id="CommandExtension" version="$(Version)" />
 	</Dependencies>
 	
 	<Localizer type="StringResource" />

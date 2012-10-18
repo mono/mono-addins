@@ -123,7 +123,7 @@ namespace Mono.Addins.Description
 		/// The addin identifier.
 		/// </value>
 		public string AddinId {
-			get { return id != null ? id : string.Empty; }
+			get { return id != null ? ParseString (id) : string.Empty; }
 			set { id = value; }
 		}
 		
@@ -134,7 +134,7 @@ namespace Mono.Addins.Description
 		/// The version.
 		/// </value>
 		public string Version {
-			get { return version != null ? version : string.Empty; }
+			get { return version != null ? ParseString (version) : string.Empty; }
 			set { version = value; }
 		}
 		
@@ -145,7 +145,7 @@ namespace Mono.Addins.Description
 		/// The name.
 		/// </value>
 		public override string Name {
-			get { return AddinId + " v" + version; }
+			get { return AddinId + " v" + Version; }
 		}
 		
 		internal override bool CheckInstalled (AddinRegistry registry)
@@ -162,8 +162,8 @@ namespace Mono.Addins.Description
 		internal override void Write (BinaryXmlWriter writer)
 		{
 			base.Write (writer);
-			writer.WriteValue ("id", id);
-			writer.WriteValue ("version", version);
+			writer.WriteValue ("id", ParseString (id));
+			writer.WriteValue ("version", ParseString (version));
 		}
 		
 		internal override void Read (BinaryXmlReader reader)

@@ -35,6 +35,7 @@ using System.Xml.Serialization;
 using System.Collections.Specialized;
 using Mono.Addins.Serialization;
 using Mono.Addins.Database;
+using System.Text;
 
 namespace Mono.Addins.Description
 {
@@ -79,6 +80,7 @@ namespace Mono.Addins.Description
 		object[] fileInfo;
 		
 		AddinPropertyCollectionImpl properties;
+		Dictionary<string,string> variables;
 		
 		internal static BinaryXmlTypeMap typeMap;
 		
@@ -137,7 +139,7 @@ namespace Mono.Addins.Description
 		/// The local identifier.
 		/// </value>
 		public string LocalId {
-			get { return id != null ? id : string.Empty; }
+			get { return id != null ? ParseString (id) : string.Empty; }
 			set { id = value; hasUserId = true; }
 		}
 
@@ -148,7 +150,7 @@ namespace Mono.Addins.Description
 		/// The namespace.
 		/// </value>
 		public string Namespace {
-			get { return ns != null ? ns : string.Empty; }
+			get { return ns != null ? ParseString (ns) : string.Empty; }
 			set { ns = value; }
 		}
 
@@ -164,7 +166,7 @@ namespace Mono.Addins.Description
 				if (val.Length > 0)
 					return val;
 				if (name != null && name.Length > 0)
-					return name;
+					return ParseString (name);
 				if (HasUserId)
 					return AddinId;
 				else if (sourceAddinFile != null)
@@ -182,7 +184,7 @@ namespace Mono.Addins.Description
 		/// The version.
 		/// </value>
 		public string Version {
-			get { return version != null ? version : string.Empty; }
+			get { return version != null ? ParseString (version) : string.Empty; }
 			set { version = value; }
 		}
 
@@ -193,7 +195,7 @@ namespace Mono.Addins.Description
 		/// The compat version.
 		/// </value>
 		public string CompatVersion {
-			get { return compatVersion != null ? compatVersion : string.Empty; }
+			get { return compatVersion != null ? ParseString (compatVersion) : string.Empty; }
 			set { compatVersion = value; }
 		}
 
@@ -208,7 +210,7 @@ namespace Mono.Addins.Description
 				string val = Properties.GetPropertyValue ("Author");
 				if (val.Length > 0)
 					return val;
-				return author ?? string.Empty; 
+				return ParseString (author) ?? string.Empty; 
 			}
 			set { author = value; }
 		}
@@ -224,7 +226,7 @@ namespace Mono.Addins.Description
 				string val = Properties.GetPropertyValue ("Url");
 				if (val.Length > 0)
 					return val;
-				return url ?? string.Empty;
+				return ParseString (url) ?? string.Empty;
 			}
 			set { url = value; }
 		}
@@ -240,7 +242,7 @@ namespace Mono.Addins.Description
 				string val = Properties.GetPropertyValue ("Copyright");
 				if (val.Length > 0)
 					return val;
-				return copyright ?? string.Empty; 
+				return ParseString (copyright) ?? string.Empty; 
 			}
 			set { copyright = value; }
 		}
@@ -256,7 +258,7 @@ namespace Mono.Addins.Description
 				string val = Properties.GetPropertyValue ("Description");
 				if (val.Length > 0)
 					return val;
-				return description ?? string.Empty;
+				return ParseString (description) ?? string.Empty;
 			}
 			set { description = value; }
 		}
@@ -272,7 +274,7 @@ namespace Mono.Addins.Description
 				string val = Properties.GetPropertyValue ("Category");
 				if (val.Length > 0)
 					return val;
-				return category ?? string.Empty;
+				return ParseString (category) ?? string.Empty;
 			}
 			set { category = value; }
 		}
@@ -542,7 +544,7 @@ namespace Mono.Addins.Description
 		public AddinPropertyCollection Properties {
 			get {
 				if (properties == null)
-					properties = new AddinPropertyCollectionImpl ();
+					properties = new AddinPropertyCollectionImpl (this);
 				return properties;
 			}
 		}
@@ -755,7 +757,7 @@ namespace Mono.Addins.Description
 			}
 			
 			elem = configDoc.DocumentElement;
-			
+
 			SaveCoreProperty (elem, HasUserId ? id : null, "id", "Id");
 			SaveCoreProperty (elem, version, "version", "Version");
 			SaveCoreProperty (elem, ns, "namespace", "Namespace");
@@ -841,6 +843,27 @@ namespace Mono.Addins.Description
 					oldHeader.AppendChild (propElem);
 				}
 			}
+			
+			XmlElement oldVars = (XmlElement) elem.SelectSingleNode ("Variables");
+			if (variables == null || variables.Count == 0) {
+				if (oldVars != null)
+					elem.RemoveChild (oldVars);
+			} else {
+				if (oldVars == null) {
+					oldVars = elem.OwnerDocument.CreateElement ("Variables");
+					if (elem.FirstChild != null)
+						elem.InsertBefore (oldVars, elem.FirstChild);
+					else
+						elem.AppendChild (oldVars);
+				}
+				else
+					oldVars.RemoveAll ();
+				foreach (var prop in variables) {
+					XmlElement propElem = elem.OwnerDocument.CreateElement (prop.Key);
+					propElem.InnerText = prop.Value ?? string.Empty;
+					oldVars.AppendChild (propElem);
+				}
+			}
 		}
 		
 		void SaveCoreProperty (XmlElement elem, string val, string attr, string prop)
@@ -908,11 +931,23 @@ namespace Mono.Addins.Description
 			} catch (Exception ex) {
 				throw new InvalidOperationException ("The add-in configuration file is invalid: " + ex.Message, ex);
 			}
-			
+
 			XmlElement elem = config.configDoc.DocumentElement;
 			if (elem.LocalName == "ExtensionModel")
 				return config;
 			
+			XmlElement varsElem = (XmlElement) elem.SelectSingleNode ("Variables");
+			if (varsElem != null) {
+				foreach (XmlNode node in varsElem.ChildNodes) {
+					XmlElement prop = node as XmlElement;
+					if (prop == null)
+						continue;
+					if (config.variables == null)
+						config.variables = new Dictionary<string, string> ();
+					config.variables [prop.LocalName] = prop.InnerText;
+				}
+			}
+
 			config.id = elem.GetAttribute ("id");
 			config.ns = elem.GetAttribute ("namespace");
 			config.name = elem.GetAttribute ("name");
@@ -948,7 +983,7 @@ namespace Mono.Addins.Description
 					XmlElement prop = node as XmlElement;
 					if (prop == null)
 						continue;
-					config.Properties.SetPropertyValue (prop.LocalName, prop.InnerText, prop.GetAttribute ("locale"));
+						config.Properties.SetPropertyValue (prop.LocalName, prop.InnerText, prop.GetAttribute ("locale"));
 				}
 			}
 			
@@ -958,6 +993,48 @@ namespace Mono.Addins.Description
 				config.hasUserId = true;
 			
 			return config;
+		}
+
+		internal string ParseString (string input)
+		{
+			if (input == null || input.Length < 4 || variables == null || variables.Count == 0)
+				return input;
+
+			int i = input.IndexOf ("$(");
+			if (i == -1)
+				return input;
+
+			StringBuilder result = new StringBuilder (input.Substring (0, i), input.Length);
+
+			while (i < input.Length) {
+				if (input [i] == '$') {
+					i++;
+					
+					if (i >= input.Length || input[i] != '(') {
+						result.Append ('$');
+						continue;
+					}
+					
+					i++;
+					int start = i;
+					while (i < input.Length && input [i] != ')')
+						i++;
+					
+					string tag = input.Substring (start, i - start);
+
+					string tagValue;
+					if (variables.TryGetValue (tag, out tagValue))
+						result.Append (tagValue);
+					else {
+						result.Append ('$');
+						i = start - 1;
+					}
+				} else {
+					result.Append (input [i]);
+				}
+				i++;
+			}
+			return result.ToString ();
 		}
 		
 		static bool GetBool (string s, bool defval)
@@ -1124,18 +1201,18 @@ namespace Mono.Addins.Description
 		void IBinaryXmlElement.Write (BinaryXmlWriter writer)
 		{
 			TransferCoreProperties (true);
-			writer.WriteValue ("id", id);
-			writer.WriteValue ("ns", ns);
+			writer.WriteValue ("id", ParseString (id));
+			writer.WriteValue ("ns", ParseString (ns));
 			writer.WriteValue ("isroot", isroot);
-			writer.WriteValue ("name", name);
-			writer.WriteValue ("version", version);
-			writer.WriteValue ("compatVersion", compatVersion);
+			writer.WriteValue ("name", ParseString (name));
+			writer.WriteValue ("version", ParseString (version));
+			writer.WriteValue ("compatVersion", ParseString (compatVersion));
 			writer.WriteValue ("hasUserId", hasUserId);
-			writer.WriteValue ("author", author);
-			writer.WriteValue ("url", url);
-			writer.WriteValue ("copyright", copyright);
-			writer.WriteValue ("description", description);
-			writer.WriteValue ("category", category);
+			writer.WriteValue ("author", ParseString (author));
+			writer.WriteValue ("url", ParseString (url));
+			writer.WriteValue ("copyright", ParseString (copyright));
+			writer.WriteValue ("description", ParseString (description));
+			writer.WriteValue ("category", ParseString (category));
 			writer.WriteValue ("basePath", basePath);
 			writer.WriteValue ("sourceAddinFile", sourceAddinFile);
 			writer.WriteValue ("defaultEnabled", defaultEnabled);
@@ -1177,7 +1254,7 @@ namespace Mono.Addins.Description
 			fileInfo = (object[]) reader.ReadValue ("FilesInfo", null);
 			localizer = (ExtensionNodeDescription) reader.ReadValue ("Localizer");
 			flags = (AddinFlags) reader.ReadInt32Value ("flags");
-			properties = (AddinPropertyCollectionImpl) reader.ReadValue ("Properties", new AddinPropertyCollectionImpl ());
+			properties = (AddinPropertyCollectionImpl) reader.ReadValue ("Properties", new AddinPropertyCollectionImpl (this));
 			
 			if (mainModule != null)
 				mainModule.SetParent (this);

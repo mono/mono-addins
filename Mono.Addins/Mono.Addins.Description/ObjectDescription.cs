@@ -77,6 +77,15 @@ namespace Mono.Addins.Description
 					return null;
 			}
 		}
+
+		internal string ParseString (string s)
+		{
+			var desc = ParentAddinDescription;
+			if (desc != null)
+				return desc.ParseString (s);
+			else
+				return s;
+		}
 		
 		internal void SetParent (object ob)
 		{

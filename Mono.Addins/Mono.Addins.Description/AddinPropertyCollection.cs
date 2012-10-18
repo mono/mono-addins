@@ -113,8 +113,15 @@ namespace Mono.Addins.Description
 	
 	class AddinPropertyCollectionImpl: List<AddinProperty>, AddinPropertyCollection
 	{
+		AddinDescription desc;
+
 		public AddinPropertyCollectionImpl ()
 		{
+		}
+		
+		public AddinPropertyCollectionImpl (AddinDescription desc)
+		{
+			this.desc = desc;
 		}
 		
 		public AddinPropertyCollectionImpl (AddinPropertyCollection col)
@@ -138,7 +145,7 @@ namespace Mono.Addins.Description
 			foreach (var p in this) {
 				if (p.Name == name) {
 					if (p.Locale == locale)
-						return p.Value;
+						return ParseString (p.Value);
 					string plang = GetLocaleLang (p.Locale);
 					if (plang == p.Locale && plang == lang) // No country specified
 						sameLang = p;
@@ -149,13 +156,21 @@ namespace Mono.Addins.Description
 				}
 			}
 			if (sameLang != null)
-				return sameLang.Value;
+				return ParseString (sameLang.Value);
 			else if (sameLangDifCountry != null)
-				return sameLangDifCountry.Value;
+				return ParseString (sameLangDifCountry.Value);
 			else if (defaultLoc != null)
-				return defaultLoc.Value;
+				return ParseString (defaultLoc.Value);
 			else
 				return string.Empty;
+		}
+
+		string ParseString (string s)
+		{
+			if (desc != null)
+				return desc.ParseString (s);
+			else
+				return s;
 		}
 		
 		string NormalizeLocale (string loc)
