@@ -33,6 +33,7 @@ using System.IO;
 using System.Reflection;
 using Mono.Addins.Description;
 using Mono.Addins.Serialization;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Database
 {
@@ -148,11 +149,6 @@ namespace Mono.Addins.Database
 		
 		public static string GetGacPath (string fullName)
 		{
-			string gacDir = typeof(Uri).Assembly.Location;
-			gacDir = Path.GetDirectoryName (gacDir);
-			gacDir = Path.GetDirectoryName (gacDir);
-			gacDir = Path.GetDirectoryName (gacDir);
-			
 			string[] parts = fullName.Split (',');
 			if (parts.Length != 4) return null;
 			string name = parts[0].Trim ();
@@ -166,10 +162,87 @@ namespace Mono.Addins.Database
 			
 			i = parts[3].IndexOf ('=');
 			string token = i != -1 ? parts[3].Substring (i+1).Trim () : parts[3].Trim ();
+
+			string versionDirName = version + "_" + culture + "_" + token;
 			
-			string file = Path.Combine (gacDir, name);
-			file = Path.Combine (file, version + "_" + culture + "_" + token);
-			return file;
+			if (Util.IsMono) {
+				string gacDir = typeof(Uri).Assembly.Location;
+				gacDir = Path.GetDirectoryName (gacDir);
+				gacDir = Path.GetDirectoryName (gacDir);
+				gacDir = Path.GetDirectoryName (gacDir);
+				string dir = Path.Combine (gacDir, name);
+				return Path.Combine (dir, versionDirName);
+			} else {
+				// .NET 4.0 introduces a new GAC directory structure and location.
+				// Assembly version directory names are now prefixed with the CLR version
+				// Since there can be different assembly versions for different target CLR runtimes,
+				// we now look for the best match, that is, the assembly with the higher CLR version
+				
+				var currentVersion = new Version (Environment.Version.Major, Environment.Version.Minor);
+				
+				foreach (var gacDir in GetDotNetGacDirectories ()) {
+					var asmDir = Path.Combine (gacDir, name);
+					if (!Directory.Exists (asmDir))
+						continue;
+					Version bestVersion = new Version (0, 0);
+					string bestDir = null;
+					foreach (var dir in Directory.GetDirectories (asmDir, "v*_" + versionDirName)) {
+						var dirName = Path.GetFileName (dir);
+						i = dirName.IndexOf ('_');
+						Version av;
+						if (Version.TryParse (dirName.Substring (1, i - 1), out av)) {
+							if (av == currentVersion)
+								return dir;
+							else if (av < currentVersion && av > bestVersion) {
+								bestDir = dir;
+								bestVersion = av;
+							}
+						}
+					}
+					if (bestDir != null)
+						return bestDir;
+				}
+				
+				// Look in the old GAC. There are no CLR prefixes here
+				
+				foreach (var gacDir in GetLegacyDotNetGacDirectories ()) {
+					var asmDir = Path.Combine (gacDir, name);
+					asmDir = Path.Combine (asmDir, versionDirName);
+					if (Directory.Exists (asmDir))
+						return asmDir;
+				}
+				return null;
+			}
+		}
+
+		static IEnumerable<string> GetLegacyDotNetGacDirectories ()
+		{
+			var winDir = Path.GetFullPath (Environment.SystemDirectory + "\\..");
+
+			string gacDir = winDir + "\\assembly\\GAC";
+			if (Directory.Exists (gacDir))
+				yield return gacDir;
+			if (Directory.Exists (gacDir + "_32"))
+				yield return gacDir + "_32";
+			if (Directory.Exists (gacDir + "_64"))
+				yield return gacDir + "_64";
+			if (Directory.Exists (gacDir + "_MSIL"))
+				yield return gacDir + "_MSIL";
+		}
+
+		static IEnumerable<string> GetDotNetGacDirectories ()
+		{
+			var winDir = Path.GetFullPath (Environment.SystemDirectory + "\\..");
+			
+			string gacDir = winDir + "\\Microsoft.NET\\assembly\\GAC";
+			if (Directory.Exists (gacDir))
+				yield return gacDir;
+			if (Directory.Exists (gacDir + "_32"))
+				yield return gacDir + "_32";
+			if (Directory.Exists (gacDir + "_64"))
+				yield return gacDir + "_64";
+			if (Directory.Exists (gacDir + "_MSIL"))
+				yield return gacDir + "_MSIL";
 		}
 	}
 }
