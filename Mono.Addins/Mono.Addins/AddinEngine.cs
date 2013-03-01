@@ -667,7 +667,7 @@ namespace Mono.Addins
 		
 		void CheckHostAssembly (Assembly asm)
 		{
-			if (AddinDatabase.RunningSetupProcess || asm is System.Reflection.Emit.AssemblyBuilder)
+			if (AddinDatabase.RunningSetupProcess || asm is System.Reflection.Emit.AssemblyBuilder || asm.IsDynamic)
 				return;
 			string codeBase;
 			try {
