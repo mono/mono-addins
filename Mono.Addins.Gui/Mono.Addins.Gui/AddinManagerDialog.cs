@@ -180,7 +180,8 @@ namespace Mono.Addins.Gui
 		{
 			int w = filterEntry.SizeRequest ().Width;
 			int h = filterEntry.SizeRequest ().Height;
-			filterEntry.Allocation = new Gdk.Rectangle (notebook.Allocation.Right - w - 1, notebook.Allocation.Y, w, h);
+			var alloc = notebook.Allocation;
+			filterEntry.Allocation = new Gdk.Rectangle (alloc.Left + alloc.Width - 1 - w, alloc.Y, w, h);
 		}
 		
 		public override void Dispose ()

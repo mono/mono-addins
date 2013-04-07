@@ -138,7 +138,7 @@ namespace Mono.Addins.Gui
 					cr.RelLineTo (-rect.Width, 0);
 					cr.RelLineTo (0, -rect.Height);
 					cr.ClosePath ();
-					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Bottom);
+					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + rect.Height - 1);
 					Cairo.Color color1 = gcol;
 					pat.AddColorStop (0, color1);
 					gcol.L -= 0.1;
@@ -155,16 +155,16 @@ namespace Mono.Addins.Gui
 			
 			rect = Allocation;
 			for (int n=0; n<topMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.X, rect.Y + n, rect.Right - 1, rect.Y + n);
+				GdkWindow.DrawLine (borderColor, rect.X, rect.Y + n, rect.Left + rect.Width - 1, rect.Y + n);
 			
 			for (int n=0; n<bottomMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.X, rect.Bottom - n - 1, rect.Right - 1, rect.Bottom - n - 1);
+				GdkWindow.DrawLine (borderColor, rect.X, rect.Top + rect.Height - 1 - n, rect.Left + rect.Width - 1, rect.Top + rect.Height - 1 - n);
 			
 			for (int n=0; n<leftMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.X + n, rect.Y, rect.X + n, rect.Bottom - 1);
+				GdkWindow.DrawLine (borderColor, rect.X + n, rect.Y, rect.X + n, rect.Top + rect.Height - 1);
 			
 			for (int n=0; n<rightMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.Right - n - 1, rect.Y, rect.Right - n - 1, rect.Bottom - 1);
+				GdkWindow.DrawLine (borderColor, rect.Left + rect.Width - 1 - n, rect.Y, rect.Left + rect.Width - 1 - n, rect.Top + rect.Height - 1);
 			
 			return res;
 		}
