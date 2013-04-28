@@ -246,7 +246,7 @@ namespace Mono.Addins.Gui
 					btnInstall.Visible = false;
 					btnUpdate.Visible = updateInfo != null && AllowInstall;
 					btnDisable.Visible = true;
-					btnDisable.Label = installed.Enabled ? "Disable" : "Enable";
+					btnDisable.Label = installed.Enabled ? Catalog.GetString ("Disable") : Catalog.GetString ("Enable");
 					btnDisable.Visible = installed.Description.CanDisable;
 					btnUninstall.Visible = installed.Description.CanUninstall;
 					version = installed.Version;
