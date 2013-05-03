@@ -59,10 +59,10 @@ namespace Mono.Addins
 		IAddinInstaller installer;
 		
 		bool checkAssemblyLoadConflicts;
-		Hashtable loadedAddins = new Hashtable ();
+		Dictionary<string,RuntimeAddin> loadedAddins = new Dictionary<string,RuntimeAddin> ();
 		Dictionary<string,ExtensionNodeSet> nodeSets = new Dictionary<string, ExtensionNodeSet> ();
 		Hashtable autoExtensionTypes = new Hashtable ();
-		Hashtable loadedAssemblies = new Hashtable ();
+		Dictionary<Assembly,RuntimeAddin> loadedAssemblies = new Dictionary<Assembly,RuntimeAddin> ();
 		AddinLocalizer defaultLocalizer;
 		IProgressStatus defaultProgressStatus = new ConsoleProgressStatus (false);
 		
@@ -179,31 +179,33 @@ namespace Mono.Addins
 		
 		internal void Initialize (Assembly startupAsm, string configDir, string addinsDir, string databaseDir)
 		{
-			if (initialized)
-				return;
-			
-			Initialize (this);
-			
-			string asmFile = new Uri (startupAsm.CodeBase).LocalPath;
-			startupDirectory = System.IO.Path.GetDirectoryName (asmFile);
-			
-			string customDir = Environment.GetEnvironmentVariable ("MONO_ADDINS_REGISTRY");
-			if (customDir != null && customDir.Length > 0)
-				configDir = customDir;
+			lock (LocalLock) {
+				if (initialized)
+					return;
+				
+				Initialize (this);
+				
+				string asmFile = new Uri (startupAsm.CodeBase).LocalPath;
+				startupDirectory = System.IO.Path.GetDirectoryName (asmFile);
+				
+				string customDir = Environment.GetEnvironmentVariable ("MONO_ADDINS_REGISTRY");
+				if (customDir != null && customDir.Length > 0)
+					configDir = customDir;
 
-			if (configDir == null || configDir.Length == 0)
-				registry = AddinRegistry.GetGlobalRegistry (this, startupDirectory);
-			else
-				registry = new AddinRegistry (this, configDir, startupDirectory, addinsDir, databaseDir);
+				if (string.IsNullOrEmpty (configDir))
+					registry = AddinRegistry.GetGlobalRegistry (this, startupDirectory);
+				else
+					registry = new AddinRegistry (this, configDir, startupDirectory, addinsDir, databaseDir);
 
-			if (registry.CreateHostAddinsFile (asmFile) || registry.UnknownDomain)
-				registry.Update (new ConsoleProgressStatus (false));
-			
-			initialized = true;
-			
-			ActivateRoots ();
-			OnAssemblyLoaded (null, null);
-			AppDomain.CurrentDomain.AssemblyLoad += new AssemblyLoadEventHandler (OnAssemblyLoaded);
+				if (registry.CreateHostAddinsFile (asmFile) || registry.UnknownDomain)
+					registry.Update (new ConsoleProgressStatus (false));
+				
+				initialized = true;
+				
+				ActivateRoots ();
+				OnAssemblyLoaded (null, null);
+				AppDomain.CurrentDomain.AssemblyLoad += new AssemblyLoadEventHandler (OnAssemblyLoaded);
+			}
 		}
 		
 		/// <summary>
@@ -211,14 +213,16 @@ namespace Mono.Addins
 		/// </summary>
 		public void Shutdown ()
 		{
-			initialized = false;
-			AppDomain.CurrentDomain.AssemblyLoad -= new AssemblyLoadEventHandler (OnAssemblyLoaded);
-			loadedAddins.Clear ();
-			loadedAssemblies.Clear ();
-			registry.Dispose ();
-			registry = null;
-			startupDirectory = null;
-			ClearContext ();
+			lock (LocalLock) {
+				initialized = false;
+				AppDomain.CurrentDomain.AssemblyLoad -= new AssemblyLoadEventHandler (OnAssemblyLoaded);
+				loadedAddins = new Dictionary<string, RuntimeAddin> ();
+				loadedAssemblies = new Dictionary<Assembly, RuntimeAddin> ();
+				registry.Dispose ();
+				registry = null;
+				startupDirectory = null;
+				ClearContext ();
+			}
 		}
 		
 		/// <summary>
@@ -230,10 +234,12 @@ namespace Mono.Addins
 		public void InitializeDefaultLocalizer (IAddinLocalizer localizer)
 		{
 			CheckInitialized ();
-			if (localizer != null)
-				defaultLocalizer = new AddinLocalizer (localizer);
-			else
-				defaultLocalizer = null;
+			lock (LocalLock) {
+				if (localizer != null)
+					defaultLocalizer = new AddinLocalizer (localizer);
+				else
+					defaultLocalizer = null;
+			}
 		}
 		
 		internal string StartupDirectory {
@@ -265,10 +271,8 @@ namespace Mono.Addins
 		public AddinLocalizer DefaultLocalizer {
 			get {
 				CheckInitialized ();
-				if (defaultLocalizer != null)
-					return defaultLocalizer; 
-				else
-					return NullLocalizer.Instance;
+				var loc = defaultLocalizer;
+				return loc ?? NullLocalizer.Instance; 
 			}
 		}
 		
@@ -314,7 +318,9 @@ namespace Mono.Addins
 		
 		internal RuntimeAddin GetAddinForAssembly (Assembly asm)
 		{
-			return (RuntimeAddin) loadedAssemblies [asm];
+			RuntimeAddin ad;
+			loadedAssemblies.TryGetValue (asm, out ad);
+			return ad;
 		}
 		
 		/// <summary>
@@ -350,11 +356,14 @@ namespace Mono.Addins
 			}
 			if (notInstalled.Count == 0)
 				return;
-			if (installer == null)
+
+			var ins = installer;
+
+			if (ins == null)
 				throw new InvalidOperationException ("Add-in installer not set");
 			
 			// Install the add-ins
-			installer.InstallAddins (Registry, message, (string[]) notInstalled.ToArray (typeof(string)));
+			ins.InstallAddins (Registry, message, (string[]) notInstalled.ToArray (typeof(string)));
 		}
 		
 		// Enables or disables conflict checking while loading assemblies.
@@ -376,12 +385,14 @@ namespace Mono.Addins
 		public bool IsAddinLoaded (string id)
 		{
 			CheckInitialized ();
-			return loadedAddins.Contains (Addin.GetIdName (id));
+			return loadedAddins.ContainsKey (Addin.GetIdName (id));
 		}
 		
 		internal RuntimeAddin GetAddin (string id)
 		{
-			return (RuntimeAddin) loadedAddins [Addin.GetIdName (id)];
+			RuntimeAddin a;
+			loadedAddins.TryGetValue (Addin.GetIdName (id), out a);
+			return a;
 		}
 		
 		internal void ActivateAddin (string id)
@@ -396,10 +407,16 @@ namespace Mono.Addins
 			RuntimeAddin addin = GetAddin (id);
 			if (addin != null) {
 				addin.UnloadExtensions ();
-				loadedAddins.Remove (Addin.GetIdName (id));
-				if (addin.AssembliesLoaded) {
-					foreach (Assembly asm in addin.Assemblies)
-						loadedAssemblies.Remove (asm);
+				lock (LocalLock) {
+					var loadedAddinsCopy = new Dictionary<string,RuntimeAddin> (loadedAddins);
+					loadedAddinsCopy.Remove (Addin.GetIdName (id));
+					loadedAddins = loadedAddinsCopy;
+					if (addin.AssembliesLoaded) {
+						var loadedAssembliesCopy = new Dictionary<Assembly,RuntimeAddin> ();
+						foreach (Assembly asm in addin.Assemblies)
+							loadedAssembliesCopy.Remove (asm);
+						loadedAssemblies = loadedAssembliesCopy;
+					}
 				}
 				ReportAddinUnload (id);
 			}
@@ -432,41 +449,43 @@ namespace Mono.Addins
 		internal bool LoadAddin (IProgressStatus statusMonitor, string id, bool throwExceptions)
 		{
 			try {
-				if (IsAddinLoaded (id))
-					return true;
+				lock (LocalLock) {
+					if (IsAddinLoaded (id))
+						return true;
 
-				if (!Registry.IsAddinEnabled (id)) {
-					string msg = GettextCatalog.GetString ("Disabled add-ins can't be loaded.");
-					ReportError (msg, id, null, false);
-					if (throwExceptions)
-						throw new InvalidOperationException (msg);
-					return false;
-				}
-
-				ArrayList addins = new ArrayList ();
-				Stack depCheck = new Stack ();
-				ResolveLoadDependencies (addins, depCheck, id, false);
-				addins.Reverse ();
-				
-				if (statusMonitor != null)
-					statusMonitor.SetMessage ("Loading Addins");
-				
-				for (int n=0; n<addins.Count; n++) {
-					
-					if (statusMonitor != null)
-						statusMonitor.SetProgress ((double) n / (double)addins.Count);
-					
-					Addin iad = (Addin) addins [n];
-					if (IsAddinLoaded (iad.Id))
-						continue;
-
-					if (statusMonitor != null)
-						statusMonitor.SetMessage (string.Format(GettextCatalog.GetString("Loading {0} add-in"), iad.Id));
-					
-					if (!InsertAddin (statusMonitor, iad))
+					if (!Registry.IsAddinEnabled (id)) {
+						string msg = GettextCatalog.GetString ("Disabled add-ins can't be loaded.");
+						ReportError (msg, id, null, false);
+						if (throwExceptions)
+							throw new InvalidOperationException (msg);
 						return false;
+					}
+
+					ArrayList addins = new ArrayList ();
+					Stack depCheck = new Stack ();
+					ResolveLoadDependencies (addins, depCheck, id, false);
+					addins.Reverse ();
+					
+					if (statusMonitor != null)
+						statusMonitor.SetMessage ("Loading Addins");
+					
+					for (int n=0; n<addins.Count; n++) {
+						
+						if (statusMonitor != null)
+							statusMonitor.SetProgress ((double) n / (double)addins.Count);
+						
+						Addin iad = (Addin) addins [n];
+						if (IsAddinLoaded (iad.Id))
+							continue;
+
+						if (statusMonitor != null)
+							statusMonitor.SetMessage (string.Format(GettextCatalog.GetString("Loading {0} add-in"), iad.Id));
+						
+						if (!InsertAddin (statusMonitor, iad))
+							return false;
+					}
+					return true;
 				}
-				return true;
 			}
 			catch (Exception ex) {
 				ReportError ("Add-in could not be loaded: " + ex.Message, id, ex, false);
@@ -494,15 +513,15 @@ namespace Mono.Addins
 				AddinDescription description = p.Load (iad);
 				
 				// Register the add-in
-				loadedAddins [Addin.GetIdName (p.Id)] = p;
+				var loadedAddinsCopy = new Dictionary<string,RuntimeAddin> (loadedAddins);
+				loadedAddinsCopy [Addin.GetIdName (p.Id)] = p;
+				loadedAddins = loadedAddinsCopy;
 				
 				if (!AddinDatabase.RunningSetupProcess) {
 					// Load the extension points and other addin data
 					
-					foreach (ExtensionNodeSet rel in description.ExtensionNodeSets) {
-						RegisterNodeSet (iad.Id, rel);
-					}
-					
+					RegisterNodeSets (iad.Id, description.ExtensionNodeSets);
+
 					foreach (ConditionTypeDescription cond in description.ConditionTypes) {
 						Type ctype = p.GetType (cond.TypeName, true);
 						RegisterCondition (cond.Id, ctype);
@@ -527,8 +546,12 @@ namespace Mono.Addins
 		
 		internal void RegisterAssemblies (RuntimeAddin addin)
 		{
-			foreach (Assembly asm in addin.Assemblies)
-				loadedAssemblies [asm] = addin;
+			lock (LocalLock) {
+				var loadedAssembliesCopy = new Dictionary<Assembly,RuntimeAddin> (loadedAssemblies);
+				foreach (Assembly asm in addin.Assemblies)
+					loadedAssembliesCopy [asm] = addin;
+				loadedAssemblies = loadedAssembliesCopy;
+			}
 		}
 		
 		internal void InsertExtensionPoint (RuntimeAddin addin, ExtensionPoint ep)
@@ -597,16 +620,26 @@ namespace Mono.Addins
 			return true;
 		}
 		
-		internal void RegisterNodeSet (string addinId, ExtensionNodeSet nset)
+		void RegisterNodeSets (string addinId, ExtensionNodeSetCollection nsets)
 		{
-			nset.SourceAddinId = addinId;
-			nodeSets [nset.Id] = nset;
+			lock (LocalLock) {
+				var nodeSetsCopy = new Dictionary<string,ExtensionNodeSet> (nodeSets);
+				foreach (ExtensionNodeSet nset in nsets) {
+					nset.SourceAddinId = addinId;
+					nodeSetsCopy [nset.Id] = nset;
+				}
+				nodeSets = nodeSetsCopy;
+			}
 		}
 		
 		internal void UnregisterAddinNodeSets (string addinId)
 		{
-			foreach (var nset in nodeSets.Values.Where (n => n.SourceAddinId == addinId).ToArray ())
-				nodeSets.Remove (nset.Id);
+			lock (LocalLock) {
+				var nodeSetsCopy = new Dictionary<string,ExtensionNodeSet> (nodeSets);
+				foreach (var nset in nodeSetsCopy.Values.Where (n => n.SourceAddinId == addinId).ToArray ())
+					nodeSetsCopy.Remove (nset.Id);
+				nodeSets = nodeSetsCopy;
+			}
 		}
 		
 		internal string GetNodeTypeAddin (ExtensionNodeSet nset, string type, string callingAddinId)
@@ -678,9 +711,11 @@ namespace Mono.Addins
 			} catch {
 				return;
 			}
+
 			Uri u;
 			if (!Uri.TryCreate (codeBase, UriKind.Absolute, out u))
 				return;
+
 			string asmFile = u.LocalPath;
 			Addin ainfo = Registry.GetAddinForHostAssembly (asmFile);
 			if (ainfo != null && !IsAddinLoaded (ainfo.Id)) {
@@ -726,8 +761,9 @@ namespace Mono.Addins
 		
 		internal void ReportError (string message, string addinId, Exception exception, bool fatal)
 		{
-			if (AddinLoadError != null)
-				AddinLoadError (null, new AddinErrorEventArgs (message, addinId, exception));
+			var handler = AddinLoadError;
+			if (handler != null)
+				handler (null, new AddinErrorEventArgs (message, addinId, exception));
 			else {
 				Console.WriteLine (message);
 				if (exception != null)
@@ -737,9 +773,10 @@ namespace Mono.Addins
 		
 		internal void ReportAddinLoad (string id)
 		{
-			if (AddinLoaded != null) {
+			var handler = AddinLoaded;
+			if (handler != null) {
 				try {
-					AddinLoaded (null, new AddinEventArgs (id));
+					handler (null, new AddinEventArgs (id));
 				} catch {
 					// Ignore subscriber exceptions
 				}
@@ -748,9 +785,10 @@ namespace Mono.Addins
 		
 		internal void ReportAddinUnload (string id)
 		{
-			if (AddinUnloaded != null) {
+			var handler = AddinUnloaded;
+			if (handler != null) {
 				try {
-					AddinUnloaded (null, new AddinEventArgs (id));
+					handler (null, new AddinEventArgs (id));
 				} catch {
 					// Ignore subscriber exceptions
 				}
