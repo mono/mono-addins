@@ -47,6 +47,8 @@ namespace Mono.Addins
 	/// </remarks>
 	public class ExtensionContext
 	{
+		internal object LocalLock = new object ();
+
 		Hashtable conditionTypes = new Hashtable ();
 		Hashtable conditionsToNodes = new Hashtable ();
 		List<WeakReference> childContexts;
