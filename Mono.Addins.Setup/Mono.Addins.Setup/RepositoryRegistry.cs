@@ -174,34 +174,41 @@ namespace Mono.Addins.Setup
 			RepositoryRecord rep = FindRepositoryRecord (url);
 			if (rep == null)
 				return; // Nothing to do
-			
-			foreach (RepositoryRecord rr in service.Configuration.Repositories) {
-				if (rr == rep) continue;
-				Repository newRep = rr.GetCachedRepository ();
-				if (newRep == null) continue;
-				foreach (ReferenceRepositoryEntry re in newRep.Repositories) {
-					if (re.Url == url) {
-						// The repository can't be removed because there is another
-						// repository depending on it. Just mark it as a reference.
-						rep.IsReference = true;
-						return;
+
+			rep.IsReference = true;
+			PurgeUnusedRepositories ();
+			service.SaveConfiguration ();
+			repoList = null;
+		}
+
+		void PurgeUnusedRepositories ()
+		{
+			bool changed;
+
+			do {
+				changed = false;
+
+				HashSet<string> referencedRepos = new HashSet<string> ();
+
+				// Get all referenced repos
+				foreach (RepositoryRecord rr in service.Configuration.Repositories) {
+					Repository repInfo = rr.GetCachedRepository ();
+					if (repInfo == null)
+						continue;
+
+					foreach (ReferenceRepositoryEntry re in repInfo.Repositories)
+						referencedRepos.Add (new Uri (new Uri (repInfo.Url), re.Url).ToString ());
+				}
+
+				foreach (RepositoryRecord rr in service.Configuration.Repositories.ToArray ()) {
+					if (rr.IsReference && !referencedRepos.Contains (rr.Url)) {
+						changed = true;
+						service.Configuration.Repositories.Remove (rr);
+						rr.ClearCachedRepository ();
 					}
 				}
 			}
-			
-			// There are no other repositories referencing this one, so we can safely delete
-			
-			Repository delRep = rep.GetCachedRepository ();
-			service.Configuration.Repositories.Remove (rep);
-			rep.ClearCachedRepository ();
-			
-			if (delRep != null) {
-				foreach (ReferenceRepositoryEntry re in delRep.Repositories)
-					RemoveRepository (new Uri (new Uri (url), re.Url).ToString ());
-			}
-
-			service.SaveConfiguration ();
-			repoList = null;
+			while (changed);
 		}
 		
 		/// <summary>
@@ -311,6 +318,8 @@ namespace Mono.Addins.Setup
 			} finally {
 				monitor.EndTask ();
 			}
+
+			PurgeUnusedRepositories ();
 			service.SaveConfiguration ();
 		}
 
