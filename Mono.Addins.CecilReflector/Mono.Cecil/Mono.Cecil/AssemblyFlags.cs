@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// Copyright (c) 2008 - 2010 Jb Evain
+// Copyright (c) 2008 - 2011 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -35,6 +35,7 @@ namespace Mono.Cecil {
 		PublicKey					 	= 0x0001,
 		SideBySideCompatible			= 0x0000,
 		Retargetable					= 0x0100,
+		WindowsRuntime					= 0x0200,
 		DisableJITCompileOptimizer		= 0x4000,
 		EnableJITCompileTracking		= 0x8000,
 	}

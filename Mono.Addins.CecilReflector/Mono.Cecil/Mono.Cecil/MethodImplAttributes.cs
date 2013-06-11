@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// Copyright (c) 2008 - 2010 Jb Evain
+// Copyright (c) 2008 - 2011 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -49,6 +49,5 @@ namespace Mono.Cecil {
 		Synchronized		= 0x0020,	// Method is single threaded through the body
 		NoOptimization		= 0x0040,	// Method is not optimized by the JIT.
 		NoInlining			= 0x0008,	// Method may not be inlined
-		MaxMethodImplVal	= 0xffff	 // Range check value
 	}
 }

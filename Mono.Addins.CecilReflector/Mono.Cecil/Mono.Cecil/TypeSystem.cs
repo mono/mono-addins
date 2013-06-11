@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// Copyright (c) 2008 - 2010 Jb Evain
+// Copyright (c) 2008 - 2011 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -34,20 +34,29 @@ namespace Mono.Cecil {
 
 	public abstract class TypeSystem {
 
-		sealed class CorlibTypeSystem : TypeSystem {
+		sealed class CoreTypeSystem : TypeSystem {
 
-			public CorlibTypeSystem (ModuleDefinition module)
+			public CoreTypeSystem (ModuleDefinition module)
 				: base (module)
 			{
 			}
 
 			internal override TypeReference LookupType (string @namespace, string name)
 			{
+				var type = LookupTypeDefinition (@namespace, name) ?? LookupTypeForwarded (@namespace, name);
+				if (type != null)
+					return type;
+
+				throw new NotSupportedException ();
+			}
+
+			TypeReference LookupTypeDefinition (string @namespace, string name)
+			{
 				var metadata = module.MetadataSystem;
 				if (metadata.Types == null)
 					Initialize (module.Types);
 
-				return module.Read (this, (_, reader) => {
+				return module.Read (new Row<string, string> (@namespace, name), (row, reader) => {
 					var types = reader.metadata.Types;
 
 					for (int i = 0; i < types.Length; i++) {
@@ -56,12 +65,28 @@ namespace Mono.Cecil {
 
 						var type = types [i];
 
-						if (type.Name == name && type.Namespace == @namespace)
+						if (type.Name == row.Col2 && type.Namespace == row.Col1)
 							return type;
 					}
 
 					return null;
 				});
+			}
+
+			TypeReference LookupTypeForwarded (string @namespace, string name)
+			{
+				if (!module.HasExportedTypes)
+					return null;
+
+				var exported_types = module.ExportedTypes;
+				for (int i = 0; i < exported_types.Count; i++) {
+					var exported_type = exported_types [i];
+
+					if (exported_type.Name == name && exported_type.Namespace == @namespace)
+						return exported_type.CreateReference ();
+				}
+
+				return null;
 			}
 
 			static void Initialize (object obj)
@@ -158,18 +183,10 @@ namespace Mono.Cecil {
 
 		internal static TypeSystem CreateTypeSystem (ModuleDefinition module)
 		{
-			if (IsCorlib (module))
-				return new CorlibTypeSystem (module);
+			if (module.IsCorlib ())
+				return new CoreTypeSystem (module);
 
 			return new CommonTypeSystem (module);
-		}
-
-		static bool IsCorlib (ModuleDefinition module)
-		{
-			if (module.Assembly == null)
-				return false;
-
-			return module.Assembly.Name.Name == "mscorlib";
 		}
 
 		internal abstract TypeReference LookupType (string @namespace, string name);
