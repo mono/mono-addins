@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// Copyright (c) 2008 - 2010 Jb Evain
+// Copyright (c) 2008 - 2011 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -47,6 +47,15 @@ namespace Mono.Cecil {
 
 		public IMethodSignature Method {
 			get { return method; }
+		}
+
+		public int Sequence {
+			get {
+				if (method == null)
+					return -1;
+
+				return method.HasImplicitThis () ? index + 1 : index;
+			}
 		}
 
 		public bool HasConstant {
@@ -136,6 +145,12 @@ namespace Mono.Cecil {
 		}
 
 		#endregion
+
+		internal ParameterDefinition (TypeReference parameterType, IMethodSignature method)
+			: this (string.Empty, ParameterAttributes.None, parameterType)
+		{
+			this.method = method;
+		}
 
 		public ParameterDefinition (TypeReference parameterType)
 			: this (string.Empty, ParameterAttributes.None, parameterType)

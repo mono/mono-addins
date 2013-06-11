@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// Copyright (c) 2008 - 2010 Jb Evain
+// Copyright (c) 2008 - 2011 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -42,16 +42,17 @@ namespace Mono.Cecil {
 
 		public override string Name {
 			get { return element_type.Name; }
-			set { throw new NotSupportedException (); }
+			set { throw new InvalidOperationException (); }
 		}
 
 		public override string Namespace {
 			get { return element_type.Namespace; }
-			set { throw new NotSupportedException (); }
+			set { throw new InvalidOperationException (); }
 		}
 
 		public override IMetadataScope Scope {
 			get { return element_type.Scope; }
+			set { throw new InvalidOperationException (); }
 		}
 
 		public override ModuleDefinition Module {

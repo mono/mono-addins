@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// Copyright (c) 2008 - 2010 Jb Evain
+// Copyright (c) 2008 - 2011 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -62,6 +62,7 @@ namespace Mono.Cecil {
 		// Implementation attributes
 		Import				= 0x00001000,	// Class/Interface is imported
 		Serializable		= 0x00002000,	// Class is serializable
+		WindowsRuntime		= 0x00004000,	// Windows Runtime type
 
 		// String formatting attributes
 		StringFormatMask	= 0x00030000,	// Use this mask to retrieve string information for native interop

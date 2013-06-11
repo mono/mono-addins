@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// Copyright (c) 2008 - 2010 Jb Evain
+// Copyright (c) 2008 - 2011 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,8 +27,7 @@
 //
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using Mono.Collections.Generic;
 
 namespace Mono {
 
@@ -47,9 +46,22 @@ namespace Mono.Cecil {
 			return self == null || self.Length == 0;
 		}
 
-		public static bool IsNullOrEmpty<T> (this ICollection<T> self)
+		public static bool IsNullOrEmpty<T> (this Collection<T> self)
 		{
-			return self == null || self.Count == 0;
+			return self == null || self.size == 0;
+		}
+
+		public static T [] Resize<T> (this T [] self, int length)
+		{
+#if !CF
+			Array.Resize (ref self, length);
+#else
+			var copy = new T [length];
+			Array.Copy (self, copy, self.Length);
+			self = copy;
+#endif
+
+			return self;
 		}
 	}
 }

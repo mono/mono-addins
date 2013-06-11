@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// Copyright (c) 2008 - 2010 Jb Evain
+// Copyright (c) 2008 - 2011 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -261,7 +261,7 @@ namespace Mono.Cecil.Metadata {
 	abstract class HeapBuffer : ByteBuffer {
 
 		public bool IsLarge {
-			get { return base.length > 65536; }
+			get { return base.length > 65535; }
 		}
 
 		public abstract bool IsEmpty { get; }
@@ -274,7 +274,7 @@ namespace Mono.Cecil.Metadata {
 
 	class StringHeapBuffer : HeapBuffer {
 
-		readonly Dictionary<string, uint> strings = new Dictionary<string, uint> ();
+		readonly Dictionary<string, uint> strings = new Dictionary<string, uint> (StringComparer.Ordinal);
 
 		public sealed override bool IsEmpty {
 			get { return length <= 1; }
