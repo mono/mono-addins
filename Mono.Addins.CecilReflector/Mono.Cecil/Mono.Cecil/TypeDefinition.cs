@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// Copyright (c) 2008 - 2010 Jb Evain
+// Copyright (c) 2008 - 2011 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,6 +28,7 @@
 
 using System;
 
+using Mono.Cecil.Metadata;
 using Mono.Collections.Generic;
 
 namespace Mono.Cecil {
@@ -159,10 +160,6 @@ namespace Mono.Cecil {
 
 				return nested_types = new MemberDefinitionCollection<TypeDefinition> (this);
 			}
-		}
-
-		internal new bool HasImage {
-			get { return Module != null && Module.HasImage; }
 		}
 
 		public bool HasMethods {
@@ -392,6 +389,11 @@ namespace Mono.Cecil {
 			set { attributes = attributes.SetAttributes ((uint) TypeAttributes.Serializable, value); }
 		}
 
+		public bool IsWindowsRuntime {
+			get { return attributes.GetAttributes ((uint) TypeAttributes.WindowsRuntime); }
+			set { attributes = attributes.SetAttributes ((uint) TypeAttributes.WindowsRuntime, value); }
+		}
+
 		public bool IsAnsiClass {
 			get { return attributes.GetMaskedAttributes ((uint) TypeAttributes.StringFormatMask, (uint) TypeAttributes.AnsiClass); }
 			set { attributes = attributes.SetMaskedAttributes ((uint) TypeAttributes.StringFormatMask, (uint) TypeAttributes.AnsiClass, value); }
@@ -434,6 +436,23 @@ namespace Mono.Cecil {
 					return false;
 
 				return base_type.IsTypeOf ("System", "Enum") || (base_type.IsTypeOf ("System", "ValueType") && !this.IsTypeOf ("System", "Enum"));
+			}
+		}
+
+		public override bool IsPrimitive {
+			get {
+				ElementType primitive_etype;
+				return MetadataSystem.TryGetPrimitiveElementType (this, out primitive_etype);
+			}
+		}
+
+		public override MetadataType MetadataType {
+			get {
+				ElementType primitive_etype;
+				if (MetadataSystem.TryGetPrimitiveElementType (this, out primitive_etype))
+					return (MetadataType) primitive_etype;
+
+				return base.MetadataType;
 			}
 		}
 

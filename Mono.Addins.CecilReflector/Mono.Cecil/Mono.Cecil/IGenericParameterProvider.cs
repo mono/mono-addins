@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// Copyright (c) 2008 - 2010 Jb Evain
+// Copyright (c) 2008 - 2011 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -58,9 +58,7 @@ namespace Mono.Cecil {
 			this IGenericParameterProvider self,
 			ModuleDefinition module)
 		{
-			return module.HasImage ()
-				? module.Read (self, (provider, reader) => reader.HasGenericParameters (provider))
-				: false;
+			return module.HasImage () && module.Read (self, (provider, reader) => reader.HasGenericParameters (provider));
 		}
 
 		public static Collection<GenericParameter> GetGenericParameters (
@@ -69,7 +67,7 @@ namespace Mono.Cecil {
 		{
 			return module.HasImage ()
 				? module.Read (self, (provider, reader) => reader.ReadGenericParameters (provider))
-				: new Collection<GenericParameter> ();
+				: new GenericParameterCollection (self);
 		}
 	}
 }

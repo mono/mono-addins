@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// Copyright (c) 2008 - 2010 Jb Evain
+// Copyright (c) 2008 - 2011 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -173,13 +173,7 @@ namespace Mono.Cecil {
 				return;
 			}
 
-#if !CF
-			Array.Resize (ref array, array.Length + 1);
-#else
-			var copy = new T [array.Length + 1];
-			Array.Copy (array, copy, array.Length);
-			array = copy;
-#endif
+			array = array.Resize (array.Length + 1);
 			array [array.Length - 1] = item;
 		}
 
@@ -272,7 +266,7 @@ namespace Mono.Cecil {
 
 		public static TypeReference ParseType (ModuleDefinition module, string fullname)
 		{
-			if (fullname == null)
+			if (string.IsNullOrEmpty (fullname))
 				return null;
 
 			var parser = new TypeParser (fullname);
@@ -356,6 +350,7 @@ namespace Mono.Cecil {
 			SplitFullName (type_info.type_fullname, out @namespace, out name);
 
 			var type = new TypeReference (@namespace, name, module, scope);
+			MetadataSystem.TryProcessPrimitiveTypeReference (type);
 
 			AdjustGenericParameters (type);
 

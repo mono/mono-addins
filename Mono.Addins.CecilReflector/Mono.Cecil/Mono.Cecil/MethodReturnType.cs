@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// Copyright (c) 2008 - 2010 Jb Evain
+// Copyright (c) 2008 - 2011 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -46,13 +46,17 @@ namespace Mono.Cecil {
 		}
 
 		internal ParameterDefinition Parameter {
-			get { return parameter ?? (parameter = new ParameterDefinition (return_type)); }
-			set { parameter = value; }
+			get { return parameter ?? (parameter = new ParameterDefinition (return_type, method)); }
 		}
 
 		public MetadataToken MetadataToken {
 			get { return Parameter.MetadataToken; }
 			set { Parameter.MetadataToken = value; }
+		}
+
+		public ParameterAttributes Attributes {
+			get { return Parameter.Attributes; }
+			set { Parameter.Attributes = value; }
 		}
 
 		public bool HasCustomAttributes {

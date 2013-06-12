@@ -4,7 +4,7 @@
 // Author:
 //   Jb Evain (jbevain@gmail.com)
 //
-// Copyright (c) 2008 - 2010 Jb Evain
+// Copyright (c) 2008 - 2011 Jb Evain
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -49,16 +49,11 @@ namespace Mono.Cecil.Cil {
 			get { return base.position - start; }
 		}
 
-		CodeReader (Section section, MetadataReader reader)
+		public CodeReader (Section section, MetadataReader reader)
 			: base (section.Data)
 		{
 			this.code_section = section;
 			this.reader = reader;
-		}
-
-		public static CodeReader CreateCodeReader (MetadataReader metadata)
-		{
-			return new CodeReader (metadata.image.MetadataSection, metadata);
 		}
 
 		public MethodBody ReadMethodBody (MethodDefinition method)
@@ -107,7 +102,7 @@ namespace Mono.Cecil.Cil {
 				throw new InvalidOperationException ();
 			}
 
-			var symbol_reader = reader.module.SymbolReader;
+			var symbol_reader = reader.module.symbol_reader;
 
 			if (symbol_reader != null) {
 				var instructions = body.Instructions;
@@ -150,7 +145,7 @@ namespace Mono.Cecil.Cil {
 				code_size = 0;
 
 			var end = start + code_size;
-			var instructions = body.instructions = new InstructionCollection (code_size / 3);
+			var instructions = body.instructions = new InstructionCollection ((code_size + 1) / 2);
 
 			while (position < end) {
 				var offset = base.position - start;
@@ -364,7 +359,6 @@ namespace Mono.Cecil.Cil {
 				break;
 			case ExceptionHandlerType.Filter:
 				handler.FilterStart = GetInstruction (ReadInt32 ());
-				handler.FilterEnd = handler.HandlerStart.Previous;
 				break;
 			default:
 				Advance (4);
@@ -415,7 +409,7 @@ namespace Mono.Cecil.Cil {
 				throw new NotSupportedException ();
 			}
 
-			var symbol_reader = reader.module.SymbolReader;
+			var symbol_reader = reader.module.symbol_reader;
 			if (symbol_reader != null && writer.metadata.write_symbols) {
 				symbols.method_token = GetOriginalToken (writer.metadata, method);
 				symbols.local_var_token = local_var_token;
