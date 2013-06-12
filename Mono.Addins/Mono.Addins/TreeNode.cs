@@ -340,9 +340,14 @@ namespace Mono.Addins
 		{
 			if (extensionPoint != null) {
 				string aid = Addin.GetIdName (extensionPoint.ParentAddinDescription.AddinId);
-				RuntimeAddin ad = addinEngine.GetAddin (aid);
-				if (ad != null)
-					extensionPoint = ad.Addin.Description.ExtensionPoints [GetPath ()];
+				AddinDescription ad = null;
+				try {
+					ad = addinEngine.GetAddin (aid).Addin.Description;
+				} catch (InvalidOperationException) {
+					//could not read add-in description, probably cache is out of date
+					//because a whole AddinDatabase::ResetCacheData is in progress
+				}
+				extensionPoint = ad != null ? ad.ExtensionPoints [GetPath ()] : null;
 			}
 			if (childrenList != null) {
 				foreach (TreeNode cn in childrenList)
