@@ -138,14 +138,16 @@ namespace Mono.Addins.Gui
 					cr.RelLineTo (-rect.Width, 0);
 					cr.RelLineTo (0, -rect.Height);
 					cr.ClosePath ();
-					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + rect.Height - 1);
-					Cairo.Color color1 = gcol;
-					pat.AddColorStop (0, color1);
-					gcol.L -= 0.1;
-					if (gcol.L < 0) gcol.L = 0;
-					pat.AddColorStop (1, gcol);
-					cr.Pattern = pat;
-					cr.FillPreserve ();
+					using (Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + rect.Height - 1)) {
+						Cairo.Color color1 = gcol;
+						pat.AddColorStop (0, color1);
+						gcol.L -= 0.1;
+						if (gcol.L < 0)
+							gcol.L = 0;
+						pat.AddColorStop (1, gcol);
+						cr.Pattern = pat;
+						cr.FillPreserve ();
+					}
 				}
 			}
 			
