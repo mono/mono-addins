@@ -423,7 +423,10 @@ namespace Mono.Addins
 		public void LoadAddin (IProgressStatus statusMonitor, string id)
 		{
 			CheckInitialized ();
-			LoadAddin (statusMonitor, id, true);
+			if (LoadAddin (statusMonitor, id, true)) {
+				var adn = GetAddin (id);
+				adn.EnsureAssembliesLoaded ();
+			}
 		}
 		
 		internal bool LoadAddin (IProgressStatus statusMonitor, string id, bool throwExceptions)
