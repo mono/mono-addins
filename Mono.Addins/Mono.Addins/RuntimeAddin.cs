@@ -671,7 +671,7 @@ namespace Mono.Addins
 			get { return assemblies != null; }
 		}
 		
-		void EnsureAssembliesLoaded ()
+		internal void EnsureAssembliesLoaded ()
 		{
 			if (assemblies != null)
 				return;
