@@ -318,6 +318,7 @@ namespace Mono.Addins
 		
 		internal RuntimeAddin GetAddinForAssembly (Assembly asm)
 		{
+			ValidateAddinRoots ();
 			RuntimeAddin ad;
 			loadedAssemblies.TryGetValue (asm, out ad);
 			return ad;
@@ -385,11 +386,13 @@ namespace Mono.Addins
 		public bool IsAddinLoaded (string id)
 		{
 			CheckInitialized ();
+			ValidateAddinRoots ();
 			return loadedAddins.ContainsKey (Addin.GetIdName (id));
 		}
 		
 		internal RuntimeAddin GetAddin (string id)
 		{
+			ValidateAddinRoots ();
 			RuntimeAddin a;
 			loadedAddins.TryGetValue (Addin.GetIdName (id), out a);
 			return a;
@@ -691,12 +694,34 @@ namespace Mono.Addins
 
 		void OnAssemblyLoaded (object s, AssemblyLoadEventArgs a)
 		{
-			if (a != null)
-				CheckHostAssembly (a.LoadedAssembly);
+			if (a != null) {
+				lock (pendingRootChecks) {
+					pendingRootChecks.Add (a.LoadedAssembly);
+				}
+			}
 		}
-		
+
+		List<Assembly> pendingRootChecks = new List<Assembly> ();
+
+		internal void ValidateAddinRoots ()
+		{
+			List<Assembly> copy = null;
+			lock (pendingRootChecks) {
+				if (pendingRootChecks.Count > 0) {
+					copy = new List<Assembly> (pendingRootChecks);
+					pendingRootChecks.Clear ();
+				}
+			}
+			if (copy != null) {
+				foreach (Assembly asm in copy)
+					CheckHostAssembly (asm);
+			}
+		}
+
 		internal void ActivateRoots ()
 		{
+			lock (pendingRootChecks)
+				pendingRootChecks.Clear ();
 			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies ())
 				CheckHostAssembly (asm);
 		}
