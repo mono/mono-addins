@@ -41,10 +41,19 @@ namespace Mono.Addins.CecilReflector
 	{
 		IAssemblyLocator locator;
 		Hashtable cachedAssemblies = new Hashtable ();
+		DefaultAssemblyResolver defaultAssemblyResolver;
 		
 		public void Initialize (IAssemblyLocator locator)
 		{
 			this.locator = locator;
+			defaultAssemblyResolver = new DefaultAssemblyResolver ();
+			defaultAssemblyResolver.ResolveFailure += delegate (object sender, AssemblyNameReference reference) {
+				var file = locator.GetAssemblyLocation (reference.FullName);
+				if (file != null)
+					return LoadAssembly (file, true);
+				else
+					return null;
+			};
 		}
 		
 		public object[] GetCustomAttributes (object obj, Type type, bool inherit)
@@ -286,7 +295,9 @@ namespace Mono.Addins.CecilReflector
 			AssemblyDefinition adef = (AssemblyDefinition) cachedAssemblies [file];
 			if (adef != null)
 				return adef;
-			adef = AssemblyDefinition.ReadAssembly (file);
+			var rp = new ReaderParameters (ReadingMode.Deferred);
+			rp.AssemblyResolver = defaultAssemblyResolver;
+			adef = AssemblyDefinition.ReadAssembly (file, rp);
 			if (adef != null && cache)
 				cachedAssemblies [file] = adef;
 			return adef;
