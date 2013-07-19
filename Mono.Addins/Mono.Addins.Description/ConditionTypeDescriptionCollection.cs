@@ -34,7 +34,7 @@ namespace Mono.Addins.Description
 	/// <summary>
 	/// A collection of condition types
 	/// </summary>
-	public class ConditionTypeDescriptionCollection: ObjectDescriptionCollection
+	public class ConditionTypeDescriptionCollection: ObjectDescriptionCollection<ConditionTypeDescription>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Addins.Description.ConditionTypeDescriptionCollection"/> class.

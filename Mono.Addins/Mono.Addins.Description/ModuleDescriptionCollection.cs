@@ -34,7 +34,7 @@ namespace Mono.Addins.Description
 	/// <summary>
 	/// A collection of module descriptions
 	/// </summary>
-	public class ModuleCollection: ObjectDescriptionCollection
+	public class ModuleCollection: ObjectDescriptionCollection<ModuleDescription>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Addins.Description.ModuleCollection"/> class.

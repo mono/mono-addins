@@ -34,7 +34,7 @@ namespace Mono.Addins.Description
 	/// <summary>
 	/// A collection of node attributes
 	/// </summary>
-	public class NodeTypeAttributeCollection: ObjectDescriptionCollection
+	public class NodeTypeAttributeCollection: ObjectDescriptionCollection<NodeTypeAttribute>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Addins.Description.NodeTypeAttributeCollection"/> class.

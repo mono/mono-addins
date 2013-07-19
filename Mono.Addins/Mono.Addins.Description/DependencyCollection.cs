@@ -34,7 +34,7 @@ namespace Mono.Addins.Description
 	/// <summary>
 	/// A collection of dependency definitions.
 	/// </summary>
-	public class DependencyCollection: ObjectDescriptionCollection
+	public class DependencyCollection: ObjectDescriptionCollection<Dependency>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Addins.Description.DependencyCollection"/> class.

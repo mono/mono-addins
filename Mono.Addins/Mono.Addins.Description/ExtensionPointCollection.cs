@@ -35,7 +35,7 @@ namespace Mono.Addins.Description
 	/// <summary>
 	/// A collection of extension point definitions.
 	/// </summary>
-	public class ExtensionPointCollection: ObjectDescriptionCollection
+	public class ExtensionPointCollection: ObjectDescriptionCollection<ExtensionPoint>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Addins.Description.ExtensionPointCollection"/> class.

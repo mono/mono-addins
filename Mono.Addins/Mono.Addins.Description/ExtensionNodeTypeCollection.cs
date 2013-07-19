@@ -35,7 +35,7 @@ namespace Mono.Addins.Description
 	/// <summary>
 	/// A collection of node types.
 	/// </summary>
-	public class ExtensionNodeTypeCollection: ObjectDescriptionCollection
+	public class ExtensionNodeTypeCollection: ObjectDescriptionCollection<ExtensionNodeType>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Addins.Description.ExtensionNodeTypeCollection"/> class.

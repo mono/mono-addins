@@ -29,8 +29,10 @@
 
 using System;
 using System.Xml;
+using System.Linq;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Description
 {
@@ -161,6 +163,25 @@ namespace Mono.Addins.Description
 				ob.Verify (location + "[" + n + "]/", errors);
 				n++;
 			}
+		}
+	}
+
+	/// <summary>
+	/// Base class for add-in description collections.
+	/// </summary>
+	public class ObjectDescriptionCollection<T>: ObjectDescriptionCollection, IEnumerable<T> where T:ObjectDescription
+	{
+		internal ObjectDescriptionCollection ()
+		{
+		}
+
+		internal ObjectDescriptionCollection (object owner): base (owner)
+		{
+		}
+
+		IEnumerator<T> IEnumerable<T>.GetEnumerator ()
+		{
+			return Enumerable.Cast<T> (List).GetEnumerator ();
 		}
 	}
 }
