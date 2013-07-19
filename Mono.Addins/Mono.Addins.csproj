@@ -141,6 +141,9 @@
     <Compile Include="Mono.Addins\AddinPropertyAttribute.cs" />
     <Compile Include="Mono.Addins\AddinNameAttribute.cs" />
     <Compile Include="Mono.Addins\AddinDescriptionAttribute.cs" />
+    <Compile Include="Mono.Addins\AddinUrlAttribute.cs" />
+    <Compile Include="Mono.Addins\AddinCategoryAttribute.cs" />
+    <Compile Include="Mono.Addins\AddinFlagsAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

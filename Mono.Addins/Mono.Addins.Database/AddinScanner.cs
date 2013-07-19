@@ -772,6 +772,24 @@ namespace Mono.Addins.Database
 			if (catt != null && config.Copyright.Length == 0)
 				config.Copyright = ((AssemblyCopyrightAttribute)catt).Copyright;
 			
+			// Category
+
+			catt = reflector.GetCustomAttribute (asm, typeof(AddinCategoryAttribute), false);
+			if (catt != null && config.Category.Length == 0)
+				config.Category = ((AddinCategoryAttribute)catt).Category;
+			
+			// Url
+
+			catt = reflector.GetCustomAttribute (asm, typeof(AddinUrlAttribute), false);
+			if (catt != null && config.Url.Length == 0)
+				config.Url = ((AddinUrlAttribute)catt).Url;
+			
+			// Flags
+
+			catt = reflector.GetCustomAttribute (asm, typeof(AddinFlagsAttribute), false);
+			if (catt != null)
+				config.Flags |= ((AddinFlagsAttribute)catt).Flags;
+
 			// Localizer
 			
 			AddinLocalizerGettextAttribute locat = (AddinLocalizerGettextAttribute) reflector.GetCustomAttribute (asm, typeof(AddinLocalizerGettextAttribute), false);
