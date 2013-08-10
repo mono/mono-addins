@@ -152,62 +152,38 @@ namespace Mono.Addins.Gui
 			this.buttonRefreshUpdates.Name = "buttonRefreshUpdates";
 			this.buttonRefreshUpdates.UseUnderline = true;
 			this.buttonRefreshUpdates.Relief = ((global::Gtk.ReliefStyle)(2));
-			// Container child buttonRefreshUpdates.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w9 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w10 = new global::Gtk.HBox ();
-			w10.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w11 = new global::Gtk.Image ();
-			w11.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-refresh", global::Gtk.IconSize.Menu);
-			w10.Add (w11);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w13 = new global::Gtk.Label ();
-			w13.LabelProp = global::Mono.Unix.Catalog.GetString ("Refresh");
-			w13.UseUnderline = true;
-			w10.Add (w13);
-			w9.Add (w10);
-			this.buttonRefreshUpdates.Add (w9);
+			this.buttonRefreshUpdates.Label = global::Mono.Unix.Catalog.GetString ("Refresh");
+			global::Gtk.Image w9 = new global::Gtk.Image ();
+			w9.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-refresh", global::Gtk.IconSize.Menu);
+			this.buttonRefreshUpdates.Image = w9;
 			this.hbox67.Add (this.buttonRefreshUpdates);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox67 [this.buttonRefreshUpdates]));
-			w17.PackType = ((global::Gtk.PackType)(1));
-			w17.Position = 1;
-			w17.Expand = false;
-			w17.Fill = false;
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox67 [this.buttonRefreshUpdates]));
+			w10.PackType = ((global::Gtk.PackType)(1));
+			w10.Position = 1;
+			w10.Expand = false;
+			w10.Fill = false;
 			// Container child hbox67.Gtk.Box+BoxChild
 			this.buttonUpdateAll = new global::Gtk.Button ();
 			this.buttonUpdateAll.CanFocus = true;
 			this.buttonUpdateAll.Name = "buttonUpdateAll";
 			this.buttonUpdateAll.UseUnderline = true;
 			this.buttonUpdateAll.Relief = ((global::Gtk.ReliefStyle)(2));
-			// Container child buttonUpdateAll.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w18 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w19 = new global::Gtk.HBox ();
-			w19.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w20 = new global::Gtk.Image ();
-			w20.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("download.png");
-			w19.Add (w20);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w22 = new global::Gtk.Label ();
-			w22.LabelProp = global::Mono.Unix.Catalog.GetString ("Update All");
-			w22.UseUnderline = true;
-			w19.Add (w22);
-			w18.Add (w19);
-			this.buttonUpdateAll.Add (w18);
+			this.buttonUpdateAll.Label = global::Mono.Unix.Catalog.GetString ("Update All");
+			global::Gtk.Image w11 = new global::Gtk.Image ();
+			w11.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("download.png");
+			this.buttonUpdateAll.Image = w11;
 			this.hbox67.Add (this.buttonUpdateAll);
-			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.hbox67 [this.buttonUpdateAll]));
-			w26.PackType = ((global::Gtk.PackType)(1));
-			w26.Position = 2;
-			w26.Expand = false;
-			w26.Fill = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox67 [this.buttonUpdateAll]));
+			w12.PackType = ((global::Gtk.PackType)(1));
+			w12.Position = 2;
+			w12.Expand = false;
+			w12.Fill = false;
 			this.eboxRepoUpdates.Add (this.hbox67);
 			this.vboxUpdates.Add (this.eboxRepoUpdates);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vboxUpdates [this.eboxRepoUpdates]));
-			w28.Position = 0;
-			w28.Expand = false;
-			w28.Fill = false;
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vboxUpdates [this.eboxRepoUpdates]));
+			w14.Position = 0;
+			w14.Expand = false;
+			w14.Fill = false;
 			// Container child vboxUpdates.Gtk.Box+BoxChild
 			this.scrolledUpdates = new global::Gtk.ScrolledWindow ();
 			this.scrolledUpdates.CanFocus = true;
@@ -219,11 +195,11 @@ namespace Mono.Addins.Gui
 			this.updatesTreeView.Name = "updatesTreeView";
 			this.scrolledUpdates.Add (this.updatesTreeView);
 			this.vboxUpdates.Add (this.scrolledUpdates);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vboxUpdates [this.scrolledUpdates]));
-			w30.Position = 1;
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vboxUpdates [this.scrolledUpdates]));
+			w16.Position = 1;
 			this.boxUpdates.Add (this.vboxUpdates);
-			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.boxUpdates [this.vboxUpdates]));
-			w31.Position = 0;
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.boxUpdates [this.vboxUpdates]));
+			w17.Position = 0;
 			// Container child boxUpdates.Gtk.Box+BoxChild
 			this.eventbox3 = new global::Gtk.EventBox ();
 			this.eventbox3.Name = "eventbox3";
@@ -234,13 +210,13 @@ namespace Mono.Addins.Gui
 			this.addininfoUpdates.AllowInstall = false;
 			this.eventbox3.Add (this.addininfoUpdates);
 			this.boxUpdates.Add (this.eventbox3);
-			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.boxUpdates [this.eventbox3]));
-			w33.Position = 1;
-			w33.Expand = false;
-			w33.Fill = false;
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.boxUpdates [this.eventbox3]));
+			w19.Position = 1;
+			w19.Expand = false;
+			w19.Fill = false;
 			this.notebook.Add (this.boxUpdates);
-			global::Gtk.Notebook.NotebookChild w34 = ((global::Gtk.Notebook.NotebookChild)(this.notebook [this.boxUpdates]));
-			w34.Position = 1;
+			global::Gtk.Notebook.NotebookChild w20 = ((global::Gtk.Notebook.NotebookChild)(this.notebook [this.boxUpdates]));
+			w20.Position = 1;
 			// Notebook tab
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
@@ -267,47 +243,37 @@ namespace Mono.Addins.Gui
 			this.label112.Name = "label112";
 			this.label112.LabelProp = global::Mono.Unix.Catalog.GetString ("Repository:");
 			this.hbox66.Add (this.label112);
-			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.hbox66 [this.label112]));
-			w35.Position = 0;
-			w35.Expand = false;
-			w35.Fill = false;
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox66 [this.label112]));
+			w21.Position = 0;
+			w21.Expand = false;
+			w21.Fill = false;
 			// Container child hbox66.Gtk.Box+BoxChild
 			this.repoCombo = new global::Gtk.ComboBox ();
 			this.repoCombo.Name = "repoCombo";
 			this.hbox66.Add (this.repoCombo);
-			global::Gtk.Box.BoxChild w36 = ((global::Gtk.Box.BoxChild)(this.hbox66 [this.repoCombo]));
-			w36.Position = 1;
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox66 [this.repoCombo]));
+			w22.Position = 1;
 			// Container child hbox66.Gtk.Box+BoxChild
 			this.buttonRefresh = new global::Gtk.Button ();
 			this.buttonRefresh.CanFocus = true;
 			this.buttonRefresh.Name = "buttonRefresh";
 			this.buttonRefresh.UseUnderline = true;
 			this.buttonRefresh.Relief = ((global::Gtk.ReliefStyle)(2));
-			// Container child buttonRefresh.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w37 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w38 = new global::Gtk.HBox ();
-			w38.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w39 = new global::Gtk.Image ();
-			w39.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-refresh", global::Gtk.IconSize.Menu);
-			w38.Add (w39);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w41 = new global::Gtk.Label ();
-			w38.Add (w41);
-			w37.Add (w38);
-			this.buttonRefresh.Add (w37);
+			this.buttonRefresh.Label = "";
+			global::Gtk.Image w23 = new global::Gtk.Image ();
+			w23.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-refresh", global::Gtk.IconSize.Menu);
+			this.buttonRefresh.Image = w23;
 			this.hbox66.Add (this.buttonRefresh);
-			global::Gtk.Box.BoxChild w45 = ((global::Gtk.Box.BoxChild)(this.hbox66 [this.buttonRefresh]));
-			w45.Position = 2;
-			w45.Expand = false;
-			w45.Fill = false;
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.hbox66 [this.buttonRefresh]));
+			w24.Position = 2;
+			w24.Expand = false;
+			w24.Fill = false;
 			this.eboxRepo.Add (this.hbox66);
 			this.vboxGallery.Add (this.eboxRepo);
-			global::Gtk.Box.BoxChild w47 = ((global::Gtk.Box.BoxChild)(this.vboxGallery [this.eboxRepo]));
-			w47.Position = 0;
-			w47.Expand = false;
-			w47.Fill = false;
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vboxGallery [this.eboxRepo]));
+			w26.Position = 0;
+			w26.Expand = false;
+			w26.Fill = false;
 			// Container child vboxGallery.Gtk.Box+BoxChild
 			this.scrolledGallery = new global::Gtk.ScrolledWindow ();
 			this.scrolledGallery.CanFocus = true;
@@ -319,11 +285,11 @@ namespace Mono.Addins.Gui
 			this.galleryTreeView.Name = "galleryTreeView";
 			this.scrolledGallery.Add (this.galleryTreeView);
 			this.vboxGallery.Add (this.scrolledGallery);
-			global::Gtk.Box.BoxChild w49 = ((global::Gtk.Box.BoxChild)(this.vboxGallery [this.scrolledGallery]));
-			w49.Position = 1;
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vboxGallery [this.scrolledGallery]));
+			w28.Position = 1;
 			this.hbox6.Add (this.vboxGallery);
-			global::Gtk.Box.BoxChild w50 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.vboxGallery]));
-			w50.Position = 0;
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.vboxGallery]));
+			w29.Position = 0;
 			// Container child hbox6.Gtk.Box+BoxChild
 			this.eventbox1 = new global::Gtk.EventBox ();
 			this.eventbox1.Name = "eventbox1";
@@ -334,13 +300,13 @@ namespace Mono.Addins.Gui
 			this.addininfoGallery.AllowInstall = false;
 			this.eventbox1.Add (this.addininfoGallery);
 			this.hbox6.Add (this.eventbox1);
-			global::Gtk.Box.BoxChild w52 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.eventbox1]));
-			w52.Position = 1;
-			w52.Expand = false;
-			w52.Fill = false;
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.eventbox1]));
+			w31.Position = 1;
+			w31.Expand = false;
+			w31.Fill = false;
 			this.notebook.Add (this.hbox6);
-			global::Gtk.Notebook.NotebookChild w53 = ((global::Gtk.Notebook.NotebookChild)(this.notebook [this.hbox6]));
-			w53.Position = 2;
+			global::Gtk.Notebook.NotebookChild w32 = ((global::Gtk.Notebook.NotebookChild)(this.notebook [this.hbox6]));
+			w32.Position = 2;
 			// Notebook tab
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
@@ -348,33 +314,33 @@ namespace Mono.Addins.Gui
 			this.notebook.SetTabLabel (this.hbox6, this.label8);
 			this.label8.ShowAll ();
 			this.hbox72.Add (this.notebook);
-			global::Gtk.Box.BoxChild w54 = ((global::Gtk.Box.BoxChild)(this.hbox72 [this.notebook]));
-			w54.Position = 0;
+			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.hbox72 [this.notebook]));
+			w33.Position = 0;
 			this.hbox65.Add (this.hbox72);
-			global::Gtk.Box.BoxChild w55 = ((global::Gtk.Box.BoxChild)(this.hbox65 [this.hbox72]));
-			w55.Position = 0;
+			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.hbox65 [this.hbox72]));
+			w34.Position = 0;
 			this.vbox93.Add (this.hbox65);
-			global::Gtk.Box.BoxChild w56 = ((global::Gtk.Box.BoxChild)(this.vbox93 [this.hbox65]));
-			w56.Position = 0;
+			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.vbox93 [this.hbox65]));
+			w35.Position = 0;
 			w1.Add (this.vbox93);
-			global::Gtk.Box.BoxChild w57 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox93]));
-			w57.Position = 0;
+			global::Gtk.Box.BoxChild w36 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox93]));
+			w36.Position = 0;
 			// Internal child Mono.Addins.Gui.AddinManagerDialog.ActionArea
-			global::Gtk.HButtonBox w58 = this.ActionArea;
-			w58.Name = "dialog-action_area8";
-			w58.Spacing = 6;
-			w58.BorderWidth = ((uint)(5));
-			w58.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(2));
+			global::Gtk.HButtonBox w37 = this.ActionArea;
+			w37.Name = "dialog-action_area8";
+			w37.Spacing = 6;
+			w37.BorderWidth = ((uint)(5));
+			w37.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(2));
 			// Container child dialog-action_area8.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonInstallFromFile = new global::Gtk.Button ();
 			this.buttonInstallFromFile.CanFocus = true;
 			this.buttonInstallFromFile.Name = "buttonInstallFromFile";
 			this.buttonInstallFromFile.UseUnderline = true;
 			this.buttonInstallFromFile.Label = global::Mono.Unix.Catalog.GetString ("Install from file...");
-			w58.Add (this.buttonInstallFromFile);
-			global::Gtk.ButtonBox.ButtonBoxChild w59 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w58 [this.buttonInstallFromFile]));
-			w59.Expand = false;
-			w59.Fill = false;
+			w37.Add (this.buttonInstallFromFile);
+			global::Gtk.ButtonBox.ButtonBoxChild w38 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w37 [this.buttonInstallFromFile]));
+			w38.Expand = false;
+			w38.Fill = false;
 			// Container child dialog-action_area8.Gtk.ButtonBox+ButtonBoxChild
 			this.btnClose = new global::Gtk.Button ();
 			this.btnClose.CanDefault = true;
@@ -384,10 +350,10 @@ namespace Mono.Addins.Gui
 			this.btnClose.UseUnderline = true;
 			this.btnClose.Label = "gtk-close";
 			this.AddActionWidget (this.btnClose, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w60 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w58 [this.btnClose]));
-			w60.Position = 1;
-			w60.Expand = false;
-			w60.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w39 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w37 [this.btnClose]));
+			w39.Position = 1;
+			w39.Expand = false;
+			w39.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
