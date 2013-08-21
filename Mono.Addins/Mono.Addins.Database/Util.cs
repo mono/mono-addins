@@ -76,7 +76,6 @@ namespace Mono.Addins.Database
 			var random = new Random ();
 			do {
 				testFile = Path.Combine (path, random.Next ().ToString ());
-				Console.WriteLine ("Checking: {0}", testFile);
 				n++;
 			} while (File.Exists (testFile) && n < 100);
 			if (n == 100)
