@@ -356,7 +356,7 @@ namespace Mono.Addins.Database
 			{
 				string path = GetDescriptionPath (domain, id);
 				if (sinfo == null && fileDatabase.Exists (path)) {
-					sinfo = new Addin (this, path);
+					sinfo = new Addin (this, domain, id);
 					cachedAddinSetupInfos [idd] = sinfo;
 					if (!enabledOnly || sinfo.Enabled)
 						return sinfo;
@@ -417,7 +417,7 @@ namespace Mono.Addins.Database
 				string sid = addin + " " + rdomain;
 				ainfo = cachedAddinSetupInfos [sid] as Addin;
 				if (ainfo == null)
-					ainfo = new Addin (this, GetDescriptionPath (rdomain, addin));
+					ainfo = new Addin (this, rdomain, addin);
 				cachedAddinSetupInfos [assemblyLocation] = ainfo;
 				cachedAddinSetupInfos [addin + " " + rdomain] = ainfo;
 			}

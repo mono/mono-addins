@@ -221,7 +221,7 @@ namespace Mono.Addins
 			} else
 				currentDomain = AddinDatabase.GlobalDomain;
 		}
-		
+
 		/// <summary>
 		/// Gets the global registry.
 		/// </summary>
@@ -624,6 +624,10 @@ namespace Mono.Addins
 		public void Rebuild (IProgressStatus monitor)
 		{
 			database.Repair (monitor, currentDomain);
+
+			// A full rebuild may cause the domain to change
+			if (!string.IsNullOrEmpty (startupDirectory))
+				currentDomain = database.GetFolderDomain (null, startupDirectory);
 		}
 		
 		/// <summary>

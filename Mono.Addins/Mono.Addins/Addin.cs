@@ -44,32 +44,27 @@ namespace Mono.Addins
 	public class Addin
 	{
 		AddinInfo addin;
-		string configFile;
 		string sourceFile;
 		WeakReference desc;
 		AddinDatabase database;
 		bool? isLatestVersion;
 		bool? isUserAddin;
 		string id;
+		string domain;
 		
-		internal Addin (AddinDatabase database, string file)
+		internal Addin (AddinDatabase database, string domain, string id)
 		{
 			this.database = database;
-			configFile = file;
+			this.id = id;
+			this.domain = domain;
+			LoadAddinInfo ();
 		}
-		
+
 		/// <summary>
 		/// Full identifier of the add-in, including namespace and version.
 		/// </summary>
 		public string Id {
-			get {
-				if (configFile != null) {
-					if (id == null)
-						id = Path.GetFileNameWithoutExtension (configFile);
-					return id;
-				}
-				return this.AddinInfo.Id; 
-			}
+			get { return id; }
 		}
 		
 		/// <summary>
@@ -145,7 +140,7 @@ namespace Mono.Addins
 					try {
 						addin = AddinInfo.ReadFromDescription (Description);
 					} catch (Exception ex) {
-						throw new InvalidOperationException ("Could not read add-in file: " + configFile, ex);
+						throw new InvalidOperationException ("Could not read add-in file: " + database.GetDescriptionPath (domain, id), ex);
 					}
 				}
 				return addin;
@@ -230,7 +225,7 @@ namespace Mono.Addins
 					sourceFile = m.AddinFile;
 					addin = AddinInfo.ReadFromDescription (m);
 				} catch (Exception ex) {
-					throw new InvalidOperationException ("Could not read add-in file: " + configFile, ex);
+					throw new InvalidOperationException ("Could not read add-in file: " + database.GetDescriptionPath (domain, id), ex);
 				}
 			}
 		}
@@ -246,6 +241,7 @@ namespace Mono.Addins
 						return d;
 				}
 
+				var configFile = database.GetDescriptionPath (domain, id);
 				AddinDescription m;
 				database.ReadAddinDescription (new ConsoleProgressStatus (true), configFile, out m);
 				
@@ -274,6 +270,9 @@ namespace Mono.Addins
 
 		internal void ResetCachedData ()
 		{
+			// The domain may have changed
+			if (sourceFile != null)
+				domain = database.GetFolderDomain (null, Path.GetDirectoryName (sourceFile));
 			desc = null;
 			addin = null;
 		}

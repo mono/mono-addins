@@ -181,12 +181,17 @@ namespace Mono.Addins.Database
 			
 			string lastAsm = null;
 			foreach (string file in list.ToArray ()) {
-				AssemblyName aname = AssemblyName.GetAssemblyName (file);
-				list.Remove (file);
-				lastAsm = file;
-				assemblyLocationsByFullName [aname.FullName] = file;
-				if (aname.FullName == fullName)
-					return file;
+				try {
+					list.Remove (file);
+					AssemblyName aname = AssemblyName.GetAssemblyName (file);
+					lastAsm = file;
+					assemblyLocationsByFullName [aname.FullName] = file;
+					if (aname.FullName == fullName)
+						return file;
+				} catch {
+					// Could not get the assembly name. The file either doesn't exist or it is not a valid assembly.
+					// In this case, just ignore it.
+				}
 			}
 			
 			if (lastAsm != null) {
