@@ -1458,6 +1458,9 @@ namespace Mono.Addins.Database
 			AddinScanFolderInfo folderInfo;
 			if (GetFolderInfoForPath (progressStatus, path, out folderInfo) && folderInfo != null && !folderInfo.SharedFolder)
 				return folderInfo.Domain;
+			else if (path.Length > 0 && path [path.Length - 1] != Path.DirectorySeparatorChar)
+				// Try again by appending a directory separator at the end. Some directories are registered like this.
+				return GetFolderDomain (progressStatus, path + Path.DirectorySeparatorChar);
 			else
 				return UnknownDomain;
 		}
