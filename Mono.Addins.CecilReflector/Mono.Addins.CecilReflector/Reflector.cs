@@ -445,10 +445,14 @@ namespace Mono.Addins.CecilReflector
 				string loc = locator.GetAssemblyLocation (aref.FullName);
 				if (loc == null)
 					continue;
-				AssemblyDefinition asm = LoadAssembly (loc, true);
-				td = GetType (asm, name) as TypeDefinition;
-				if (td != null)
-					return td;
+				try {
+					AssemblyDefinition asm = LoadAssembly (loc, true);
+					td = GetType (asm, name) as TypeDefinition;
+					if (td != null)
+						return td;
+				} catch {
+					Console.WriteLine ("Could not scan dependency '{0}'. Ignoring for now.", aref.FullName);
+				}
 			}
 			return null;
 		}
