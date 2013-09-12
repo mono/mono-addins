@@ -933,8 +933,10 @@ namespace Mono.Addins.Description
 			}
 
 			XmlElement elem = config.configDoc.DocumentElement;
-			if (elem.LocalName == "ExtensionModel")
+			if (elem.LocalName == "ExtensionModel") {
+				config.IsExtensionModel = true;
 				return config;
+			}
 			
 			XmlElement varsElem = (XmlElement) elem.SelectSingleNode ("Variables");
 			if (varsElem != null) {
@@ -1175,7 +1177,8 @@ namespace Mono.Addins.Description
 		}
 		
 		internal bool IsExtensionModel {
-			get { return RootElement.LocalName == "ExtensionModel"; }
+			get;
+			set;
 		}
 		
 		internal static AddinDescription Merge (AddinDescription desc1, AddinDescription desc2)
@@ -1189,15 +1192,20 @@ namespace Mono.Addins.Description
 			desc1.ExtensionNodeSets.AddRange (desc2.ExtensionNodeSets);
 			desc1.ConditionTypes.AddRange (desc2.ConditionTypes);
 			desc1.OptionalModules.AddRange (desc2.OptionalModules);
-			foreach (string s in desc2.MainModule.Assemblies)
-				desc1.MainModule.Assemblies.Add (s);
-			foreach (string s in desc2.MainModule.DataFiles)
-				desc1.MainModule.DataFiles.Add (s);
-			desc1.MainModule.Dependencies.AddRange (desc2.MainModule.Dependencies);
-			desc1.MainModule.Extensions.AddRange (desc2.MainModule.Extensions);
+			Merge (desc1.MainModule, desc2.MainModule);
 			return desc1;
 		}
 		
+		internal static void Merge (ModuleDescription desc1, ModuleDescription desc2)
+		{
+			foreach (string s in desc2.Assemblies)
+				desc1.Assemblies.Add (s);
+			foreach (string s in desc2.DataFiles)
+				desc1.DataFiles.Add (s);
+			desc1.Dependencies.AddRange (desc2.Dependencies);
+			desc1.Extensions.AddRange (desc2.Extensions);
+		}
+
 		void IBinaryXmlElement.Write (BinaryXmlWriter writer)
 		{
 			TransferCoreProperties (true);

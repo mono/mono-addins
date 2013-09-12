@@ -38,6 +38,7 @@ using System.Xml;
 using System.ComponentModel;
 
 using Mono.Addins.Description;
+using System.Linq;
 
 namespace Mono.Addins.Database
 {
@@ -545,31 +546,20 @@ namespace Mono.Addins.Database
 					throw new Exception ("Could not load assembly: " + filePath);
 				
 				// Get the config file from the resources, if there is one
-				
-				foreach (string res in reflector.GetResourceNames (asm)) {
-					if (res.EndsWith (".addin") || res.EndsWith (".addin.xml")) {
-						using (Stream s = reflector.GetResourceStream (asm, res)) {
-							AddinDescription ad = AddinDescription.Read (s, Path.GetDirectoryName (filePath));
-							if (config != null) {
-								if (!config.IsExtensionModel && !ad.IsExtensionModel) {
-									// There is more than one add-in definition
-									monitor.ReportError ("Duplicate add-in definition found in assembly: " + filePath, null);
-									return false;
-								}
-								config = AddinDescription.Merge (config, ad);
-							} else
-								config = ad;
-						}
-					}
-				}
-				
-				if (config == null) {
+
+				if (!ReadExtensionResources (monitor, filePath, reflector, asm, ref config))
+					return false;
+
+				if (config == null || config.IsExtensionModel) {
 					// In this case, only scan the assembly if it has the Addin attribute.
 					AddinAttribute att = (AddinAttribute) reflector.GetCustomAttribute (asm, typeof(AddinAttribute), false);
-					if (att == null)
+					if (att == null) {
+						config = null;
 						return true;
+					}
 
-					config = new AddinDescription ();
+					if (config == null)
+						config = new AddinDescription ();
 				}
 				
 				config.SetBasePath (Path.GetDirectoryName (filePath));
@@ -585,6 +575,45 @@ namespace Mono.Addins.Database
 				// Something went wrong while scanning the assembly. We'll ignore it for now.
 				monitor.ReportError ("There was an error while scanning assembly: " + filePath, ex);
 				return false;
+			}
+		}
+
+		bool ReadExtensionResources (IProgressStatus monitor, string filePath, IAssemblyReflector reflector, object asm, ref AddinDescription config)
+		{
+			foreach (var ad in GetAddinDescriptionResources (reflector, asm, filePath)) {
+				if (config != null) {
+					if (!config.IsExtensionModel && !ad.IsExtensionModel) {
+						// There is more than one add-in definition
+						monitor.ReportError ("Duplicate add-in definition found in assembly: " + filePath, null);
+						return false;
+					}
+					config = AddinDescription.Merge (config, ad);
+				} else
+					config = ad;
+			}
+			return true;
+		}
+
+		bool ReadModuleExtensionResources (IProgressStatus monitor, string filePath, IAssemblyReflector reflector, object asm, ModuleDescription module)
+		{
+			foreach (var ad in GetAddinDescriptionResources (reflector, asm, filePath)) {
+				if (!ad.IsExtensionModel) {
+					monitor.ReportError ("An assembly included by an optional module cannot define an add-in: " + filePath, null);
+					return false;
+				}
+				AddinDescription.Merge (module, ad.MainModule);	
+			}
+			return true;
+		}
+
+		IEnumerable<AddinDescription> GetAddinDescriptionResources (IAssemblyReflector reflector, object asm, string filePath)
+		{
+			foreach (var r in reflector.GetResourceNames (asm).Where (res => res.EndsWith (".addin") || res.EndsWith (".addin.xml"))) {
+				AddinDescription ad;
+				using (Stream s = reflector.GetResourceStream (asm, r)) {
+					ad = AddinDescription.Read (s, Path.GetDirectoryName (filePath));
+				}
+				yield return ad;
 			}
 		}
 
@@ -614,6 +643,7 @@ namespace Mono.Addins.Database
 						continue;
 					object asm = reflector.LoadAssembly (asmFile);
 					assemblies.Add (asm);
+					ReadExtensionResources (monitor, asmFile, reflector, asm, ref config);
 					ScanAssemblyAddinHeaders (reflector, config, asm, scanResult);
 					ScanAssemblyImports (reflector, config.MainModule, asm);
 				}
@@ -670,6 +700,7 @@ namespace Mono.Addins.Database
 							object asm = reflector.LoadAssembly (asmFile);
 							assemblies.Add (asm);
 							scanResult.AddPathToIgnore (Path.GetFullPath (asmFile));
+							ReadModuleExtensionResources (monitor, asmFile, reflector, asm, mod);
 							ScanAssemblyImports (reflector, mod, asm);
 						}
 						// Add all data files to the ignore file list. It avoids scanning assemblies
@@ -830,11 +861,11 @@ namespace Mono.Addins.Database
 					module.DataFiles.Add (import.FilePath);
 			}
 		}
-		
+
 		void ScanAssemblyContents (IAssemblyReflector reflector, AddinDescription config, ModuleDescription module, object asm, AddinScanResult scanResult)
 		{
 			bool isMainModule = module == config.MainModule;
-			
+
 			// Get dependencies
 			
 			object[] deps = reflector.GetCustomAttributes (asm, typeof(AddinDependencyAttribute), false);
