@@ -245,5 +245,15 @@ namespace Mono.Addins.Database
 			if (Directory.Exists (gacDir + "_MSIL"))
 				yield return gacDir + "_MSIL";
 		}
+
+		internal static bool IsManagedAssembly (string file)
+		{
+			try {
+				AssemblyName.GetAssemblyName (file);
+				return true;
+			} catch (BadImageFormatException) {
+				return false;
+			}
+		}
 	}
 }

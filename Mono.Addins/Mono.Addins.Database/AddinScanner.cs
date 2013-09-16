@@ -229,6 +229,13 @@ namespace Mono.Addins.Database
 				return;
 			}
 			
+			string ext = Path.GetExtension (file).ToLower ();
+			if ((ext == ".dll" || ext == ".exe") && !Util.IsManagedAssembly (file)) {
+				// Ignore dlls and exes which are not managed assemblies
+				folderInfo.SetLastScanTime (file, null, false, fs.GetLastWriteTime (file), true);
+				return;
+			}
+
 			if (monitor.LogLevel > 1)
 				monitor.Log ("Scanning file: " + file);
 			
@@ -242,8 +249,6 @@ namespace Mono.Addins.Database
 			AddinDescription config = null;
 			
 			try {
-				string ext = Path.GetExtension (file).ToLower ();
-				
 				if (ext == ".dll" || ext == ".exe")
 					scanSuccessful = ScanAssembly (monitor, file, scanResult, out config);
 				else
