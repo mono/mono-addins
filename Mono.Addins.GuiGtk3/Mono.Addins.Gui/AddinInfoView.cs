@@ -102,6 +102,7 @@ namespace Mono.Addins.GuiGtk3
 			btnInstall.Clicked += OnBtnInstallClicked;
 			btnUninstall.Clicked += OnBtnUninstallClicked;
 			btnUpdate.Clicked += OnBtnUpdateClicked;
+			urlButton.Clicked += OnUrlButtonClicked;
 
 			ShowAll ();
 		}
