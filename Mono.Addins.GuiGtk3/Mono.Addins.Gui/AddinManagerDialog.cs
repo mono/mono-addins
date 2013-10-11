@@ -46,8 +46,8 @@ namespace Mono.Addins.GuiGtk3
 		[UI] TreeView galleryTreeView;
 		[UI] TreeView updatesTreeView;
 		[UI] ComboBox repoCombo;
-		[UI] VBox vboxUpdates;
-		[UI] VBox vboxGallery;
+		[UI] Box vboxUpdates;
+		[UI] Box vboxGallery;
 		[UI] ScrolledWindow scrolledUpdates;
 		[UI] ScrolledWindow scrolledGallery;
 		[UI] EventBox eboxRepoUpdates;
