@@ -142,7 +142,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="interfaces\ErrorDialog.ui" />
     <EmbeddedResource Include="interfaces\NewSiteDialog.ui" />
-    <EmbeddedResource Include="interfaces\ProgressDialog.ui" />
     <EmbeddedResource Include="interfaces\AddinManagerDialog.ui.xml">
       <LogicalName>Mono.Addins.GuiGtk3.interfaces.AddinManagerDialog.ui</LogicalName>
     </EmbeddedResource>
@@ -157,6 +156,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="interfaces\InstallDialog.ui.xml">
       <LogicalName>Mono.Addins.GuiGtk3.interfaces.InstallDialog.ui</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="interfaces\ProgressDialog.ui.xml">
+      <LogicalName>Mono.Addins.GuiGtk3.interfaces.ProgressDialog.ui</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

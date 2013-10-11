@@ -54,6 +54,8 @@ namespace Mono.Addins.GuiGtk3
 		[UI] EventBox eboxRepo;
 		[UI] Label labelUpdates;
 		[UI] Button buttonUpdateAll;
+		[UI] Button buttonRefreshUpdates;
+		[UI] Button buttonRefresh;
 		[UI] Notebook notebook;
 		[UI] EventBox eventbox1;
 		[UI] EventBox eventbox2;
@@ -135,6 +137,11 @@ namespace Mono.Addins.GuiGtk3
 			updatesTree.ShowCategories = false;
 			updatesTree.ShowInstalledMarkers = true;
 			updatesTreeView.Selection.Changed += OnGallerySelectionChanged;
+
+			//Wiring more buttons
+			buttonUpdateAll.Clicked += OnUpdateAll;
+			buttonRefreshUpdates.Clicked += OnButtonRefreshClicked;
+			buttonRefresh.Clicked += OnButtonRefreshClicked;
 			
 			repoStore = new ListStore (typeof(string), typeof(string));
 			repoCombo.Model = repoStore;
