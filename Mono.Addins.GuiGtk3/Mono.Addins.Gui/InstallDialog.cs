@@ -67,6 +67,8 @@ namespace Mono.Addins.GuiGtk3
 //			Services.PlaceDialog (this, parent);
 			boxProgress.Visible = false;
 			Resizable = false;
+
+			ShowAll ();
 		}
 		
 		public void InitForInstall (AddinRepositoryEntry[] addinsToInstall)
