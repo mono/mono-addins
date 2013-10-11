@@ -218,7 +218,8 @@ namespace Mono.Addins.GuiGtk3
 		
 		internal void OnManageRepos (object sender, EventArgs e)
 		{
-			ManageSitesDialog dlg = new ManageSitesDialog (this, service);
+			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.ManageSitesDialog.ui", null);
+			ManageSitesDialog dlg = new ManageSitesDialog (service, builder, builder.GetObject ("window1").Handle);
 			try {
 				dlg.Run ();
 			} finally {
@@ -410,7 +411,8 @@ namespace Mono.Addins.GuiGtk3
 		
 		void ManageSites ()
 		{
-			ManageSitesDialog dlg = new ManageSitesDialog (this, service);
+			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.ManageSitesDialog.ui", null);
+			ManageSitesDialog dlg = new ManageSitesDialog (service, builder, builder.GetObject ("window1").Handle);
 			try {
 				dlg.Run ();
 				repoCombo.Active = lastRepoActive;
@@ -436,7 +438,8 @@ namespace Mono.Addins.GuiGtk3
 		
 		protected virtual void OnButtonRefreshClicked (object sender, System.EventArgs e)
 		{
-			ProgressDialog pdlg = new ProgressDialog (this);
+			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.ProgressDialog.ui", null);
+			ProgressDialog pdlg = new ProgressDialog (builder, builder.GetObject ("window1").Handle);
 			pdlg.Show ();
 			pdlg.SetMessage (AddinManager.CurrentLocalizer.GetString ("Updating repository"));
 			bool updateDone = false;
@@ -461,7 +464,8 @@ namespace Mono.Addins.GuiGtk3
 		
 		protected virtual void OnInstallClicked (object sender, System.EventArgs e)
 		{
-			InstallDialog dlg = new InstallDialog (this, service);
+			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.InstallDialog.ui", null);
+			InstallDialog dlg = new InstallDialog (service, builder, builder.GetObject ("window1").Handle);
 			try {
 				List<AddinRepositoryEntry> selectedEntry = ((AddinInfoView)sender).SelectedEntries;
 				dlg.InitForInstall (selectedEntry.ToArray ());
@@ -475,7 +479,8 @@ namespace Mono.Addins.GuiGtk3
 		protected virtual void OnUninstallClicked (object sender, System.EventArgs e)
 		{
 			List<Addin> selectedAddin = ((AddinInfoView)sender).SelectedAddins;
-			InstallDialog dlg = new InstallDialog (this, service);
+			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.InstallDialog.ui", null);
+			InstallDialog dlg = new InstallDialog (service, builder, builder.GetObject ("window1").Handle);
 			try {
 				dlg.InitForUninstall (selectedAddin.ToArray ());
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
@@ -489,7 +494,8 @@ namespace Mono.Addins.GuiGtk3
 		protected virtual void OnUpdateClicked (object sender, System.EventArgs e)
 		{
 			List<AddinRepositoryEntry> selectedEntry = ((AddinInfoView)sender).SelectedEntries;
-			InstallDialog dlg = new InstallDialog (this, service);
+			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.InstallDialog.ui", null);
+			InstallDialog dlg = new InstallDialog (service, builder, builder.GetObject ("window1").Handle);
 			try {
 				dlg.InitForInstall (selectedEntry.ToArray ());
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok)
@@ -517,7 +523,8 @@ namespace Mono.Addins.GuiGtk3
 			object[] data = updatesTree.AddinsData;
 			AddinRepositoryEntry[] entries = new AddinRepositoryEntry [data.Length];
 			Array.Copy (data, entries, data.Length);
-			InstallDialog dlg = new InstallDialog (this, service);
+			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.InstallDialog.ui", null);
+			InstallDialog dlg = new InstallDialog (service, builder, builder.GetObject ("window1").Handle);
 			try {
 				dlg.InitForInstall (entries);
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok)
@@ -560,7 +567,8 @@ namespace Mono.Addins.GuiGtk3
 				dlg.Destroy ();
 			}
 			
-			InstallDialog idlg = new InstallDialog (this, service);
+			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.InstallDialog.ui", null);
+			InstallDialog idlg = new InstallDialog (service, builder, builder.GetObject ("window1").Handle);
 			try {
 				idlg.InitForInstall (files);
 				if (idlg.Run () == (int) Gtk.ResponseType.Ok)

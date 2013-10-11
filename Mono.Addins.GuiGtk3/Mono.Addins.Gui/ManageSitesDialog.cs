@@ -48,10 +48,10 @@ namespace Mono.Addins.GuiGtk3
 		ListStore treeStore;
 		SetupService service;
 		
-		public ManageSitesDialog (Gtk.Window parent, SetupService service)
+		public ManageSitesDialog (SetupService service, Builder builder, IntPtr handle): base (handle)
 		{
-			Build ();
-			TransientFor = parent;
+			builder.Autoconnect (this);
+//			TransientFor = parent;
 //			Services.PlaceDialog (this, parent);
 			this.service = service;
 			treeStore = new Gtk.ListStore (typeof (string), typeof (string), typeof(bool));
@@ -84,7 +84,8 @@ namespace Mono.Addins.GuiGtk3
 		
 		protected void OnAdd (object sender, EventArgs e)
 		{
-			NewSiteDialog dlg = new NewSiteDialog (this);
+			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.NewSiteDialog.ui", null);
+			NewSiteDialog dlg = new NewSiteDialog (builder, builder.GetObject ("window1").Handle);
 			try {
 				if (dlg.Run ()) {
 					string url = dlg.Url;
@@ -99,7 +100,8 @@ namespace Mono.Addins.GuiGtk3
 					}
 					
 					if (!service.Repositories.ContainsRepository (url)) {
-						ProgressDialog pdlg = new ProgressDialog (this);
+						builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.ProgressDialog.ui", null);
+						ProgressDialog pdlg = new ProgressDialog (builder, builder.GetObject ("window1").Handle);
 						pdlg.Show ();
 						pdlg.SetMessage (AddinManager.CurrentLocalizer.GetString ("Registering repository"));
 						

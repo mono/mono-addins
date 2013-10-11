@@ -43,10 +43,10 @@ namespace Mono.Addins.GuiGtk3
 		TextTag tagNoWrap;
 		TextTag tagWrap;
 		
-		public ErrorDialog (Window parent)
+		public ErrorDialog (Builder builder, IntPtr handle): base (handle)
 		{
-			Build ();
-			TransientFor = parent;
+			builder.Autoconnect (this);
+//			TransientFor = parent;
 			okButton.Clicked += new EventHandler (OnClose);
 			expander.Activated += new EventHandler (OnExpanded);
 			descriptionLabel.ModifyBg (StateType.Normal, new Gdk.Color (255,0,0));

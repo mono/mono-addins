@@ -10,7 +10,8 @@ namespace Mono.Addins.GuiGtk3
 	{
 		public void InstallAddins (AddinRegistry reg, string message, string[] addinIds)
 		{
-			AddinInstallerDialog dlg = new AddinInstallerDialog (reg, message, addinIds);
+			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.AddinInstallerDialog.ui", null);
+			AddinInstallerDialog dlg = new AddinInstallerDialog (reg, message, addinIds, builder, builder.GetObject ("window1").Handle);
 			try {
 				if (dlg.Run () == (int) Gtk.ResponseType.Cancel)
 					throw new InstallException (Catalog.GetString ("Installation cancelled"));

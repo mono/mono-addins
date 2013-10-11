@@ -72,9 +72,9 @@ namespace Mono.Addins.GuiGtk3
 		public event EventHandler UpdateClicked;
 		public event EventHandler EnableDisableClicked;
 		
-		public AddinInfoView ()
+		public AddinInfoView (Builder builder, IntPtr handle): base (handle)
 		{
-			this.Build ();
+			builder.Autoconnect (this);
 			AllowInstall = true;
 			titleWidth = labelName.SizeRequest ().Width;
 			

@@ -42,9 +42,9 @@ namespace Mono.Addins.GuiGtk3
 		bool cancelled;
 		bool hadError;
 		
-		public ProgressDialog (Gtk.Window parent)
+		public ProgressDialog (Builder builder, IntPtr handle): base (handle)
 		{
-			this.Build();
+			builder.Autoconnect (this);
 //			Services.PlaceDialog (this, parent);
 		}
 

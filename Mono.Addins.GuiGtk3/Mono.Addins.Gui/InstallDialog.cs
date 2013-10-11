@@ -58,11 +58,11 @@ namespace Mono.Addins.GuiGtk3
 		bool installing;
 		const int MaxHeight = 350;
 		
-		public InstallDialog (Gtk.Window parent, SetupService service)
+		public InstallDialog (SetupService service, Builder builder, IntPtr handle): base (handle)
 		{
-			this.Build ();
+			builder.Autoconnect (this);
 			this.service = service;
-			TransientFor = parent;
+//			TransientFor = parent;
 			WindowPosition = Gtk.WindowPosition.CenterOnParent;
 //			Services.PlaceDialog (this, parent);
 			boxProgress.Visible = false;

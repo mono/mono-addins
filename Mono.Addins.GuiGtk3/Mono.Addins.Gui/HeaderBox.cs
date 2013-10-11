@@ -172,24 +172,23 @@ namespace Mono.Addins.GuiGtk3
 				
 			}
 			
-			bool res = base.OnExposeEvent (evnt);
-			
-			Gdk.GC borderColor = Parent.Style.DarkGC (Gtk.StateType.Normal);
-			
-			rect = Allocation;
-			for (int n=0; n<topMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.X, rect.Y + n, rect.Left + rect.Width - 1, rect.Y + n);
-			
-			for (int n=0; n<bottomMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.X, rect.Top + rect.Height - 1 - n, rect.Left + rect.Width - 1, rect.Top + rect.Height - 1 - n);
-			
-			for (int n=0; n<leftMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.X + n, rect.Y, rect.X + n, rect.Top + rect.Height - 1);
-			
-			for (int n=0; n<rightMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.Left + rect.Width - 1 - n, rect.Y, rect.Left + rect.Width - 1 - n, rect.Top + rect.Height - 1);
-			
-			return res;
+			base.Draw (cr);
+			//FIXME: Get this drawing properly again!
+//			Gdk.Color colour = Parent.Style.Dark (Gtk.StateType.Normal);
+//			cr.SetSourceRGB (colour.Red, colour.Green, colour.Blue);
+//
+//			rect = Allocation;
+//			for (int n=0; n<topMargin; n++)
+//				GdkWindow.DrawLine (borderColor, rect.X, rect.Y + n, rect.Left + rect.Width - 1, rect.Y + n);
+//			
+//			for (int n=0; n<bottomMargin; n++)
+//				GdkWindow.DrawLine (borderColor, rect.X, rect.Top + rect.Height - 1 - n, rect.Left + rect.Width - 1, rect.Top + rect.Height - 1 - n);
+//			
+//			for (int n=0; n<leftMargin; n++)
+//				GdkWindow.DrawLine (borderColor, rect.X + n, rect.Y, rect.X + n, rect.Top + rect.Height - 1);
+//			
+//			for (int n=0; n<rightMargin; n++)
+//				GdkWindow.DrawLine (borderColor, rect.Left + rect.Width - 1 - n, rect.Y, rect.Left + rect.Width - 1 - n, rect.Top + rect.Height - 1);
 		}
 	}
 }

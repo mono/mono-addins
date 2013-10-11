@@ -6,7 +6,7 @@
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{410A7DC9-E7DA-43E6-B592-93E2A344B660}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>Mono.Addins.GuiGtk3</RootNamespace>
     <AssemblyName>Mono.Addins.GuiGtk3</AssemblyName>
   </PropertyGroup>

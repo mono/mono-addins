@@ -51,9 +51,10 @@ namespace Mono.Addins.GuiGtk3
 		string errMessage;
 		SetupService setup;
 		
-		public AddinInstallerDialog (AddinRegistry reg, string message, string[] addinIds)
+		public AddinInstallerDialog (AddinRegistry reg, string message, string[] addinIds,
+		                             Builder builder, IntPtr handle): base (handle)
 		{
-			this.Build();
+			builder.Autoconnect (this);
 			
 			this.addinIds = addinIds;
 			setup = new SetupService (reg);

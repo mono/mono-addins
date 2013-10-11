@@ -41,10 +41,10 @@ namespace Mono.Addins.GuiGtk3
 		[UI] RadioButton btnOnlineRep;
 		[UI] Button btnOk;
 
-		public NewSiteDialog (Gtk.Window parent)
+		public NewSiteDialog (Builder builder, IntPtr handle): base (handle)
 		{
-			Build ();
-			TransientFor = parent;
+			builder.Autoconnect (this);
+//			TransientFor = parent;
 //			Services.PlaceDialog (this, parent);
 			pathEntry.Sensitive = false;
 			CheckValues ();
