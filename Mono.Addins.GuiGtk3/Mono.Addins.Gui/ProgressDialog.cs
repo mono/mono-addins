@@ -46,6 +46,7 @@ namespace Mono.Addins.GuiGtk3
 		{
 			builder.Autoconnect (this);
 //			Services.PlaceDialog (this, parent);
+			ShowAll ();
 		}
 
 		public bool IsCanceled {
