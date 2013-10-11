@@ -82,9 +82,7 @@
                                                       <signal name="UninstallClicked" handler="OnUninstallClicked" swapped="no"/>
                                                       <signal name="UpdateClicked" handler="OnUpdateClicked" swapped="no"/>
                                                       <signal name="EnableDisableClicked" handler="OnEnableDisableClicked" swapped="no"/>
-                                                   </object>-->
-				  <placeholder />
-                                </child>
+                                                   </object>-->                                </child>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
                               </object>
@@ -96,15 +94,7 @@
                             </child>
                           </object>
                         </child>
-                        <child>
-                          <object class="GtkLabel" id="label7">
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Installed</property>
-                          </object>
-                          <packing>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
+
                         <child>
                           <object class="GtkHBox" id="boxUpdates">
                             <property name="can_focus">False</property>
@@ -205,7 +195,6 @@
                                                       <signal name="UpdateClicked" handler="OnUpdateClicked" swapped="no"/>
                                                       <signal name="EnableDisableClicked" handler="OnEnableDisableClicked" swapped="no"/>
                                                    </object>-->
-				  <placeholder />
                                 </child>
                               </object>
                               <packing>
@@ -219,15 +208,7 @@
                             <property name="position">1</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkLabel" id="label4">
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Updates</property>
-                          </object>
-                          <packing>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
+
                         <child>
                           <object class="GtkHBox" id="hbox6">
                             <property name="can_focus">False</property>
@@ -250,7 +231,7 @@
                                             <property name="label" translatable="yes">Repository:</property>
                                           </object>
                                           <packing>
-                                            <property name="expand">False</property>
+                                            <property name="expand">True</property>
                                             <property name="fill">False</property>
                                             <property name="position">0</property>
                                           </packing>
@@ -272,7 +253,7 @@
                                             <property name="use_underline">True</property>
                                           </object>
                                           <packing>
-                                            <property name="expand">False</property>
+                                            <property name="expand">True</property>
                                             <property name="fill">False</property>
                                             <property name="position">2</property>
                                           </packing>
@@ -299,7 +280,7 @@
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
+                                    <property name="expand">True</property>
                                     <property name="fill">True</property>
                                     <property name="position">1</property>
                                   </packing>
@@ -324,12 +305,11 @@
                                                       <signal name="UpdateClicked" handler="OnUpdateClicked" swapped="no"/>
                                                       <signal name="EnableDisableClicked" handler="OnEnableDisableClicked" swapped="no"/>
                                                    </object>-->
-				  <placeholder />
                                 </child>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
@@ -338,15 +318,7 @@
                             <property name="position">2</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkLabel" id="label8">
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Gallery</property>
-                          </object>
-                          <packing>
-                            <property name="position">5</property>
-                          </packing>
-                        </child>
+
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -363,14 +335,14 @@
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
+            <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">0</property>
           </packing>

@@ -3,6 +3,8 @@
   <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkBox" id="AddinInfoView">
     <property name="can_focus">False</property>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
     <child>
       <object class="GtkEventBox" id="ebox">
         <property name="can_focus">False</property>
@@ -221,7 +223,7 @@
                         <property name="use_underline">True</property>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">False</property>
                         <property name="position">0</property>
                       </packing>
@@ -234,7 +236,7 @@
                         <property name="use_underline">True</property>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">False</property>
                         <property name="position">1</property>
                       </packing>
@@ -247,7 +249,7 @@
                         <property name="use_underline">True</property>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">False</property>
                         <property name="position">2</property>
                       </packing>
@@ -260,7 +262,7 @@
                         <property name="use_underline">True</property>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">False</property>
                         <property name="position">3</property>
                       </packing>
@@ -278,8 +280,8 @@
         </child>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
         <property name="position">0</property>
       </packing>
     </child>

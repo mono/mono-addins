@@ -86,32 +86,72 @@
     <EmbeddedResource Include="icons\installed-overlay.png">
       <LogicalName>installed-overlay.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\package-x-generic.png" />
-    <EmbeddedResource Include="icons\package-x-generic_16.png" />
-    <EmbeddedResource Include="icons\package-x-generic_22.png" />
-    <EmbeddedResource Include="icons\plugin-16.png" />
-    <EmbeddedResource Include="icons\plugin-22.png" />
-    <EmbeddedResource Include="icons\plugin-32.png" />
-    <EmbeddedResource Include="icons\plugin-avail-16.png" />
-    <EmbeddedResource Include="icons\plugin-avail-32.png" />
-    <EmbeddedResource Include="icons\plugin-disabled-32.png" />
-    <EmbeddedResource Include="icons\plugin-update-16.png" />
-    <EmbeddedResource Include="icons\plugin-update-22.png" />
-    <EmbeddedResource Include="icons\plugin-update-32.png" />
-    <EmbeddedResource Include="icons\software-update-available.png" />
-    <EmbeddedResource Include="icons\software-update-available-overlay.png" />
-    <EmbeddedResource Include="icons\system-software-update.png" />
-    <EmbeddedResource Include="icons\system-software-update_22.png" />
-    <EmbeddedResource Include="icons\user-package.png" />
-    <EmbeddedResource Include="icons\web.png" />
-    <EmbeddedResource Include="interfaces\AddinInfoView.ui" />
+    <EmbeddedResource Include="icons\package-x-generic.png">
+      <LogicalName>package-x-generic.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-x-generic_16.png">
+      <LogicalName>package-x-generic_16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-x-generic_22.png">
+      <LogicalName>package-x-generic_22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-16.png">
+      <LogicalName>plugin-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-22.png">
+      <LogicalName>plugin-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-32.png">
+      <LogicalName>plugin-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-avail-16.png">
+      <LogicalName>plugin-avail-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-avail-32.png">
+      <LogicalName>plugin-avail-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-disabled-32.png">
+      <LogicalName>plugin-disabled-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-16.png">
+      <LogicalName>plugin-update-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-22.png">
+      <LogicalName>plugin-update-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-32.png">
+      <LogicalName>plugin-update-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\software-update-available.png">
+      <LogicalName>software-update-available.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\software-update-available-overlay.png">
+      <LogicalName>software-update-available-overlay.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\system-software-update.png">
+      <LogicalName>system-software-update.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\system-software-update_22.png">
+      <LogicalName>system-software-update_22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\user-package.png">
+      <LogicalName>user-package.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\web.png">
+      <LogicalName>icons.web.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="interfaces\AddinInstallerDialog.ui" />
-    <EmbeddedResource Include="interfaces\AddinManagerDialog.ui" />
     <EmbeddedResource Include="interfaces\ErrorDialog.ui" />
     <EmbeddedResource Include="interfaces\InstallDialog.ui" />
     <EmbeddedResource Include="interfaces\ManageSitesDialog.ui" />
     <EmbeddedResource Include="interfaces\NewSiteDialog.ui" />
     <EmbeddedResource Include="interfaces\ProgressDialog.ui" />
+    <EmbeddedResource Include="interfaces\AddinManagerDialog.ui.xml">
+      <LogicalName>Mono.Addins.GuiGtk3.interfaces.AddinManagerDialog.ui</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="interfaces\AddinInfoView.ui.xml">
+      <LogicalName>Mono.Addins.GuiGtk3.interfaces.AddinInfoView.ui</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
