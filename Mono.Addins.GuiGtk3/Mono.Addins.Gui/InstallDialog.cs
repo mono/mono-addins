@@ -68,6 +68,10 @@ namespace Mono.Addins.GuiGtk3
 			boxProgress.Visible = false;
 			Resizable = false;
 
+			//Wire Buttons
+			buttonOk.Clicked += OnButtonOkClicked;
+			buttonCancel.Clicked += OnButtonCancelClicked;
+
 			ShowAll ();
 		}
 		
