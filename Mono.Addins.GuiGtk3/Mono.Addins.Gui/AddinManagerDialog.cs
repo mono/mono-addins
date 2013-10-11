@@ -94,10 +94,22 @@ namespace Mono.Addins.GuiGtk3
 //			TransientFor = parent;
 //			HasSeparator = false;
 			addininfoInstalled = new AddinInfoView ();
+			addininfoInstalled.InstallClicked += OnInstallClicked;
+			addininfoInstalled.UninstallClicked += OnUninstallClicked;
+			addininfoInstalled.UpdateClicked += OnUpdateClicked;
+			addininfoInstalled.EnableDisableClicked += OnEnableDisableClicked;
 			eventbox2.Child = addininfoInstalled;
 			addininfoGallery = new AddinInfoView ();
+			addininfoGallery.InstallClicked += OnInstallClicked;
+			addininfoGallery.UninstallClicked += OnUninstallClicked;
+			addininfoGallery.UpdateClicked += OnUpdateClicked;
+			addininfoGallery.EnableDisableClicked += OnEnableDisableClicked;
 			eventbox1.Child = addininfoGallery;
 			addininfoUpdates = new AddinInfoView ();
+			addininfoUpdates.InstallClicked += OnInstallClicked;
+			addininfoUpdates.UninstallClicked += OnUninstallClicked;
+			addininfoUpdates.UpdateClicked += OnUpdateClicked;
+			addininfoUpdates.EnableDisableClicked += OnEnableDisableClicked;
 			eventbox3.Child = addininfoUpdates;
 
 //			Services.PlaceDialog (this, parent);
@@ -451,7 +463,7 @@ namespace Mono.Addins.GuiGtk3
 		protected virtual void OnButtonRefreshClicked (object sender, System.EventArgs e)
 		{
 			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.ProgressDialog.ui", null);
-			ProgressDialog pdlg = new ProgressDialog (builder, builder.GetObject ("window1").Handle);
+			ProgressDialog pdlg = new ProgressDialog (builder, builder.GetObject ("ProgressDialog").Handle);
 			pdlg.Show ();
 			pdlg.SetMessage (AddinManager.CurrentLocalizer.GetString ("Updating repository"));
 			bool updateDone = false;
@@ -477,7 +489,7 @@ namespace Mono.Addins.GuiGtk3
 		protected virtual void OnInstallClicked (object sender, System.EventArgs e)
 		{
 			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.InstallDialog.ui", null);
-			InstallDialog dlg = new InstallDialog (service, builder, builder.GetObject ("window1").Handle);
+			InstallDialog dlg = new InstallDialog (service, builder, builder.GetObject ("InstallDialog").Handle);
 			try {
 				List<AddinRepositoryEntry> selectedEntry = ((AddinInfoView)sender).SelectedEntries;
 				dlg.InitForInstall (selectedEntry.ToArray ());
@@ -492,7 +504,7 @@ namespace Mono.Addins.GuiGtk3
 		{
 			List<Addin> selectedAddin = ((AddinInfoView)sender).SelectedAddins;
 			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.InstallDialog.ui", null);
-			InstallDialog dlg = new InstallDialog (service, builder, builder.GetObject ("window1").Handle);
+			InstallDialog dlg = new InstallDialog (service, builder, builder.GetObject ("InstallDialog").Handle);
 			try {
 				dlg.InitForUninstall (selectedAddin.ToArray ());
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
@@ -507,7 +519,7 @@ namespace Mono.Addins.GuiGtk3
 		{
 			List<AddinRepositoryEntry> selectedEntry = ((AddinInfoView)sender).SelectedEntries;
 			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.InstallDialog.ui", null);
-			InstallDialog dlg = new InstallDialog (service, builder, builder.GetObject ("window1").Handle);
+			InstallDialog dlg = new InstallDialog (service, builder, builder.GetObject ("InstallDialog").Handle);
 			try {
 				dlg.InitForInstall (selectedEntry.ToArray ());
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok)
@@ -536,7 +548,7 @@ namespace Mono.Addins.GuiGtk3
 			AddinRepositoryEntry[] entries = new AddinRepositoryEntry [data.Length];
 			Array.Copy (data, entries, data.Length);
 			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.InstallDialog.ui", null);
-			InstallDialog dlg = new InstallDialog (service, builder, builder.GetObject ("window1").Handle);
+			InstallDialog dlg = new InstallDialog (service, builder, builder.GetObject ("InstallDialog").Handle);
 			try {
 				dlg.InitForInstall (entries);
 				if (dlg.Run () == (int) Gtk.ResponseType.Ok)

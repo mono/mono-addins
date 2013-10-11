@@ -97,6 +97,12 @@ namespace Mono.Addins.GuiGtk3
 			hb.Replace (boxHeader);
 			topHeaderBox = hb;
 
+			//Enable our buttons for clicking
+			btnDisable.Clicked += OnBtnDisableClicked;
+			btnInstall.Clicked += OnBtnInstallClicked;
+			btnUninstall.Clicked += OnBtnUninstallClicked;
+			btnUpdate.Clicked += OnBtnUpdateClicked;
+
 			ShowAll ();
 		}
 		

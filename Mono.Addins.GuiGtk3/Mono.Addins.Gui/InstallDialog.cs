@@ -39,7 +39,7 @@ namespace Mono.Addins.GuiGtk3
 	internal class InstallDialog : Gtk.Dialog
 	{
 		//From UI File
-		[UI] VBox boxProgress;
+		[UI] Box boxProgress;
 		[UI] Button buttonOk;
 		[UI] Label labelInfo;
 		[UI] ScrolledWindow scrolledwindow1;

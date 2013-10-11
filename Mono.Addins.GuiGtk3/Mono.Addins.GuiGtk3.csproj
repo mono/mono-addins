@@ -140,10 +140,7 @@
     <EmbeddedResource Include="icons\web.png">
       <LogicalName>icons.web.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="interfaces\AddinInstallerDialog.ui" />
     <EmbeddedResource Include="interfaces\ErrorDialog.ui" />
-    <EmbeddedResource Include="interfaces\InstallDialog.ui" />
-    <EmbeddedResource Include="interfaces\ManageSitesDialog.ui" />
     <EmbeddedResource Include="interfaces\NewSiteDialog.ui" />
     <EmbeddedResource Include="interfaces\ProgressDialog.ui" />
     <EmbeddedResource Include="interfaces\AddinManagerDialog.ui.xml">
@@ -151,6 +148,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="interfaces\AddinInfoView.ui.xml">
       <LogicalName>Mono.Addins.GuiGtk3.interfaces.AddinInfoView.ui</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="interfaces\AddinInstallerDialog.ui.xml">
+      <LogicalName>Mono.Addins.GuiGtk3.interfaces.AddinInstallerDialog.ui</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="interfaces\ManageSitesDialog.ui.xml">
+      <LogicalName>Mono.Addins.GuiGtk3.interfaces.ManageSitesDialog.ui</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="interfaces\InstallDialog.ui.xml">
+      <LogicalName>Mono.Addins.GuiGtk3.interfaces.InstallDialog.ui</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
