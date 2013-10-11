@@ -39,7 +39,7 @@ namespace GuiTester
 
 			AddinManagerWindow.AllowInstall = false;
 			Gtk.Window win = new Gtk.Window (Gtk.WindowType.Toplevel);
-			win.Show ();
+//			win.Show ();
 
 			AddinManagerWindow.Run (win);
 

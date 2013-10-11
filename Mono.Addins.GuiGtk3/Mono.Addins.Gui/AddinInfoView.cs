@@ -55,7 +55,7 @@ namespace Mono.Addins.GuiGtk3
 		[UI] Label labelVersion;
 		[UI] EventBox ebox;
 		[UI] EventBox ebox2;
-		[UI] VBox vboxDesc;
+		[UI] Box vboxDesc;
 		[UI] ScrolledWindow scrolledwindow;
 
 		List<AddinRepositoryEntry> selectedEntry = new List<AddinRepositoryEntry> ();

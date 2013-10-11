@@ -80,8 +80,12 @@
     <Compile Include="Mono.Addins.Gui\Services.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="icons\download.png" />
-    <EmbeddedResource Include="icons\installed-overlay.png" />
+    <EmbeddedResource Include="icons\download.png">
+      <LogicalName>download.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\installed-overlay.png">
+      <LogicalName>installed-overlay.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\package-x-generic.png" />
     <EmbeddedResource Include="icons\package-x-generic_16.png" />
     <EmbeddedResource Include="icons\package-x-generic_22.png" />

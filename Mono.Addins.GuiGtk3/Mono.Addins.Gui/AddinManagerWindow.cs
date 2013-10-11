@@ -54,7 +54,7 @@ namespace Mono.Addins.GuiGtk3
 		{
 			
 			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.AddinManagerDialog.ui", null);
-			AddinManagerDialog dlg = new AddinManagerDialog (builder, builder.GetObject ("window1").Handle);
+			AddinManagerDialog dlg = new AddinManagerDialog (builder, builder.GetObject ("AddinManagerDialog").Handle);
 			InitDialog (dlg);
 			parent.Add (dlg);
 			dlg.Show ();
