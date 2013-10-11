@@ -72,9 +72,11 @@ namespace Mono.Addins.GuiGtk3
 		public event EventHandler UpdateClicked;
 		public event EventHandler EnableDisableClicked;
 		
-		public AddinInfoView (Builder builder, IntPtr handle): base (handle)
+		public AddinInfoView ()
 		{
+			Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.AddinInfoView.ui", null);
 			builder.Autoconnect (this);
+			Add ((Box) builder.GetObject ("AddinInfoView"));
 			AllowInstall = true;
 			titleWidth = labelName.SizeRequest ().Width;
 			
@@ -94,6 +96,8 @@ namespace Mono.Addins.GuiGtk3
 			hb.GradientBackround = true;
 			hb.Replace (boxHeader);
 			topHeaderBox = hb;
+
+			ShowAll ();
 		}
 		
 		public void Init (SetupService service)

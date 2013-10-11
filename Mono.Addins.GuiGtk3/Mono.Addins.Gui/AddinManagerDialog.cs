@@ -55,8 +55,12 @@ namespace Mono.Addins.GuiGtk3
 		[UI] Label labelUpdates;
 		[UI] Button buttonUpdateAll;
 		[UI] Notebook notebook;
+		[UI] EventBox eventbox1;
+		[UI] EventBox eventbox2;
+		[UI] EventBox eventbox3;
+
 		//Manually fill in from the UI File
-		AddinInfoView addininfoInstalled; //TODO: Might need to init manually
+		AddinInfoView addininfoInstalled;
 		AddinInfoView addininfoGallery;
 		AddinInfoView addininfoUpdates;
 
@@ -89,12 +93,12 @@ namespace Mono.Addins.GuiGtk3
 			builder.Autoconnect (this);
 //			TransientFor = parent;
 //			HasSeparator = false;
-			builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.AddinInfoView.ui", null);
-			addininfoInstalled = new AddinInfoView (builder, builder.GetObject ("AddinInfoView").Handle);
-			builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.AddinInfoView.ui", null);
-			addininfoGallery = new AddinInfoView (builder, builder.GetObject ("AddinInfoView").Handle);
-			builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.AddinInfoView.ui", null);
-			addininfoUpdates = new AddinInfoView (builder, builder.GetObject ("AddinInfoView").Handle);
+			addininfoInstalled = new AddinInfoView ();
+			eventbox2.Child = addininfoInstalled;
+			addininfoGallery = new AddinInfoView ();
+			eventbox1.Child = addininfoGallery;
+			addininfoUpdates = new AddinInfoView ();
+			eventbox3.Child = addininfoUpdates;
 
 //			Services.PlaceDialog (this, parent);
 			Show ();
@@ -181,6 +185,8 @@ namespace Mono.Addins.GuiGtk3
 			repoCombo.Active = 0;
 			
 			LoadAll ();
+
+			ShowAll ();
 		}
 		
 		void InsertFilterEntry ()
