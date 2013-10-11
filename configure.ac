@@ -47,13 +47,6 @@ AC_ARG_ENABLE(gui,
 
 AM_CONDITIONAL(ENABLE_GUI, test x$enable_gui = xyes)
 
-AC_ARG_ENABLE(gui_gtk3,
-	AC_HELP_STRING([--enable-gui-gtk3],
-		[enable support for GTK3 dependent libraries [default=no]]),
-		enable_gui_gtk3=${enableval}, enable_gui_gtk3=no)
-
-AM_CONDITIONAL(ENABLE_GUI_GTK3, test x$enable_gui_gtk3 = xyes)
-
 AC_ARG_ENABLE(tests,
 	AC_HELP_STRING([--enable-tests],
 		[build unit tests [default=no]]),
@@ -70,10 +63,6 @@ AM_CONDITIONAL(ENABLE_DOCS, test x$enable_docs = xyes)
 
 if test "x$enable_gui" = "xyes"; then
 	PKG_CHECK_MODULES([GTK_SHARP_20], [gtk-sharp-2.0])
-fi
-
-if test "x$enable_gui_gtk3" = "xyes"; then
-	PKG_CHECK_MODULES([GTK_SHARP_30], [gtk-sharp-3.0 >= 2.99])
 fi
 
 if test "x$enable_tests" = "xyes"; then
@@ -128,8 +117,7 @@ echo ""
 echo "Configuration summary"
 echo ""
 echo "   * Installation prefix = $prefix"
-echo "   * GTK2 gui support: $enable_gui"
-echo "   * GTK3 gui support: $enable_gui_gtk3"
+echo "   * gui support: $enable_gui"
 echo "   * unit tests: $enable_tests"
 echo "   * documentation: $enable_docs"
 echo ""
