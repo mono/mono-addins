@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Gtk;
-using Mono.Addins.Gui;
+using Mono.Addins.GuiGtk3;
 using Mono.Addins;
 
 namespace GuiTester
@@ -40,8 +40,6 @@ namespace GuiTester
 			AddinManagerWindow.AllowInstall = false;
 			Gtk.Window win = new Gtk.Window (Gtk.WindowType.Toplevel);
 			win.Show ();
-
-
 
 			AddinManagerWindow.Run (win);
 
