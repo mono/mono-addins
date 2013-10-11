@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface><!-- interface-requires gtk+ 3.0 -->
+   <object class="GtkDialog" id="AddinManagerDialog">
+      <property name="member_name"/>
+      <property name="visible">False</property>
+      <property name="generate_public">False</property>
+      <property name="title" translatable="yes">Add-in Manager</property>
+      <property name="type_hint">Dialog</property>
+      <property name="border_width">6</property>
+      <property name="default_width">700</property>
+      <property name="default_height">550</property>
+      <property name="buttons">2</property>
+      <property name="help_button">False</property>
+      <child internal-child="vbox">
+         <object class="GtkBox" id="dialog-vbox8">
+            <property name="orientation">vertical</property>
+            <property name="member_name"/>
+            <property name="spacing">3</property>
+            <property name="border_width">2</property>
+            <child>
+               <object class="GtkBox" id="vbox93">
+                  <property name="orientation">vertical</property>
+                  <property name="member_name"/>
+                  <property name="spacing">6</property>
+                  <property name="border_width">6</property>
+                  <child>
+                     <object class="GtkHBox" id="hbox65">
+                        <property name="member_name"/>
+                        <property name="spacing">12</property>
+                        <child>
+                           <object class="GtkHBox" id="hbox72">
+                              <property name="member_name"/>
+                              <property name="spacing">12</property>
+                              <child>
+                                 <object class="GtkNotebook" id="notebook">
+                                    <property name="member_name"/>
+                                    <property name="can_focus">True</property>
+                                    <property name="current_page">0</property>
+                                    <property name="show_border">False</property>
+                                    <child>
+                                       <object class="GtkHBox" id="hbox2">
+                                          <property name="member_name"/>
+                                          <property name="spacing">9</property>
+                                          <property name="border_width">9</property>
+                                          <child>
+                                             <object class="GtkBox" id="vbox6">
+                                                <property name="orientation">vertical</property>
+                                                <property name="member_name"/>
+                                                <property name="spacing">6</property>
+                                                <child>
+                                                   <object class="GtkScrolledWindow" id="scrolledwindow13">
+                                                      <property name="member_name"/>
+                                                      <property name="can_focus">True</property>
+                                                      <property name="shadow_type">In</property>
+                                                      <child>
+                                                         <object class="GtkTreeView" id="addinTree">
+                                                            <property name="member_name"/>
+                                                            <property name="can_focus">True</property>
+                                                         </object>
+                                                      </child>
+                                                   </object>
+                                                   <packing>
+                                                      <property name="position">0</property>
+                                                      <property name="auto_size">True</property>
+                                                   </packing>
+                                                </child>
+                                             </object>
+                                             <packing>
+                                                <property name="position">0</property>
+                                                <property name="auto_size">True</property>
+                                             </packing>
+                                          </child>
+                                          <child>
+                                             <object class="GtkEventBox" id="eventbox2">
+                                                <property name="member_name"/>
+                                                <child>
+                                                   <object class="MonoAddinsGuiAddinInfoView" id="addininfoInstalled">
+                                                      <property name="member_name"/>
+                                                      <property name="events">ButtonPressMask</property>
+                                                      <property name="allow_install">False</property>
+                                                      <signal name="InstallClicked" handler="OnInstallClicked" swapped="no"/>
+                                                      <signal name="UninstallClicked" handler="OnUninstallClicked" swapped="no"/>
+                                                      <signal name="UpdateClicked" handler="OnUpdateClicked" swapped="no"/>
+                                                      <signal name="EnableDisableClicked"
+                                                              handler="OnEnableDisableClicked"
+                                                              swapped="no"/>
+                                                   </object>
+                                                </child>
+                                             </object>
+                                             <packing>
+                                                <property name="position">1</property>
+                                                <property name="auto_size">True</property>
+                                                <property name="expand">False</property>
+                                                <property name="fill">False</property>
+                                             </packing>
+                                          </child>
+                                       </object>
+                                    </child>
+                                    <child>
+                                       <object class="GtkLabel" id="label7">
+                                          <property name="member_name"/>
+                                          <property name="label" translatable="yes">Installed</property>
+                                       </object>
+                                       <packing>
+                                          <property name="type">tab</property>
+                                       </packing>
+                                    </child>
+                                    <child>
+                                       <object class="GtkHBox" id="boxUpdates">
+                                          <property name="member_name"/>
+                                          <property name="spacing">9</property>
+                                          <property name="border_width">9</property>
+                                          <child>
+                                             <object class="GtkBox" id="vboxUpdates">
+                                                <property name="orientation">vertical</property>
+                                                <property name="member_name"/>
+                                                <child>
+                                                   <object class="GtkEventBox" id="eboxRepoUpdates">
+                                                      <property name="member_name"/>
+                                                      <child>
+                                                         <object class="GtkHBox" id="hbox67">
+                                                            <property name="member_name"/>
+                                                            <property name="spacing">6</property>
+                                                            <child>
+                                                               <object class="GtkLabel" id="labelUpdates">
+                                                                  <property name="member_name"/>
+                                                                  <property name="label" translatable="yes">No updates found</property>
+                                                               </object>
+                                                               <packing>
+                                                                  <property name="position">0</property>
+                                                                  <property name="auto_size">False</property>
+                                                                  <property name="expand">False</property>
+                                                                  <property name="fill">False</property>
+                                                               </packing>
+                                                            </child>
+                                                            <child>
+                                                               <object class="GtkButton" id="buttonRefreshUpdates">
+                                                                  <property name="member_name"/>
+                                                                  <property name="can_focus">True</property>
+                                                                  <property name="type">TextAndIcon</property>
+                                                                  <property name="icon">stock:gtk-refresh Menu</property>
+                                                                  <property name="label" translatable="yes">Refresh</property>
+                                                                  <property name="use_underline">True</property>
+                                                                  <property name="relief">None</property>
+                                                                  <signal name="Clicked" handler="OnButtonRefreshClicked" swapped="no"/>
+                                                               </object>
+                                                               <packing>
+                                                                  <property name="pack_type">End</property>
+                                                                  <property name="position">1</property>
+                                                                  <property name="auto_size">False</property>
+                                                                  <property name="expand">False</property>
+                                                                  <property name="fill">False</property>
+                                                               </packing>
+                                                            </child>
+                                                            <child>
+                                                               <object class="GtkButton" id="buttonUpdateAll">
+                                                                  <property name="member_name"/>
+                                                                  <property name="can_focus">True</property>
+                                                                  <property name="type">TextAndIcon</property>
+                                                                  <property name="icon">resource:download.png</property>
+                                                                  <property name="label" translatable="yes">Update All</property>
+                                                                  <property name="use_underline">True</property>
+                                                                  <property name="relief">None</property>
+                                                                  <signal name="Clicked" handler="OnUpdateAll" swapped="no"/>
+                                                               </object>
+                                                               <packing>
+                                                                  <property name="pack_type">End</property>
+                                                                  <property name="position">2</property>
+                                                                  <property name="auto_size">True</property>
+                                                                  <property name="expand">False</property>
+                                                                  <property name="fill">False</property>
+                                                               </packing>
+                                                            </child>
+                                                         </object>
+                                                      </child>
+                                                   </object>
+                                                   <packing>
+                                                      <property name="position">0</property>
+                                                      <property name="auto_size">True</property>
+                                                      <property name="expand">False</property>
+                                                      <property name="fill">False</property>
+                                                   </packing>
+                                                </child>
+                                                <child>
+                                                   <object class="GtkScrolledWindow" id="scrolledUpdates">
+                                                      <property name="member_name"/>
+                                                      <property name="can_focus">True</property>
+                                                      <property name="shadow_type">In</property>
+                                                      <child>
+                                                         <object class="GtkTreeView" id="updatesTreeView">
+                                                            <property name="member_name"/>
+                                                            <property name="can_focus">True</property>
+                                                         </object>
+                                                      </child>
+                                                   </object>
+                                                   <packing>
+                                                      <property name="position">1</property>
+                                                      <property name="auto_size">True</property>
+                                                   </packing>
+                                                </child>
+                                             </object>
+                                             <packing>
+                                                <property name="position">0</property>
+                                                <property name="auto_size">False</property>
+                                             </packing>
+                                          </child>
+                                          <child>
+                                             <object class="GtkEventBox" id="eventbox3">
+                                                <property name="member_name"/>
+                                                <child>
+                                                   <object class="MonoAddinsGuiAddinInfoView" id="addininfoUpdates">
+                                                      <property name="member_name"/>
+                                                      <property name="events">ButtonPressMask</property>
+                                                      <property name="allow_install">False</property>
+                                                      <signal name="InstallClicked" handler="OnInstallClicked" swapped="no"/>
+                                                      <signal name="UninstallClicked" handler="OnUninstallClicked" swapped="no"/>
+                                                      <signal name="UpdateClicked" handler="OnUpdateClicked" swapped="no"/>
+                                                      <signal name="EnableDisableClicked"
+                                                              handler="OnEnableDisableClicked"
+                                                              swapped="no"/>
+                                                   </object>
+                                                </child>
+                                             </object>
+                                             <packing>
+                                                <property name="position">1</property>
+                                                <property name="auto_size">True</property>
+                                                <property name="expand">False</property>
+                                                <property name="fill">False</property>
+                                             </packing>
+                                          </child>
+                                       </object>
+                                       <packing>
+                                          <property name="position">1</property>
+                                       </packing>
+                                    </child>
+                                    <child>
+                                       <object class="GtkLabel" id="label4">
+                                          <property name="member_name"/>
+                                          <property name="label" translatable="yes">Updates</property>
+                                       </object>
+                                       <packing>
+                                          <property name="type">tab</property>
+                                       </packing>
+                                    </child>
+                                    <child>
+                                       <object class="GtkHBox" id="hbox6">
+                                          <property name="member_name"/>
+                                          <property name="spacing">9</property>
+                                          <property name="border_width">9</property>
+                                          <child>
+                                             <object class="GtkBox" id="vboxGallery">
+                                                <property name="orientation">vertical</property>
+                                                <property name="member_name"/>
+                                                <child>
+                                                   <object class="GtkEventBox" id="eboxRepo">
+                                                      <property name="member_name"/>
+                                                      <child>
+                                                         <object class="GtkHBox" id="hbox66">
+                                                            <property name="member_name"/>
+                                                            <property name="spacing">6</property>
+                                                            <child>
+                                                               <object class="GtkLabel" id="label112">
+                                                                  <property name="member_name"/>
+                                                                  <property name="label" translatable="yes">Repository:</property>
+                                                               </object>
+                                                               <packing>
+                                                                  <property name="position">0</property>
+                                                                  <property name="auto_size">False</property>
+                                                                  <property name="expand">False</property>
+                                                                  <property name="fill">False</property>
+                                                               </packing>
+                                                            </child>
+                                                            <child>
+                                                               <object class="GtkComboBox" id="repoCombo">
+                                                                  <property name="member_name"/>
+                                                                  <property name="is_text_combo">False</property>
+                                                                  <property name="items" translatable="yes"/>
+                                                                  <signal name="Changed" handler="OnRepoComboChanged" swapped="no"/>
+                                                               </object>
+                                                               <packing>
+                                                                  <property name="position">1</property>
+                                                                  <property name="auto_size">False</property>
+                                                               </packing>
+                                                            </child>
+                                                            <child>
+                                                               <object class="GtkButton" id="buttonRefresh">
+                                                                  <property name="member_name"/>
+                                                                  <property name="can_focus">True</property>
+                                                                  <property name="type">TextAndIcon</property>
+                                                                  <property name="icon">stock:gtk-refresh Menu</property>
+                                                                  <property name="label" translatable="yes"/>
+                                                                  <property name="use_underline">True</property>
+                                                                  <property name="relief">None</property>
+                                                                  <signal name="Clicked" handler="OnButtonRefreshClicked" swapped="no"/>
+                                                               </object>
+                                                               <packing>
+                                                                  <property name="position">2</property>
+                                                                  <property name="auto_size">False</property>
+                                                                  <property name="expand">False</property>
+                                                                  <property name="fill">False</property>
+                                                               </packing>
+                                                            </child>
+                                                         </object>
+                                                      </child>
+                                                   </object>
+                                                   <packing>
+                                                      <property name="position">0</property>
+                                                      <property name="auto_size">True</property>
+                                                      <property name="expand">False</property>
+                                                      <property name="fill">False</property>
+                                                   </packing>
+                                                </child>
+                                                <child>
+                                                   <object class="GtkScrolledWindow" id="scrolledGallery">
+                                                      <property name="member_name"/>
+                                                      <property name="can_focus">True</property>
+                                                      <property name="shadow_type">In</property>
+                                                      <child>
+                                                         <object class="GtkTreeView" id="galleryTreeView">
+                                                            <property name="member_name"/>
+                                                            <property name="can_focus">True</property>
+                                                         </object>
+                                                      </child>
+                                                   </object>
+                                                   <packing>
+                                                      <property name="position">1</property>
+                                                      <property name="auto_size">True</property>
+                                                   </packing>
+                                                </child>
+                                             </object>
+                                             <packing>
+                                                <property name="position">0</property>
+                                                <property name="auto_size">False</property>
+                                             </packing>
+                                          </child>
+                                          <child>
+                                             <object class="GtkEventBox" id="eventbox1">
+                                                <property name="member_name"/>
+                                                <child>
+                                                   <object class="MonoAddinsGuiAddinInfoView" id="addininfoGallery">
+                                                      <property name="member_name"/>
+                                                      <property name="events">ButtonPressMask</property>
+                                                      <property name="allow_install">False</property>
+                                                      <signal name="InstallClicked" handler="OnInstallClicked" swapped="no"/>
+                                                      <signal name="UninstallClicked" handler="OnUninstallClicked" swapped="no"/>
+                                                      <signal name="UpdateClicked" handler="OnUpdateClicked" swapped="no"/>
+                                                      <signal name="EnableDisableClicked"
+                                                              handler="OnEnableDisableClicked"
+                                                              swapped="no"/>
+                                                   </object>
+                                                </child>
+                                             </object>
+                                             <packing>
+                                                <property name="position">1</property>
+                                                <property name="auto_size">True</property>
+                                                <property name="expand">False</property>
+                                                <property name="fill">False</property>
+                                             </packing>
+                                          </child>
+                                       </object>
+                                       <packing>
+                                          <property name="position">2</property>
+                                       </packing>
+                                    </child>
+                                    <child>
+                                       <object class="GtkLabel" id="label8">
+                                          <property name="member_name"/>
+                                          <property name="label" translatable="yes">Gallery</property>
+                                       </object>
+                                       <packing>
+                                          <property name="type">tab</property>
+                                       </packing>
+                                    </child>
+                                 </object>
+                                 <packing>
+                                    <property name="position">0</property>
+                                    <property name="auto_size">True</property>
+                                 </packing>
+                              </child>
+                           </object>
+                           <packing>
+                              <property name="position">0</property>
+                              <property name="auto_size">False</property>
+                           </packing>
+                        </child>
+                     </object>
+                     <packing>
+                        <property name="position">0</property>
+                        <property name="auto_size">False</property>
+                     </packing>
+                  </child>
+               </object>
+               <packing>
+                  <property name="position">0</property>
+                  <property name="auto_size">False</property>
+               </packing>
+            </child>
+         </object>
+      </child>
+      <child internal-child="&#xA;                           action_area&#xA;                        ">
+         <object class="GtkHButtonBox" id="dialog-action_area8">
+            <property name="member_name"/>
+            <property name="spacing">6</property>
+            <property name="border_width">5</property>
+            <property name="size">2</property>
+            <property name="layout_style">Edge</property>
+            <child>
+               <object class="GtkButton" id="buttonInstallFromFile">
+                  <property name="member_name"/>
+                  <property name="can_focus">True</property>
+                  <property name="type">TextOnly</property>
+                  <property name="label" translatable="yes">Install from file...</property>
+                  <property name="use_underline">True</property>
+                  <property name="response_id">-1</property>
+                  <signal name="Clicked"
+                          handler="OnButtonInstallFromFileClicked"
+                          swapped="no"/>
+               </object>
+               <packing>
+                  <property name="expand">False</property>
+                  <property name="fill">False</property>
+               </packing>
+            </child>
+            <child>
+               <object class="GtkButton" id="btnClose">
+                  <property name="member_name"/>
+                  <property name="can_default">True</property>
+                  <property name="can_focus">True</property>
+                  <property name="use_stock">True</property>
+                  <property name="type">StockItem</property>
+                  <property name="stock_id">gtk-close</property>
+                  <property name="response_id">-7</property>
+                  <property name="label">gtk-close</property>
+               </object>
+               <packing>
+                  <property name="position">1</property>
+                  <property name="expand">False</property>
+                  <property name="fill">False</property>
+               </packing>
+            </child>
+         </object>
+      </child>
+   </object>
+</interface>
