@@ -44,6 +44,7 @@ namespace Mono.Addins.GuiGtk3
 		//From UI File
 		[UI] TreeView repoTree;
 		[UI] Button btnRemove;
+		[UI] Button btnAdd;
 
 		ListStore treeStore;
 		SetupService service;
@@ -68,6 +69,12 @@ namespace Mono.Addins.GuiGtk3
 				AppendRepository (rep);
 
 			btnRemove.Sensitive = false;
+
+			//Wire buttons
+			btnRemove.Clicked += OnRemove;
+			btnAdd.Clicked += OnAdd;
+
+			ShowAll ();
 		}
 
 //		public override void Dispose ()
@@ -85,7 +92,7 @@ namespace Mono.Addins.GuiGtk3
 		protected void OnAdd (object sender, EventArgs e)
 		{
 			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.NewSiteDialog.ui", null);
-			NewSiteDialog dlg = new NewSiteDialog (builder, builder.GetObject ("window1").Handle);
+			NewSiteDialog dlg = new NewSiteDialog (builder, builder.GetObject ("NewSiteDialog").Handle);
 			try {
 				if (dlg.Run ()) {
 					string url = dlg.Url;
@@ -101,7 +108,7 @@ namespace Mono.Addins.GuiGtk3
 					
 					if (!service.Repositories.ContainsRepository (url)) {
 						builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.ProgressDialog.ui", null);
-						ProgressDialog pdlg = new ProgressDialog (builder, builder.GetObject ("window1").Handle);
+						ProgressDialog pdlg = new ProgressDialog (builder, builder.GetObject ("ProgressDialog").Handle);
 						pdlg.Show ();
 						pdlg.SetMessage (AddinManager.CurrentLocalizer.GetString ("Registering repository"));
 						

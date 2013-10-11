@@ -39,6 +39,8 @@ namespace Mono.Addins.GuiGtk3
 		[UI] Entry pathEntry;
 		[UI] Entry urlText;
 		[UI] RadioButton btnOnlineRep;
+		[UI] RadioButton btnLocalRep;
+		[UI] Button buttonBrowse;
 		[UI] Button btnOk;
 
 		public NewSiteDialog (Builder builder, IntPtr handle): base (handle)
@@ -48,6 +50,13 @@ namespace Mono.Addins.GuiGtk3
 //			Services.PlaceDialog (this, parent);
 			pathEntry.Sensitive = false;
 			CheckValues ();
+
+			//Wire buttons
+			buttonBrowse.Clicked += OnButtonBrowseClicked;
+			pathEntry.Changed += OnPathEntryChanged;
+			urlText.Changed += OnUrlTextChanged;
+
+			ShowAll ();
 		}
 		
 //		public override void Dispose ()

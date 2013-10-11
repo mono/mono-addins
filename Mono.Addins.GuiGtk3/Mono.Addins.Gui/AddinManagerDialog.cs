@@ -144,6 +144,7 @@ namespace Mono.Addins.GuiGtk3
 			buttonRefreshUpdates.Clicked += OnButtonRefreshClicked;
 			buttonRefresh.Clicked += OnButtonRefreshClicked;
 			buttonInstallFromFile.Clicked += OnButtonInstallFromFileClicked;
+			repoCombo.Changed += OnRepoComboChanged;
 			
 			repoStore = new ListStore (typeof(string), typeof(string));
 			repoCombo.Model = repoStore;
@@ -445,7 +446,7 @@ namespace Mono.Addins.GuiGtk3
 		void ManageSites ()
 		{
 			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.ManageSitesDialog.ui", null);
-			ManageSitesDialog dlg = new ManageSitesDialog (service, builder, builder.GetObject ("window1").Handle);
+			ManageSitesDialog dlg = new ManageSitesDialog (service, builder, builder.GetObject ("ManageSitesDialog").Handle);
 			try {
 				dlg.Run ();
 				repoCombo.Active = lastRepoActive;

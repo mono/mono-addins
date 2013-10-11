@@ -57,8 +57,8 @@ namespace Mono.Addins.GuiGtk3
 		
 		public static void ShowError (Exception ex, string message, Window parent, bool modal)
 		{
-			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.AddinManagerDialog.ui", null);
-			ErrorDialog dlg = new ErrorDialog (builder, builder.GetObject ("window1").Handle);
+			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.ErrorDialog.ui", null);
+			ErrorDialog dlg = new ErrorDialog (builder, builder.GetObject ("ErrorDialog").Handle);
 			
 			if (message == null) {
 				if (ex != null)

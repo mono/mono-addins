@@ -140,8 +140,6 @@
     <EmbeddedResource Include="icons\web.png">
       <LogicalName>icons.web.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="interfaces\ErrorDialog.ui" />
-    <EmbeddedResource Include="interfaces\NewSiteDialog.ui" />
     <EmbeddedResource Include="interfaces\AddinManagerDialog.ui.xml">
       <LogicalName>Mono.Addins.GuiGtk3.interfaces.AddinManagerDialog.ui</LogicalName>
     </EmbeddedResource>
@@ -159,6 +157,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="interfaces\ProgressDialog.ui.xml">
       <LogicalName>Mono.Addins.GuiGtk3.interfaces.ProgressDialog.ui</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="interfaces\NewSiteDialog.ui.xml">
+      <LogicalName>Mono.Addins.GuiGtk3.interfaces.NewSiteDialog.ui</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="interfaces\ErrorDialog.ui.xml">
+      <LogicalName>Mono.Addins.GuiGtk3.interfaces.ErrorDialog.ui</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

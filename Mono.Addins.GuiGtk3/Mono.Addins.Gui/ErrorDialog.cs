@@ -60,6 +60,8 @@ namespace Mono.Addins.GuiGtk3
 			detailsTextView.Buffer.TagTable.Add (tagWrap);
 			
 			expander.Visible = false;
+
+			ShowAll ();
 		}
 		
 		public string Message {
