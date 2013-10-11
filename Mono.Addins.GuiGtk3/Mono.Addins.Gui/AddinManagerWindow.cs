@@ -61,15 +61,16 @@ namespace Mono.Addins.GuiGtk3
 			return dlg;
 		}
 		
-//		public static void Run (Gtk.Window parent)
-//		{
-//			AddinManagerDialog dlg = new AddinManagerDialog (parent);
-//			try {
-//				InitDialog (dlg);
-//				dlg.Run ();
-//			} finally {
-//				dlg.Destroy ();
-//			}
-//		}
+		public static void Run (Gtk.Window parent)
+		{
+			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.AddinManagerDialog.ui", null);
+			AddinManagerDialog dlg = new AddinManagerDialog (builder, builder.GetObject ("window1").Handle);
+			try {
+				InitDialog (dlg);
+				dlg.Run ();
+			} finally {
+				dlg.Destroy ();
+			}
+		}
 	}
 }
