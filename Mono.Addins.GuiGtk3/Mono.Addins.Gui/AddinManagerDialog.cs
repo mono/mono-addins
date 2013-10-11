@@ -56,6 +56,7 @@ namespace Mono.Addins.GuiGtk3
 		[UI] Button buttonUpdateAll;
 		[UI] Button buttonRefreshUpdates;
 		[UI] Button buttonRefresh;
+		[UI] Button buttonInstallFromFile;
 		[UI] Notebook notebook;
 		[UI] EventBox eventbox1;
 		[UI] EventBox eventbox2;
@@ -142,6 +143,7 @@ namespace Mono.Addins.GuiGtk3
 			buttonUpdateAll.Clicked += OnUpdateAll;
 			buttonRefreshUpdates.Clicked += OnButtonRefreshClicked;
 			buttonRefresh.Clicked += OnButtonRefreshClicked;
+			buttonInstallFromFile.Clicked += OnButtonInstallFromFileClicked;
 			
 			repoStore = new ListStore (typeof(string), typeof(string));
 			repoCombo.Model = repoStore;
@@ -599,7 +601,7 @@ namespace Mono.Addins.GuiGtk3
 			}
 			
 			Gtk.Builder builder = new Gtk.Builder (null, "Mono.Addins.GuiGtk3.interfaces.InstallDialog.ui", null);
-			InstallDialog idlg = new InstallDialog (service, builder, builder.GetObject ("window1").Handle);
+			InstallDialog idlg = new InstallDialog (service, builder, builder.GetObject ("InstallDialog").Handle);
 			try {
 				idlg.InitForInstall (files);
 				if (idlg.Run () == (int) Gtk.ResponseType.Ok)
