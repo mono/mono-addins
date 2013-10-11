@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptionalModule", "Test\Mult
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuiTester", "Test\GuiTester\GuiTester.csproj", "{87331208-C6EA-4F1E-99A6-595778EFA39E}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "docs", "docs\docs.mdproj", "{87EADEFB-B389-4479-9C36-CDAA07839983}"
+Project("{9344bdbb-3e7f-41fc-a0dd-8665d75ee146}") = "docs", "docs\docs.mdproj", "{87EADEFB-B389-4479-9C36-CDAA07839983}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Addins.Setup", "Mono.Addins.Setup\Mono.Addins.Setup.csproj", "{A85C9721-C054-4BD8-A1F3-0227615F0A36}"
 EndProject

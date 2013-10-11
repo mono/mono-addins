@@ -9,39 +9,30 @@
     <AssemblyName>Mono.Addins.Setup</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>Mono.Addins.Setup</RootNamespace>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>..\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <ConsolePause>false</ConsolePause>
-    <GenerateDocumentation>true</GenerateDocumentation>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <ConsolePause>False</ConsolePause>
+    <GenerateDocumentation>True</GenerateDocumentation>
     <NoWarn>1574</NoWarn>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>..\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <ConsolePause>false</ConsolePause>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugGTK3|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\DebugGTK3</OutputPath>
-    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib" />

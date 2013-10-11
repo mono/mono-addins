@@ -9,34 +9,26 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Addins.MSBuild</AssemblyName>
     <RootNamespace>Mono.Addins.MSBuild</RootNamespace>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>..\bin</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
+    <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>..\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugGTK3|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\DebugGTK3</OutputPath>
-    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
