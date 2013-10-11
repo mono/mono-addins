@@ -1,163 +1,154 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<interface><!-- interface-requires gtk+ 3.0 -->
-   <object class="GtkDialog" id="InstallDialog">
-      <property name="member_name"/>
-      <property name="visible">False</property>
-      <property name="generate_public">False</property>
-      <property name="window_position">CenterOnParent</property>
-      <property name="buttons">2</property>
-      <property name="help_button">False</property>
-      <child internal-child="vbox">
-         <object class="GtkBox" id="dialog1_VBox">
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkDialog" id="InstallDialog">
+    <property name="can_focus">False</property>
+    <property name="type_hint">normal</property>
+    <child internal-child="vbox">
+      <object class="GtkBox" id="dialog1_VBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkBox" id="vbox3">
+            <property name="can_focus">False</property>
+            <property name="border_width">9</property>
             <property name="orientation">vertical</property>
-            <property name="member_name"/>
-            <property name="border_width">2</property>
+            <property name="spacing">9</property>
             <child>
-               <object class="GtkBox" id="vbox3">
-                  <property name="orientation">vertical</property>
-                  <property name="member_name"/>
-                  <property name="spacing">9</property>
-                  <property name="border_width">9</property>
-                  <child>
-                     <object class="GtkScrolledWindow" id="scrolledwindow1">
-                        <property name="member_name"/>
-                        <property name="can_focus">True</property>
-                        <property name="vscrollbar_policy">Never</property>
-                        <property name="hscrollbar_policy">Never</property>
-                        <child>
-                           <object class="GtkViewport" id="GtkViewport">
-                              <property name="member_name"/>
-                              <property name="shadow_type">None</property>
-                              <child>
-                                 <object class="GtkBox" id="vbox4">
-                                    <property name="orientation">vertical</property>
-                                    <property name="member_name"/>
-                                    <property name="spacing">6</property>
-                                    <child>
-                                       <object class="GtkLabel" id="labelInfo">
-                                          <property name="member_name"/>
-                                          <property name="width_request">400</property>
-                                          <property name="xalign">0</property>
-                                          <property name="yalign">0</property>
-                                          <property name="label" translatable="yes">label3</property>
-                                          <property name="wrap">True</property>
-                                       </object>
-                                       <packing>
-                                          <property name="position">0</property>
-                                          <property name="auto_size">True</property>
-                                          <property name="expand">False</property>
-                                          <property name="fill">False</property>
-                                       </packing>
-                                    </child>
-                                 </object>
-                              </child>
-                           </object>
-                        </child>
-                     </object>
-                     <packing>
-                        <property name="position">0</property>
-                        <property name="auto_size">True</property>
-                     </packing>
-                  </child>
-                  <child>
-                     <object class="GtkHSeparator" id="insSeparator">
-                        <property name="member_name"/>
-                        <property name="visible">False</property>
-                     </object>
-                     <packing>
-                        <property name="position">1</property>
-                        <property name="auto_size">True</property>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                     </packing>
-                  </child>
-                  <child>
-                     <object class="GtkBox" id="boxProgress">
+              <object class="GtkScrolledWindow" id="scrolledwindow1">
+                <property name="can_focus">True</property>
+                <property name="hscrollbar_policy">always</property>
+                <property name="vscrollbar_policy">always</property>
+                <child>
+                  <object class="GtkViewport" id="GtkViewport">
+                    <property name="can_focus">False</property>
+                    <property name="shadow_type">none</property>
+                    <child>
+                      <object class="GtkBox" id="vbox4">
+                        <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
-                        <property name="member_name"/>
                         <property name="spacing">6</property>
                         <child>
-                           <object class="GtkLabel" id="globalProgressLabel">
-                              <property name="member_name"/>
-                              <property name="xalign">0</property>
-                              <property name="ellipsize">End</property>
-                           </object>
-                           <packing>
-                              <property name="position">0</property>
-                              <property name="auto_size">True</property>
-                              <property name="expand">False</property>
-                              <property name="fill">False</property>
-                           </packing>
+                          <object class="GtkLabel" id="labelInfo">
+                            <property name="width_request">400</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="yalign">0</property>
+                            <property name="label" translatable="yes">label3</property>
+                            <property name="wrap">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">0</property>
+                          </packing>
                         </child>
-                        <child>
-                           <object class="GtkProgressBar" id="mainProgressBar">
-                              <property name="member_name"/>
-                           </object>
-                           <packing>
-                              <property name="position">1</property>
-                              <property name="auto_size">True</property>
-                              <property name="expand">False</property>
-                              <property name="fill">False</property>
-                           </packing>
-                        </child>
-                     </object>
-                     <packing>
-                        <property name="position">2</property>
-                        <property name="auto_size">True</property>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                     </packing>
-                  </child>
-               </object>
-               <packing>
-                  <property name="position">0</property>
-                  <property name="auto_size">True</property>
-               </packing>
-            </child>
-         </object>
-      </child>
-      <child internal-child="&#xA;                           action_area&#xA;                        ">
-         <object class="GtkHButtonBox" id="dialog1_ActionArea">
-            <property name="member_name"/>
-            <property name="spacing">10</property>
-            <property name="border_width">5</property>
-            <property name="size">2</property>
-            <property name="layout_style">End</property>
-            <child>
-               <object class="GtkButton" id="buttonCancel">
-                  <property name="member_name"/>
-                  <property name="can_default">True</property>
-                  <property name="can_focus">True</property>
-                  <property name="use_stock">True</property>
-                  <property name="type">StockItem</property>
-                  <property name="stock_id">gtk-cancel</property>
-                  <property name="response_id">-1</property>
-                  <signal name="Clicked" handler="OnButtonCancelClicked" swapped="no"/>
-                  <property name="label">gtk-cancel</property>
-               </object>
-               <packing>
-                  <property name="expand">False</property>
-                  <property name="fill">False</property>
-               </packing>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
-               <object class="GtkButton" id="buttonOk">
-                  <property name="member_name"/>
-                  <property name="can_default">True</property>
-                  <property name="can_focus">True</property>
-                  <property name="type">TextOnly</property>
-                  <property name="label" translatable="yes">Install</property>
-                  <property name="use_underline">True</property>
-                  <property name="response_id">-1</property>
-                  <signal name="Clicked" handler="OnButtonOkClicked" swapped="no"/>
-               </object>
-               <packing>
-                  <property name="position">1</property>
-                  <property name="expand">False</property>
-                  <property name="fill">False</property>
-               </packing>
+              <object class="GtkHSeparator" id="insSeparator">
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
             </child>
-         </object>
-      </child>
-   </object>
+            <child>
+              <object class="GtkBox" id="boxProgress">
+                <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkLabel" id="globalProgressLabel">
+                    <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="mainProgressBar">
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox" id="dialog1_ActionArea">
+            <property name="can_focus">False</property>
+            <property name="layout_style"/>
+            <child>
+              <object class="GtkButton" id="buttonCancel">
+                <property name="label">gtk-cancel</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="buttonOk">
+                <property name="label" translatable="yes">Install</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="-1">buttonCancel</action-widget>
+      <action-widget response="-1">buttonOk</action-widget>
+    </action-widgets>
+  </object>
 </interface>
