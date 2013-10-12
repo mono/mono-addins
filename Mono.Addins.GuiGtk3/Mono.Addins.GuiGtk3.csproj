@@ -176,4 +176,7 @@
       <Name>Mono.Addins</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ChangeLog" />
+  </ItemGroup>
 </Project>

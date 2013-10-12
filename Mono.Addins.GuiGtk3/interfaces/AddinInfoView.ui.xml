@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Ported from Stetic to GtkBuilder by Stephan Sundermann and Robert Nordan -->
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkBox" id="AddinInfoView">
