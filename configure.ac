@@ -90,9 +90,11 @@ AC_SUBST(MONO_NUNIT_LIBS)
 MONO_ADDINS_DEFAULT_LIB='Mono.Addins.dll'
 MONO_ADDINS_SETUP_DEFAULT_LIB='Mono.Addins.Setup.dll'
 MONO_ADDINS_GUI_DEFAULT_LIB='Mono.Addins.Gui.dll'
+MONO_ADDINS_GUI_GTK3_DEFAULT_LIB='Mono.Addins.GuiGtk3.dll'
 MONO_ADDINS_MSBUILD_DEFAULT_LIB='Mono.Addins.MSBuild.dll'
 AC_SUBST(MONO_ADDINS_DEFAULT_LIB)
 AC_SUBST(MONO_ADDINS_GUI_DEFAULT_LIB)
+AC_SUBST(MONO_ADDINS_GUI_GTK3_DEFAULT_LIB)
 AC_SUBST(MONO_ADDINS_SETUP_DEFAULT_LIB)
 AC_SUBST(MONO_ADDINS_MSBUILD_DEFAULT_LIB)
 
@@ -105,6 +107,7 @@ AC_CONFIG_FILES([
 ./Makefile
 ./policy.config
 ./Mono.Addins.Gui/Makefile
+./Mono.Addins.GuiGtk3/Makefile
 ./Mono.Addins.Setup/Makefile
 ./Mono.Addins/Makefile
 ./Mono.Addins.CecilReflector/Makefile

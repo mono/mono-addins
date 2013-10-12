@@ -1,0 +1,12 @@
+prefix=${pcfiledir}/../..
+exec_prefix=${prefix}
+pkglibdir=${prefix}/lib/mono/@PACKAGE@
+
+Libraries=${pkglibdir}/@MONO_ADDINS_GUI_GTK3_DEFAULT_LIB@
+
+Name: Mono.Addins.GuiGtk3
+Description: 
+Version: @VERSION@
+
+Requires: mono-addins
+Libs:  -r:${pkglibdir}/@MONO_ADDINS_GUI_GTK3_DEFAULT_LIB@

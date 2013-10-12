@@ -3,8 +3,12 @@ MAIN_SLN=$(top_builddir)/Mono.Addins.sln
 
 if ENABLE_GUI
 PROFILE_NAME=Debug
+else 
+if ENABLE_GUI_GTK3
+PROFILE_NAME=Debug
 else
 PROFILE_NAME=DebugNotGui
+endif
 endif
 
 XBUILD=xbuild
