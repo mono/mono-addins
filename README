@@ -21,7 +21,11 @@ Options:
 
 --enable-gui
 
-	Include GUI support (requires gtk#)
+	Include GUI support for GTK2 (requires gtk#2)
+
+--enable-gui-gtk3
+
+	Include GUI support for GTK3 (requires gtk#3)
 
 --enable-tests
 
