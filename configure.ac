@@ -102,6 +102,7 @@ AC_CONFIG_FILES([
 ./mono-addins.spec
 ./Mono.Addins/mono-addins.pc
 ./Mono.Addins.Gui/mono-addins-gui.pc
+./Mono.Addins.GuiGtk3/mono-addins-gui-gtk3.pc
 ./Mono.Addins.Setup/mono-addins-setup.pc
 ./Mono.Addins.MSBuild/mono-addins-msbuild.pc
 ./Makefile
