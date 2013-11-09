@@ -559,17 +559,19 @@ namespace Mono.Addins.Setup
 					continue;
 				}
 				AddinDescription desc = null;
-				if (File.Exists (args[0]))
-					desc = registry.GetAddinDescription (new Mono.Addins.ConsoleProgressStatus (verbose), args[0]);
-				else {
-					Addin addin = registry.GetAddin (args [0]);
-					if (addin != null)
-						desc = addin.Description;
+				if (!generateAll) {
+					if (File.Exists (args [0]))
+						desc = registry.GetAddinDescription (new Mono.Addins.ConsoleProgressStatus (verbose), args [0]);
+					else {
+						Addin addin = registry.GetAddin (args [0]);
+						if (addin != null)
+							desc = addin.Description;
+					}
+					if (desc == null)
+						throw new InstallException (string.Format ("Add-in '{0}' not found.", a));
+					if (desc != null)
+						addins.Add (desc);
 				}
-				if (desc == null)
-					throw new InstallException (string.Format ("Add-in '{0}' not found.", a));
-				if (desc != null)
-					addins.Add (desc);
 			}
 			
 			if (generateAll) {
