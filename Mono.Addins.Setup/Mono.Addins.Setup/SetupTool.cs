@@ -558,9 +558,14 @@ namespace Mono.Addins.Setup
 					extensionModel = false;
 					continue;
 				}
+
+				// We don't require file parameter if we're generating for all.
+				if (generateAll)
+					continue;
+
 				AddinDescription desc = null;
-				if (File.Exists (args[0]))
-					desc = registry.GetAddinDescription (new Mono.Addins.ConsoleProgressStatus (verbose), args[0]);
+				if (File.Exists (args [0]))
+					desc = registry.GetAddinDescription (new Mono.Addins.ConsoleProgressStatus (verbose), args [0]);
 				else {
 					Addin addin = registry.GetAddin (args [0]);
 					if (addin != null)
