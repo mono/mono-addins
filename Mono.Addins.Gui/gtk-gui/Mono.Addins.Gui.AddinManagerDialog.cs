@@ -27,7 +27,7 @@ namespace Mono.Addins.Gui
 		private global::Gtk.EventBox eventbox3;
 		private global::Mono.Addins.Gui.AddinInfoView addininfoUpdates;
 		private global::Gtk.Label label4;
-		private global::Gtk.HBox hbox6;
+		private global::Gtk.HBox hbox8;
 		private global::Gtk.VBox vboxGallery;
 		private global::Gtk.EventBox eboxRepo;
 		private global::Gtk.HBox hbox66;
@@ -224,11 +224,11 @@ namespace Mono.Addins.Gui
 			this.notebook.SetTabLabel (this.boxUpdates, this.label4);
 			this.label4.ShowAll ();
 			// Container child notebook.Gtk.Notebook+NotebookChild
-			this.hbox6 = new global::Gtk.HBox ();
-			this.hbox6.Name = "hbox6";
-			this.hbox6.Spacing = 9;
-			this.hbox6.BorderWidth = ((uint)(9));
-			// Container child hbox6.Gtk.Box+BoxChild
+			this.hbox8 = new global::Gtk.HBox ();
+			this.hbox8.Name = "hbox8";
+			this.hbox8.Spacing = 9;
+			this.hbox8.BorderWidth = ((uint)(9));
+			// Container child hbox8.Gtk.Box+BoxChild
 			this.vboxGallery = new global::Gtk.VBox ();
 			this.vboxGallery.Name = "vboxGallery";
 			// Container child vboxGallery.Gtk.Box+BoxChild
@@ -259,7 +259,7 @@ namespace Mono.Addins.Gui
 			this.buttonRefresh.Name = "buttonRefresh";
 			this.buttonRefresh.UseUnderline = true;
 			this.buttonRefresh.Relief = ((global::Gtk.ReliefStyle)(2));
-			this.buttonRefresh.Label = "";
+			this.buttonRefresh.Label = global::Mono.Unix.Catalog.GetString ("Refresh");
 			global::Gtk.Image w23 = new global::Gtk.Image ();
 			w23.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-refresh", global::Gtk.IconSize.Menu);
 			this.buttonRefresh.Image = w23;
@@ -287,10 +287,10 @@ namespace Mono.Addins.Gui
 			this.vboxGallery.Add (this.scrolledGallery);
 			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vboxGallery [this.scrolledGallery]));
 			w28.Position = 1;
-			this.hbox6.Add (this.vboxGallery);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.vboxGallery]));
+			this.hbox8.Add (this.vboxGallery);
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.hbox8 [this.vboxGallery]));
 			w29.Position = 0;
-			// Container child hbox6.Gtk.Box+BoxChild
+			// Container child hbox8.Gtk.Box+BoxChild
 			this.eventbox1 = new global::Gtk.EventBox ();
 			this.eventbox1.Name = "eventbox1";
 			// Container child eventbox1.Gtk.Container+ContainerChild
@@ -299,19 +299,19 @@ namespace Mono.Addins.Gui
 			this.addininfoGallery.Name = "addininfoGallery";
 			this.addininfoGallery.AllowInstall = false;
 			this.eventbox1.Add (this.addininfoGallery);
-			this.hbox6.Add (this.eventbox1);
-			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.eventbox1]));
+			this.hbox8.Add (this.eventbox1);
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.hbox8 [this.eventbox1]));
 			w31.Position = 1;
 			w31.Expand = false;
 			w31.Fill = false;
-			this.notebook.Add (this.hbox6);
-			global::Gtk.Notebook.NotebookChild w32 = ((global::Gtk.Notebook.NotebookChild)(this.notebook [this.hbox6]));
+			this.notebook.Add (this.hbox8);
+			global::Gtk.Notebook.NotebookChild w32 = ((global::Gtk.Notebook.NotebookChild)(this.notebook [this.hbox8]));
 			w32.Position = 2;
 			// Notebook tab
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Gallery");
-			this.notebook.SetTabLabel (this.hbox6, this.label8);
+			this.notebook.SetTabLabel (this.hbox8, this.label8);
 			this.label8.ShowAll ();
 			this.hbox72.Add (this.notebook);
 			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.hbox72 [this.notebook]));

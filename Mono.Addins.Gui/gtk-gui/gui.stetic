@@ -381,7 +381,7 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.HBox" id="hbox6">
+                          <widget class="Gtk.HBox" id="hbox8">
                             <property name="MemberName" />
                             <property name="Spacing">9</property>
                             <property name="BorderWidth">9</property>
@@ -425,7 +425,7 @@
                                             <property name="CanFocus">True</property>
                                             <property name="Type">TextAndIcon</property>
                                             <property name="Icon">stock:gtk-refresh Menu</property>
-                                            <property name="Label" translatable="yes" />
+                                            <property name="Label" translatable="yes">Refresh</property>
                                             <property name="UseUnderline">True</property>
                                             <property name="Relief">None</property>
                                             <signal name="Clicked" handler="OnButtonRefreshClicked" />
