@@ -66,6 +66,12 @@ namespace Mono.Addins.Description
 		{
 		}
 
+		internal void MergeWith (ModuleDescription module)
+		{
+			Dependencies.AddRange (module.Dependencies);
+			Extensions.AddRange (module.Extensions);
+		}
+
 		/// <summary>
 		/// Checks if this module depends on the specified add-in.
 		/// </summary>

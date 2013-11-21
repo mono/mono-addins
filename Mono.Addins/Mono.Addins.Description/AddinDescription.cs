@@ -1193,8 +1193,7 @@ namespace Mono.Addins.Description
 				desc1.MainModule.Assemblies.Add (s);
 			foreach (string s in desc2.MainModule.DataFiles)
 				desc1.MainModule.DataFiles.Add (s);
-			desc1.MainModule.Dependencies.AddRange (desc2.MainModule.Dependencies);
-			desc1.MainModule.Extensions.AddRange (desc2.MainModule.Extensions);
+			desc1.MainModule.MergeWith (desc2.MainModule);
 			return desc1;
 		}
 		
