@@ -470,7 +470,7 @@ namespace Mono.Addins.Database
 				}
 			}
 
-			Configuration.SetStatus (id, true, ainfo.AddinInfo.EnabledByDefault);
+			Configuration.SetEnabled (id, true, ainfo.AddinInfo.EnabledByDefault);
 			SaveConfiguration ();
 
 			if (addinEngine != null && addinEngine.IsInitialized)
@@ -486,7 +486,7 @@ namespace Mono.Addins.Database
 			if (!IsAddinEnabled (domain, id))
 				return;
 			
-			Configuration.SetStatus (id, false, ai.AddinInfo.EnabledByDefault);
+			Configuration.SetEnabled (id, false, ai.AddinInfo.EnabledByDefault);
 			SaveConfiguration ();
 			
 			// Disable all add-ins which depend on it
@@ -519,7 +519,7 @@ namespace Mono.Addins.Database
 			}
 			catch {
 				// If something goes wrong, enable the add-in again
-				Configuration.SetStatus (id, true, ai.AddinInfo.EnabledByDefault);
+				Configuration.SetEnabled (id, true, ai.AddinInfo.EnabledByDefault);
 				SaveConfiguration ();
 				throw;
 			}
