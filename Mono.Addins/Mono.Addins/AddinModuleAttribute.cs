@@ -31,6 +31,7 @@ namespace Mono.Addins
 	/// <summary>
 	/// Declares an optional add-in module
 	/// </summary>
+	[AttributeUsage (AttributeTargets.Assembly, AllowMultiple=true)]
 	public class AddinModuleAttribute: Attribute
 	{
 		string assemblyFile;

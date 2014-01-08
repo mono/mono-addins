@@ -568,13 +568,16 @@ namespace Mono.Addins.Database
 					}
 				}
 				
-				if (config == null) {
+				if (config == null || config.IsExtensionModel) {
 					// In this case, only scan the assembly if it has the Addin attribute.
 					AddinAttribute att = (AddinAttribute) reflector.GetCustomAttribute (asm, typeof(AddinAttribute), false);
-					if (att == null)
+					if (att == null) {
+						config = null;
 						return true;
+					}
 
-					config = new AddinDescription ();
+					if (config == null)
+						config = new AddinDescription ();
 				}
 				
 				config.SetBasePath (Path.GetDirectoryName (filePath));
