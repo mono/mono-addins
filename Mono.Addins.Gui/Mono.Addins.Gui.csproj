@@ -98,67 +98,67 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\package-x-generic.png">
-      <LogicalName>package-x-generic.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>package-x-generic.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-x-generic_16.png">
-      <LogicalName>package-x-generic_16.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>package-x-generic_16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-x-generic_22.png">
-      <LogicalName>package-x-generic_22.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>package-x-generic_22.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\user-package.png">
-      <LogicalName>user-package.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>user-package.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\system-software-update.png">
-      <LogicalName>system-software-update.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>system-software-update.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-avail-16.png">
-      <LogicalName>plugin-avail-16.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>plugin-avail-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-update-16.png">
-      <LogicalName>plugin-update-16.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>plugin-update-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-16.png">
-      <LogicalName>plugin-16.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>plugin-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-32.png">
-      <LogicalName>plugin-32.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>plugin-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-avail-32.png">
-      <LogicalName>plugin-avail-32.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>plugin-avail-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-update-32.png">
-      <LogicalName>plugin-update-32.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>plugin-update-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-disabled-32.png">
-      <LogicalName>plugin-disabled-32.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>plugin-disabled-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\system-software-update_22.png">
-      <LogicalName>system-software-update_22.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>system-software-update_22.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\download.png">
-      <LogicalName>download.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>download.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-22.png">
-      <LogicalName>plugin-22.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>plugin-22.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-update-22.png">
-      <LogicalName>plugin-update-22.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>plugin-update-22.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\software-update-available-overlay.png">
-      <LogicalName>software-update-available-overlay.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>software-update-available-overlay.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\software-update-available.png">
-      <LogicalName>software-update-available.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>software-update-available.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\installed-overlay.png">
-      <LogicalName>installed-overlay.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>installed-overlay.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\web.png">
-      <LogicalName>web.png</LogicalName><!-- TODO: VV: New icon -->
+      <LogicalName>web.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
