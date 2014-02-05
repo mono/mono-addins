@@ -86,7 +86,16 @@ namespace Mono.Addins.Gui
 				FireSearch ();
 			};
 		}
-		
+
+		public override void Dispose ()
+		{
+			iconClean.Clicked = null;
+			iconFind.Clicked = null;
+			entry.Activated = null;
+			entry.Changed = null;
+			base.Dispose ();
+		}
+
 		public event EventHandler TextChanged;
 		
 		public Gtk.Entry Entry {

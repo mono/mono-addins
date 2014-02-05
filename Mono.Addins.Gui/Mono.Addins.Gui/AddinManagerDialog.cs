@@ -186,6 +186,14 @@ namespace Mono.Addins.Gui
 		
 		public override void Dispose ()
 		{
+			addinTree.Selection.Changed -= OnSelectionChanged;
+			tree.Dispose ();
+			galleryTreeView.Selection.Changed -= OnGallerySelectionChanged;
+			galleryTree.Dispose ();
+			updatesTreeView.Selection.Changed -= OnGallerySelectionChanged;
+			updatesTree.Dispose ();
+			notebook.SizeAllocated = null;
+			filterEntry.TextChanged = null;
 			base.Dispose ();
 			Destroy ();
 		}

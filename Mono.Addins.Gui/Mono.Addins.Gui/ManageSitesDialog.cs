@@ -39,6 +39,7 @@ namespace Mono.Addins.Gui
 {
 	partial class ManageSitesDialog : Dialog
 	{
+		CellRendererToggle crt;
 		ListStore treeStore;
 		SetupService service;
 		
@@ -51,7 +52,7 @@ namespace Mono.Addins.Gui
 			treeStore = new Gtk.ListStore (typeof (string), typeof (string), typeof(bool));
 			repoTree.Model = treeStore;
 			repoTree.HeadersVisible = false;
-			var crt = new Gtk.CellRendererToggle ();
+			crt = new CellRendererToggle ();
 			crt.Toggled += HandleRepoToggled;
 			repoTree.AppendColumn ("", crt, "active", 2);
 			repoTree.AppendColumn ("", new Gtk.CellRendererText (), "markup", 1);
@@ -66,6 +67,7 @@ namespace Mono.Addins.Gui
 
 		public override void Dispose ()
 		{
+			crt.Toggled -= HandleRepoToggled;
 			base.Dispose ();
 			Destroy ();
 		}

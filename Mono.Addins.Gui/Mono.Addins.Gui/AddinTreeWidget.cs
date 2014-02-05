@@ -40,7 +40,7 @@ using System.IO;
 
 namespace Mono.Addins.Gui
 {
-	public class AddinTreeWidget
+	public class AddinTreeWidget : IDisposable
 	{
 		protected Gtk.TreeView treeView;
 		protected Gtk.TreeStore treeStore;
@@ -83,6 +83,11 @@ namespace Mono.Addins.Gui
 			ShowCategories = true;
 			
 			treeView.Destroyed += HandleTreeViewDestroyed;
+		}
+
+		public void Dispose ()
+		{
+			treeView.Destroyed -= HandleTreeViewDestroyed;
 		}
 
 		void HandleTreeViewDestroyed (object sender, EventArgs e)
