@@ -51,6 +51,8 @@ namespace Mono.Addins.Gui
 		Label installedTabLabel;
 		Label updatesTabLabel;
 		Label galleryTabLabel;
+
+		bool firstLoad = true;
 		
 		const string AllRepoMarker = "__ALL";
 		const string ManageRepoMarker = "__MANAGE";
@@ -412,8 +414,8 @@ namespace Mono.Addins.Gui
 		{
 			UpdateAddinInfo ();
 		}
-		
-		protected virtual void OnButtonRefreshClicked (object sender, System.EventArgs e)
+
+		void UpdateRepositories ()
 		{
 			ProgressDialog pdlg = new ProgressDialog (this);
 			pdlg.Show ();
@@ -434,6 +436,11 @@ namespace Mono.Addins.Gui
 				Thread.Sleep (50);
 			}
 			pdlg.Destroy ();
+		}
+
+		protected virtual void OnButtonRefreshClicked (object sender, System.EventArgs e)
+		{
+			UpdateRepositories ();
 			LoadGallery ();
 			LoadUpdates ();
 		}
@@ -546,6 +553,14 @@ namespace Mono.Addins.Gui
 					LoadAll ();
 			} finally {
 				idlg.Destroy ();
+			}
+		}
+
+		protected void OnNotebookSwitchPage (object o, SwitchPageArgs args)
+		{
+			if (args.PageNum == 2 && firstLoad) {
+				UpdateRepositories ();
+				firstLoad = false;
 			}
 		}
 	}

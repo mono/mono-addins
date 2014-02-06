@@ -358,6 +358,7 @@ namespace Mono.Addins.Gui
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
+			this.notebook.SwitchPage += new global::Gtk.SwitchPageHandler (this.OnNotebookSwitchPage);
 			this.addininfoInstalled.InstallClicked += new global::System.EventHandler (this.OnInstallClicked);
 			this.addininfoInstalled.UninstallClicked += new global::System.EventHandler (this.OnUninstallClicked);
 			this.addininfoInstalled.UpdateClicked += new global::System.EventHandler (this.OnUpdateClicked);
