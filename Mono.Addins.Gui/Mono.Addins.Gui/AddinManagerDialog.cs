@@ -52,7 +52,7 @@ namespace Mono.Addins.Gui
 		Label updatesTabLabel;
 		Label galleryTabLabel;
 
-		bool firstLoad = true;
+		static bool firstLoad = true;
 		
 		const string AllRepoMarker = "__ALL";
 		const string ManageRepoMarker = "__MANAGE";
