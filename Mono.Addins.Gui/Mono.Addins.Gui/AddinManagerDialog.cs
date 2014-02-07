@@ -418,7 +418,8 @@ namespace Mono.Addins.Gui
 		void UpdateRepositories ()
 		{
 			ProgressDialog pdlg = new ProgressDialog (this);
-			pdlg.Show ();
+			if (!firstLoad)
+				pdlg.Show ();
 			pdlg.SetMessage (AddinManager.CurrentLocalizer.GetString ("Updating repository"));
 			bool updateDone = false;
 
