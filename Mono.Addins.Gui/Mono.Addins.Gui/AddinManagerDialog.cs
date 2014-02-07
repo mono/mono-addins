@@ -421,13 +421,13 @@ namespace Mono.Addins.Gui
 			if (!firstLoad)
 				pdlg.Show ();
 			pdlg.SetMessage (AddinManager.CurrentLocalizer.GetString ("Updating repository"));
-			bool updateDone = false;
+			bool updateDone = buttonRefresh.Sensitive = false;
 
 			Thread t = new Thread (delegate () {
 				try {
 					service.Repositories.UpdateAllRepositories (pdlg);
 				} finally {
-					updateDone = true;
+					updateDone = buttonRefresh.Sensitive = true;
 				}
 			});
 			t.Start ();
