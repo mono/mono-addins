@@ -427,7 +427,7 @@ namespace Mono.Addins.Gui
 				try {
 					service.Repositories.UpdateAllRepositories (pdlg);
 				} finally {
-					updateDone = buttonRefresh.Sensitive = true;
+					updateDone = true;
 				}
 			});
 			t.Start ();
@@ -436,6 +436,7 @@ namespace Mono.Addins.Gui
 					Gtk.Application.RunIteration ();
 				Thread.Sleep (50);
 			}
+			buttonRefresh.Sensitive = true;
 			pdlg.Destroy ();
 		}
 
