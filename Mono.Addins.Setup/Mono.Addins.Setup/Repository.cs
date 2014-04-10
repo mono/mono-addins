@@ -128,7 +128,7 @@ namespace Mono.Addins.Setup
 			}
 
 			res.FilePath = cachedFile;
-			WebRequestHelper.GetResponseAsync (() => WebRequest.CreateHttp (u)).ContinueWith (t => {
+			WebRequestHelper.GetResponseAsync (() => (HttpWebRequest)WebRequest.Create (u)).ContinueWith (t => {
 				try {
 					var resp = t.Result;
 					string dir = Path.GetDirectoryName (res.FilePath);

@@ -642,7 +642,7 @@ namespace Mono.Addins.Setup
 			try {
 				monitor.BeginTask ("Requesting " + url, 2);
 				var resp = WebRequestHelper.GetResponse (
-					() => WebRequest.CreateHttp (url),
+					() => (HttpWebRequest)WebRequest.Create (url),
 					r => r.Headers ["Pragma"] = "no-cache"
 				);
 				monitor.Step (1);
