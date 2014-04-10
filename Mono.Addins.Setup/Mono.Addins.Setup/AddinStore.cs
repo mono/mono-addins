@@ -45,6 +45,7 @@ using Mono.Addins.Description;
 using Mono.Addins.Serialization;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Mono.Addins.Setup
 {
@@ -626,7 +627,7 @@ namespace Mono.Addins.Setup
 		
 		internal string DownloadFile (IProgressMonitor monitor, string url)
 		{
-			if (url.StartsWith ("file://")) {
+			if (url.StartsWith ("file://", StringComparison.Ordinal)) {
 				string tmpfile = Path.GetTempFileName ();
 				string path = new Uri (url).LocalPath;
 				File.Delete (tmpfile);
@@ -634,20 +635,22 @@ namespace Mono.Addins.Setup
 				return tmpfile;
 			}
 
-			monitor.BeginTask ("Requesting " + url, 2);
-			HttpWebRequest req = (HttpWebRequest) WebRequest.Create (url);
-			req.Headers ["Pragma"] = "no-cache";
-			HttpWebResponse resp = (HttpWebResponse) req.GetResponse ();
-			monitor.Step (1);
-			
-			monitor.BeginTask ("Downloading " + url, (int) resp.ContentLength);
-			
-			string file = Path.GetTempFileName ();
+			string file = null;
 			FileStream fs = null;
 			Stream s = null;
+
 			try {
+				monitor.BeginTask ("Requesting " + url, 2);
+				var resp = WebRequestHelper.GetResponse (
+					() => WebRequest.CreateHttp (url),
+					r => r.Headers ["Pragma"] = "no-cache"
+				);
+				monitor.Step (1);
+				monitor.BeginTask ("Downloading " + url, (int) resp.ContentLength);
+
+				file = Path.GetTempFileName ();
 				fs = new FileStream (file, FileMode.Create, FileAccess.Write);
-				s = req.GetResponse ().GetResponseStream ();
+					s = resp.GetResponseStream ();
 				byte[] buffer = new byte [4096];
 				
 				int n;
@@ -665,7 +668,8 @@ namespace Mono.Addins.Setup
 					fs.Close ();
 				if (s != null)
 					s.Close ();
-				File.Delete (file);
+				if (file != null)
+					File.Delete (file);
 				throw;
 			} finally {
 				monitor.EndTask ();

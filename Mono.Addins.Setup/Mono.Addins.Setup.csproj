@@ -79,6 +79,7 @@
     <Compile Include="Mono.Addins.Setup\ConsoleAddinInstaller.cs" />
     <Compile Include="Mono.Addins.Setup\PcFileCache.cs" />
     <Compile Include="Mono.Addins.Setup\TextFormatter.cs" />
+    <Compile Include="Mono.Addins.Setup\WebRequestHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -88,15 +89,6 @@
     <MonoDevelop>
       <Properties>
         <Deployment.LinuxDeployData scriptName="mono.addins.setup" />
-        <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
-          <BuildFilesVar Sync="True" Name="FILES" />
-          <DeployFilesVar Sync="True" Name="DATA_FILES" />
-          <ResourcesVar Sync="True" Name="RESOURCES" />
-          <OthersVar />
-          <GacRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
-          <AsmRefVar Sync="True" Name="DLL_REFERENCES" />
-          <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
-        </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
