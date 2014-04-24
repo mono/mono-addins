@@ -265,6 +265,9 @@ namespace Mono.Addins.Setup
 
 		static IHttpWebResponse GetResponse (HttpWebResponse response)
 		{
+			if (response == null)
+				return null;
+
 			var httpWebResponse = response as IHttpWebResponse;
 			if (httpWebResponse != null)
 				return httpWebResponse;
@@ -274,8 +277,10 @@ namespace Mono.Addins.Setup
 
 		static bool IsAuthenticationResponse (IHttpWebResponse response)
 		{
-			return response.StatusCode == HttpStatusCode.Unauthorized ||
-				response.StatusCode == HttpStatusCode.ProxyAuthenticationRequired;
+			return response != null && (
+				response.StatusCode == HttpStatusCode.Unauthorized ||
+				response.StatusCode == HttpStatusCode.ProxyAuthenticationRequired
+			);
 		}
 
 		static void SetKeepAliveHeaders (HttpWebRequest request, IHttpWebResponse previousResponse)
