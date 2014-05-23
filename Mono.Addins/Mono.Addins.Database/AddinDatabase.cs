@@ -1443,8 +1443,11 @@ namespace Mono.Addins.Database
 					if (einfo != null) einfo.AddEventHandler (AppDomain.CurrentDomain, resolver);
 				
 					AddinDescription desc = scanner.ScanSingleFile (progressStatus, file, sr);
-					if (desc != null)
+					if (desc != null) {
+						// Reset the xml doc so that it is not reused when saving. We want a brand new document
+						desc.ResetXmlDoc ();
 						desc.Save (outFile);
+					}
 				}
 				finally {
 					AppDomain.CurrentDomain.AssemblyResolve -= resolver;

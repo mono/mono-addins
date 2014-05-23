@@ -613,6 +613,11 @@ namespace Mono.Addins.Description
 					return null;
 			}
 		}
+
+		internal void ResetXmlDoc ()
+		{
+			configDoc = null;
+		}
 		
 		/// <summary>
 		/// Gets or sets file where this description is stored
