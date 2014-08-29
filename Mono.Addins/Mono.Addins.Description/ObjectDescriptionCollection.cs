@@ -181,7 +181,7 @@ namespace Mono.Addins.Description
 
 		IEnumerator<T> IEnumerable<T>.GetEnumerator ()
 		{
-			return Enumerable.Cast<T> (List).GetEnumerator ();
+			return Enumerable.Cast<T> (InnerList).GetEnumerator ();
 		}
 	}
 }
