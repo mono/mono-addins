@@ -190,11 +190,15 @@ namespace Mono.Addins
 		ExtensionNodeDescription node;
 		string typeId;
 		AddinEngine addinEngine;
+		string addin;
+
+		internal const string SourceAddinAttribute = "__sourceAddin"; 
 		
 		internal Condition (AddinEngine addinEngine, ExtensionNodeDescription element, BaseCondition parent): base (parent)
 		{
 			this.addinEngine = addinEngine;
 			typeId = element.GetAttribute ("id");
+			addin = element.GetAttribute (SourceAddinAttribute);
 			node = element;
 		}
 		
@@ -202,6 +206,12 @@ namespace Mono.Addins
 		{
 			if (!base.Evaluate (ctx))
 				return false;
+
+			if (!string.IsNullOrEmpty (addin)) {
+				// Make sure the add-in that implements the condition is loaded
+				addinEngine.LoadAddin (null, addin, true);
+				addin = null; // Don't try again
+			}
 			
 			ConditionType type = ctx.GetCondition (typeId);
 			if (type == null) {

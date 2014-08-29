@@ -45,7 +45,7 @@ namespace Mono.Addins.Database
 		public const string GlobalDomain = "global";
 		public const string UnknownDomain = "unknown";
 		
-		public const string VersionTag = "001";
+		public const string VersionTag = "002";
 
 		List<Addin> allSetupInfos;
 		List<Addin> addinSetupInfos;
@@ -181,7 +181,7 @@ namespace Mono.Addins.Database
 			}
 			return null;
 		}
-		
+
 		public IEnumerable<Addin> GetInstalledAddins (string domain, AddinSearchFlagsInternal flags)
 		{
 			if (domain == null)
@@ -858,7 +858,7 @@ namespace Mono.Addins.Database
 				return;
 			}
 			
-			CollectModuleExtensionData (conf, conf.MainModule, updateData);
+			CollectModuleExtensionData (conf, conf.MainModule, updateData, addinHash);
 			
 			foreach (ModuleDescription module in conf.OptionalModules) {
 				missingDeps = addinHash.GetMissingDependencies (conf, module);
@@ -869,7 +869,7 @@ namespace Mono.Addins.Database
 					}
 				}
 				else
-					CollectModuleExtensionData (conf, module, updateData);
+					CollectModuleExtensionData (conf, module, updateData, addinHash);
 			}
 		}
 		
@@ -886,16 +886,16 @@ namespace Mono.Addins.Database
 			return w;
 		}
 		
-		void CollectModuleExtensionData (AddinDescription conf, ModuleDescription module, AddinUpdateData updateData)
+		void CollectModuleExtensionData (AddinDescription conf, ModuleDescription module, AddinUpdateData updateData, AddinIndex index)
 		{
 			foreach (Extension ext in module.Extensions) {
 				updateData.RelExtensions++;
 				updateData.RegisterExtension (conf, module, ext);
-				AddChildExtensions (conf, module, updateData, ext.Path, ext.ExtensionNodes, false);
+				AddChildExtensions (conf, module, updateData, index, ext.Path, ext.ExtensionNodes, false);
 			}
 		}
 		
-		void AddChildExtensions (AddinDescription conf, ModuleDescription module, AddinUpdateData updateData, string path, ExtensionNodeDescriptionCollection nodes, bool conditionChildren)
+		void AddChildExtensions (AddinDescription conf, ModuleDescription module, AddinUpdateData updateData, AddinIndex index, string path, ExtensionNodeDescriptionCollection nodes, bool conditionChildren)
 		{
 			// Don't register conditions as extension nodes.
 			if (!conditionChildren)
@@ -906,8 +906,18 @@ namespace Mono.Addins.Database
 					continue;
 				updateData.RelExtensionNodes++;
 				string id = node.GetAttribute ("id");
-				if (id.Length != 0)
-					AddChildExtensions (conf, module, updateData, path + "/" + id, node.ChildNodes, node.NodeName == "Condition");
+				if (id.Length != 0) {
+					bool isCondition = node.NodeName == "Condition";
+					if (isCondition) {
+						// Find the add-in that provides the implementation for this condition.
+						// Store that id in the condition. The add-in engine will ensure the add-in
+						// is loaded when it tries to evaluate this condition.
+						var condAsm = index.FindCondition (conf, module, id);
+						if (condAsm != null)
+							node.SetAttribute (Condition.SourceAddinAttribute, condAsm);
+					}
+					AddChildExtensions (conf, module, updateData, index, path + "/" + id, node.ChildNodes, isCondition);
+				}
 			}
 		}
 		
@@ -1904,6 +1914,26 @@ namespace Mono.Addins.Database
 			return null;
 		}
 		
+		public string FindCondition (AddinDescription desc, ModuleDescription mod, string conditionId)
+		{
+			if (desc.ConditionTypes.Any (c => c.Id == conditionId))
+				return desc.AddinId;
+
+			foreach (Dependency dep in mod.Dependencies) {
+				AddinDependency adep = dep as AddinDependency;
+
+				if (adep == null)
+					continue;
+				var descs = FindDescriptions (desc.Domain, adep.FullAddinId);
+				foreach (var d in descs) {
+					var c = FindCondition (d, d.MainModule, conditionId);
+					if (c != null)
+						return c;
+				}
+			}
+			return null;
+		}
+
 		public List<AddinDescription> GetSortedAddins ()
 		{
 			var inserted = new HashSet<string> ();
