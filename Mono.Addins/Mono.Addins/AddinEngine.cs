@@ -753,7 +753,16 @@ namespace Mono.Addins
 				return;
 
 			string asmFile = u.LocalPath;
-			Addin ainfo = Registry.GetAddinForHostAssembly (asmFile);
+			Addin ainfo;
+			try {
+				ainfo = Registry.GetAddinForHostAssembly (asmFile);
+			} catch (Exception ex) {
+				// GetAddinForHostAssembly may crash if the add-in db has been corrupted. In this case, update the db
+				// and try getting the add-in info again. If it crashes again, then this is a bug.
+				Registry.Update (null);
+				ainfo = Registry.GetAddinForHostAssembly (asmFile);
+			}
+
 			if (ainfo != null && !IsAddinLoaded (ainfo.Id)) {
 				AddinDescription adesc = null;
 				try {

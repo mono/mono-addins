@@ -566,7 +566,7 @@ namespace Mono.Addins.Database
 				Update (null, domain);
 		}
 		
-		void GenerateAddinExtensionMapsInternal (IProgressStatus monitor, List<string> addinsToUpdate, List<string> addinsToUpdateRelations, List<string> removedAddins)
+		void GenerateAddinExtensionMapsInternal (IProgressStatus monitor, string domain, List<string> addinsToUpdate, List<string> addinsToUpdateRelations, List<string> removedAddins)
 		{
 			AddinUpdateData updateData = new AddinUpdateData (this, monitor);
 			
@@ -630,8 +630,8 @@ namespace Mono.Addins.Database
 				}
 			}
 			else {
-				foreach (string dom in domains)
-					files.AddRange (fileDatabase.GetDirectoryFiles (Path.Combine (AddinCachePath, dom), "*.maddin"));
+				files.AddRange (fileDatabase.GetDirectoryFiles (Path.Combine (AddinCachePath, domain), "*.maddin"));
+				files.AddRange (fileDatabase.GetDirectoryFiles (Path.Combine (AddinCachePath, AddinDatabase.GlobalDomain), "*.maddin"));
 			}
 			
 			// Load the descriptions.
@@ -1393,7 +1393,7 @@ namespace Mono.Addins.Database
 					scanResult.AddinsToUpdateRelations = null;
 				}
 				
-				GenerateAddinExtensionMapsInternal (monitor, scanResult.AddinsToUpdate, scanResult.AddinsToUpdateRelations, scanResult.RemovedAddins);
+				GenerateAddinExtensionMapsInternal (monitor, scanResult.Domain, scanResult.AddinsToUpdate, scanResult.AddinsToUpdateRelations, scanResult.RemovedAddins);
 			}
 			catch (Exception ex) {
 				fatalDatabseError = true;
