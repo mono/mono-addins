@@ -759,6 +759,7 @@ namespace Mono.Addins
 			} catch (Exception ex) {
 				// GetAddinForHostAssembly may crash if the add-in db has been corrupted. In this case, update the db
 				// and try getting the add-in info again. If it crashes again, then this is a bug.
+				defaultProgressStatus.ReportError ("Add-in description could not be loaded.", ex);
 				Registry.Update (null);
 				ainfo = Registry.GetAddinForHostAssembly (asmFile);
 			}

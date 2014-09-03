@@ -585,7 +585,7 @@ namespace Mono.Addins.Database
 			ArrayList files = new ArrayList ();
 			
 			bool partialGeneration = addinsToUpdate != null;
-			string[] domains = GetDomains ();
+			string[] domains = GetDomains ().Where (d => d == domain || d == GlobalDomain).ToArray ();
 			
 			// Get the files to be updated
 			
@@ -630,8 +630,8 @@ namespace Mono.Addins.Database
 				}
 			}
 			else {
-				files.AddRange (fileDatabase.GetDirectoryFiles (Path.Combine (AddinCachePath, domain), "*.maddin"));
-				files.AddRange (fileDatabase.GetDirectoryFiles (Path.Combine (AddinCachePath, AddinDatabase.GlobalDomain), "*.maddin"));
+				foreach (var dom in domains)
+					files.AddRange (fileDatabase.GetDirectoryFiles (Path.Combine (AddinCachePath, dom), "*.maddin"));
 			}
 			
 			// Load the descriptions.
