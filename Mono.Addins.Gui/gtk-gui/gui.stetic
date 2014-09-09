@@ -181,6 +181,7 @@
                         <property name="CanFocus">True</property>
                         <property name="CurrentPage">0</property>
                         <property name="ShowBorder">False</property>
+                        <signal name="SwitchPage" handler="OnNotebookSwitchPage" />
                         <child>
                           <widget class="Gtk.HBox" id="hbox2">
                             <property name="MemberName" />

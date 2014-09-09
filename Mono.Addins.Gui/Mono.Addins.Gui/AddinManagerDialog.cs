@@ -51,6 +51,8 @@ namespace Mono.Addins.Gui
 		Label installedTabLabel;
 		Label updatesTabLabel;
 		Label galleryTabLabel;
+
+		static bool firstLoad = true;
 		
 		const string AllRepoMarker = "__ALL";
 		const string ManageRepoMarker = "__MANAGE";
@@ -412,13 +414,14 @@ namespace Mono.Addins.Gui
 		{
 			UpdateAddinInfo ();
 		}
-		
-		protected virtual void OnButtonRefreshClicked (object sender, System.EventArgs e)
+
+		void UpdateRepositories ()
 		{
 			ProgressDialog pdlg = new ProgressDialog (this);
-			pdlg.Show ();
+			if (!firstLoad)
+				pdlg.Show ();
 			pdlg.SetMessage (AddinManager.CurrentLocalizer.GetString ("Updating repository"));
-			bool updateDone = false;
+			bool updateDone = buttonRefresh.Sensitive = false;
 
 			Thread t = new Thread (delegate () {
 				try {
@@ -433,7 +436,13 @@ namespace Mono.Addins.Gui
 					Gtk.Application.RunIteration ();
 				Thread.Sleep (50);
 			}
+			buttonRefresh.Sensitive = true;
 			pdlg.Destroy ();
+		}
+
+		protected virtual void OnButtonRefreshClicked (object sender, System.EventArgs e)
+		{
+			UpdateRepositories ();
 			LoadGallery ();
 			LoadUpdates ();
 		}
@@ -546,6 +555,14 @@ namespace Mono.Addins.Gui
 					LoadAll ();
 			} finally {
 				idlg.Destroy ();
+			}
+		}
+
+		protected void OnNotebookSwitchPage (object o, SwitchPageArgs args)
+		{
+			if (args.PageNum == 2 && firstLoad) {
+				UpdateRepositories ();
+				firstLoad = false;
 			}
 		}
 	}
