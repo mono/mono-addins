@@ -39,7 +39,7 @@ namespace Mono.Addins
 	/// This class is a kind of Mono.Addins.ExtensionNode which can be used to register
 	/// types in an extension point. This is a very common case: a host application
 	/// defines an interface, and add-ins create classes that implement that interface.
-	/// The host will define an extension point which will use TypeExtensionNode as node
+	/// The host will define an extension point which will use TypeExtensionNode as nodetext
 	/// type. Add-ins will register the classes they implement in that extension point.
 	/// 
 	/// When the nodes of an extension point are of type TypeExtensionNode it is then
@@ -106,6 +106,12 @@ namespace Mono.Addins
 				return type;
 			}
 		}
+
+		public string TypeName {
+			get {
+				return typeName;
+			}
+		}
 	}
 	
 	/// <summary>
@@ -114,7 +120,7 @@ namespace Mono.Addins
 	/// <remarks>
 	/// This is the default type for type extension nodes bound to a custom extension attribute.
 	/// </remarks>
-	public class TypeExtensionNode<T>: TypeExtensionNode where T:CustomExtensionAttribute
+	public class TypeExtensionNode<T>: TypeExtensionNode, IAttributedExtensionNode where T:CustomExtensionAttribute
 	{
 		T data;
 		
@@ -125,6 +131,10 @@ namespace Mono.Addins
 		public T Data {
 			get { return data; }
 			internal set { data = value; }
+		}
+
+		CustomExtensionAttribute IAttributedExtensionNode.Attribute {
+			get { return data; }
 		}
 	}
 }
