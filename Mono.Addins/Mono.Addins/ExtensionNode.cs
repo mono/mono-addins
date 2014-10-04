@@ -384,7 +384,8 @@ namespace Mono.Addins
 			ReadObject (this, attributes, nodeType.Fields);
 			
 			if (nodeType.CustomAttributeMember != null) {
-				object att = Activator.CreateInstance (nodeType.CustomAttributeMember.MemberType);
+				var att = (CustomExtensionAttribute) Activator.CreateInstance (nodeType.CustomAttributeMember.MemberType, true);
+				att.ExtensionNode = this;
 				ReadObject (att, attributes, nodeType.CustomAttributeFields);
 				nodeType.CustomAttributeMember.SetValue (this, att);
 			}
@@ -530,7 +531,7 @@ namespace Mono.Addins
 	/// <remarks>
 	/// This is the default type for extension nodes bound to a custom extension attribute.
 	/// </remarks>
-	public class ExtensionNode<T>: ExtensionNode where T:CustomExtensionAttribute
+	public class ExtensionNode<T>: ExtensionNode, IAttributedExtensionNode where T:CustomExtensionAttribute
 	{
 		T data;
 		
@@ -542,5 +543,14 @@ namespace Mono.Addins
 			get { return data; }
 			internal set { data = value; }
 		}
+
+		CustomExtensionAttribute IAttributedExtensionNode.Attribute {
+			get { return data; }
+		}
+	}
+
+	public interface IAttributedExtensionNode
+	{
+		CustomExtensionAttribute Attribute { get; }
 	}
 }

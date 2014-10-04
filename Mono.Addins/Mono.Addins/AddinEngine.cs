@@ -205,6 +205,16 @@ namespace Mono.Addins
 				ActivateRoots ();
 				OnAssemblyLoaded (null, null);
 				AppDomain.CurrentDomain.AssemblyLoad += new AssemblyLoadEventHandler (OnAssemblyLoaded);
+				AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainAssemblyResolve;
+			}
+		}
+
+		Assembly CurrentDomainAssemblyResolve(object sender, ResolveEventArgs args)
+		{
+			lock (LocalLock) {
+				// MS.NET is more strict than Mono when loading assemblies. Assemblies loaded in the "Load" context can't see assemblies loaded
+				// in the "LoadFrom" context, unless assemblies are explicitly resolved in the AssemblyResolve event.
+				return loadedAddins.Values.Where(a => a.AssembliesLoaded).SelectMany(a => a.Assemblies).FirstOrDefault(a => a.FullName.ToString () == args.Name);
 			}
 		}
 		
@@ -216,7 +226,8 @@ namespace Mono.Addins
 			lock (LocalLock) {
 				initialized = false;
 				AppDomain.CurrentDomain.AssemblyLoad -= new AssemblyLoadEventHandler (OnAssemblyLoaded);
-				loadedAddins = new Dictionary<string, RuntimeAddin> ();
+				AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainAssemblyResolve;
+				loadedAddins = new Dictionary<string, RuntimeAddin>();
 				loadedAssemblies = new Dictionary<Assembly, RuntimeAddin> ();
 				registry.Dispose ();
 				registry = null;
@@ -742,7 +753,17 @@ namespace Mono.Addins
 				return;
 
 			string asmFile = u.LocalPath;
-			Addin ainfo = Registry.GetAddinForHostAssembly (asmFile);
+			Addin ainfo;
+			try {
+				ainfo = Registry.GetAddinForHostAssembly (asmFile);
+			} catch (Exception ex) {
+				// GetAddinForHostAssembly may crash if the add-in db has been corrupted. In this case, update the db
+				// and try getting the add-in info again. If it crashes again, then this is a bug.
+				defaultProgressStatus.ReportError ("Add-in description could not be loaded.", ex);
+				Registry.Update (null);
+				ainfo = Registry.GetAddinForHostAssembly (asmFile);
+			}
+
 			if (ainfo != null && !IsAddinLoaded (ainfo.Id)) {
 				AddinDescription adesc = null;
 				try {

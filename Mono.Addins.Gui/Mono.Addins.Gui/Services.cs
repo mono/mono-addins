@@ -139,6 +139,9 @@ namespace Mono.Addins.Gui
 		/// <summary>Centers a window relative to its parent.</summary>
 		static void CenterWindow (Window child, Window parent)
 		{
+			if (child == null || parent == null)
+				return;
+
 			child.Child.Show ();
 			int w, h, winw, winh, x, y, winx, winy;
 			child.GetSize (out w, out h);

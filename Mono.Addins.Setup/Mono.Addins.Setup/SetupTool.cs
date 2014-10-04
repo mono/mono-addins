@@ -529,14 +529,34 @@ namespace Mono.Addins.Setup
 		void PrintAddinInfo (string[] args)
 		{
 			bool generateXml = false;
-			bool generateAll = false;
 			bool pickNamespace = false;
 			bool extensionModel = true;
 			
 			ArrayList addins = new ArrayList ();
 			ArrayList namespaces = new ArrayList ();
+
+			bool generateAll = args [0] == "--all";
+			if (!generateAll) {
+				AddinDescription desc = null;
+				if (File.Exists (args [0]))
+					desc = registry.GetAddinDescription (new ConsoleProgressStatus (verbose), args [0]);
+				else {
+					Addin addin = registry.GetAddin (args [0]);
+					if (addin != null)
+						desc = addin.Description;
+				}
+				if (desc == null)
+					throw new InstallException (string.Format ("Add-in '{0}' not found.", args [0]));
+				if (desc != null)
+					addins.Add (desc);
+			}
 			
-			foreach (string a in args) {
+			for (int i = 1; i < args.Length; i++) {
+				string a = args [i];
+
+				if (a == "--all")
+					throw new InstallException (string.Format ("--all needs to be the first parameter"));
+
 				if (pickNamespace) {
 					namespaces.Add (a);
 					pickNamespace = false;
@@ -550,26 +570,10 @@ namespace Mono.Addins.Setup
 					pickNamespace = true;
 					continue;
 				}
-				if (a == "--all") {
-					generateAll = true;
-					continue;
-				}
 				if (a == "--full") {
 					extensionModel = false;
 					continue;
 				}
-				AddinDescription desc = null;
-				if (File.Exists (args[0]))
-					desc = registry.GetAddinDescription (new Mono.Addins.ConsoleProgressStatus (verbose), args[0]);
-				else {
-					Addin addin = registry.GetAddin (args [0]);
-					if (addin != null)
-						desc = addin.Description;
-				}
-				if (desc == null)
-					throw new InstallException (string.Format ("Add-in '{0}' not found.", a));
-				if (desc != null)
-					addins.Add (desc);
 			}
 			
 			if (generateAll) {
@@ -1083,11 +1087,10 @@ namespace Mono.Addins.Setup
 			commands.Add (cmd);
 
 			cmd = new SetupCommand (cat, "info", null, new SetupCommandHandler (PrintAddinInfo));
-			cmd.Usage = "[addin-id|addin-file] [--xml] [--all] [--full] [--namespace <namespace>]";
+			cmd.Usage = "[addin-id|addin-file|--all] [--xml] [--full] [--namespace <namespace>]";
 			cmd.Description = "Prints information about add-ins.";
 			cmd.AppendDesc ("Prints information about add-ins. Options:\n");
 			cmd.AppendDesc (" --xml: Dump the information using an XML format.\n");
-			cmd.AppendDesc (" --all: Dump information from all add-ins.\n");
 			cmd.AppendDesc (" --full: Include add-ins which don't define extension points.\n");
 			cmd.AppendDesc (" --namespace ns: Include only add-ins from the specified 'ns' namespace.");
 			commands.Add (cmd);

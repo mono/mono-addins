@@ -7,6 +7,8 @@ obj
 *policy*config
 *.pc
 *.dll
+Test/UnitTests/bin
+Test/UnitTests/obj
 
 # Ide stuff
 *.pidb

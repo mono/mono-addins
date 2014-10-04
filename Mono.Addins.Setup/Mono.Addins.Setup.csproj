@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <ProjectGuid>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Addins.Setup</AssemblyName>
@@ -22,8 +22,8 @@
     <WarningLevel>4</WarningLevel>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <ConsolePause>False</ConsolePause>
-    <GenerateDocumentation>True</GenerateDocumentation>
     <NoWarn>1574</NoWarn>
+    <DocumentationFile>..\bin\Mono.Addins.Setup.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -79,6 +79,7 @@
     <Compile Include="Mono.Addins.Setup\ConsoleAddinInstaller.cs" />
     <Compile Include="Mono.Addins.Setup\PcFileCache.cs" />
     <Compile Include="Mono.Addins.Setup\TextFormatter.cs" />
+    <Compile Include="Mono.Addins.Setup\WebRequestHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -88,15 +89,6 @@
     <MonoDevelop>
       <Properties>
         <Deployment.LinuxDeployData scriptName="mono.addins.setup" />
-        <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
-          <BuildFilesVar Sync="True" Name="FILES" />
-          <DeployFilesVar Sync="True" Name="DATA_FILES" />
-          <ResourcesVar Sync="True" Name="RESOURCES" />
-          <OthersVar />
-          <GacRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
-          <AsmRefVar Sync="True" Name="DLL_REFERENCES" />
-          <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
-        </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>

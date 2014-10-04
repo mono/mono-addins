@@ -470,7 +470,7 @@ namespace Mono.Addins.Database
 				}
 			}
 
-			Configuration.SetStatus (id, true, ainfo.AddinInfo.EnabledByDefault);
+			Configuration.SetEnabled (id, true, ainfo.AddinInfo.EnabledByDefault);
 			SaveConfiguration ();
 
 			if (addinEngine != null && addinEngine.IsInitialized)
@@ -486,7 +486,7 @@ namespace Mono.Addins.Database
 			if (!IsAddinEnabled (domain, id))
 				return;
 			
-			Configuration.SetStatus (id, false, ai.AddinInfo.EnabledByDefault);
+			Configuration.SetEnabled (id, false, ai.AddinInfo.EnabledByDefault);
 			SaveConfiguration ();
 			
 			// Disable all add-ins which depend on it
@@ -519,7 +519,7 @@ namespace Mono.Addins.Database
 			}
 			catch {
 				// If something goes wrong, enable the add-in again
-				Configuration.SetStatus (id, true, ai.AddinInfo.EnabledByDefault);
+				Configuration.SetEnabled (id, true, ai.AddinInfo.EnabledByDefault);
 				SaveConfiguration ();
 				throw;
 			}
@@ -566,7 +566,7 @@ namespace Mono.Addins.Database
 				Update (null, domain);
 		}
 		
-		void GenerateAddinExtensionMapsInternal (IProgressStatus monitor, List<string> addinsToUpdate, List<string> addinsToUpdateRelations, List<string> removedAddins)
+		void GenerateAddinExtensionMapsInternal (IProgressStatus monitor, string domain, List<string> addinsToUpdate, List<string> addinsToUpdateRelations, List<string> removedAddins)
 		{
 			AddinUpdateData updateData = new AddinUpdateData (this, monitor);
 			
@@ -585,7 +585,7 @@ namespace Mono.Addins.Database
 			ArrayList files = new ArrayList ();
 			
 			bool partialGeneration = addinsToUpdate != null;
-			string[] domains = GetDomains ();
+			string[] domains = GetDomains ().Where (d => d == domain || d == GlobalDomain).ToArray ();
 			
 			// Get the files to be updated
 			
@@ -630,7 +630,7 @@ namespace Mono.Addins.Database
 				}
 			}
 			else {
-				foreach (string dom in domains)
+				foreach (var dom in domains)
 					files.AddRange (fileDatabase.GetDirectoryFiles (Path.Combine (AddinCachePath, dom), "*.maddin"));
 			}
 			
@@ -1393,7 +1393,7 @@ namespace Mono.Addins.Database
 					scanResult.AddinsToUpdateRelations = null;
 				}
 				
-				GenerateAddinExtensionMapsInternal (monitor, scanResult.AddinsToUpdate, scanResult.AddinsToUpdateRelations, scanResult.RemovedAddins);
+				GenerateAddinExtensionMapsInternal (monitor, scanResult.Domain, scanResult.AddinsToUpdate, scanResult.AddinsToUpdateRelations, scanResult.RemovedAddins);
 			}
 			catch (Exception ex) {
 				fatalDatabseError = true;
@@ -1443,8 +1443,11 @@ namespace Mono.Addins.Database
 					if (einfo != null) einfo.AddEventHandler (AppDomain.CurrentDomain, resolver);
 				
 					AddinDescription desc = scanner.ScanSingleFile (progressStatus, file, sr);
-					if (desc != null)
+					if (desc != null) {
+						// Reset the xml doc so that it is not reused when saving. We want a brand new document
+						desc.ResetXmlDoc ();
 						desc.Save (outFile);
+					}
 				}
 				finally {
 					AppDomain.CurrentDomain.AssemblyResolve -= resolver;

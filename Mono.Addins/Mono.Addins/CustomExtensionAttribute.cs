@@ -83,6 +83,22 @@ namespace Mono.Addins
 			get { return path; }
 			set { path = value; }
 		}
+
+		/// <summary>
+		/// The extension node bound to this attribute
+		/// </summary>
+		public ExtensionNode ExtensionNode { get; internal set; }
+
+
+		/// <summary>
+		/// The add-in that registered this extension node.
+		/// </summary>
+		/// <remarks>
+		/// This property provides access to the resources and types of the add-in that created this extension node.
+		/// </remarks>
+		public RuntimeAddin Addin {
+			get { return ExtensionNode.Addin; }
+		}
 	}
 }
 

@@ -55,27 +55,31 @@ namespace Mono.Addins.Database
 		
 		public bool IsEnabled (string addinId, bool defaultValue)
 		{
+			var addinName = Addin.GetIdName (addinId);
+
 			AddinStatus s;
-			if (addinStatus.TryGetValue (addinId, out s))
-				return s.Enabled && !s.Uninstalled;
+			if (addinStatus.TryGetValue (addinName, out s))
+				return s.Enabled && !IsRegisteredForUninstall (addinId);
 			else
 				return defaultValue;
 		}
 		
-		public void SetStatus (string addinId, bool enabled, bool defaultValue)
+		public void SetEnabled (string addinId, bool enabled, bool defaultValue)
 		{
-			AddinStatus s;
-			addinStatus.TryGetValue (addinId, out s);
-			
-			if (s != null && s.Uninstalled)
+			if (IsRegisteredForUninstall (addinId))
 				return;
+
+			var addinName = Addin.GetIdName (addinId);
+
+			AddinStatus s;
+			addinStatus.TryGetValue (addinName, out s);
 			
 			if (enabled == defaultValue) {
-				addinStatus.Remove (addinId);
+				addinStatus.Remove (addinName);
 				return;
 			}
 			if (s == null)
-				s = addinStatus [addinId] = new AddinStatus (addinId);
+				s = addinStatus [addinName] = new AddinStatus (addinName);
 			s.Enabled = enabled;
 		}
 		
@@ -123,7 +127,7 @@ namespace Mono.Addins.Database
 			if (disabledElem != null) {
 				// For back compatibility
 				foreach (XmlElement elem in disabledElem.SelectNodes ("Addin"))
-					config.SetStatus (elem.InnerText, false, true);
+					config.SetEnabled (elem.InnerText, false, true);
 				return config;
 			}
 			

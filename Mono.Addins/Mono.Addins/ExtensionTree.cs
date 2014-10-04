@@ -212,7 +212,7 @@ namespace Mono.Addins
 						addinEngine.ReportError ("Custom attribute type '" + ntype.ExtensionAttributeTypeName + "' not found.", ntype.AddinId, null, false);
 						return false;
 					}
-					if (ntype.ObjectTypeName.Length > 0)
+					if (ntype.ObjectTypeName.Length > 0 || ntype.TypeName == typeof(TypeExtensionNode).FullName)
 						ntype.Type = typeof(TypeExtensionNode<>).MakeGenericType (attType);
 					else
 						ntype.Type = typeof(ExtensionNode<>).MakeGenericType (attType);

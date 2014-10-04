@@ -33,6 +33,7 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Mono.Addins.Setup
 {
@@ -125,37 +126,29 @@ namespace Mono.Addins.Setup
 				res.SetDone ();
 				return res;
 			}
-			else {
-				HttpWebRequest req = (HttpWebRequest) HttpWebRequest.Create (u);
-				res.FilePath = cachedFile;
-				res.Request = req;
-				req.BeginGetResponse (OnGotResponse, res);
-			}
-			return res;
-		}
-		
-		void OnGotResponse (IAsyncResult ares)
-		{
-			FileAsyncResult res = (FileAsyncResult) ares.AsyncState;
-			try {
-				WebResponse resp = res.Request.EndGetResponse (ares);
-				string dir = Path.GetDirectoryName (res.FilePath);
-				lock (this) {
-					if (!Directory.Exists (dir))
-						Directory.CreateDirectory (dir);
-				}
-				byte[] buffer = new byte [8092];
-				using (var s = resp.GetResponseStream ()) {
-					using (var f = File.OpenWrite (res.FilePath)) {
-						int nr = 0;
-						while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
-							f.Write (buffer, 0, nr);
+
+			res.FilePath = cachedFile;
+			WebRequestHelper.GetResponseAsync (() => (HttpWebRequest)WebRequest.Create (u)).ContinueWith (t => {
+				try {
+					var resp = t.Result;
+					string dir = Path.GetDirectoryName (res.FilePath);
+					lock (this) {
+						if (!Directory.Exists (dir))
+							Directory.CreateDirectory (dir);
 					}
+					byte[] buffer = new byte [8092];
+					using (var s = resp.GetResponseStream ()) {
+						using (var f = File.OpenWrite (res.FilePath)) {
+							int nr = 0;
+							while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
+								f.Write (buffer, 0, nr);
+						}
+					}
+				} catch (Exception ex) {
+					res.Error = ex;
 				}
-			} catch (Exception ex) {
-				res.Error = ex;
-			}
-			res.SetDone ();
+			});
+			return res;
 		}
 		
 		public Stream EndDownloadSupportFile (IAsyncResult ares)
@@ -174,7 +167,6 @@ namespace Mono.Addins.Setup
 		ManualResetEvent done;
 		
 		public string FilePath;
-		public HttpWebRequest Request;
 		public AsyncCallback Callback;
 		public Exception Error;
 		

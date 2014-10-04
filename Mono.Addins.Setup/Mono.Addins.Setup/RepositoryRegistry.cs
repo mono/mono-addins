@@ -351,7 +351,7 @@ namespace Mono.Addins.Setup
 					refRep = RegisterRepository (refRepUrl, true);
 				refRep.Enabled = rr.Enabled;
 				// Update the repo if the modified timestamp changes or if there is no timestamp info
-				if (refRep.LastModified != re.LastModified || re.LastModified == DateTime.MinValue) {
+				if (refRep.LastModified != re.LastModified || re.LastModified == DateTime.MinValue || !File.Exists (refRep.File)) {
 					refRep.LastModified = re.LastModified;
 					UpdateRepository (monitor, refRepUri, refRep);
 				}
