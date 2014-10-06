@@ -58,18 +58,20 @@ namespace Mono.Addins.Database
 			var addinName = Addin.GetIdName (addinId);
 
 			AddinStatus s;
-			if (addinStatus.TryGetValue (addinName, out s))
+			if (addinStatus.TryGetValue (addinId, out s))
+				return s.Enabled && !IsRegisteredForUninstall (addinId);
+			else if (addinStatus.TryGetValue (addinName, out s))
 				return s.Enabled && !IsRegisteredForUninstall (addinId);
 			else
 				return defaultValue;
 		}
 		
-		public void SetEnabled (string addinId, bool enabled, bool defaultValue)
+		public void SetEnabled (string addinId, bool enabled, bool defaultValue, bool exactVersionMatch)
 		{
 			if (IsRegisteredForUninstall (addinId))
 				return;
 
-			var addinName = Addin.GetIdName (addinId);
+			var addinName = exactVersionMatch ? addinId : Addin.GetIdName (addinId);
 
 			AddinStatus s;
 			addinStatus.TryGetValue (addinName, out s);
@@ -127,7 +129,7 @@ namespace Mono.Addins.Database
 			if (disabledElem != null) {
 				// For back compatibility
 				foreach (XmlElement elem in disabledElem.SelectNodes ("Addin"))
-					config.SetEnabled (elem.InnerText, false, true);
+					config.SetEnabled (elem.InnerText, false, true, false);
 				return config;
 			}
 			
