@@ -470,23 +470,23 @@ namespace Mono.Addins.Database
 				}
 			}
 
-			Configuration.SetEnabled (id, true, ainfo.AddinInfo.EnabledByDefault);
+			Configuration.SetEnabled (id, true, ainfo.AddinInfo.EnabledByDefault, false);
 			SaveConfiguration ();
 
 			if (addinEngine != null && addinEngine.IsInitialized)
 				addinEngine.ActivateAddin (id);
 		}
 		
-		public void DisableAddin (string domain, string id)
+		public void DisableAddin (string domain, string id, bool exactVersionMatch = false)
 		{
 			Addin ai = GetInstalledAddin (domain, id, true);
 			if (ai == null)
 				throw new InvalidOperationException ("Add-in '" + id + "' not installed.");
 
-			if (!IsAddinEnabled (domain, id))
+			if (!IsAddinEnabled (domain, id, exactVersionMatch))
 				return;
 			
-			Configuration.SetEnabled (id, false, ai.AddinInfo.EnabledByDefault);
+			Configuration.SetEnabled (id, false, ai.AddinInfo.EnabledByDefault, exactVersionMatch);
 			SaveConfiguration ();
 			
 			// Disable all add-ins which depend on it
@@ -519,7 +519,7 @@ namespace Mono.Addins.Database
 			}
 			catch {
 				// If something goes wrong, enable the add-in again
-				Configuration.SetEnabled (id, true, ai.AddinInfo.EnabledByDefault);
+				Configuration.SetEnabled (id, true, ai.AddinInfo.EnabledByDefault, false);
 				SaveConfiguration ();
 				throw;
 			}
@@ -530,7 +530,7 @@ namespace Mono.Addins.Database
 		
 		public void RegisterForUninstall (string domain, string id, IEnumerable<string> files)
 		{
-			DisableAddin (domain, id);
+			DisableAddin (domain, id, true);
 			Configuration.RegisterForUninstall (id, files);
 			SaveConfiguration ();
 		}
