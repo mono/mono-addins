@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Ported from Stetic to GtkBuilder by Stephan Sundermann and Robert Nordan -->
+<interface><!-- interface-requires gtk+ 3.0 -->
+   <object class="GtkDialog" id="ErrorDialog">
+      <property name="member_name"/>
+      <property name="generate_public">False</property>
+      <property name="title" translatable="yes">Error</property>
+      <property name="type_hint">Dialog</property>
+      <property name="border_width">6</property>
+      <property name="buttons">1</property>
+      <property name="help_button">False</property>
+      <child internal-child="vbox">
+         <object class="GtkBox" id="dialog-vbox5">
+            <property name="orientation">vertical</property>
+            <property name="member_name"/>
+            <property name="spacing">6</property>
+            <child>
+               <object class="GtkHBox" id="hbox59">
+                  <property name="member_name"/>
+                  <property name="spacing">6</property>
+                  <property name="border_width">6</property>
+                  <child>
+                     <object class="GtkBox" id="vbox72">
+                        <property name="orientation">vertical</property>
+                        <property name="member_name"/>
+                        <child>
+                           <object class="GtkImage" id="icon">
+                              <property name="member_name"/>
+                              <property name="pixbuf">stock:gtk-dialog-error Dialog</property>
+                           </object>
+                           <packing>
+                              <property name="position">0</property>
+                              <property name="auto_size">False</property>
+                              <property name="expand">False</property>
+                              <property name="fill">False</property>
+                           </packing>
+                        </child>
+                     </object>
+                     <packing>
+                        <property name="position">0</property>
+                        <property name="auto_size">False</property>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                     </packing>
+                  </child>
+                  <child>
+                     <object class="GtkBox" id="vbox73">
+                        <property name="orientation">vertical</property>
+                        <property name="member_name"/>
+                        <property name="spacing">12</property>
+                        <child>
+                           <object class="GtkLabel" id="descriptionLabel">
+                              <property name="member_name"/>
+                              <property name="width_request">540</property>
+                              <property name="can_focus">True</property>
+                              <property name="xalign">0</property>
+                              <property name="label">An exception has been thrown 1 2 3 4 5 6 7 8 9 10 11 12 13 14</property>
+                              <property name="wrap">True</property>
+                              <property name="selectable">True</property>
+                           </object>
+                           <packing>
+                              <property name="position">0</property>
+                              <property name="auto_size">False</property>
+                              <property name="expand">False</property>
+                              <property name="fill">False</property>
+                           </packing>
+                        </child>
+                        <child>
+                           <object class="GtkExpander" id="expander">
+                              <property name="member_name"/>
+                              <property name="can_focus">True</property>
+                              <child>
+                                 <object class="GtkScrolledWindow" id="scrolledwindow10">
+                                    <property name="member_name"/>
+                                    <property name="can_focus">True</property>
+                                    <property name="shadow_type">In</property>
+                                    <child>
+                                       <object class="GtkTextView" id="detailsTextView">
+                                          <property name="member_name"/>
+                                          <property name="height_request">250</property>
+                                          <property name="can_focus">True</property>
+                                          <property name="text" translatable="yes"/>
+                                          <property name="pixels_above_lines">2</property>
+                                          <property name="pixels_below_lines">2</property>
+                                          <property name="left_margin">6</property>
+                                          <property name="right_margin">6</property>
+                                       </object>
+                                    </child>
+                                 </object>
+                              </child>
+                              <child>
+                                 <object class="GtkLabel" id="label102">
+                                    <property name="member_name"/>
+                                    <property name="label" translatable="yes">Details</property>
+                                 </object>
+                                 <packing>
+                                    <property name="type">label_item</property>
+                                 </packing>
+                              </child>
+                           </object>
+                           <packing>
+                              <property name="position">1</property>
+                              <property name="auto_size">False</property>
+                           </packing>
+                        </child>
+                     </object>
+                     <packing>
+                        <property name="position">1</property>
+                        <property name="auto_size">False</property>
+                     </packing>
+                  </child>
+               </object>
+               <packing>
+                  <property name="position">0</property>
+                  <property name="auto_size">False</property>
+               </packing>
+            </child>
+         </object>
+      </child>
+      <child internal-child="action_area">
+         <object class="GtkHButtonBox" id="dialog-action_area5">
+            <property name="member_name"/>
+            <property name="spacing">10</property>
+            <property name="border_width">5</property>
+            <property name="size">1</property>
+            <property name="layout_style">End</property>
+            <child>
+               <object class="GtkButton" id="okButton">
+                  <property name="member_name"/>
+                  <property name="can_default">True</property>
+                  <property name="can_focus">True</property>
+                  <property name="use_stock">True</property>
+                  <property name="type">StockItem</property>
+                  <property name="stock_id">gtk-ok</property>
+                  <property name="response_id">-5</property>
+                  <property name="label">gtk-ok</property>
+               </object>
+               <packing>
+                  <property name="expand">False</property>
+                  <property name="fill">False</property>
+               </packing>
+            </child>
+         </object>
+      </child>
+   </object>
+</interface>

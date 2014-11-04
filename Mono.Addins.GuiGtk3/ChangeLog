@@ -1,0 +1,4 @@
+2013-10-12  Robert Nordan <rpvn@robpvn.net>
+
+	* New project building with GTK#3. Porting help from Stephan
+	  Sundermann and Mirco Bauer. (#monohack in Vienna)

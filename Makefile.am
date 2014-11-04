@@ -1,5 +1,5 @@
 
-SUBDIRS =  Mono.Addins Mono.Addins.CecilReflector Mono.Addins.Setup Mono.Addins.MSBuild Mono.Addins.Gui mautil Test docs
+SUBDIRS =  Mono.Addins Mono.Addins.CecilReflector Mono.Addins.Setup Mono.Addins.MSBuild Mono.Addins.Gui Mono.Addins.GuiGtk3 mautil Test docs
 
 EXTRA_DIST = COPYING mono-addins.snk Mono.Addins.sln
 

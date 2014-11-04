@@ -47,6 +47,13 @@ AC_ARG_ENABLE(gui,
 
 AM_CONDITIONAL(ENABLE_GUI, test x$enable_gui = xyes)
 
+AC_ARG_ENABLE(gui_gtk3,
+	AC_HELP_STRING([--enable-gui-gtk3],
+		[enable support for GTK3 dependent libraries [default=no]]),
+		enable_gui_gtk3=${enableval}, enable_gui_gtk3=no)
+
+AM_CONDITIONAL(ENABLE_GUI_GTK3, test x$enable_gui_gtk3 = xyes)
+
 AC_ARG_ENABLE(tests,
 	AC_HELP_STRING([--enable-tests],
 		[build unit tests [default=no]]),
@@ -65,6 +72,10 @@ if test "x$enable_gui" = "xyes"; then
 	PKG_CHECK_MODULES([GTK_SHARP_20], [gtk-sharp-2.0])
 fi
 
+if test "x$enable_gui_gtk3" = "xyes"; then
+	PKG_CHECK_MODULES([GTK_SHARP_30], [gtk-sharp-3.0 >= 2.99])
+fi
+
 if test "x$enable_tests" = "xyes"; then
 	PKG_CHECK_MODULES([MONO_NUNIT], [mono-nunit])
 fi
@@ -79,9 +90,11 @@ AC_SUBST(MONO_NUNIT_LIBS)
 MONO_ADDINS_DEFAULT_LIB='Mono.Addins.dll'
 MONO_ADDINS_SETUP_DEFAULT_LIB='Mono.Addins.Setup.dll'
 MONO_ADDINS_GUI_DEFAULT_LIB='Mono.Addins.Gui.dll'
+MONO_ADDINS_GUI_GTK3_DEFAULT_LIB='Mono.Addins.GuiGtk3.dll'
 MONO_ADDINS_MSBUILD_DEFAULT_LIB='Mono.Addins.MSBuild.dll'
 AC_SUBST(MONO_ADDINS_DEFAULT_LIB)
 AC_SUBST(MONO_ADDINS_GUI_DEFAULT_LIB)
+AC_SUBST(MONO_ADDINS_GUI_GTK3_DEFAULT_LIB)
 AC_SUBST(MONO_ADDINS_SETUP_DEFAULT_LIB)
 AC_SUBST(MONO_ADDINS_MSBUILD_DEFAULT_LIB)
 
@@ -89,11 +102,13 @@ AC_CONFIG_FILES([
 ./mono-addins.spec
 ./Mono.Addins/mono-addins.pc
 ./Mono.Addins.Gui/mono-addins-gui.pc
+./Mono.Addins.GuiGtk3/mono-addins-gui-gtk3.pc
 ./Mono.Addins.Setup/mono-addins-setup.pc
 ./Mono.Addins.MSBuild/mono-addins-msbuild.pc
 ./Makefile
 ./policy.config
 ./Mono.Addins.Gui/Makefile
+./Mono.Addins.GuiGtk3/Makefile
 ./Mono.Addins.Setup/Makefile
 ./Mono.Addins/Makefile
 ./Mono.Addins.CecilReflector/Makefile
@@ -117,7 +132,8 @@ echo ""
 echo "Configuration summary"
 echo ""
 echo "   * Installation prefix = $prefix"
-echo "   * gui support: $enable_gui"
+echo "   * GTK2 gui support: $enable_gui"
+echo "   * GTK3 gui support: $enable_gui_gtk3"
 echo "   * unit tests: $enable_tests"
 echo "   * documentation: $enable_docs"
 echo ""
