@@ -44,7 +44,7 @@ namespace Mono.Addins
 		TreeNode parent;
 		ExtensionNodeSet nodeTypes;
 		ExtensionPoint extensionPoint;
-		BaseCondition condition;
+		ConditionExpression condition;
 		protected AddinEngine addinEngine;
 
 		public TreeNode (AddinEngine addinEngine, string id)
@@ -97,7 +97,7 @@ namespace Mono.Addins
 			get { return parent; }
 		}
 		
-		public BaseCondition Condition {
+		public ConditionExpression Condition {
 			get { return condition; }
 			set {
 				condition = value;
@@ -121,7 +121,7 @@ namespace Mono.Addins
 				if (ctx == null)
 					return true;
 				else
-					return condition.Evaluate (ctx);
+					return condition.BoolEvaluate (ctx);
 			}
 		}
 		

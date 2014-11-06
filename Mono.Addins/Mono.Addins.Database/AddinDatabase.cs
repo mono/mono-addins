@@ -914,7 +914,31 @@ namespace Mono.Addins.Database
 						// is loaded when it tries to evaluate this condition.
 						var condAsm = index.FindCondition (conf, module, id);
 						if (condAsm != null)
-							node.SetAttribute (Condition.SourceAddinAttribute, condAsm);
+							node.SetAttribute (CustomConditionExpression.SourceAddinAttribute, condAsm);
+					} else {
+						var cond = node.GetAttribute ("condition");
+						if (!string.IsNullOrEmpty (cond)) {
+							ConditionExpression c;
+							try {
+								// Find the add-in that provides the implementation for this condition.
+								c = ConditionParser.ParseCondition (cond);
+							} catch {
+								// do nothing. The error has already been reported while scanning the add-in
+								c = null;
+							}
+							if (c != null) {
+								List<string> types = new List<string> ();
+								c.GetConditionTypes (types);
+								HashSet<string> addins = new HashSet<string> ();
+								foreach (var ct in types) {
+									var condAsm = index.FindCondition (conf, module, ct);
+									if (condAsm != null)
+										addins.Add (condAsm);
+								}
+								if (addins.Count > 0)
+									node.SetAttribute (CustomConditionExpression.SourceAddinAttribute, string.Join (";", addins));
+							}
+						}
 					}
 					AddChildExtensions (conf, module, updateData, index, path + "/" + id, node.ChildNodes, isCondition);
 				}

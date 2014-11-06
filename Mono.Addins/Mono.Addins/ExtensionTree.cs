@@ -59,17 +59,29 @@ namespace Mono.Addins
 				addinEngine.ReportError ("Can't load extensions for path '" + extension.Path + "'. Extension point not defined.", addin, null, false);
 				return;
 			}
-			
+
+			var parentCondition = tnode.Condition;
+
+			if (!string.IsNullOrEmpty (extension.Condition)) {
+				var cond = ConditionParser.ParseCondition (extension.Condition);
+				if (parentCondition != null)
+					cond = new AndConditionExpression (parentCondition, cond);
+				parentCondition = cond;
+			}
+
 			int curPos = tnode.ChildCount;
-			LoadExtensionElement (tnode, addin, extension.ExtensionNodes, (ModuleDescription) extension.Parent, ref curPos, tnode.Condition, false, addedNodes);
+			LoadExtensionElement (tnode, addin, extension.ExtensionNodes, (ModuleDescription) extension.Parent, ref curPos, parentCondition, false, addedNodes);
 		}
 
-		void LoadExtensionElement (TreeNode tnode, string addin, ExtensionNodeDescriptionCollection extension, ModuleDescription module, ref int curPos, BaseCondition parentCondition, bool inComplextCondition, ArrayList addedNodes)
+		void LoadExtensionElement (TreeNode tnode, string addin, ExtensionNodeDescriptionCollection extension, ModuleDescription module, ref int curPos, ConditionExpression parentCondition, bool inComplextCondition, ArrayList addedNodes)
 		{
 			foreach (ExtensionNodeDescription elem in extension) {
 					
 				if (inComplextCondition) {
-					parentCondition = ReadComplexCondition (elem, parentCondition);
+					var cond = ReadComplexCondition (elem);
+					if (parentCondition != null)
+						cond = new AndConditionExpression (parentCondition, cond);
+					parentCondition = cond;
 					inComplextCondition = false;
 					continue;
 				}
@@ -80,18 +92,20 @@ namespace Mono.Addins
 				}
 					
 				if (elem.NodeName == "Condition") {
-					Condition cond = new Condition (AddinEngine, elem, parentCondition);
+					ConditionExpression cond = new CustomConditionExpression (elem);
+					if (parentCondition != null)
+						cond = new AndConditionExpression (parentCondition, cond);
 					LoadExtensionElement (tnode, addin, elem.ChildNodes, module, ref curPos, cond, false, addedNodes);
 					continue;
 				}
 					
-				string after = elem.GetAttribute ("insertafter");
+				string after = elem.InsertAfter;
 				if (after.Length > 0) {
 					int i = tnode.Children.IndexOfNode (after);
 					if (i != -1)
 						curPos = i+1;
 				}
-				string before = elem.GetAttribute ("insertbefore");
+				string before = elem.InsertBefore;
 				if (before.Length > 0) {
 					int i = tnode.Children.IndexOfNode (before);
 					if (i != -1)
@@ -106,7 +120,7 @@ namespace Mono.Addins
 					continue;
 				}
 				
-				string id = elem.GetAttribute ("id");
+				string id = elem.Id;
 				if (id.Length == 0)
 					id = AutoIdPrefix + (++internalId);
 
@@ -115,6 +129,14 @@ namespace Mono.Addins
 				ExtensionNode enode = ReadNode (cnode, addin, ntype, elem, module);
 				if (enode == null)
 					continue;
+
+				string condition = elem.Condition;
+				if (!string.IsNullOrEmpty (condition)) {
+					var cond = ConditionParser.ParseCondition (condition);
+					if (parentCondition != null)
+						cond = new AndConditionExpression (parentCondition, cond);
+					parentCondition = cond;
+				}
 
 				cnode.Condition = parentCondition;
 				cnode.ExtensionNodeSet = ntype;
@@ -136,30 +158,34 @@ namespace Mono.Addins
 				tnode.NotifyChildrenChanged ();
 		}
 		
-		BaseCondition ReadComplexCondition (ExtensionNodeDescription elem, BaseCondition parentCondition)
+		ConditionExpression ReadComplexCondition (ExtensionNodeDescription elem)
 		{
 			if (elem.NodeName == "Or" || elem.NodeName == "And" || elem.NodeName == "Not") {
-				ArrayList conds = new ArrayList ();
+				var conds = new List<ConditionExpression> ();
 				foreach (ExtensionNodeDescription celem in elem.ChildNodes) {
-					conds.Add (ReadComplexCondition (celem, null));
+					conds.Add (ReadComplexCondition (celem));
 				}
+				if (conds.Count == 0)
+					return new LiteralConditionExpression (true);
+				else if (conds.Count == 1)
+					return conds [0];
 				if (elem.NodeName == "Or")
-					return new OrCondition ((BaseCondition[]) conds.ToArray (typeof(BaseCondition)), parentCondition);
+					return new OrConditionExpression (conds.ToArray ());
 				else if (elem.NodeName == "And")
-					return new AndCondition ((BaseCondition[]) conds.ToArray (typeof(BaseCondition)), parentCondition);
+					return new AndConditionExpression (conds.ToArray ());
 				else {
 					if (conds.Count != 1) {
 						addinEngine.ReportError ("Invalid complex condition element '" + elem.NodeName + "'. 'Not' condition can only have one parameter.", null, null, false);
-						return new NullCondition ();
+						return new NullConditionExpression ();
 					}
-					return new NotCondition ((BaseCondition) conds [0], parentCondition);
+					return new NotConditionExpression (conds [0]);
 				}
 			}
 			if (elem.NodeName == "Condition") {
-				return new Condition (AddinEngine, elem, parentCondition);
+				return new CustomConditionExpression (elem);
 			}
 			addinEngine.ReportError ("Invalid complex condition element '" + elem.NodeName + "'.", null, null, false);
-			return new NullCondition ();
+			return new NullConditionExpression ();
 		}
 		
 		public ExtensionNode ReadNode (TreeNode tnode, string addin, ExtensionNodeType ntype, ExtensionNodeDescription elem, ModuleDescription module)

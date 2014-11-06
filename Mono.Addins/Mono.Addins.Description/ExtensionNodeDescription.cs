@@ -161,7 +161,7 @@ namespace Mono.Addins.Description
 		public string InsertAfter {
 			get { return GetAttribute ("insertafter"); }
 			set {
-				if (value == null || value.Length == 0)
+				if (string.IsNullOrEmpty (value))
 					RemoveAttribute ("insertafter");
 				else
 					SetAttribute ("insertafter", value); 
@@ -177,13 +177,29 @@ namespace Mono.Addins.Description
 		public string InsertBefore {
 			get { return GetAttribute ("insertbefore"); }
 			set {
-				if (value == null || value.Length == 0)
+				if (string.IsNullOrEmpty (value))
 					RemoveAttribute ("insertbefore");
 				else
 					SetAttribute ("insertbefore", value); 
 			}
 		}
 		
+		/// <summary>
+		/// Gets or sets the condition expression that is applied to this node
+		/// </summary>
+		/// <value>
+		/// The condition expression
+		/// </value>
+		public string Condition {
+			get { return GetAttribute ("condition"); }
+			set {
+				if (string.IsNullOrEmpty (value))
+					RemoveAttribute ("condition");
+				else
+					SetAttribute ("condition", value); 
+			}
+		}
+
 		/// <summary>
 		/// Gets a value indicating whether this node is a condition.
 		/// </summary>

@@ -191,6 +191,7 @@ namespace Mono.Addins.Description
 		{
 			Element = element;
 			path = element.GetAttribute ("path");
+			Condition = element.GetAttribute ("condition");
 		}
 		
 		/// <summary>
@@ -203,7 +204,15 @@ namespace Mono.Addins.Description
 			get { return path; }
 			set { path = value; }
 		}
-		
+
+		/// <summary>
+		/// Gets or sets the condition expression that is applied to all nodes of this extension
+		/// </summary>
+		/// <value>
+		/// The condition expression
+		/// </value>
+		public string Condition { get; set; }
+
 		internal override void SaveXml (XmlElement parent)
 		{
 			if (Element == null) {
@@ -211,6 +220,10 @@ namespace Mono.Addins.Description
 				parent.AppendChild (Element);
 			}
 			Element.SetAttribute ("path", path);
+			if (!string.IsNullOrEmpty (Condition))
+				Element.SetAttribute ("condition", Condition);
+			else
+				Element.RemoveAttribute ("condition");
 			if (nodes != null)
 				nodes.SaveXml (Element);
 		}
@@ -247,12 +260,14 @@ namespace Mono.Addins.Description
 		{
 			writer.WriteValue ("path", path);
 			writer.WriteValue ("Nodes", ExtensionNodes);
+			writer.WriteValue ("condition", Condition);
 		}
 		
 		internal override void Read (BinaryXmlReader reader)
 		{
 			path = reader.ReadStringValue ("path");
 			nodes = (ExtensionNodeDescriptionCollection) reader.ReadValue ("Nodes", new ExtensionNodeDescriptionCollection (this));
+			Condition = reader.ReadStringValue ("condition");
 		}
 	}
 }

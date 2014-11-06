@@ -49,13 +49,15 @@ namespace Mono.Addins
 	{
 		internal object LocalLock = new object ();
 
-		Hashtable conditionTypes = new Hashtable ();
-		Hashtable conditionsToNodes = new Hashtable ();
+		Dictionary<string,ConditionInfo> conditionTypes = new Dictionary<string,ConditionInfo> ();
+		Dictionary<ConditionExpression,List<TreeNode>> conditionsToNodes = new Dictionary<ConditionExpression,List<TreeNode>> ();
 		List<WeakReference> childContexts;
 		ExtensionContext parentContext;
 		ExtensionTree tree;
 		bool fireEvents = false;
 		
+		Dictionary<string,string> conditionProperties = new Dictionary<string, string> ();
+
 		ArrayList runTimeEnabledAddins;
 		ArrayList runTimeDisabledAddins;
 		
@@ -184,8 +186,8 @@ namespace Mono.Addins
 		
 		ConditionInfo CreateConditionInfo (string id)
 		{
-			ConditionInfo info = conditionTypes [id] as ConditionInfo;
-			if (info == null) {
+			ConditionInfo info;
+			if (!conditionTypes.TryGetValue (id, out info)) {
 				info = new ConditionInfo ();
 				conditionTypes [id] = info;
 			}
@@ -199,9 +201,9 @@ namespace Mono.Addins
 		internal ConditionType GetCondition (string id)
 		{
 			ConditionType ct;
-			ConditionInfo info = (ConditionInfo) conditionTypes [id];
+			ConditionInfo info;
 			
-			if (info != null) {
+			if (conditionTypes.TryGetValue (id, out info)) {
 				if (info.CondType is Type) {
 					// The condition was registered as a type, create an instance now
 					ct = (ConditionType) Activator.CreateInstance ((Type)info.CondType);
@@ -221,24 +223,25 @@ namespace Mono.Addins
 			else
 				return null;
 		}
-		
-		internal void RegisterNodeCondition (TreeNode node, BaseCondition cond)
+
+		internal void RegisterNodeCondition (TreeNode node, ConditionExpression cond)
 		{
-			ArrayList list = (ArrayList) conditionsToNodes [cond];
-			if (list == null) {
-				list = new ArrayList ();
+			List<TreeNode> list;
+			if (!conditionsToNodes.TryGetValue (cond, out list)) {
+				list = new List<TreeNode> ();
 				conditionsToNodes [cond] = list;
-				ArrayList conditionTypeIds = new ArrayList ();
+				var conditionTypeIds = new List<string> ();
 				cond.GetConditionTypes (conditionTypeIds);
 				
 				foreach (string cid in conditionTypeIds) {
 				
 					// Make sure the condition is properly created
-					GetCondition (cid);
+					if (cid[0] != '$')
+						GetCondition (cid);
 					
 					ConditionInfo info = CreateConditionInfo (cid);
 					if (info.BoundConditions == null)
-						info.BoundConditions = new ArrayList ();
+						info.BoundConditions = new List<ConditionExpression> ();
 						
 					info.BoundConditions.Add (cond);
 				}
@@ -246,23 +249,46 @@ namespace Mono.Addins
 			list.Add (node);
 		}
 		
-		internal void UnregisterNodeCondition (TreeNode node, BaseCondition cond)
+		internal void UnregisterNodeCondition (TreeNode node, ConditionExpression cond)
 		{
-			ArrayList list = (ArrayList) conditionsToNodes [cond];
-			if (list == null)
+			List<TreeNode> list;
+			if (!conditionsToNodes.TryGetValue (cond, out list))
 				return;
 			
 			list.Remove (node);
 			if (list.Count == 0) {
 				conditionsToNodes.Remove (cond);
-				ArrayList conditionTypeIds = new ArrayList ();
+				var conditionTypeIds = new List<string> ();
 				cond.GetConditionTypes (conditionTypeIds);
-				foreach (string cid in conditionTypes.Keys) {
-					ConditionInfo info = conditionTypes [cid] as ConditionInfo;
-					if (info != null && info.BoundConditions != null)
+				foreach (var info in conditionTypes.Values) {
+					if (info.BoundConditions != null)
 						info.BoundConditions.Remove (cond);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets the value of a condition property
+		/// </summary>
+		/// <returns>The value.</returns>
+		/// <param name="name">Name of the property</param>
+		public string GetConditionProperty (string name)
+		{
+			string value;
+			if (conditionProperties.TryGetValue (name, out value))
+				return value;
+			return "";
+		}
+
+		/// <summary>
+		/// Sets the value of a condition property.
+		/// </summary>
+		/// <param name="name">Name of the property</param>
+		/// <param name="value">Value.</param>
+		public void SetConditionProperty (string name, string value)
+		{
+			conditionProperties [name] = value;
+			NotifyConditionChanged ("$" + name);
 		}
 		
 		/// <summary>
@@ -280,7 +306,7 @@ namespace Mono.Addins
 			if (node == null)
 				return null;
 			
-			if (node.Condition == null || node.Condition.Evaluate (this))
+			if (node.Condition == null || node.Condition.BoolEvaluate (this))
 				return node.ExtensionNode;
 			else
 				return null;
@@ -760,25 +786,25 @@ namespace Mono.Addins
 		void OnConditionChanged (object s, EventArgs a)
 		{
 			ConditionType cond = (ConditionType) s;
-			NotifyConditionChanged (cond);
+			NotifyConditionChanged (cond.Id);
 		}
 		
-		internal void NotifyConditionChanged (ConditionType cond)
+		internal void NotifyConditionChanged (string conditionId)
 		{
 			try {
 				fireEvents = true;
 				
-				ConditionInfo info = (ConditionInfo) conditionTypes [cond.Id];
-				if (info != null && info.BoundConditions != null) {
-					Hashtable parentsToNotify = new Hashtable ();
-					foreach (BaseCondition c in info.BoundConditions) {
-						ArrayList nodeList = (ArrayList) conditionsToNodes [c];
-						if (nodeList != null) {
+				ConditionInfo info;
+				if (conditionTypes.TryGetValue (conditionId, out info) && info.BoundConditions != null) {
+					var parentsToNotify = new HashSet<TreeNode> ();
+					foreach (ConditionExpression c in info.BoundConditions) {
+						List<TreeNode> nodeList;
+						if (conditionsToNodes.TryGetValue (c, out nodeList)) {
 							foreach (TreeNode node in nodeList)
-								parentsToNotify [node.Parent] = null;
+								parentsToNotify.Add (node.Parent);
 						}
 					}
-					foreach (TreeNode node in parentsToNotify.Keys) {
+					foreach (TreeNode node in parentsToNotify) {
 						if (node.NotifyChildrenChanged ())
 							NotifyExtensionsChanged (new ExtensionEventArgs (node.GetPath ()));
 					}
@@ -795,7 +821,7 @@ namespace Mono.Addins
 					foreach (WeakReference wref in childContexts) {
 						ExtensionContext ctx = wref.Target as ExtensionContext;
 						if (ctx != null)
-							ctx.NotifyConditionChanged (cond);
+							ctx.NotifyConditionChanged (conditionId);
 					}
 				}
 			}
@@ -1211,7 +1237,7 @@ namespace Mono.Addins
 	class ConditionInfo
 	{
 		public object CondType;
-		public ArrayList BoundConditions;
+		public List<ConditionExpression> BoundConditions;
 	}
 
 	

@@ -31,6 +31,8 @@ using System;
 using System.Xml;
 using Mono.Addins.Description;
 using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace Mono.Addins
 {
@@ -81,156 +83,450 @@ namespace Mono.Addins
 		}
 	}
 	
-	internal class BaseCondition
+	internal abstract class ConditionExpression
 	{
-		BaseCondition parent;
-		
-		internal BaseCondition (BaseCondition parent)
+		internal ConditionExpression ()
 		{
-			this.parent = parent;
 		}
-		
-		public virtual bool Evaluate (ExtensionContext ctx)
+
+		public bool BoolEvaluate (ExtensionContext context)
 		{
-			return parent == null || parent.Evaluate (ctx);
+			var val = Evaluate (context);
+			if (!(val is bool))
+				throw new EvaluationException (String.Format ("Can not evaluate \"{0}\" to bool.", ToString()));
+			return (bool)val;
 		}
-		
-		internal virtual void GetConditionTypes (ArrayList listToFill)
+
+		public abstract object Evaluate (ExtensionContext ctx);
+
+		internal abstract void GetConditionTypes (List<string> listToFill);
+
+		protected bool IsInteger (object value)
 		{
+			return value is int || value is byte || value is long;
+		}
+
+		protected long GetInteger (object value)
+		{
+			return Convert.ToInt64 (value);
+		}
+
+		protected bool IsFloat (object value)
+		{
+			return value is float || value is double;
+		}
+
+		protected bool IsNumber (object value)
+		{
+			return value is int || value is byte || value is long || value is float || value is double;
+		}
+
+		protected double GetFloat (object value)
+		{
+			return Convert.ToDouble (value);
 		}
 	}
 	
-	internal class NullCondition: BaseCondition
+	internal class NullConditionExpression: ConditionExpression
 	{
-		public NullCondition (): base (null)
+		public NullConditionExpression ()
 		{
 		}
 		
-		public override bool Evaluate (ExtensionContext ctx)
+		public override object Evaluate (ExtensionContext ctx)
 		{
 			return false;
 		}
-	}
-	
-	class OrCondition: BaseCondition
-	{
-		BaseCondition[] conditions;
-		
-		public OrCondition (BaseCondition[] conditions, BaseCondition parent): base (parent)
+
+		internal override void GetConditionTypes (List<string> listToFill)
 		{
-			this.conditions = conditions;
-		}
-		
-		public override bool Evaluate (ExtensionContext ctx)
-		{
-			if (!base.Evaluate (ctx))
-				return false;
-			foreach (BaseCondition cond in conditions)
-				if (cond.Evaluate (ctx))
-					return true;
-			return false;
-		}
-		
-		internal override void GetConditionTypes (ArrayList listToFill)
-		{
-			foreach (BaseCondition cond in conditions)
-				cond.GetConditionTypes (listToFill);
 		}
 	}
 	
-	class AndCondition: BaseCondition
+	class OrConditionExpression: BinaryConditionExpression
 	{
-		BaseCondition[] conditions;
-		
-		public AndCondition (BaseCondition[] conditions, BaseCondition parent): base (parent)
+		public OrConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
 		{
-			this.conditions = conditions;
 		}
-		
-		public override bool Evaluate (ExtensionContext ctx)
+
+		public OrConditionExpression (ConditionExpression[] conditionExpressions, int index = 0)
 		{
-			if (!base.Evaluate (ctx))
-				return false;
-			foreach (BaseCondition cond in conditions)
-				if (!cond.Evaluate (ctx))
-					return false;
-			return true;
+			exp1 = conditionExpressions [index];
+			if (conditionExpressions.Length == index + 2)
+				exp2 = conditionExpressions [index + 1];
+			else
+				exp2 = new OrConditionExpression (conditionExpressions, index + 1);
 		}
-		
-		internal override void GetConditionTypes (ArrayList listToFill)
+
+		public override object Evaluate (ExtensionContext ctx)
 		{
-			foreach (BaseCondition cond in conditions)
-				cond.GetConditionTypes (listToFill);
+			return exp1.BoolEvaluate (ctx) || exp2.BoolEvaluate (ctx);
 		}
 	}
 	
-	class NotCondition: BaseCondition
+	class AndConditionExpression: BinaryConditionExpression
 	{
-		BaseCondition baseCond;
-		
-		public NotCondition (BaseCondition baseCond, BaseCondition parent): base (parent)
+		public AndConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
 		{
-			this.baseCond = baseCond;
+		}
+
+		public AndConditionExpression (ConditionExpression[] conditionExpressions, int index = 0)
+		{
+			exp1 = conditionExpressions [index];
+			if (conditionExpressions.Length == index + 2)
+				exp2 = conditionExpressions [index + 1];
+			else
+				exp2 = new AndConditionExpression (conditionExpressions, index + 1);
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			return exp1.BoolEvaluate (ctx) && exp2.BoolEvaluate (ctx);
+		}
+	}
+	
+	class NotConditionExpression: ConditionExpression
+	{
+		ConditionExpression exp;
+		
+		public NotConditionExpression (ConditionExpression exp)
+		{
+			this.exp = exp;
 		}
 		
-		public override bool Evaluate (ExtensionContext ctx)
+		public override object Evaluate (ExtensionContext ctx)
 		{
-			return !base.Evaluate (ctx);
+			return !exp.BoolEvaluate (ctx);
 		}
 		
-		internal override void GetConditionTypes (System.Collections.ArrayList listToFill)
+		internal override void GetConditionTypes (List<string> listToFill)
 		{
-			baseCond.GetConditionTypes (listToFill);
+			exp.GetConditionTypes (listToFill);
 		}
 	}
 
-	
-	internal sealed class Condition: BaseCondition
+	class EqualsConditionExpression: BinaryConditionExpression
+	{
+		public EqualsConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
+		{
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			return object.Equals (exp1.Evaluate (ctx), exp2.Evaluate (ctx));
+		}
+	}
+
+	class NotEqualsConditionExpression: BinaryConditionExpression
+	{
+		public NotEqualsConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
+		{
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			return !object.Equals (exp1.Evaluate (ctx), exp2.Evaluate (ctx));
+		}
+	}
+
+	abstract class BinaryConditionExpression: ConditionExpression
+	{
+		protected ConditionExpression exp1;
+		protected ConditionExpression exp2;
+
+		protected BinaryConditionExpression ()
+		{
+		}
+
+		protected BinaryConditionExpression (ConditionExpression exp1, ConditionExpression exp2)
+		{
+			this.exp1 = exp1;
+			this.exp2 = exp2;
+		}
+
+		internal override void GetConditionTypes (List<string> listToFill)
+		{
+			exp1.GetConditionTypes (listToFill);
+			exp2.GetConditionTypes (listToFill);
+		}
+	}
+
+	class GreaterThanConditionExpression: BinaryConditionExpression
+	{
+		public GreaterThanConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
+		{
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			var v1 = exp1.Evaluate (ctx);
+			var v2 = exp2.Evaluate (ctx);
+			if (IsInteger (v1) && IsInteger (v2))
+				return GetInteger (v1) > GetInteger (v2);
+			if (IsNumber (v1) && IsNumber (v2))
+				return GetFloat (v1) > GetFloat (v2);
+			if (v1 is string && v2 is string)
+				return string.Compare ((string)v1, (string)v2, StringComparison.Ordinal) > 0;
+			throw new EvaluationException ("Invalid operands for greater-than operation");
+		}
+	}
+
+	class GreaterThanOrEqualConditionExpression: BinaryConditionExpression
+	{
+		public GreaterThanOrEqualConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
+		{
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			var v1 = exp1.Evaluate (ctx);
+			var v2 = exp2.Evaluate (ctx);
+			if (IsInteger (v1) && IsInteger (v2))
+				return GetInteger (v1) >= GetInteger (v2);
+			if (IsNumber (v1) && IsNumber (v2))
+				return GetFloat (v1) >= GetFloat (v2);
+			if (v1 is string && v2 is string)
+				return string.Compare ((string)v1, (string)v2, StringComparison.Ordinal) >= 0;
+			throw new EvaluationException ("Invalid operands for greater-than operation");
+		}
+	}
+
+	class LessThanConditionExpression: BinaryConditionExpression
+	{
+		public LessThanConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
+		{
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			var v1 = exp1.Evaluate (ctx);
+			var v2 = exp2.Evaluate (ctx);
+			if (IsInteger (v1) && IsInteger (v2))
+				return GetInteger (v1) < GetInteger (v2);
+			if (IsNumber (v1) && IsNumber (v2))
+				return GetFloat (v1) < GetFloat (v2);
+			if (v1 is string && v2 is string)
+				return string.Compare ((string)v1, (string)v2, StringComparison.Ordinal) < 0;
+			throw new EvaluationException ("Invalid operands for less-than operation");
+		}
+	}
+
+	class LessThanOrEqualConditionExpression: BinaryConditionExpression
+	{
+		public LessThanOrEqualConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
+		{
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			var v1 = exp1.Evaluate (ctx);
+			var v2 = exp2.Evaluate (ctx);
+			if (IsInteger (v1) && IsInteger (v2))
+				return GetInteger (v1) <= GetInteger (v2);
+			if (IsNumber (v1) && IsNumber (v2))
+				return GetFloat (v1) <= GetFloat (v2);
+			if (v1 is string && v2 is string)
+				return string.Compare ((string)v1, (string)v2, StringComparison.Ordinal) <= 0;
+			throw new EvaluationException ("Invalid operands for less-than operation");
+		}
+	}
+
+	class AdditionConditionExpression: BinaryConditionExpression
+	{
+		public AdditionConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
+		{
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			var v1 = exp1.Evaluate (ctx);
+			var v2 = exp2.Evaluate (ctx);
+			if (IsInteger (v1) && IsInteger (v2))
+				return GetInteger (v1) + GetInteger (v2);
+			if (IsNumber (v1) && IsNumber (v2))
+				return GetFloat (v1) + GetFloat (v2);
+			if (v1 is string && v2 is string)
+				return ((string)v1) + ((string)v2);
+			throw new EvaluationException ("Invalid operands for addition operation");
+		}
+	}
+
+	class SubstractionConditionExpression: BinaryConditionExpression
+	{
+		public SubstractionConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
+		{
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			var v1 = exp1.Evaluate (ctx);
+			var v2 = exp2.Evaluate (ctx);
+			if (IsInteger (v1) && IsInteger (v2))
+				return GetInteger (v1) - GetInteger (v2);
+			if (IsNumber (v1) && IsNumber (v2))
+				return GetFloat (v1) - GetFloat (v2);
+			throw new EvaluationException ("Invalid operands for substraction operation");
+		}
+	}
+
+	class MultiplicationConditionExpression: BinaryConditionExpression
+	{
+		public MultiplicationConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
+		{
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			var v1 = exp1.Evaluate (ctx);
+			var v2 = exp2.Evaluate (ctx);
+			if (IsInteger (v1) && IsInteger (v2))
+				return GetInteger (v1) * GetInteger (v2);
+			if (IsNumber (v1) && IsNumber (v2))
+				return GetFloat (v1) * GetFloat (v2);
+			throw new EvaluationException ("Invalid operands for multiplication operation");
+		}
+	}
+
+	class DivisionConditionExpression: BinaryConditionExpression
+	{
+		public DivisionConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
+		{
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			var v1 = exp1.Evaluate (ctx);
+			var v2 = exp2.Evaluate (ctx);
+			if (IsInteger (v1) && IsInteger (v2))
+				return GetInteger (v1) / GetInteger (v2);
+			if (IsNumber (v1) && IsNumber (v2))
+				return GetFloat (v1) / GetFloat (v2);
+			throw new EvaluationException ("Invalid operands for division operation");
+		}
+	}
+
+	class ModulusConditionExpression: BinaryConditionExpression
+	{
+		public ModulusConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
+		{
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			var v1 = exp1.Evaluate (ctx);
+			var v2 = exp2.Evaluate (ctx);
+			if (IsInteger (v1) && IsInteger (v2))
+				return GetInteger (v1) % GetInteger (v2);
+			throw new EvaluationException ("Invalid operands for modulus operation");
+		}
+	}
+
+	class LiteralConditionExpression: ConditionExpression
+	{
+		object value;
+
+		public LiteralConditionExpression (object ob)
+		{
+			value = ob;
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			return value;
+		}
+
+		internal override void GetConditionTypes (List<string> listToFill)
+		{
+		}
+	}
+
+	class CustomConditionArgument
+	{
+		public string Name { get; set; }
+		public ConditionExpression Expression { get; set; }
+	}
+
+	internal sealed class CustomConditionExpression: ConditionExpression
 	{
 		ExtensionNodeDescription node;
 		string typeId;
-		AddinEngine addinEngine;
 		string addin;
+		List<CustomConditionArgument> args;
 
 		internal const string SourceAddinAttribute = "__sourceAddin"; 
 		
-		internal Condition (AddinEngine addinEngine, ExtensionNodeDescription element, BaseCondition parent): base (parent)
+		internal CustomConditionExpression (ExtensionNodeDescription elem)
 		{
-			this.addinEngine = addinEngine;
-			typeId = element.GetAttribute ("id");
-			addin = element.GetAttribute (SourceAddinAttribute);
-			node = element;
+			node = elem;
+			typeId = elem.GetAttribute ("id");
+			addin = elem.GetAttribute (SourceAddinAttribute);
+		}
+
+		internal CustomConditionExpression (string name, List<CustomConditionArgument> args)
+		{
+			typeId = name;
+			this.args = args;
+			node = new ExtensionNodeDescription ();
 		}
 		
-		public override bool Evaluate (ExtensionContext ctx)
+		public override object Evaluate (ExtensionContext ctx)
 		{
-			if (!base.Evaluate (ctx))
-				return false;
-
 			if (!string.IsNullOrEmpty (addin)) {
 				// Make sure the add-in that implements the condition is loaded
-				addinEngine.LoadAddin (null, addin, true);
+				ctx.AddinEngine.LoadAddin (null, addin, true);
 				addin = null; // Don't try again
 			}
 			
 			ConditionType type = ctx.GetCondition (typeId);
 			if (type == null) {
-				addinEngine.ReportError ("Condition '" + typeId + "' not found in current extension context.", null, null, false);
+				ctx.AddinEngine.ReportError ("Condition '" + typeId + "' not found in current extension context.", null, null, false);
 				return false;
 			}
-			
+
+			if (args != null) {
+				foreach (var arg in args)
+					node.SetAttribute (arg.Name, arg.Expression.Evaluate (ctx).ToString ());
+			}
+
 			try {
 				return type.Evaluate (node);
 			}
 			catch (Exception ex) {
-				addinEngine.ReportError ("Error while evaluating condition '" + typeId + "'", null, ex, false);
+				ctx.AddinEngine.ReportError ("Error while evaluating condition '" + typeId + "'", null, ex, false);
 				return false;
 			}
 		}
 		
-		internal override void GetConditionTypes (ArrayList listToFill)
+		internal override void GetConditionTypes (List<string> listToFill)
 		{
 			listToFill.Add (typeId);
+		}
+	}
+
+	class ConditionPropertyExpression: ConditionExpression
+	{
+		string name;
+
+		public ConditionPropertyExpression (string name)
+		{
+			this.name = name;
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			return ctx.GetConditionProperty (name);
+		}
+
+		internal override void GetConditionTypes (List<string> listToFill)
+		{
+			listToFill.Add ("$" + name);
+		}
+	}
+
+	class EvaluationException: Exception
+	{
+		public EvaluationException (string message) : base (message)
+		{
 		}
 	}
 }
