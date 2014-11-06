@@ -71,7 +71,6 @@ Global
 		{2FF5459A-495C-4FDF-81EA-D0A6C07E7C0D}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{2FF5459A-495C-4FDF-81EA-D0A6C07E7C0D}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{410A7DC9-E7DA-43E6-B592-93E2A344B660}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{410A7DC9-E7DA-43E6-B592-93E2A344B660}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{410A7DC9-E7DA-43E6-B592-93E2A344B660}.DebugNoGui|Any CPU.ActiveCfg = Debug|Any CPU
 		{410A7DC9-E7DA-43E6-B592-93E2A344B660}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
 		{410A7DC9-E7DA-43E6-B592-93E2A344B660}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
@@ -196,7 +195,6 @@ Global
 		{B051C84E-48CC-448D-B00C-1525EB64E4BE} = {0CE17344-E7E3-4620-B6D4-B04778EC5739}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Test\GuiTester\GuiTester.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = Flat

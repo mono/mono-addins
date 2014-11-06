@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <ProjectGuid>{2FF5459A-495C-4FDF-81EA-D0A6C07E7C0D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>SystemInfoExtension</AssemblyName>
