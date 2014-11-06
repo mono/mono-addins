@@ -549,8 +549,15 @@ namespace Mono.Addins
 		}
 	}
 
+	/// <summary>
+	/// An extension node with custom metadata
+	/// </summary>
 	public interface IAttributedExtensionNode
 	{
+		/// <summary>
+		/// Gets the attribute bound to the extension node
+		/// </summary>
+		/// <value>The attribute.</value>
 		CustomExtensionAttribute Attribute { get; }
 	}
 }
