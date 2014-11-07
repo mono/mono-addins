@@ -914,7 +914,7 @@ namespace Mono.Addins.Database
 						// is loaded when it tries to evaluate this condition.
 						var condAsm = index.FindCondition (conf, module, id);
 						if (condAsm != null)
-							node.SetAttribute (CustomConditionExpression.SourceAddinAttribute, condAsm);
+							node.SetAttribute (FunctionConditionExpression.SourceAddinAttribute, condAsm);
 					} else {
 						var cond = node.GetAttribute ("condition");
 						if (!string.IsNullOrEmpty (cond)) {
@@ -936,7 +936,7 @@ namespace Mono.Addins.Database
 										addins.Add (condAsm);
 								}
 								if (addins.Count > 0)
-									node.SetAttribute (CustomConditionExpression.SourceAddinAttribute, string.Join (";", addins));
+									node.SetAttribute (FunctionConditionExpression.SourceAddinAttribute, string.Join (";", addins));
 							}
 						}
 					}

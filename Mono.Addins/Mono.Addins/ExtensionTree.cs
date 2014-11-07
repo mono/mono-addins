@@ -87,7 +87,7 @@ namespace Mono.Addins
 					if (elem.Id == "__exp")
 						cond = ConditionParser.ParseCondition (elem.GetAttribute ("exp"));
 					else
-						cond = new CustomConditionExpression (elem);
+						cond = new FunctionConditionExpression (elem);
 
 					if (parentCondition != null)
 						cond = new AndConditionExpression (parentCondition, cond);
@@ -181,7 +181,7 @@ namespace Mono.Addins
 				}
 			}
 			if (elem.NodeName == "Condition") {
-				return new CustomConditionExpression (elem);
+				return new FunctionConditionExpression (elem);
 			}
 			addinEngine.ReportError ("Invalid complex condition element '" + elem.NodeName + "'.", null, null, false);
 			return new LiteralConditionExpression (false);

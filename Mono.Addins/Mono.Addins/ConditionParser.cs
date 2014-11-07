@@ -213,7 +213,7 @@ namespace Mono.Addins {
 
 		ConditionExpression ParseFunctionExpression (string functionName)
 		{
-			return new CustomConditionExpression (functionName, ParseFunctionArguments ());
+			return new FunctionConditionExpression (functionName, ParseFunctionArguments ());
 		}
 
 		List <NamedConditionExpression> ParseFunctionArguments ()

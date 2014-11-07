@@ -192,6 +192,18 @@ namespace UnitTests
 			Assert.AreEqual (true, Eval ("val == 5 and IsHello('hello')"));
 		}
 
+		[Test]
+		public void CustomFunctionCondition ()
+		{
+			var c = new DoubleValue ();
+			context.RegisterConditionFunction ("DoubleValue", c);
+			context.SetConditionProperty ("val", 5);
+
+			Assert.AreEqual (4, Eval ("DoubleValue(2)"));
+			Assert.AreEqual (7, Eval ("DoubleValue(2) + 3"));
+			Assert.AreEqual (10, Eval ("DoubleValue(val)"));
+		}
+
 		void CheckConditions (string exp, params string[] references)
 		{
 			var e = ConditionParser.ParseCondition (exp);
@@ -216,6 +228,15 @@ namespace UnitTests
 		{
 			var ignoreCase = string.Compare (conditionNode.GetAttribute ("ignoreCase"), "true", StringComparison.OrdinalIgnoreCase) == 0;
 			return string.Compare (conditionNode.GetAttribute ("value"), "hello", ignoreCase) == 0;
+		}
+	}
+
+	class DoubleValue: ConditionFunction
+	{
+		public override object Evaluate (ConditionFuncitonArgs args)
+		{
+			var val = (int) args.GetArg ("value");
+			return val * 2;
 		}
 	}
 }

@@ -152,15 +152,34 @@ namespace Mono.Addins
 		/// </remarks>
 		public void RegisterCondition (string id, ConditionType type)
 		{
-			type.Id = id;
-			ConditionInfo info = CreateConditionInfo (id);
-			ConditionType ot = info.CondType as ConditionType;
-			if (ot != null)
-				ot.Changed -= new EventHandler (OnConditionChanged);
-			info.CondType = type;
-			type.Changed += new EventHandler (OnConditionChanged);
+			RegisterConditionFunction (id, type);
 		}
 		
+		/// <summary>
+		/// Registers a new condition in the extension context.
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the condition.
+		/// </param>
+		/// <param name="type">
+		/// Condition evaluator.
+		/// </param>
+		/// <remarks>
+		/// The registered condition will be particular to this extension context.
+		/// Any event that might be fired as a result of changes in the condition will
+		/// only be fired in this context.
+		/// </remarks>
+		public void RegisterConditionFunction (string id, ConditionFunction type)
+		{
+			type.Id = id;
+			ConditionInfo info = CreateConditionInfo (id);
+			var ot = info.CondType as ConditionFunction;
+			if (ot != null)
+				ot.Changed -= OnConditionChanged;
+			info.CondType = type;
+			type.Changed += OnConditionChanged;
+		}
+
 		/// <summary>
 		/// Registers a new condition in the extension context.
 		/// </summary>
@@ -178,9 +197,9 @@ namespace Mono.Addins
 		{
 			// Allows delayed creation of condition types
 			ConditionInfo info = CreateConditionInfo (id);
-			ConditionType ot = info.CondType as ConditionType;
+			ConditionFunction ot = info.CondType as ConditionFunction;
 			if (ot != null)
-				ot.Changed -= new EventHandler (OnConditionChanged);
+				ot.Changed -= OnConditionChanged;
 			info.CondType = type;
 		}
 		
@@ -198,28 +217,28 @@ namespace Mono.Addins
 			get { return fireEvents; }
 		}
 		
-		internal ConditionType GetCondition (string id)
+		internal ConditionFunction GetConditionFunction (string id)
 		{
-			ConditionType ct;
+			ConditionFunction ct;
 			ConditionInfo info;
 			
 			if (conditionTypes.TryGetValue (id, out info)) {
 				if (info.CondType is Type) {
 					// The condition was registered as a type, create an instance now
-					ct = (ConditionType) Activator.CreateInstance ((Type)info.CondType);
+					ct = (ConditionFunction) Activator.CreateInstance ((Type)info.CondType);
 					ct.Id = id;
-					ct.Changed += new EventHandler (OnConditionChanged);
+					ct.Changed += OnConditionChanged;
 					info.CondType = ct;
 				}
 				else
-					ct = info.CondType as ConditionType;
+					ct = info.CondType as ConditionFunction;
 
 				if (ct != null)
 					return ct;
 			}
 			
 			if (parentContext != null)
-				return parentContext.GetCondition (id);
+				return parentContext.GetConditionFunction (id);
 			else
 				return null;
 		}
@@ -237,7 +256,7 @@ namespace Mono.Addins
 				
 					// Make sure the condition is properly created
 					if (cid[0] != '$')
-						GetCondition (cid);
+						GetConditionFunction (cid);
 					
 					ConditionInfo info = CreateConditionInfo (cid);
 					if (info.BoundConditions == null)
@@ -785,7 +804,7 @@ namespace Mono.Addins
 		
 		void OnConditionChanged (object s, EventArgs a)
 		{
-			ConditionType cond = (ConditionType) s;
+			var cond = (ConditionFunction) s;
 			NotifyConditionChanged (cond.Id);
 		}
 		

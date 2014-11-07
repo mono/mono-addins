@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Linq;
 using System.Xml;
 using Mono.Addins.Description;
 using System.Collections;
@@ -37,31 +38,24 @@ using System.Globalization;
 namespace Mono.Addins
 {
 	/// <summary>
-	/// A condition evaluator.
+	/// A function that can be used in a condition
 	/// </summary>
-	/// <remarks>
-	/// Add-ins may use conditions to register nodes in an extension point which
-	/// are only visible under some contexts. For example, an add-in registering
-	/// a custom menu option to the main menu of a sample text editor might want
-	/// to make that option visible only for some kind of files. To allow add-ins
-	/// to do this kind of check, the host application needs to define a new condition.
-	/// </remarks>
-	public abstract class ConditionType
+	public abstract class ConditionFunction
 	{
 		internal event EventHandler Changed;
 		string id;
-		
+
 		/// <summary>
-		/// Evaluates the condition.
+		/// Evaluates the function.
 		/// </summary>
-		/// <param name="conditionNode">
-		/// Condition node information.
+		/// <param name="args">
+		/// Arguments.
 		/// </param>
 		/// <returns>
-		/// 'true' if the condition is satisfied.
+		/// The result of the evaluation
 		/// </returns>
-		public abstract bool Evaluate (NodeElement conditionNode);
-		
+		public abstract object Evaluate (ConditionFuncitonArgs args);
+
 		/// <summary>
 		/// Notifies that the condition has changed, and that it has to be re-evaluated.
 		/// </summary>
@@ -76,10 +70,128 @@ namespace Mono.Addins
 			if (Changed != null)
 				Changed (this, EventArgs.Empty);
 		}
-		
+
 		internal string Id {
 			get { return id; }
 			set { id = value; }
+		}
+	}
+
+
+	/// <summary>
+	/// A set of function arguments
+	/// </summary>
+	public class ConditionFuncitonArgs
+	{
+		ExtensionNodeDescription node;
+
+		List<NamedConditionExpression> args;
+		object[] values;
+
+		internal static ConditionFuncitonArgs Empty = new ConditionFuncitonArgs (new List<NamedConditionExpression> (), new object [0]);
+
+		internal ConditionFuncitonArgs (ExtensionNodeDescription node)
+		{
+			this.node = node;
+		}
+
+		internal ConditionFuncitonArgs (List<NamedConditionExpression> args, object[] values)
+		{
+			this.args = args;
+			this.values = values;
+		}
+
+		internal ExtensionNodeDescription Node {
+			get {
+				return node;
+			}
+		}
+
+		/// <summary>
+		/// Gets the value of an argument
+		/// </summary>
+		/// <param name = "name">
+		/// Name of the attribute
+		/// </param>
+		/// <returns>
+		/// The value of the attribute
+		/// </returns>
+		public object GetArg (string name)
+		{
+			if (args != null) {
+				for (int n = 0; n < args.Count; n++) {
+					if (args [n].Name == name)
+						return values [n];
+				}
+				return null;
+			} else {
+				return node.GetAttribute (name);
+			}
+		}
+
+		/// <summary>
+		/// Determines whether this instance has an argument with the specified name.
+		/// </summary>
+		/// <param name="name">Name of the argument</param>
+		public bool HasArg (string name)
+		{
+			return ArgNames.Contains (name);
+		}
+
+		/// <summary>
+		/// Gets the names of the arguments defined in this collection
+		/// </summary>
+		public IEnumerable<string> ArgNames {
+			get {
+				if (args != null)
+					return args.Select (a => a.Name);
+				else
+					return node.Attributes.Select (a => a.Name);
+			}
+		}
+	}
+
+	/// <summary>
+	/// A condition evaluator.
+	/// </summary>
+	/// <remarks>
+	/// Add-ins may use conditions to register nodes in an extension point which
+	/// are only visible under some contexts. For example, an add-in registering
+	/// a custom menu option to the main menu of a sample text editor might want
+	/// to make that option visible only for some kind of files. To allow add-ins
+	/// to do this kind of check, the host application needs to define a new condition.
+	/// </remarks>
+	public abstract class ConditionType: ConditionFunction
+	{
+		/// <summary>
+		/// Evaluates the condition.
+		/// </summary>
+		/// <param name="conditionNode">
+		/// Condition node information.
+		/// </param>
+		/// <returns>
+		/// 'true' if the condition is satisfied.
+		/// </returns>
+		public abstract bool Evaluate (NodeElement conditionNode);
+
+		/// <summary>
+		/// Evaluates the condition.
+		/// </summary>
+		/// <param name="args">
+		/// Arguments for the condition
+		/// </param>
+		/// <returns>
+		/// The result of the evaluation
+		/// </returns>
+		public override object Evaluate (ConditionFuncitonArgs args)
+		{
+			if (args.Node != null)
+				return Evaluate (args.Node);
+
+			var n = new ExtensionNodeDescription ();
+			foreach (var a in args.ArgNames)
+				n.SetAttribute (a, Convert.ToString (args.GetArg (a), CultureInfo.InvariantCulture));
+			return Evaluate (n);
 		}
 	}
 	
@@ -103,22 +215,22 @@ namespace Mono.Addins
 
 		protected bool IsInteger (object value)
 		{
-			return value is int || value is byte || value is long;
+			return value is int;
 		}
 
-		protected long GetInteger (object value)
+		protected int GetInteger (object value)
 		{
-			return Convert.ToInt64 (value);
+			return Convert.ToInt32 (value);
 		}
 
 		protected bool IsFloat (object value)
 		{
-			return value is float || value is double;
+			return value is double;
 		}
 
 		protected bool IsNumber (object value)
 		{
-			return value is int || value is byte || value is long || value is float || value is double;
+			return value is int || value is double;
 		}
 
 		protected double GetFloat (object value)
@@ -467,7 +579,7 @@ namespace Mono.Addins
 		}
 	}
 
-	internal sealed class CustomConditionExpression: ConditionExpression
+	internal sealed class FunctionConditionExpression: ConditionExpression
 	{
 		ExtensionNodeDescription node;
 		string typeId;
@@ -476,14 +588,14 @@ namespace Mono.Addins
 
 		internal const string SourceAddinAttribute = "__sourceAddin"; 
 		
-		internal CustomConditionExpression (ExtensionNodeDescription elem)
+		internal FunctionConditionExpression (ExtensionNodeDescription elem)
 		{
 			node = elem;
 			typeId = elem.GetAttribute ("id");
 			addin = elem.GetAttribute (SourceAddinAttribute);
 		}
 
-		internal CustomConditionExpression (string name, List<NamedConditionExpression> args)
+		internal FunctionConditionExpression (string name, List<NamedConditionExpression> args)
 		{
 			typeId = name;
 			this.args = args;
@@ -498,19 +610,25 @@ namespace Mono.Addins
 				addin = null; // Don't try again
 			}
 			
-			ConditionType type = ctx.GetCondition (typeId);
-			if (type == null) {
+			var func = ctx.GetConditionFunction (typeId);
+			if (func == null) {
 				ctx.AddinEngine.ReportError ("Condition '" + typeId + "' not found in current extension context.", null, null, false);
 				return false;
 			}
 
-			if (args != null) {
-				foreach (var arg in args)
-					node.SetAttribute (arg.Name, arg.Evaluate (ctx).ToString ());
-			}
-
 			try {
-				return type.Evaluate (node);
+				if ((func is ConditionType) && args == null)
+					return ((ConditionType)func).Evaluate (node);
+				else if (args != null) {
+					object[] argsArray = new object[args.Count];
+					for (int n=0; n<args.Count; n++) {
+						var a = args[n];
+						argsArray [n] = a.Evaluate (ctx);
+					}
+					return func.Evaluate (new ConditionFuncitonArgs (args, argsArray));
+				} else {
+					return func.Evaluate (ConditionFuncitonArgs.Empty);
+				}
 			}
 			catch (Exception ex) {
 				ctx.AddinEngine.ReportError ("Error while evaluating condition '" + typeId + "'", null, ex, false);

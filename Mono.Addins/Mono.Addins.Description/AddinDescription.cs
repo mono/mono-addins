@@ -95,7 +95,7 @@ namespace Mono.Addins.Description
 			typeMap.RegisterType (typeof(ExtensionPoint), "ExtensionPoint");
 			typeMap.RegisterType (typeof(ModuleDescription), "ModuleDescription");
 			typeMap.RegisterType (typeof(ConditionTypeDescription), "ConditionType");
-			typeMap.RegisterType (typeof(CustomConditionExpression), "Condition");
+			typeMap.RegisterType (typeof(FunctionConditionExpression), "Condition");
 			typeMap.RegisterType (typeof(AddinDependency), "AddinDependency");
 			typeMap.RegisterType (typeof(AssemblyDependency), "AssemblyDependency");
 			typeMap.RegisterType (typeof(NodeTypeAttribute), "NodeTypeAttribute");
