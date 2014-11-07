@@ -228,33 +228,34 @@ namespace Mono.Addins
 					}
 				}
 			}
-			
+			Type nodeType;
 			// If no type name is provided, use TypeExtensionNode by default
-			if (ntype.TypeName == null || ntype.TypeName.Length == 0 || ntype.TypeName == typeof(TypeExtensionNode).FullName) {
-				// If it has a custom attribute, use the generic version of TypeExtensionNode
-				if (ntype.ExtensionAttributeTypeName.Length > 0) {
-					Type attType = p.GetType (ntype.ExtensionAttributeTypeName, false);
-					if (attType == null) {
-						addinEngine.ReportError ("Custom attribute type '" + ntype.ExtensionAttributeTypeName + "' not found.", ntype.AddinId, null, false);
-						return false;
-					}
-					if (ntype.ObjectTypeName.Length > 0 || ntype.TypeName == typeof(TypeExtensionNode).FullName)
-						ntype.Type = typeof(TypeExtensionNode<>).MakeGenericType (attType);
-					else
-						ntype.Type = typeof(ExtensionNode<>).MakeGenericType (attType);
-				} else {
-					ntype.Type = typeof(TypeExtensionNode);
-					return true;
-				}
-			}
+			if (string.IsNullOrEmpty (ntype.TypeName) || ntype.TypeName == typeof(TypeExtensionNode).FullName)
+				nodeType = typeof(TypeExtensionNode);
+			else if (ntype.TypeName == typeof(ExtensionNode).FullName)
+				nodeType = typeof(ExtensionNode);
 			else {
-				ntype.Type = p.GetType (ntype.TypeName, false);
-				if (ntype.Type == null) {
+				nodeType = p.GetType (ntype.TypeName, false);
+				if (nodeType == null) {
 					addinEngine.ReportError ("Extension node type '" + ntype.TypeName + "' not found.", ntype.AddinId, null, false);
 					return false;
 				}
 			}
-			
+
+			if ((nodeType == typeof(TypeExtensionNode) || nodeType == typeof(ExtensionNode)) && ntype.ExtensionAttributeTypeName.Length > 0) {
+				Type attType = p.GetType (ntype.ExtensionAttributeTypeName, false);
+				if (attType == null) {
+					addinEngine.ReportError ("Custom attribute type '" + ntype.ExtensionAttributeTypeName + "' not found.", ntype.AddinId, null, false);
+					return false;
+				}
+				if (nodeType == typeof(TypeExtensionNode))
+					nodeType = typeof(TypeExtensionNode<>).MakeGenericType (attType);
+				else
+					nodeType = typeof(ExtensionNode<>).MakeGenericType (attType);
+			}
+
+			ntype.Type = nodeType;
+
 			// Check if the type has NodeAttribute attributes applied to fields.
 			ExtensionNodeType.FieldData boundAttributeType = null;
 			Dictionary<string,ExtensionNodeType.FieldData> fields = GetMembersMap (ntype.Type, out boundAttributeType);
