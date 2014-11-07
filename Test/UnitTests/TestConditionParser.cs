@@ -26,6 +26,7 @@
 using System;
 using NUnit.Framework;
 using Mono.Addins;
+using System.Collections.Generic;
 
 namespace UnitTests
 {
@@ -184,6 +185,23 @@ namespace UnitTests
 			Assert.AreEqual (true, Eval ("IsHello (ignoreCase:(1 < 2), value:'He' + 'llo')"));
 
 			Assert.AreEqual (true, Eval ("val == 5 and IsHello('hello')"));
+		}
+
+		void CheckConditions (string exp, params string[] references)
+		{
+			var e = ConditionParser.ParseCondition (exp);
+			List<string> list = new List<string> ();
+			e.GetConditionTypes (list);
+			Assert.That (list, Is.EquivalentTo (references));
+		}
+
+		[Test]
+		public void GetConditionTypes ()
+		{
+			CheckConditions ("prop", "$prop");
+			CheckConditions ("1 + (2 * (prop / 3) + bar)", "$prop", "$bar");
+			CheckConditions ("foo(1)", "foo");
+			CheckConditions ("1 + (2 * (prop(car) / 3) + bar(2))", "prop", "bar", "$car");
 		}
 	}
 

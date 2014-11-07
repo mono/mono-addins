@@ -127,6 +127,47 @@ namespace Mono.Addins
 		}
 	}
 	
+	abstract class BinaryConditionExpression: ConditionExpression
+	{
+		protected ConditionExpression exp1;
+		protected ConditionExpression exp2;
+
+		protected BinaryConditionExpression ()
+		{
+		}
+
+		protected BinaryConditionExpression (ConditionExpression exp1, ConditionExpression exp2)
+		{
+			this.exp1 = exp1;
+			this.exp2 = exp2;
+		}
+
+		internal override void GetConditionTypes (List<string> listToFill)
+		{
+			exp1.GetConditionTypes (listToFill);
+			exp2.GetConditionTypes (listToFill);
+		}
+	}
+
+	abstract class UnaryConditionExpression: ConditionExpression
+	{
+		protected ConditionExpression exp;
+
+		protected UnaryConditionExpression ()
+		{
+		}
+
+		protected UnaryConditionExpression (ConditionExpression exp)
+		{
+			this.exp = exp;
+		}
+
+		internal override void GetConditionTypes (List<string> listToFill)
+		{
+			exp.GetConditionTypes (listToFill);
+		}
+	}
+
 	class OrConditionExpression: BinaryConditionExpression
 	{
 		public OrConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
@@ -169,33 +210,22 @@ namespace Mono.Addins
 		}
 	}
 	
-	class NotConditionExpression: ConditionExpression
+	class NotConditionExpression: UnaryConditionExpression
 	{
-		ConditionExpression exp;
-		
-		public NotConditionExpression (ConditionExpression exp)
+		public NotConditionExpression (ConditionExpression exp): base (exp)
 		{
-			this.exp = exp;
 		}
 		
 		public override object Evaluate (ExtensionContext ctx)
 		{
 			return !exp.BoolEvaluate (ctx);
 		}
-		
-		internal override void GetConditionTypes (List<string> listToFill)
-		{
-			exp.GetConditionTypes (listToFill);
-		}
 	}
 
-	class NegateConditionExpression: ConditionExpression
+	class NegateConditionExpression: UnaryConditionExpression
 	{
-		ConditionExpression exp;
-
-		public NegateConditionExpression (ConditionExpression exp)
+		public NegateConditionExpression (ConditionExpression exp): base (exp)
 		{
-			this.exp = exp;
 		}
 
 		public override object Evaluate (ExtensionContext ctx)
@@ -206,11 +236,6 @@ namespace Mono.Addins
 			if (IsFloat (val))
 				return -GetFloat (val);
 			throw new EvaluationException ("Invalid operand for negate operator");
-		}
-
-		internal override void GetConditionTypes (List<string> listToFill)
-		{
-			exp.GetConditionTypes (listToFill);
 		}
 	}
 
@@ -235,28 +260,6 @@ namespace Mono.Addins
 		public override object Evaluate (ExtensionContext ctx)
 		{
 			return !object.Equals (exp1.Evaluate (ctx), exp2.Evaluate (ctx));
-		}
-	}
-
-	abstract class BinaryConditionExpression: ConditionExpression
-	{
-		protected ConditionExpression exp1;
-		protected ConditionExpression exp2;
-
-		protected BinaryConditionExpression ()
-		{
-		}
-
-		protected BinaryConditionExpression (ConditionExpression exp1, ConditionExpression exp2)
-		{
-			this.exp1 = exp1;
-			this.exp2 = exp2;
-		}
-
-		internal override void GetConditionTypes (List<string> listToFill)
-		{
-			exp1.GetConditionTypes (listToFill);
-			exp2.GetConditionTypes (listToFill);
 		}
 	}
 
@@ -449,26 +452,18 @@ namespace Mono.Addins
 		}
 	}
 
-	class NamedConditionExpression: ConditionExpression
+	class NamedConditionExpression: UnaryConditionExpression
 	{
 		public string Name { get; set; }
 
-		ConditionExpression exp;
-
-		public NamedConditionExpression (string name, ConditionExpression child)
+		public NamedConditionExpression (string name, ConditionExpression exp): base (exp)
 		{
-			this.Name = name;
-			exp = child;
+			Name = name;
 		}
 
 		public override object Evaluate (ExtensionContext ctx)
 		{
 			return exp.Evaluate (ctx);
-		}
-
-		internal override void GetConditionTypes (List<string> listToFill)
-		{
-			exp.GetConditionTypes (listToFill);
 		}
 	}
 
@@ -526,6 +521,10 @@ namespace Mono.Addins
 		internal override void GetConditionTypes (List<string> listToFill)
 		{
 			listToFill.Add (typeId);
+			if (args != null) {
+				foreach (var e in args)
+					e.GetConditionTypes (listToFill);
+			}
 		}
 	}
 
