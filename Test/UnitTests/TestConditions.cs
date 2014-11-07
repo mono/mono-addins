@@ -1,5 +1,5 @@
 
-using System;
+using System.Linq;
 using System.Collections;
 using NUnit.Framework;
 using Mono.Addins;
@@ -235,6 +235,21 @@ namespace UnitTests
 				string nwrit = writers[n].Write ();
 				Assert.AreEqual (result[n], nwrit, "t2: result #" + n);
 			}
+		}
+
+		[Test()]
+		public void ConditionExpressions ()
+		{
+			var nodes = ctx.GetExtensionNodes ("/SimpleApp/NodesWithConditionExpressions");
+			Assert.That (nodes.Select (n => n.Id), Is.EquivalentTo (new [] {"node1"}));
+
+			ctx.SetConditionProperty ("TestProp", 1);
+			nodes = ctx.GetExtensionNodes ("/SimpleApp/NodesWithConditionExpressions");
+			Assert.That (nodes.Select (n => n.Id), Is.EquivalentTo (new [] {"node1", "node3", "node4"}));
+
+			ctx.SetConditionProperty ("TestProp", 2);
+			nodes = ctx.GetExtensionNodes ("/SimpleApp/NodesWithConditionExpressions");
+			Assert.That (nodes.Select (n => n.Id), Is.EquivalentTo (new [] {"node1", "node2"}));
 		}
 	}
 }
