@@ -127,22 +127,6 @@ namespace Mono.Addins
 		}
 	}
 	
-	internal class NullConditionExpression: ConditionExpression
-	{
-		public NullConditionExpression ()
-		{
-		}
-		
-		public override object Evaluate (ExtensionContext ctx)
-		{
-			return false;
-		}
-
-		internal override void GetConditionTypes (List<string> listToFill)
-		{
-		}
-	}
-	
 	class OrConditionExpression: BinaryConditionExpression
 	{
 		public OrConditionExpression (ConditionExpression exp1, ConditionExpression exp2): base (exp1, exp2)
@@ -199,6 +183,31 @@ namespace Mono.Addins
 			return !exp.BoolEvaluate (ctx);
 		}
 		
+		internal override void GetConditionTypes (List<string> listToFill)
+		{
+			exp.GetConditionTypes (listToFill);
+		}
+	}
+
+	class NegateConditionExpression: ConditionExpression
+	{
+		ConditionExpression exp;
+
+		public NegateConditionExpression (ConditionExpression exp)
+		{
+			this.exp = exp;
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			var val = exp.Evaluate (ctx);
+			if (IsInteger (val))
+				return -GetInteger (val);
+			if (IsFloat (val))
+				return -GetFloat (val);
+			throw new EvaluationException ("Invalid operand for negate operator");
+		}
+
 		internal override void GetConditionTypes (List<string> listToFill)
 		{
 			exp.GetConditionTypes (listToFill);
@@ -440,10 +449,27 @@ namespace Mono.Addins
 		}
 	}
 
-	class CustomConditionArgument
+	class NamedConditionExpression: ConditionExpression
 	{
 		public string Name { get; set; }
-		public ConditionExpression Expression { get; set; }
+
+		ConditionExpression exp;
+
+		public NamedConditionExpression (string name, ConditionExpression child)
+		{
+			this.Name = name;
+			exp = child;
+		}
+
+		public override object Evaluate (ExtensionContext ctx)
+		{
+			return exp.Evaluate (ctx);
+		}
+
+		internal override void GetConditionTypes (List<string> listToFill)
+		{
+			exp.GetConditionTypes (listToFill);
+		}
 	}
 
 	internal sealed class CustomConditionExpression: ConditionExpression
@@ -451,7 +477,7 @@ namespace Mono.Addins
 		ExtensionNodeDescription node;
 		string typeId;
 		string addin;
-		List<CustomConditionArgument> args;
+		List<NamedConditionExpression> args;
 
 		internal const string SourceAddinAttribute = "__sourceAddin"; 
 		
@@ -462,7 +488,7 @@ namespace Mono.Addins
 			addin = elem.GetAttribute (SourceAddinAttribute);
 		}
 
-		internal CustomConditionExpression (string name, List<CustomConditionArgument> args)
+		internal CustomConditionExpression (string name, List<NamedConditionExpression> args)
 		{
 			typeId = name;
 			this.args = args;
@@ -485,7 +511,7 @@ namespace Mono.Addins
 
 			if (args != null) {
 				foreach (var arg in args)
-					node.SetAttribute (arg.Name, arg.Expression.Evaluate (ctx).ToString ());
+					node.SetAttribute (arg.Name, arg.Evaluate (ctx).ToString ());
 			}
 
 			try {

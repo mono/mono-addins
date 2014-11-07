@@ -9,6 +9,8 @@
     <AssemblyName>UnitTests</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>UnitTests</RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\mono-addins.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -66,6 +68,7 @@
     <Compile Include="ExtensionModel\Properties.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="TestSetupService.cs" />
+    <Compile Include="TestConditionParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SimpleApp.addin.xml">

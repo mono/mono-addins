@@ -180,6 +180,16 @@ namespace Mono.Addins {
 				tokenizer.Expect (TokenType.RightParen);
 			} else if (token.Type == TokenType.Property && tokenizer.Token.Type == TokenType.LeftParen) {
 				e = ParseFunctionExpression (token.Value);
+			} else if (token.Type == TokenType.Property && tokenizer.Token.Type == TokenType.Colon) {
+				tokenizer.GetNextToken ();
+				e = new NamedConditionExpression (token.Value, ParseExpression ());
+			} else if (token.Type == TokenType.Property) {
+				if (token.Value.Equals ("true", StringComparison.OrdinalIgnoreCase))
+					e = new LiteralConditionExpression (true);
+				else if (token.Value.Equals ("false", StringComparison.OrdinalIgnoreCase))
+					e = new LiteralConditionExpression (false);
+				else
+					e = new ConditionPropertyExpression (token.Value);
 			} else if (token.Type == TokenType.String) {
 				e = new LiteralConditionExpression (token.Value);
 			} else if (token.Type == TokenType.Number && token.Value.IndexOf ('.') != -1) {
@@ -188,6 +198,8 @@ namespace Mono.Addins {
 				e = new LiteralConditionExpression (int.Parse (token.Value, CultureInfo.InvariantCulture));
 			} else if (token.Type == TokenType.Not) {
 				e = ParseNotExpression ();
+			} else if (token.Type == TokenType.Substraction) {
+				e = new NegateConditionExpression (ParseFactorExpression ());
 			} else
 				throw new ExpressionParseException (String.Format ("Unexpected token type {0}.", token.Type));
 			
@@ -204,22 +216,22 @@ namespace Mono.Addins {
 			return new CustomConditionExpression (functionName, ParseFunctionArguments ());
 		}
 
-		List <CustomConditionArgument> ParseFunctionArguments ()
+		List <NamedConditionExpression> ParseFunctionArguments ()
 		{
-			var list = new List <CustomConditionArgument> ();
-			CustomConditionArgument e;
-			
+			var list = new List <NamedConditionExpression> ();
+			NamedConditionExpression e;
+			tokenizer.GetNextToken ();
+
 			while (true) {
-				tokenizer.GetNextToken ();
 				if (tokenizer.Token.Type == TokenType.RightParen) {
 					tokenizer.GetNextToken ();
 					break;
 				}
-				if (tokenizer.Token.Type == TokenType.Comma)
+				if (tokenizer.Token.Type == TokenType.Comma) {
+					tokenizer.GetNextToken ();
 					continue;
+				}
 					
-				tokenizer.Putback (tokenizer.Token);
-
 				e = ParseFunctionArgument ();
 				list.Add (e);
 			}
@@ -227,22 +239,14 @@ namespace Mono.Addins {
 			return list;
 		}
 
-		CustomConditionArgument ParseFunctionArgument ()
+		NamedConditionExpression ParseFunctionArgument ()
 		{
-			var arg = new CustomConditionArgument ();
+			var e = ParseExpression ();
 
-			Token token = tokenizer.Token;
-			tokenizer.GetNextToken ();
-			if (token.Type == TokenType.Property && tokenizer.Token.Type == TokenType.Colon) {
-				arg.Name = token.Value;
-				tokenizer.GetNextToken ();
-			} else {
-				arg.Name = "value";
-				tokenizer.Putback (token);
-			}
-
-			arg.Expression = ParseExpression ();
-			return arg;
+			if (e is NamedConditionExpression)
+				return (NamedConditionExpression)e;
+			else
+				return new NamedConditionExpression ("value", e);
 		}
 
 		void ExpectToken (TokenType type)

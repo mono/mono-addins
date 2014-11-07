@@ -56,7 +56,7 @@ namespace Mono.Addins
 		ExtensionTree tree;
 		bool fireEvents = false;
 		
-		Dictionary<string,string> conditionProperties = new Dictionary<string, string> ();
+		Dictionary<string,object> conditionProperties = new Dictionary<string, object> ();
 
 		ArrayList runTimeEnabledAddins;
 		ArrayList runTimeDisabledAddins;
@@ -272,12 +272,12 @@ namespace Mono.Addins
 		/// </summary>
 		/// <returns>The value.</returns>
 		/// <param name="name">Name of the property</param>
-		public string GetConditionProperty (string name)
+		public object GetConditionProperty (string name)
 		{
-			string value;
+			object value;
 			if (conditionProperties.TryGetValue (name, out value))
 				return value;
-			return "";
+			return null;
 		}
 
 		/// <summary>
@@ -285,7 +285,7 @@ namespace Mono.Addins
 		/// </summary>
 		/// <param name="name">Name of the property</param>
 		/// <param name="value">Value.</param>
-		public void SetConditionProperty (string name, string value)
+		public void SetConditionProperty (string name, object value)
 		{
 			conditionProperties [name] = value;
 			NotifyConditionChanged ("$" + name);

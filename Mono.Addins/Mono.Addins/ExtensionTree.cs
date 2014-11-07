@@ -176,7 +176,7 @@ namespace Mono.Addins
 				else {
 					if (conds.Count != 1) {
 						addinEngine.ReportError ("Invalid complex condition element '" + elem.NodeName + "'. 'Not' condition can only have one parameter.", null, null, false);
-						return new NullConditionExpression ();
+						return new LiteralConditionExpression (false);
 					}
 					return new NotConditionExpression (conds [0]);
 				}
@@ -185,7 +185,7 @@ namespace Mono.Addins
 				return new CustomConditionExpression (elem);
 			}
 			addinEngine.ReportError ("Invalid complex condition element '" + elem.NodeName + "'.", null, null, false);
-			return new NullConditionExpression ();
+			return new LiteralConditionExpression (false);
 		}
 		
 		public ExtensionNode ReadNode (TreeNode tnode, string addin, ExtensionNodeType ntype, ExtensionNodeDescription elem, ModuleDescription module)

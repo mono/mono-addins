@@ -168,7 +168,7 @@ namespace Mono.Addins {
 			char ch = (char) i;
 
 			
-			if (Char.IsDigit (ch) || ch == '-') {
+			if (Char.IsDigit (ch)) {
 				StringBuilder sb = new StringBuilder ();
 				
 				sb.Append (ch);
