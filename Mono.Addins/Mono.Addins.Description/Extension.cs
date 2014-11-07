@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Linq;
 using System.Xml;
 using System.Collections.Specialized;
 using Mono.Addins.Serialization;
@@ -268,6 +269,32 @@ namespace Mono.Addins.Description
 			path = reader.ReadStringValue ("path");
 			nodes = (ExtensionNodeDescriptionCollection) reader.ReadValue ("Nodes", new ExtensionNodeDescriptionCollection (this));
 			Condition = reader.ReadStringValue ("condition");
+		}
+
+		internal void CreateConditionNode ()
+		{
+			if (Element != null) {
+				var cond = Element.OwnerDocument.CreateElement ("Condition");
+				cond.SetAttribute ("id", "__exp");
+				cond.SetAttribute ("exp", Condition);
+				foreach (var c in Element.ChildNodes.OfType<XmlNode> ().ToArray ()) {
+					Element.RemoveChild (c);
+					cond.AppendChild (c);
+				}
+				Element.AppendChild (cond);
+				nodes = null;
+				Element.RemoveAttribute ("condition");
+			} else if (nodes != null) {
+				var n = new ExtensionNodeDescription ("Condition");
+				n.Id = "__exp";
+				n.SetAttribute ("exp", Condition);
+				foreach (var cn in nodes.ToArray ()) {
+					nodes.Remove (cn);
+					n.ChildNodes.Add (cn);
+				}
+				nodes.Add (n);
+			}
+			Condition = null;
 		}
 	}
 }

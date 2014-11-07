@@ -58,6 +58,10 @@
 		<ExtensionNode name="Node" type="UnitTests.ItemSetNode" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/SimpleApp/NodesWithConditionExpressions">
+		<ExtensionNode name="Node"/>
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path="/SimpleApp/NodeWithChildren">
@@ -71,4 +75,14 @@
 		-->
 	</Extension>
 	
+	<Extension path="/SimpleApp/NodesWithConditionExpressions">
+		<Node id="node1" type="test" />
+		<Node id="node2" type="test" condition="TestProp == 2" />
+	</Extension>
+
+	<Extension path="/SimpleApp/NodesWithConditionExpressions" condition="TestProp == 1">
+		<Node id="node3" type="test" />
+		<Node id="node4" type="test" />
+	</Extension>
+
 </Addin>

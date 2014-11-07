@@ -589,6 +589,7 @@ namespace Mono.Addins.Database
 				if (res.EndsWith (".addin") || res.EndsWith (".addin.xml")) {
 					using (Stream s = reflector.GetResourceStream (asm, res)) {
 						AddinDescription ad = AddinDescription.Read (s, Path.GetDirectoryName (filePath));
+						ad.PrepareForScan ();
 						if (config != null) {
 							if (!config.IsExtensionModel && !ad.IsExtensionModel) {
 								// There is more than one add-in definition
@@ -609,6 +610,7 @@ namespace Mono.Addins.Database
 		{
 			// First of all scan the main module
 			
+			config.PrepareForScan ();
 			ArrayList assemblies = new ArrayList ();
 			
 			try {

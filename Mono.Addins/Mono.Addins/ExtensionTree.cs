@@ -51,7 +51,6 @@ namespace Mono.Addins
 			get { return context; }
 		}
 
-		
 		public void LoadExtension (string addin, Extension extension, ArrayList addedNodes)
 		{
 			TreeNode tnode = GetNode (extension.Path);
@@ -60,17 +59,8 @@ namespace Mono.Addins
 				return;
 			}
 
-			var parentCondition = tnode.Condition;
-
-			if (!string.IsNullOrEmpty (extension.Condition)) {
-				var cond = ConditionParser.ParseCondition (extension.Condition);
-				if (parentCondition != null)
-					cond = new AndConditionExpression (parentCondition, cond);
-				parentCondition = cond;
-			}
-
 			int curPos = tnode.ChildCount;
-			LoadExtensionElement (tnode, addin, extension.ExtensionNodes, (ModuleDescription) extension.Parent, ref curPos, parentCondition, false, addedNodes);
+			LoadExtensionElement (tnode, addin, extension.ExtensionNodes, (ModuleDescription) extension.Parent, ref curPos, tnode.Condition, false, addedNodes);
 		}
 
 		void LoadExtensionElement (TreeNode tnode, string addin, ExtensionNodeDescriptionCollection extension, ModuleDescription module, ref int curPos, ConditionExpression parentCondition, bool inComplextCondition, ArrayList addedNodes)
@@ -92,9 +82,16 @@ namespace Mono.Addins
 				}
 					
 				if (elem.NodeName == "Condition") {
-					ConditionExpression cond = new CustomConditionExpression (elem);
+
+					ConditionExpression cond;
+					if (elem.Id == "__exp")
+						cond = ConditionParser.ParseCondition (elem.GetAttribute ("exp"));
+					else
+						cond = new CustomConditionExpression (elem);
+
 					if (parentCondition != null)
 						cond = new AndConditionExpression (parentCondition, cond);
+
 					LoadExtensionElement (tnode, addin, elem.ChildNodes, module, ref curPos, cond, false, addedNodes);
 					continue;
 				}
@@ -130,15 +127,17 @@ namespace Mono.Addins
 				if (enode == null)
 					continue;
 
+				ConditionExpression nodeCondition = parentCondition;
+
 				string condition = elem.Condition;
 				if (!string.IsNullOrEmpty (condition)) {
 					var cond = ConditionParser.ParseCondition (condition);
-					if (parentCondition != null)
-						cond = new AndConditionExpression (parentCondition, cond);
-					parentCondition = cond;
+					if (nodeCondition != null)
+						cond = new AndConditionExpression (nodeCondition, cond);
+					nodeCondition = cond;
 				}
 
-				cnode.Condition = parentCondition;
+				cnode.Condition = nodeCondition;
 				cnode.ExtensionNodeSet = ntype;
 				tnode.InsertChildNode (curPos, cnode);
 				addedNodes.Add (cnode);
@@ -149,7 +148,7 @@ namespace Mono.Addins
 				// Load children
 				if (elem.ChildNodes.Count > 0) {
 					int cp = 0;
-					LoadExtensionElement (cnode, addin, elem.ChildNodes, module, ref cp, parentCondition, false, addedNodes);
+					LoadExtensionElement (cnode, addin, elem.ChildNodes, module, ref cp, nodeCondition, false, addedNodes);
 				}
 				
 				curPos++;

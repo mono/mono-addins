@@ -1182,6 +1182,12 @@ namespace Mono.Addins.Description
 		internal bool IsExtensionModel {
 			get { return RootElement.LocalName == "ExtensionModel"; }
 		}
+
+		internal void PrepareForScan ()
+		{
+			foreach (ModuleDescription m in AllModules)
+				m.CreateExtensionConditions ();
+		}
 		
 		internal static AddinDescription Merge (AddinDescription desc1, AddinDescription desc2)
 		{

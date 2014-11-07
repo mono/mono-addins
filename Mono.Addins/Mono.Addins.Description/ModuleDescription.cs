@@ -384,5 +384,17 @@ namespace Mono.Addins.Description
 			extensions = (ExtensionCollection) reader.ReadValue ("Extensions", new ExtensionCollection (this));
 			ignorePaths = (StringCollection) reader.ReadValue ("IgnorePaths", new StringCollection ());
 		}
+
+		internal void CreateExtensionConditions ()
+		{
+			// Converts condition attributes defined in Extension elements into Condition elements that are
+			// added as root of those extensions. This is necessary because all extension elements end
+			// being merged into a single one.
+
+			foreach (Extension ext in Extensions) {
+				if (!string.IsNullOrEmpty (ext.Condition))
+					ext.CreateConditionNode ();
+			}
+		}
 	}
 }
