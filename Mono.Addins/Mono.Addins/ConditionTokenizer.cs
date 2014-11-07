@@ -206,7 +206,7 @@ namespace Mono.Addins {
 				sb.Append ((char) ch);
 				
 				while ((i = PeekChar ()) != -1) {
-					if ((char) i == '_' || Char.IsLetterOrDigit ((char) i))
+					if ((char) i == '_' || Char.IsLetterOrDigit ((char) i) || (char) i == '.')
 						sb.Append ((char) ReadChar ());
 					else
 						break;

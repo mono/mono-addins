@@ -167,6 +167,11 @@ namespace UnitTests
 
 			ctx.SetConditionProperty ("some_bool", true);
 			Assert.AreEqual (false, e.Evaluate (ctx));
+
+			e = ConditionParser.ParseCondition ("ab.cd.d + ' there'");
+
+			ctx.SetConditionProperty ("ab.cd.d", "hi");
+			Assert.AreEqual ("hi there", e.Evaluate (ctx));
 		}
 
 		[Test]
