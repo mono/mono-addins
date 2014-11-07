@@ -1,7 +1,7 @@
 dnl Warning: This is an automatically generated file, do not edit!
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.54])
-AC_INIT([mono-addins], [1.0])
+AC_INIT([mono-addins], [1.1])
 AM_INIT_AUTOMAKE([foreign tar-ustar])
 AM_MAINTAINER_MODE
 
@@ -13,7 +13,7 @@ fi
 
 API_VERSION=1.0.0.0
 AC_SUBST(API_VERSION)
-POLICY_VERSIONS="0.2 0.3 0.4 0.5 0.6"
+POLICY_VERSIONS="0.2 0.3 0.4 0.5 0.6 1.0"
 AC_SUBST(POLICY_VERSIONS)
 
 AC_PROG_INSTALL

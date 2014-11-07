@@ -17,7 +17,7 @@ using System.Runtime.CompilerServices;
 // You can specify all values by your own or you can build default build and revision
 // numbers with the '*' character (the default):
 
-[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
 
 [assembly: InternalsVisibleTo ("Mono.Addins.Setup, PublicKey=00240000048000009400000006020000002400005253413100" +
 	"0400000100010079159977d2d03a8e6bea7a2e74e8d1afcc93e8851974952bb480a12c9134474d04062447c37e0e68c080536fcf3c" +
