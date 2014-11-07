@@ -36,7 +36,7 @@ namespace Mono.Addins
 	/// <summary>
 	/// A list of extension nodes.
 	/// </summary>
-	public class ExtensionNodeList: IEnumerable
+	public class ExtensionNodeList: IEnumerable<ExtensionNode>
 	{
 		internal List<ExtensionNode> list;
 		
@@ -91,6 +91,13 @@ namespace Mono.Addins
 			return list.GetEnumerator ();
 		}
 		
+		IEnumerator<ExtensionNode> IEnumerable<ExtensionNode>.GetEnumerator () 
+		{
+			if (list == null)
+				return Empty.list.GetEnumerator ();
+			return list.GetEnumerator ();
+		}
+
 		/// <summary>
 		/// Number of nodes of the collection.
 		/// </summary>
