@@ -62,13 +62,23 @@ namespace Mono.Addins.Database
 				ReleaseDomain ();
 			}
 		}
-		
+
+		// ensure types from this assembly returned to this domain from the remote domain can
+		// be resolved even if we're in the LoadFrom context
+		static System.Reflection.Assembly MonoAddinsAssemblyResolve(object sender, ResolveEventArgs args)
+		{
+			var asm = typeof(SetupDomain).Assembly;
+			return args.Name == asm.FullName? asm : null;
+		}
+
 		RemoteSetupDomain GetDomain ()
 		{
 			lock (this) {
 				if (useCount++ == 0) {
+					AppDomain.CurrentDomain.AssemblyResolve += MonoAddinsAssemblyResolve;
 					domain = AppDomain.CreateDomain ("SetupDomain", null, AppDomain.CurrentDomain.SetupInformation);
-					remoteSetupDomain = (RemoteSetupDomain) domain.CreateInstanceFromAndUnwrap (typeof(RemoteSetupDomain).Assembly.Location, typeof(RemoteSetupDomain).FullName);
+					var type = typeof(RemoteSetupDomain);
+					remoteSetupDomain = (RemoteSetupDomain) domain.CreateInstanceFromAndUnwrap (type.Assembly.Location, type.FullName);
 				}
 				return remoteSetupDomain;
 			}
@@ -81,13 +91,24 @@ namespace Mono.Addins.Database
 					AppDomain.Unload (domain);
 					domain = null;
 					remoteSetupDomain = null;
+					AppDomain.CurrentDomain.AssemblyResolve -= MonoAddinsAssemblyResolve;
 				}
 			}
 		}
 	}
-	
+
 	class RemoteSetupDomain: MarshalByRefObject
 	{
+		public RemoteSetupDomain ()
+		{
+			// ensure types from this assembly passed to this domain from the main domain
+			// can be resolved even though we're in the LoadFrom context
+			AppDomain.CurrentDomain.AssemblyResolve += (o, a) => {
+				var asm = typeof(RemoteSetupDomain).Assembly;
+				return a.Name == asm.FullName? asm : null;
+			};
+		}
+
 		public override object InitializeLifetimeService ()
 		{
 			return null;
