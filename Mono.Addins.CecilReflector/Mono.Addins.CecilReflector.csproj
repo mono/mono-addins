@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <ProjectGuid>{42D1CE65-A14B-4218-B787-58AD7AA68513}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Addins.CecilReflector</AssemblyName>
@@ -173,19 +173,4 @@
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="..">
-          <BuildFilesVar Sync="True" Name="FILES" />
-          <DeployFilesVar />
-          <ResourcesVar Sync="True" Name="RESOURCES" />
-          <OthersVar />
-          <GacRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
-          <AsmRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
-          <ProjectRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
-        </MonoDevelop.Autotools.MakefileInfo>
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
 </Project>

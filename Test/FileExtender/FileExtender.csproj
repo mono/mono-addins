@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <ProjectGuid>{A32AFFBA-4B83-4D6E-8CB3-812908BA14A9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>FileExtender</AssemblyName>
@@ -69,15 +69,6 @@
     <MonoDevelop>
       <Properties>
         <Deployment.LinuxDeployData scriptName="fileextender" generatePcFile="False" />
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
-          <BuildFilesVar Sync="True" Name="FILES" />
-          <DeployFilesVar Sync="True" Name="DATA_FILES" />
-          <ResourcesVar Sync="True" Name="RESOURCES" />
-          <OthersVar Name="EXTRAS" />
-          <GacRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
-          <AsmRefVar Sync="True" Name="DLL_REFERENCES" />
-          <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
-        </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>

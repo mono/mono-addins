@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <ProjectGuid>{04C62888-E58A-4C6E-8688-A4F6F5459E14}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>HelloWorldExtension</AssemblyName>
@@ -48,15 +48,6 @@
     <MonoDevelop>
       <Properties>
         <Deployment.LinuxDeployData scriptName="helloworldextension" generatePcFile="False" />
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
-          <BuildFilesVar Sync="True" Name="FILES" />
-          <DeployFilesVar Sync="True" Name="DATA_FILES" />
-          <ResourcesVar Sync="True" Name="RESOURCES" />
-          <OthersVar />
-          <GacRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
-          <AsmRefVar Sync="True" Name="DLL_REFERENCES" />
-          <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
-        </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>

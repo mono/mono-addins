@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <ProjectGuid>{2FF5459A-495C-4FDF-81EA-D0A6C07E7C0D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>SystemInfoExtension</AssemblyName>
@@ -56,15 +56,6 @@
     <MonoDevelop>
       <Properties>
         <Deployment.LinuxDeployData scriptName="systeminfoextension" generatePcFile="False" />
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True">
-          <BuildFilesVar Sync="True" Name="FILES" />
-          <DeployFilesVar Sync="True" Name="DATA_FILES" />
-          <ResourcesVar Name="RESOURCES" />
-          <OthersVar />
-          <GacRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
-          <AsmRefVar Sync="True" Name="DLL_REFERENCES" />
-          <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
-        </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>

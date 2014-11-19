@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B4B44F14-32C3-4D50-8C6A-06AA30E56CA3}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -40,21 +40,6 @@
     <Compile Include="ResolveAddinReferences.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="..">
-          <BuildFilesVar Sync="True" Name="FILES" />
-          <DeployFilesVar />
-          <ResourcesVar Sync="True" Name="RESOURCES" />
-          <OthersVar />
-          <GacRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
-          <AsmRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
-          <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
-        </MonoDevelop.Autotools.MakefileInfo>
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Addins.Setup\Mono.Addins.Setup.csproj">
       <Project>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</Project>

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <ProjectGuid>{1CD51E61-1985-4D22-9BFA-D14C8FC61B46}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>UnitTests</AssemblyName>
@@ -20,18 +20,12 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.core, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="nunit.core.interfaces, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
+    <Reference Include="nunit.core" />
+    <Reference Include="nunit.core.interfaces" />
+    <Reference Include="nunit.framework" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Addins\Mono.Addins.csproj">
@@ -104,15 +98,6 @@
           <DotNetNamingPolicy DirectoryNamespaceAssociation="None" ResourceNamePolicy="FileName" />
         </Policies>
         <Deployment.LinuxDeployData scriptName="unittests" generatePcFile="False" />
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="./Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" RelativeConfigureInPath="../../">
-          <BuildFilesVar Sync="True" Name="FILES" />
-          <DeployFilesVar Sync="True" Name="DATA_FILES" />
-          <ResourcesVar Sync="True" Name="RESOURCES" />
-          <OthersVar />
-          <GacRefVar Sync="True" Name="REFERENCES" Prefix="-r:" />
-          <AsmRefVar Sync="True" Name="DLL_REFERENCES" />
-          <ProjectRefVar Sync="True" Name="PROJECT_REFERENCES" />
-        </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
