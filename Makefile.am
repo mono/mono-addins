@@ -45,3 +45,7 @@ bin-zip:
 	cp support/ICSharpCode.SharpZipLib.license.txt $(BIN_PACKAGE_DIR)
 	cp support/ICSharpCode.SharpZipLib.dll $(BIN_PACKAGE_DIR)
 	cd $(BIN_PACKAGE_DIR) && zip -r ../$(BIN_PACKAGE_DIR).zip *
+
+nuget:
+	nuget pack Mono.Addins.nuspec
+	nuget pack Mono.Addins.Setup.nuspec

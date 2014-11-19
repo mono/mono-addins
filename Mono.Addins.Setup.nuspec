@@ -2,18 +2,18 @@
 <package>
   <metadata>
     <id>Mono.Addins.Setup</id>
-    <version>1.0</version>
+    <version>1.2</version>
     <authors>Lluis Sanchez</authors>
     <description>Mono.Addins is a framework for creating extensible applications, and for creating add-ins which extend applications. Mono.Addins.Setup provides an API for managing add-ins, creating add-in packages and publishing add-ins in on-line repositories.</description>
     <language>en-US</language>
-    <projectUrl>http://monoaddins.codeplex.com</projectUrl>
-    <licenseUrl>http://monoaddins.codeplex.com/license</licenseUrl>
+    <projectUrl>https://github.com/mono/mono-addins</projectUrl>
+    <licenseUrl>https://github.com/mono/mono-addins/blob/master/COPYING</licenseUrl>
 	<dependencies>
 		<dependency id="Mono.Addins" version="1.0" />
+		<dependency id="SharpZipLib" version="0.86.0" />
 	</dependencies>
   </metadata>
   <files>
-  	<file src="bin/Mono.Addins.Setup.dll" target="lib" />
-  	<file src="bin/ICSharpCode.SharpZipLib.dll" target="lib" />
+  	<file src="bin/Mono.Addins.Setup.dll" target="lib\net40" />
   </files>
 </package>
