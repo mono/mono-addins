@@ -1169,7 +1169,7 @@ namespace Mono.Addins.Database
 					// If the process has crashed, try to do a new scan, this time using verbose log,
 					// to give the user more information about the origin of the crash.
 					if (pex != null && !retry) {
-						monitor.ReportError ("Add-in scan operation failed. The Mono runtime may have encountered an error while trying to load an assembly.", null);
+						monitor.ReportError ("Add-in scan operation failed. The runtime may have encountered an error while trying to load an assembly.", null);
 						if (monitor.LogLevel <= 1) {
 							// Re-scan again using verbose log, to make it easy to find the origin of the error.
 							retry = true;
@@ -1179,7 +1179,8 @@ namespace Mono.Addins.Database
 						retry = false;
 					
 					if (!retry) {
-						monitor.ReportError ("Add-in scan operation failed", (ex is ProcessFailedException ? null : ex));
+						var pfex = ex as ProcessFailedException;
+						monitor.ReportError ("Add-in scan operation failed", pfex != null? pfex.InnerException : ex);
 						monitor.Cancel ();
 						return;
 					}
