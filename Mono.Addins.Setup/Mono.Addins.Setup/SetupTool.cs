@@ -887,7 +887,7 @@ namespace Mono.Addins.Setup
 		/// Short name of the command (it's an alias of the normal name)
 		/// </param>
 		/// <param name="arguments">
-		/// Formal description of the arguments that the command accepts. For example: "[addin-id|addin-file] [--xml] [--all] [--full] [--namespace <namespace>]"
+		/// Formal description of the arguments that the command accepts. For example: "[addin-id|addin-file] [--xml] [--all] [--full] [--namespace &lt;namespace&gt;]"
 		/// </param>
 		/// <param name="description">
 		/// Short description of the command

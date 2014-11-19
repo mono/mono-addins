@@ -549,8 +549,17 @@ namespace Mono.Addins
 		}
 	}
 
+	/// <summary>
+	/// An extension node with custom metadata provided by an attribute
+	/// </summary>
+	/// <remarks>
+	/// This interface is implemented by ExtensionNode&lt;T&gt; to provide non-generic access to the attribute instance.
+	/// </remarks>
 	public interface IAttributedExtensionNode
 	{
+		/// <summary>
+		/// The custom attribute containing the extension metadata
+		/// </summary>
 		CustomExtensionAttribute Attribute { get; }
 	}
 }

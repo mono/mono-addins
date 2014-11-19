@@ -722,7 +722,10 @@ namespace Mono.Addins.Setup
 			}
 		}
 	}
-	
+
+	/// <summary>
+	/// Repository search flags.
+	/// </summary>
 	public enum RepositorySearchFlags
 	{
 		/// <summary>

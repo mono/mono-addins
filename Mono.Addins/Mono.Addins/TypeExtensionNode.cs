@@ -107,6 +107,10 @@ namespace Mono.Addins
 			}
 		}
 
+		/// <summary>
+		/// Name of the type of the object that this node creates
+		/// </summary>
+		/// <value>The name of the type.</value>
 		public string TypeName {
 			get {
 				return typeName;
