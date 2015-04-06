@@ -103,7 +103,7 @@ namespace Mono.Addins
 		/// Default result message for the plural form
 		/// </param>
 		/// <param name="n">
-		/// Value count. Determines wether to use singular or plural form.
+		/// Value count. Determines whether to use singular or plural form.
 		/// </param>
 		/// <returns>
 		/// The localized message

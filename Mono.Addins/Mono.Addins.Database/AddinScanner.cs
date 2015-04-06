@@ -290,7 +290,7 @@ namespace Mono.Addins.Database
 					scanResult.ChangesFound = true;
 					
 					// If the add-in already existed, try to reuse the relation data it had.
-					// Also, the dependencies of the old add-in need to be re-analized
+					// Also, the dependencies of the old add-in need to be re-analyzed
 					
 					AddinDescription existingDescription = null;
 					bool res = database.GetAddinDescription (monitor, folderInfo.Domain, config.AddinId, config.AddinFile, out existingDescription);
@@ -621,7 +621,7 @@ namespace Mono.Addins.Database
 					rootAsmFile = Path.GetFileName (config.AddinFile);
 				}
 				
-				// The assembly list may be modified while scanning the headears, so
+				// The assembly list may be modified while scanning the headers, so
 				// we use a for loop instead of a foreach
 				for (int n=0; n<config.MainModule.Assemblies.Count; n++) {
 					string s = config.MainModule.Assemblies [n];
