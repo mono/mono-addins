@@ -889,7 +889,7 @@ namespace Mono.Addins
 				
 				// Global extension change event. Other events are fired by LoadModuleExtensionNodes.
 				// The event is called for all extensions, even for those not loaded. This is for coherence,
-				// although that something that it doesn't make much sense to do (subcribing the ExtensionChanged
+				// although that something that it doesn't make much sense to do (subscribing the ExtensionChanged
 				// event without first getting the list of nodes that may change).
 				foreach (string newExt in newExtensions)
 					NotifyExtensionsChanged (new ExtensionEventArgs (newExt));
@@ -939,7 +939,7 @@ namespace Mono.Addins
 				
 				// Notify global extension point changes.
 				// The event is called for all extensions, even for those not loaded. This is for coherence,
-				// although that something that it doesn't make much sense to do (subcribing the ExtensionChanged
+				// although that something that it doesn't make much sense to do (subscribing the ExtensionChanged
 				// event without first getting the list of nodes that may change).
 				
 				// We get the runtime add-in because the add-in may already have been deleted from the registry
@@ -989,7 +989,7 @@ namespace Mono.Addins
 			ArrayList newlist = null;
 			
 			// Always consider add-ins which have been enabled at runtime since
-			// they may contain extensioin for this path.
+			// they may contain extension for this path.
 			// Ignore addins disabled at run-time.
 			
 			if (runTimeEnabledAddins != null && runTimeEnabledAddins.Count > 0) {
