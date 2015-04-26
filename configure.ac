@@ -6,10 +6,7 @@ AM_INIT_AUTOMAKE([foreign tar-ustar])
 AM_MAINTAINER_MODE
 
 dnl pkg-config
-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-if test "x$PKG_CONFIG" = "xno"; then
-        AC_MSG_ERROR([You need to install pkg-config])
-fi
+PKG_PROG_PKG_CONFIG([0.16])
 
 API_VERSION=1.2.0.0
 AC_SUBST(API_VERSION)
