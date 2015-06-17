@@ -1470,11 +1470,17 @@ namespace Mono.Addins.Database
 		public string GetFolderDomain (IProgressStatus progressStatus, string path)
 		{
 			AddinScanFolderInfo folderInfo;
-			if (GetFolderInfoForPath (progressStatus, path, out folderInfo) && folderInfo != null && !folderInfo.SharedFolder)
+
+			if (GetFolderInfoForPath (progressStatus, path, out folderInfo) && folderInfo == null) {
+				if (path.Length > 0 && path [path.Length - 1] != Path.DirectorySeparatorChar)
+					// Try again by appending a directory separator at the end. Some directories are registered like this.
+					GetFolderInfoForPath (progressStatus, path + Path.DirectorySeparatorChar, out folderInfo);
+				else if (path.Length > 0 && path [path.Length - 1] == Path.DirectorySeparatorChar)
+					// Try again by removing the directory separator at the end. Some directories are registered like this.
+					GetFolderInfoForPath (progressStatus, path.TrimEnd (Path.DirectorySeparatorChar), out folderInfo);
+			}
+			if (folderInfo != null && !string.IsNullOrEmpty (folderInfo.Domain))
 				return folderInfo.Domain;
-			else if (path.Length > 0 && path [path.Length - 1] != Path.DirectorySeparatorChar)
-				// Try again by appending a directory separator at the end. Some directories are registered like this.
-				return GetFolderDomain (progressStatus, path + Path.DirectorySeparatorChar);
 			else
 				return UnknownDomain;
 		}
