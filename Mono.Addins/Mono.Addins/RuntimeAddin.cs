@@ -537,6 +537,41 @@ namespace Mono.Addins
 		}
 		
 		/// <summary>
+		/// Returns information about how the given resource has been persisted
+		/// </summary>
+		/// <param name="resourceName">
+		/// Name of the resource
+		/// </param>
+		/// <returns>
+		/// Resource information, or null if the resource doesn't exist
+		/// </returns>
+		public ManifestResourceInfo GetResourceInfo (string resourceName)
+		{
+			EnsureAssembliesLoaded ();
+
+			// Look in the addin assemblies
+
+			foreach (Assembly asm in GetAllAssemblies ()) {
+				var res = asm.GetManifestResourceInfo (resourceName);
+				if (res != null) {
+					// Mono doesn't set the referenced assembly
+					if (res.ReferencedAssembly == null)
+						return new ManifestResourceInfo (asm, res.FileName, res.ResourceLocation);
+					return res;
+				}
+			}
+
+			// Look in the dependent add-ins
+			foreach (RuntimeAddin addin in GetAllDependencies ()) {
+				var res = addin.GetResourceInfo (resourceName);
+				if (res != null)
+					return res;
+			}
+
+			return null;
+		}
+
+		/// <summary>
 		/// Localizer which can be used to localize strings defined in this add-in
 		/// </summary>
 		public AddinLocalizer Localizer {
