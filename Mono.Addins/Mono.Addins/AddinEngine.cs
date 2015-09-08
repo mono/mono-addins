@@ -426,7 +426,7 @@ namespace Mono.Addins
 					loadedAddinsCopy.Remove (Addin.GetIdName (id));
 					loadedAddins = loadedAddinsCopy;
 					if (addin.AssembliesLoaded) {
-						var loadedAssembliesCopy = new Dictionary<Assembly,RuntimeAddin> ();
+						var loadedAssembliesCopy = new Dictionary<Assembly,RuntimeAddin> (loadedAssemblies);
 						foreach (Assembly asm in addin.Assemblies)
 							loadedAssembliesCopy.Remove (asm);
 						loadedAssemblies = loadedAssembliesCopy;
