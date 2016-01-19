@@ -76,10 +76,6 @@ namespace Mono.Addins.Database
 			AddinStatus s;
 			addinStatus.TryGetValue (addinName, out s);
 			
-			if (enabled == defaultValue) {
-				addinStatus.Remove (addinName);
-				return;
-			}
 			if (s == null)
 				s = addinStatus [addinName] = new AddinStatus (addinName);
 			s.Enabled = enabled;
@@ -120,6 +116,34 @@ namespace Mono.Addins.Database
 		}
 		
 		public static DatabaseConfiguration Read (string file)
+		{
+			var config = ReadInternal (file);
+			// Try to read application level config to support disabling add-ins by default.
+			var appConfig = ReadAppConfig ();
+
+			if (appConfig == null)
+				return config;
+
+			// Overwrite app config values with user config values
+			foreach (var entry in config.addinStatus)
+				appConfig.addinStatus [entry.Key] = entry.Value;
+
+			return appConfig;
+		}
+		
+		public static DatabaseConfiguration ReadAppConfig()
+		{
+			var exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
+			var exeDirectory = Path.GetDirectoryName (exePath);
+			var appAddinsConfigFilePath = Path.Combine (exeDirectory, "addins-config.xml");
+
+			if (!File.Exists (appAddinsConfigFilePath))
+				return new DatabaseConfiguration ();
+
+			return ReadInternal (appAddinsConfigFilePath);
+		}
+
+		static DatabaseConfiguration ReadInternal (string file)
 		{
 			DatabaseConfiguration config = new DatabaseConfiguration ();
 			XmlDocument doc = new XmlDocument ();
