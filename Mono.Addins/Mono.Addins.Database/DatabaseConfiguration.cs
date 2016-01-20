@@ -133,9 +133,9 @@ namespace Mono.Addins.Database
 		
 		public static DatabaseConfiguration ReadAppConfig()
 		{
-			var exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
-			var exeDirectory = Path.GetDirectoryName (exePath);
-			var appAddinsConfigFilePath = Path.Combine (exeDirectory, "addins-config.xml");
+			var assemblyPath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
+			var assemblyDirectory = Path.GetDirectoryName (assemblyPath);
+			var appAddinsConfigFilePath = Path.Combine (assemblyDirectory, "addins-config.xml");
 
 			if (!File.Exists (appAddinsConfigFilePath))
 				return new DatabaseConfiguration ();
