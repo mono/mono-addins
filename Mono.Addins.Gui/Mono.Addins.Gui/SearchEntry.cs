@@ -56,10 +56,9 @@ namespace Mono.Addins.Gui
 			hbox.Show ();
 			hbox.Add (box);
 			Add (hbox);
-			
-			ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));
-			iconClean.ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));
-			iconFind.ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));
+
+			UpdateStyle ();
+			entry.StyleSet += UpdateStyle;
 			
 			iconClean.BorderWidth = 1;
 			iconClean.CanFocus = false;
@@ -94,7 +93,10 @@ namespace Mono.Addins.Gui
 				return this.entry;
 			}
 			set {
+				if (entry != null)
+					entry.StyleSet -= UpdateStyle;
 				entry = value;
+				entry.StyleSet += UpdateStyle;
 			}
 		}
 		
@@ -125,6 +127,21 @@ namespace Mono.Addins.Gui
 					return false;
 				});
 			}
+		}
+
+		void UpdateStyle (object o = null, StyleSetArgs args = null)
+		{
+			if (entry != null) {
+				ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));
+				iconClean.ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));
+				iconFind.ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));
+			}
+		}
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			UpdateStyle ();
 		}
 	}
 }
