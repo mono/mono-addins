@@ -29,6 +29,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 
 namespace Mono.Addins.Setup.ProgressMonitoring
 {
@@ -37,6 +38,7 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 		IProgressStatus status;
 		LogTextWriter logger;
 		ProgressTracker tracker = new ProgressTracker ();
+		StringBuilder logBuffer = new StringBuilder ();
 		
 		public ProgressStatusMonitor (IProgressStatus status)
 		{
@@ -55,6 +57,7 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 		
 		public void BeginTask (string name, int totalWork)
 		{
+			FlushLog ();
 			tracker.BeginTask (name, totalWork);
 			status.SetMessage (tracker.CurrentTask);
 			status.SetProgress (tracker.GlobalWork);
@@ -62,6 +65,7 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 		
 		public void BeginStepTask (string name, int totalWork, int stepSize)
 		{
+			FlushLog ();
 			tracker.BeginStepTask (name, totalWork, stepSize);
 			status.SetMessage (tracker.CurrentTask);
 			status.SetProgress (tracker.GlobalWork);
@@ -69,12 +73,14 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 		
 		public void Step (int work)
 		{
+			FlushLog ();
 			tracker.Step (work);
 			status.SetProgress (tracker.GlobalWork);
 		}
 		
 		public void EndTask ()
 		{
+			FlushLog ();
 			tracker.EndTask ();
 			status.SetMessage (tracker.CurrentTask);
 			status.SetProgress (tracker.GlobalWork);
@@ -82,7 +88,21 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 		
 		void WriteLog (string text)
 		{
-			status.Log (text);
+			int pi = 0;
+			int i = text.IndexOf ('\n');
+			while (i != -1) {
+				string line = text.Substring (pi, i - pi);
+				if (logBuffer.Length > 0) {
+					logBuffer.Append (line);
+					status.Log (logBuffer.ToString ());
+					logBuffer.Clear ();
+				} else {
+					status.Log (line);
+				}
+				pi = i + 1;
+				i = text.IndexOf ('\n', pi);
+			}
+			logBuffer.Append (text.Substring (pi));
 		}
 		
 		public TextWriter Log {
@@ -91,11 +111,13 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 		
 		public void ReportWarning (string message)
 		{
+			FlushLog ();
 			status.ReportWarning (message);
 		}
 		
 		public void ReportError (string message, Exception ex)
 		{
+			FlushLog ();
 			status.ReportError (message, ex);
 		}
 		
@@ -105,15 +127,25 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 		
 		public void Cancel ()
 		{
+			FlushLog ();
 			status.Cancel ();
 		}
 		
 		public int LogLevel {
 			get { return status.LogLevel; }
 		}
+
+		void FlushLog ()
+		{
+			if (logBuffer.Length > 0) {
+				status.Log (logBuffer.ToString ());
+				logBuffer.Clear ();
+			}
+		}
 		
 		public void Dispose ()
 		{
+			FlushLog ();
 		}
 	}
 }
