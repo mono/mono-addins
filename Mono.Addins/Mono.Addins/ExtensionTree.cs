@@ -86,12 +86,16 @@ namespace Mono.Addins
 				}
 					
 				string after = elem.GetAttribute ("insertafter");
+				if (after.Length == 0)
+					after = tnode.ExtensionPoint.DefaultInsertAfter;
 				if (after.Length > 0) {
 					int i = tnode.Children.IndexOfNode (after);
 					if (i != -1)
 						curPos = i+1;
 				}
 				string before = elem.GetAttribute ("insertbefore");
+				if (before.Length == 0)
+					before = tnode.ExtensionPoint.DefaultInsertBefore;
 				if (before.Length > 0) {
 					int i = tnode.Children.IndexOfNode (before);
 					if (i != -1)
