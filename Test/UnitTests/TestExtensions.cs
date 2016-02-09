@@ -176,8 +176,8 @@ namespace UnitTests
 		{
 			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/SimpleApp/DataExtensionWithAttribute");
 			Assert.AreEqual (2, nodes.Count, "Node count");
-			ExtensionNode<SimpleExtensionAttribute> n1 = nodes [0] as ExtensionNode<SimpleExtensionAttribute>;
-			ExtensionNode<SimpleExtensionAttribute> n2 = nodes [1] as ExtensionNode<SimpleExtensionAttribute>;
+			TypeExtensionNode<SimpleExtensionAttribute> n1 = nodes [0] as TypeExtensionNode<SimpleExtensionAttribute>;
+			TypeExtensionNode<SimpleExtensionAttribute> n2 = nodes [1] as TypeExtensionNode<SimpleExtensionAttribute>;
 			Assert.IsNotNull (n1);
 			Assert.IsNotNull (n2);
 			Assert.AreEqual ("test3", n1.Data.Name, "t1");
