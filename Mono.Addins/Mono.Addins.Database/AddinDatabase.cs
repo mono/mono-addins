@@ -470,7 +470,7 @@ namespace Mono.Addins.Database
 				}
 			}
 
-			Configuration.SetEnabled (id, true, ainfo.AddinInfo.EnabledByDefault, false);
+			Configuration.SetEnabled (id, true, ainfo.AddinInfo.EnabledByDefault, true);
 			SaveConfiguration ();
 
 			if (addinEngine != null && addinEngine.IsInitialized)

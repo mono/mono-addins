@@ -58,9 +58,14 @@ namespace Mono.Addins.Database
 			var addinName = Addin.GetIdName (addinId);
 
 			AddinStatus s;
+
+			// If the add-in is globaly disabled, it is disabled no matter what the version specific status is
+			if (addinStatus.TryGetValue (addinName, out s)) {
+				if (!s.Enabled)
+					return false;
+			}
+
 			if (addinStatus.TryGetValue (addinId, out s))
-				return s.Enabled && !IsRegisteredForUninstall (addinId);
-			else if (addinStatus.TryGetValue (addinName, out s))
 				return s.Enabled && !IsRegisteredForUninstall (addinId);
 			else
 				return defaultValue;
@@ -79,6 +84,10 @@ namespace Mono.Addins.Database
 			if (s == null)
 				s = addinStatus [addinName] = new AddinStatus (addinName);
 			s.Enabled = enabled;
+
+			// If enabling a specific version of an add-in, make sure the add-in is enabled as a whole
+			if (enabled && exactVersionMatch)
+				SetEnabled (addinId, true, defaultValue, false);
 		}
 		
 		public void RegisterForUninstall (string addinId, IEnumerable<string> files)

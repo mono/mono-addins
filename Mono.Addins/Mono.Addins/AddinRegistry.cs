@@ -512,6 +512,28 @@ namespace Mono.Addins
 		}
 
 		/// <summary>
+		/// Disables an add-in.
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the add-in.
+		/// </param>
+		/// <param name="exactVersionMatch">
+		/// If true, it disables the add-in that exactly matches the provided version. If false, it disables
+		/// all versions of add-ins with the same Id
+		/// </param>
+		/// <remarks>
+		/// When an add-in is disabled, all extension points it defines will be ignored
+		/// by the add-in engine. Other add-ins which depend on the disabled add-in will
+		/// also automatically be disabled.
+		/// </remarks>
+		public void DisableAddin (string id, bool exactVersionMatch)
+		{
+			if (currentDomain == AddinDatabase.UnknownDomain)
+				return;
+			database.DisableAddin (currentDomain, id, exactVersionMatch);
+		}
+
+		/// <summary>
 		/// Registers a set of add-ins for uninstallation.
 		/// </summary>
 		/// <param name='id'>

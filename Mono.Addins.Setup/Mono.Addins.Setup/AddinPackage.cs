@@ -294,7 +294,7 @@ namespace Mono.Addins.Setup
 		{
 			if (disablingOnUninstall) {
 				disablingOnUninstall = false;
-				service.Registry.DisableAddin (info.Id);
+				service.Registry.DisableAddin (info.Id, true);
 				return;
 			}
 			
