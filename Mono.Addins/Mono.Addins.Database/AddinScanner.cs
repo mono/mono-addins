@@ -908,6 +908,8 @@ namespace Mono.Addins.Database
 					ExtensionPoint ep = config.AddExtensionPoint (ext.Path);
 					ep.Description = ext.Description;
 					ep.Name = ext.Name;
+					ep.DefaultInsertBefore = ext.DefaultInsertBefore;
+					ep.DefaultInsertAfter = ext.DefaultInsertAfter;
 					ExtensionNodeType nt = ep.AddExtensionNode (ext.NodeName, ext.NodeTypeName);
 					nt.ExtensionAttributeTypeName = ext.ExtensionAttributeTypeName;
 				}
