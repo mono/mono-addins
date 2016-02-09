@@ -205,7 +205,9 @@ namespace UnitTests
 			InitChangedExtensionEvent ("/SimpleApp/Writers",
 			                           "/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender",
 			                           "/SimpleApp/NodeWithChildren",
-			                           "/SystemInformation/Modules");
+			                           "/SystemInformation/Modules",
+			                           "/SimpleApp/DefaultInsertAfter",
+			                           "/SimpleApp/DefaultInsertBefore");
 			notifyCount = addCount = removeCount = eventCount = 0;
 			AddinManager.Registry.DisableAddin ("SimpleApp.FileContentExtension,0.1.0");
 			
@@ -216,7 +218,7 @@ namespace UnitTests
 			Assert.AreEqual (1, notifyCount, "notifyCount 3");
 			Assert.AreEqual (0, addCount, "addCount 3");
 			Assert.AreEqual (1, removeCount, "removeCount 3");
-			Assert.AreEqual (4, eventCount, "eventCount 3");
+			Assert.AreEqual (6, eventCount, "eventCount 3");
 			
 			// Now unregister
 			

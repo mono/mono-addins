@@ -60,7 +60,7 @@ namespace Mono.Addins
 				return;
 			}
 			
-			int curPos = tnode.ChildCount;
+			int curPos = -1;
 			LoadExtensionElement (tnode, addin, extension.ExtensionNodes, (ModuleDescription) extension.Parent, ref curPos, tnode.Condition, false, addedNodes);
 		}
 
@@ -84,23 +84,32 @@ namespace Mono.Addins
 					LoadExtensionElement (tnode, addin, elem.ChildNodes, module, ref curPos, cond, false, addedNodes);
 					continue;
 				}
+
+				var pnode = tnode;
+				ExtensionPoint extensionPoint = null;
+				while (pnode != null && (extensionPoint = pnode.ExtensionPoint) == null)
+					pnode = pnode.Parent;
 					
 				string after = elem.GetAttribute ("insertafter");
-				if (after.Length == 0)
-					after = tnode.ExtensionPoint.DefaultInsertAfter;
+				if (after.Length == 0 && extensionPoint != null && curPos == -1)
+					after = extensionPoint.DefaultInsertAfter;
 				if (after.Length > 0) {
 					int i = tnode.Children.IndexOfNode (after);
 					if (i != -1)
 						curPos = i+1;
 				}
 				string before = elem.GetAttribute ("insertbefore");
-				if (before.Length == 0)
-					before = tnode.ExtensionPoint.DefaultInsertBefore;
+				if (before.Length == 0 && extensionPoint != null && curPos == -1)
+					before = extensionPoint.DefaultInsertBefore;
 				if (before.Length > 0) {
 					int i = tnode.Children.IndexOfNode (before);
 					if (i != -1)
 						curPos = i;
 				}
+
+				// If node position is not explicitly set, add the node at the end
+				if (curPos == -1)
+					curPos = tnode.Children.Count;
 				
 				// Find the type of the node in this extension
 				ExtensionNodeType ntype = addinEngine.FindType (tnode.ExtensionNodeSet, elem.NodeName, addin);

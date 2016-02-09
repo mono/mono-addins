@@ -48,6 +48,22 @@
 			<Child id="child2.2" type="test" />
 		</Node>
 	</Extension>
+
+	<Extension path="/SimpleApp/DefaultInsertAfter">
+		<Node id="n1" type="test" />
+		<Node id="n2" type="test" />
+		<Node id="n0" type="test" insertbefore="First"/>
+		<Node id="n3" type="test" insertafter="Last"/>
+		<Node id="n4" type="test" />
+	</Extension>
+
+	<Extension path="/SimpleApp/DefaultInsertBefore">
+		<Node id="n1" type="test" />
+		<Node id="n2" type="test" />
+		<Node id="n0" type="test" insertbefore="First"/>
+		<Node id="n3" type="test" insertafter="Last"/>
+		<Node id="n4" type="test" />
+	</Extension>
 	
 	<Module>
 		<Dependencies>
