@@ -169,7 +169,7 @@ namespace Mono.Addins.Gui
 			this.urlButton.Relief = ((global::Gtk.ReliefStyle)(2));
 			this.urlButton.Label = global::Mono.Unix.Catalog.GetString ("More information");
 			global::Gtk.Image w12 = new global::Gtk.Image ();
-			w12.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("web.png");
+			w12.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("web-search-16.png");
 			this.urlButton.Image = w12;
 			this.hbox3.Add (this.urlButton);
 			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.urlButton]));
@@ -205,7 +205,7 @@ namespace Mono.Addins.Gui
 			this.btnInstall.UseUnderline = true;
 			this.btnInstall.Label = global::Mono.Unix.Catalog.GetString ("Install...");
 			global::Gtk.Image w20 = new global::Gtk.Image ();
-			w20.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("download.png");
+			w20.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("download-16.png");
 			this.btnInstall.Image = w20;
 			this.hbox1.Add (this.btnInstall);
 			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnInstall]));
@@ -219,7 +219,7 @@ namespace Mono.Addins.Gui
 			this.btnUpdate.UseUnderline = true;
 			this.btnUpdate.Label = global::Mono.Unix.Catalog.GetString ("Update");
 			global::Gtk.Image w22 = new global::Gtk.Image ();
-			w22.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("download.png");
+			w22.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("download-16.png");
 			this.btnUpdate.Image = w22;
 			this.hbox1.Add (this.btnUpdate);
 			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnUpdate]));

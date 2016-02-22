@@ -298,7 +298,7 @@
                                             <property name="MemberName" />
                                             <property name="CanFocus">True</property>
                                             <property name="Type">TextAndIcon</property>
-                                            <property name="Icon">resource:download.png</property>
+                                            <property name="Icon">resource:download-16.png</property>
                                             <property name="Label" translatable="yes">Update All</property>
                                             <property name="UseUnderline">True</property>
                                             <property name="Relief">None</property>
@@ -1510,7 +1510,7 @@
                                         <property name="MemberName" />
                                         <property name="CanFocus">True</property>
                                         <property name="Type">TextAndIcon</property>
-                                        <property name="Icon">resource:web.png</property>
+                                        <property name="Icon">resource:web-search-16.png</property>
                                         <property name="Label" translatable="yes">More information</property>
                                         <property name="UseUnderline">True</property>
                                         <property name="Relief">None</property>
@@ -1568,7 +1568,7 @@
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Type">TextAndIcon</property>
-                        <property name="Icon">resource:download.png</property>
+                        <property name="Icon">resource:download-16.png</property>
                         <property name="Label" translatable="yes">Install...</property>
                         <property name="UseUnderline">True</property>
                         <signal name="Clicked" handler="OnBtnInstallClicked" />
@@ -1585,7 +1585,7 @@
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Type">TextAndIcon</property>
-                        <property name="Icon">resource:download.png</property>
+                        <property name="Icon">resource:download-16.png</property>
                         <property name="Label" translatable="yes">Update</property>
                         <property name="UseUnderline">True</property>
                         <signal name="Clicked" handler="OnBtnUpdateClicked" />

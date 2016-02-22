@@ -182,7 +182,7 @@ namespace Mono.Addins.GuiGtk3
 			notebook.SetTabLabel (notebook.GetNthPage (1), tab);
 			
 			tab = new HBox (false, 3);
-			tab.PackStart (new Image (Gdk.Pixbuf.LoadFromResource ("system-software-update_22.png")), false, false, 0);
+			tab.PackStart (new Image (Gdk.Pixbuf.LoadFromResource ("update-16.png")), false, false, 0);
 			galleryTabLabel = new Label (Catalog.GetString ("Gallery"));
 			tab.PackStart (galleryTabLabel, true, true, 0);
 			tab.BorderWidth = 3;

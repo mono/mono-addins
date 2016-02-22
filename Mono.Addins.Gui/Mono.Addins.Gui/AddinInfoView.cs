@@ -255,7 +255,7 @@ namespace Mono.Addins.Gui
 						newVersion = updateInfo.Version;
 						labelHeader.Markup = "<b><span color='black'>" + Catalog.GetString ("Update available") + "</span></b>";
 //						topHeaderBox.BackgroundColor = new Gdk.Color (0, 132, 208);
-						imageHeader.Pixbuf = Gdk.Pixbuf.LoadFromResource ("software-update-available.png");
+						imageHeader.Pixbuf = Gdk.Pixbuf.LoadFromResource ("update-16.png");
 						topHeaderBox.BackgroundColor = new Gdk.Color (255, 176, 0);
 						topHeaderBox.Show ();
 					}

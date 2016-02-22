@@ -170,7 +170,7 @@ namespace Mono.Addins.Gui
 			this.buttonUpdateAll.Relief = ((global::Gtk.ReliefStyle)(2));
 			this.buttonUpdateAll.Label = global::Mono.Unix.Catalog.GetString ("Update All");
 			global::Gtk.Image w11 = new global::Gtk.Image ();
-			w11.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("download.png");
+			w11.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("download-16.png");
 			this.buttonUpdateAll.Image = w11;
 			this.hbox67.Add (this.buttonUpdateAll);
 			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox67 [this.buttonUpdateAll]));
