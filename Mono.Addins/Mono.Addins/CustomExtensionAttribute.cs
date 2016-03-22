@@ -97,7 +97,7 @@ namespace Mono.Addins
 		/// This property provides access to the resources and types of the add-in that created this extension node.
 		/// </remarks>
 		public RuntimeAddin Addin {
-			get { return ExtensionNode.Addin; }
+			get { return ExtensionNode?.Addin; }
 		}
 	}
 }
