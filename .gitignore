@@ -33,3 +33,7 @@ Makefile.in
 /configure
 /install-sh
 /missing
+.suo
+/*.suo
+/Test/
+/packages/
