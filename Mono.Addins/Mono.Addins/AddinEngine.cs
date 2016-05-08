@@ -45,8 +45,8 @@ namespace Mono.Addins
 	/// </summary>
 	/// <remarks>
 	/// This class allows hosting several independent add-in engines in a single application domain.
-	/// In general, applications use the AddinManager class to query and manage extensions. This class is static,
-	/// so the API is easily accessible. However, some kind applications may need to use several isolated
+	/// In general, applications use the AddinManager class to query and manage extensions. Most of the API is
+	/// static, so easily accessible. However, some kind applications may need to use several isolated
 	/// add-in engines, and in this case the AddinManager class can't be used, because it is bound to a single
 	/// add-in engine. Those applications can instead create several instances of the AddinEngine class. Each
 	/// add-in engine can be independently initialized with different add-in registries and extension models.
