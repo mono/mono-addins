@@ -15,7 +15,7 @@ AC_SUBST(POLICY_VERSIONS)
 
 AC_PROG_INSTALL
 
-AC_PATH_PROG(MCS, gmcs, no)
+AC_PATH_PROG(MCS, mcs, no)
 if test "x$MCS" = "xno"; then
         AC_MSG_ERROR([mcs Not found])
 fi
