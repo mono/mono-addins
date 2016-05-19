@@ -278,9 +278,8 @@ namespace Mono.Addins.Database
 					    
 					if (errors.Count > 0) {
 						scanSuccessful = false;
-						monitor.ReportError ("Errors found in add-in '" + file + ":", null);
 						foreach (string err in errors)
-							monitor.ReportError (err, null);
+							monitor.ReportError (string.Format ("{0}: {1}", file, err), null);
 					}
 				
 					// Make sure all extensions sets are initialized with the correct add-in id
