@@ -87,14 +87,16 @@ namespace Mono.Addins.Description
 		internal override void Verify (string location, StringCollection errors)
 		{
 			VerifyNotEmpty (location + "Dependencies/Addin/", errors, "id", AddinId);
-			VerifyNotEmpty (location + "Dependencies/Addin/", errors, "version", Version);
+			if (Version != null)
+				VerifyNotEmpty (location + "Dependencies/Addin/", errors, "version", Version);
 		}
 		
 		internal override void SaveXml (XmlElement parent)
 		{
 			CreateElement (parent, "Addin"); 
 			Element.SetAttribute ("id", AddinId);
-			Element.SetAttribute ("version", Version);
+			if (Version != null)
+				Element.SetAttribute ("version", Version);
 		}
 		
 		/// <summary>
