@@ -95,21 +95,22 @@ namespace Mono.Addins.Database
 					NodeAttributeAttribute bt = (NodeAttributeAttribute) Attribute.GetCustomAttribute (prop, typeof(NodeAttributeAttribute), true);
 					if (bt != null) {
 						string name = string.IsNullOrEmpty (bt.Name) ? prop.Name : bt.Name;
-						at [name] = Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture);
+						at.NodeDictionary[name] = Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture);
 					}
 				}
+			  at.PropertyDictionary[prop.Name] = val;
 			}
-			foreach (FieldInfo field in type.GetFields (BindingFlags.Public | BindingFlags.Instance)) {
+      foreach (FieldInfo field in type.GetFields (BindingFlags.Public | BindingFlags.Instance)) {
 				object val = field.GetValue (ob);
 				if (val != null) {
 					NodeAttributeAttribute bt = (NodeAttributeAttribute) Attribute.GetCustomAttribute (field, typeof(NodeAttributeAttribute), true);
 					if (bt != null) {
 						string name = string.IsNullOrEmpty (bt.Name) ? field.Name : bt.Name;
-						at [name] = Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture);
+						at.NodeDictionary[name] = Convert.ToString (val, System.Globalization.CultureInfo.InvariantCulture);
 					}
 				}
-			}
-			return at;
+      }
+      return at;
 		}
 		
 		public string GetTypeName (object type)
