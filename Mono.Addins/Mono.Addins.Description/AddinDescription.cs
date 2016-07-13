@@ -1009,7 +1009,8 @@ namespace Mono.Addins.Description
 			if (i == -1)
 				return input;
 
-			StringBuilder result = new StringBuilder (input.Substring (0, i), input.Length);
+			StringBuilder result = new StringBuilder (input.Length);
+			result.Append (input, 0, i);
 
 			while (i < input.Length) {
 				if (input [i] == '$') {

@@ -201,7 +201,7 @@ namespace Mono.Addins.Setup
 				}
 				
 				if (n != sn)
-					currentWord.Append (text.Substring (sn, n - sn));
+					currentWord.Append (text, sn, n - sn);
 				if (foundSpace) {
 					AppendCurrentWord (text[n]);
 					n++;

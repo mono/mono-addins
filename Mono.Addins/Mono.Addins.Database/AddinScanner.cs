@@ -278,9 +278,8 @@ namespace Mono.Addins.Database
 					    
 					if (errors.Count > 0) {
 						scanSuccessful = false;
-						monitor.ReportError ("Errors found in add-in '" + file + ":", null);
 						foreach (string err in errors)
-							monitor.ReportError (err, null);
+							monitor.ReportError (string.Format ("{0}: {1}", file, err), null);
 					}
 				
 					// Make sure all extensions sets are initialized with the correct add-in id
@@ -843,10 +842,11 @@ namespace Mono.Addins.Database
 			AddinLocalizerGettextAttribute locat = (AddinLocalizerGettextAttribute) reflector.GetCustomAttribute (asm, typeof(AddinLocalizerGettextAttribute), false);
 			if (locat != null) {
 				ExtensionNodeDescription node = new ExtensionNodeDescription ();
+				node.SetAttribute ("type", "Gettext");
 				if (!string.IsNullOrEmpty (locat.Catalog))
 					node.SetAttribute ("catalog", locat.Catalog);
 				if (!string.IsNullOrEmpty (locat.Location))
-					node.SetAttribute ("location", locat.Catalog);
+					node.SetAttribute ("location", locat.Location);
 				config.Localizer = node;
 			}
 			

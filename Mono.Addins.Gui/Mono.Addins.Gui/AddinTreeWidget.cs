@@ -352,7 +352,7 @@ namespace Mono.Addins.Gui
 			int i = txt.IndexOf (filter, StringComparison.CurrentCultureIgnoreCase);
 			while (i != -1) {
 				sb.Append (GLib.Markup.EscapeText (txt.Substring (last, i - last)));
-				sb.Append ("<span color='blue'>").Append (txt.Substring (i, filter.Length)).Append ("</span>");
+				sb.Append ("<span color='blue'>").Append (txt, i, filter.Length).Append ("</span>");
 				last = i + filter.Length;
 				i = txt.IndexOf (filter, last, StringComparison.CurrentCultureIgnoreCase);
 			}

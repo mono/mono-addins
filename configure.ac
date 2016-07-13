@@ -15,7 +15,7 @@ AC_SUBST(POLICY_VERSIONS)
 
 AC_PROG_INSTALL
 
-AC_PATH_PROG(MCS, gmcs, no)
+AC_PATH_PROG(MCS, mcs, no)
 if test "x$MCS" = "xno"; then
         AC_MSG_ERROR([mcs Not found])
 fi
@@ -66,7 +66,12 @@ AC_ARG_ENABLE(docs,
 AM_CONDITIONAL(ENABLE_DOCS, test x$enable_docs = xyes)
 
 if test "x$enable_gui" = "xyes"; then
-	PKG_CHECK_MODULES([GTK_SHARP_20], [gtk-sharp-2.0])
+	PKG_CHECK_MODULES([GTK_SHARP_20], [gtk-sharp-2.0],
+		has_gtk=yes, has_gtk=no)
+
+	if test "x$has_gtk" = "xno"; then
+		AC_MSG_ERROR([gtk is needed for GUI features, install it or use --disable-gui])
+	fi
 fi
 
 if test "x$enable_gui_gtk3" = "xyes"; then

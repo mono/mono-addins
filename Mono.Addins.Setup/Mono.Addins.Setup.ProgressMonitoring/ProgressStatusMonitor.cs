@@ -102,7 +102,7 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 				pi = i + 1;
 				i = text.IndexOf ('\n', pi);
 			}
-			logBuffer.Append (text.Substring (pi));
+			logBuffer.Append (text, pi, text.Length - pi);
 		}
 		
 		public TextWriter Log {
