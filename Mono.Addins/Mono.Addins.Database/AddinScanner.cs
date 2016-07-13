@@ -918,7 +918,7 @@ namespace Mono.Addins.Database
 			// Look for extension nodes declared using assembly attributes
 			
 			foreach (CustomAttribute att in reflector.GetRawCustomAttributes (asm, typeof(CustomExtensionAttribute), true))
-				AddCustomAttributeExtension (module, att, "Type");
+				AddCustomAttributeExtension (null, null, module, att, "Type");
 			
 			// Get extensions or extension points applied to types
 			
@@ -1015,7 +1015,7 @@ namespace Mono.Addins.Database
 					else {
 						// Look for custom extension attribtues
 						foreach (CustomAttribute att in reflector.GetRawCustomAttributes (t, typeof(CustomExtensionAttribute), false)) {
-							ExtensionNodeDescription elem = AddCustomAttributeExtension (module, att, "Type");
+							ExtensionNodeDescription elem = AddCustomAttributeExtension (reflector, t, module, att, "Type");
 							elem.SetAttribute ("type", typeFullName);
 							if (string.IsNullOrEmpty (elem.GetAttribute ("id")))
 								elem.SetAttribute ("id", typeFullName);
@@ -1025,13 +1025,37 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		ExtensionNodeDescription AddCustomAttributeExtension (ModuleDescription module, CustomAttribute att, string nameName)
+		ExtensionNodeDescription AddCustomAttributeExtension (IAssemblyReflector reflector, object t, ModuleDescription module, 
+      CustomAttribute att, string nameName)
 		{
-			string path;
-			if (!att.TryGetValue (CustomExtensionAttribute.PathFieldKey, out path))
-				path = "%" + att.TypeName;
-			ExtensionNodeDescription elem = module.AddExtensionNode (path, nameName);
-			foreach (KeyValuePair<string,string> prop in att) {
+		  string path;
+		  if (!att.NodeDictionary.TryGetValue(CustomExtensionAttribute.PathFieldKey, out path) && reflector != null && t != null)
+		  {
+		    object type;
+        if (att.PropertyDictionary.TryGetValue("Type", out type) && type is Type)
+        {
+          var concreteType = (Type) type;
+		      path = "$" + concreteType.FullName;
+		    }
+		    else
+		    {
+		      path = GetBaseTypeNameList(reflector, t);
+		      if (path == "$")
+		      {
+		        // The type does not implement any interface and has no superclass.
+		        // Will be reported later as an error.
+		        string typeFullName = reflector.GetTypeFullName(t);
+		        path = "$" + typeFullName;
+		      }
+		    }
+		  }
+		  else
+		  {
+		    path = "%" + att.TypeName;
+		  }
+
+		  ExtensionNodeDescription elem = module.AddExtensionNode (path, nameName);
+			foreach (KeyValuePair<string,string> prop in att.NodeDictionary) {
 				if (prop.Key != CustomExtensionAttribute.PathFieldKey)
 					elem.SetAttribute (prop.Key, prop.Value);
 			}

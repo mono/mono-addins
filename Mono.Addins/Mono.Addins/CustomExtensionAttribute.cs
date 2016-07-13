@@ -41,8 +41,9 @@ namespace Mono.Addins
 		string insertBefore;
 		string insertAfter;
 		string path;
-		
-		internal const string PathFieldKey = "__path";
+		Type type;
+
+    internal const string PathFieldKey = "__path";
 		
 		/// <summary>
 		/// Identifier of the node
@@ -84,10 +85,25 @@ namespace Mono.Addins
 			set { path = value; }
 		}
 
-		/// <summary>
-		/// The extension node bound to this attribute
-		/// </summary>
-		public ExtensionNode ExtensionNode { get; internal set; }
+    /// <summary>
+    /// Type defining the extension point being extended
+    /// </summary>
+    /// <remarks>
+    /// This property can be used to explicitly specify the type that defines the extension point
+    /// to be extended. By default, Mono.Addins will try to find any extension point defined in any
+    /// of the base classes or interfaces. This property can be used when there is more than one
+    /// base type providing an extension point.
+    /// </remarks>
+    public Type Type
+    {
+      get { return type; }
+      set { type = value; }
+    }
+
+    /// <summary>
+    /// The extension node bound to this attribute
+    /// </summary>
+    public ExtensionNode ExtensionNode { get; internal set; }
 
 
 		/// <summary>
