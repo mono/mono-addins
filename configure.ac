@@ -1,14 +1,14 @@
 dnl Warning: This is an automatically generated file, do not edit!
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.54])
-AC_INIT([mono-addins], [1.2])
+AC_INIT([mono-addins], [1.3])
 AM_INIT_AUTOMAKE([foreign tar-ustar])
 AM_MAINTAINER_MODE
 
 dnl pkg-config
 PKG_PROG_PKG_CONFIG([0.16])
 
-API_VERSION=1.2.0.0
+API_VERSION=1.3.0.0
 AC_SUBST(API_VERSION)
 POLICY_VERSIONS="0.2 0.3 0.4 0.5 0.6"
 AC_SUBST(POLICY_VERSIONS)
