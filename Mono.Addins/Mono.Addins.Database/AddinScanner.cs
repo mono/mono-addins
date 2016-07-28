@@ -748,7 +748,7 @@ namespace Mono.Addins.Database
 			scanResult.AddFileToWithFailure (config.AddinFile);
 			monitor.ReportWarning ("[" + config.AddinId + "] Could not load some add-in assemblies: " + ex.Message);
 			if (monitor.LogLevel <= 1)
-			    return;
+				return;
 			
 			ReflectionTypeLoadException rex = ex as ReflectionTypeLoadException;
 			if (rex != null) {
@@ -904,14 +904,25 @@ namespace Mono.Addins.Database
 				// Get extension points
 				
 				object[] extPoints = reflector.GetCustomAttributes (asm, typeof(ExtensionPointAttribute), false);
-				foreach (ExtensionPointAttribute ext in extPoints) {
-					ExtensionPoint ep = config.AddExtensionPoint (ext.Path);
+				foreach (ExtensionPointAttribute ext in extPoints)
+				{
+					ExtensionPoint ep;
+					if (ext.Path.Length > 0)
+					{
+						ep = config.AddExtensionPoint(ext.Path);
+					}
+					else
+					{
+						ep = config.AddExtensionPoint(GetDefaultTypeExtensionPath(config, ext.ObjectTypeName));
+					}
+
 					ep.Description = ext.Description;
 					ep.Name = ext.Name;
 					ep.DefaultInsertBefore = ext.DefaultInsertBefore;
 					ep.DefaultInsertAfter = ext.DefaultInsertAfter;
 					ExtensionNodeType nt = ep.AddExtensionNode (ext.NodeName, ext.NodeTypeName);
 					nt.ExtensionAttributeTypeName = ext.ExtensionAttributeTypeName;
+					nt.ObjectTypeName = ext.ObjectTypeName;
 				}
 			}
 			
@@ -1026,35 +1037,35 @@ namespace Mono.Addins.Database
 		}
 		
 		ExtensionNodeDescription AddCustomAttributeExtension (IAssemblyReflector reflector, object t, ModuleDescription module, 
-      CustomAttribute att, string nameName)
+			CustomAttribute att, string nameName)
 		{
 		  string path;
 		  if (!att.NodeDictionary.TryGetValue(CustomExtensionAttribute.PathFieldKey, out path) && reflector != null && t != null)
 		  {
-		    object type;
-        if (att.PropertyDictionary.TryGetValue("Type", out type) && type is Type)
-        {
-          var concreteType = (Type) type;
-		      path = "$" + concreteType.FullName;
-		    }
-		    else
-		    {
-		      path = GetBaseTypeNameList(reflector, t);
-		      if (path == "$")
-		      {
-		        // The type does not implement any interface and has no superclass.
-		        // Will be reported later as an error.
-		        string typeFullName = reflector.GetTypeFullName(t);
-		        path = "$" + typeFullName;
-		      }
-		    }
-		  }
-		  else
-		  {
-		    path = "%" + att.TypeName;
-		  }
+				object type;
+				if (att.PropertyDictionary.TryGetValue("Type", out type) && type is Type)
+				{
+					var concreteType = (Type) type;
+					path = "$" + concreteType.FullName;
+				}
+				else
+				{
+					path = GetBaseTypeNameList(reflector, t);
+					if (path == "$")
+					{
+					// The type does not implement any interface and has no superclass.
+					// Will be reported later as an error.
+					string typeFullName = reflector.GetTypeFullName(t);
+					path = "$" + typeFullName;
+					}
+				}
+			}
+			else
+			{
+				path = "%" + att.TypeName;
+			}
 
-		  ExtensionNodeDescription elem = module.AddExtensionNode (path, nameName);
+			ExtensionNodeDescription elem = module.AddExtensionNode (path, nameName);
 			foreach (KeyValuePair<string,string> prop in att.NodeDictionary) {
 				if (prop.Key != CustomExtensionAttribute.PathFieldKey)
 					elem.SetAttribute (prop.Key, prop.Value);

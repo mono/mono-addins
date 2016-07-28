@@ -224,12 +224,14 @@ namespace Mono.Addins
 		public void Shutdown ()
 		{
 			lock (LocalLock) {
+				ResetCachedData();
+
 				initialized = false;
 				AppDomain.CurrentDomain.AssemblyLoad -= new AssemblyLoadEventHandler (OnAssemblyLoaded);
 				AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainAssemblyResolve;
 				loadedAddins = new Dictionary<string, RuntimeAddin>();
 				loadedAssemblies = new Dictionary<Assembly, RuntimeAddin> ();
-				registry.Dispose ();
+				registry.Dispose();
 				registry = null;
 				startupDirectory = null;
 				ClearContext ();

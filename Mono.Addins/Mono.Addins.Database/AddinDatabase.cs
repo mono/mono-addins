@@ -1441,6 +1441,7 @@ namespace Mono.Addins.Database
 				}
 				
 				AddinScanResult sr = new AddinScanResult ();
+				sr.AddAssemblySearchLocation(registry.StartupDirectory);
 				sr.Domain = domain;
 				AddinScanner scanner = new AddinScanner (this, sr, progressStatus);
 				

@@ -300,31 +300,34 @@ namespace Mono.Addins.Database
 	public class CustomAttribute
 	{
 		private string typeName;
-	  private Dictionary<string, string> _nodeDictionary;
-	  private Dictionary<string, object> _propertyDictionary;
+		private Dictionary<string, string> _nodeDictionary;
+		private Dictionary<string, object> _propertyDictionary;
 
-	  public CustomAttribute()
-	  {
-	    _nodeDictionary = new Dictionary<string, string>();
-      _propertyDictionary = new Dictionary<string, object>();
-	  }
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		public CustomAttribute()
+		{
+			_nodeDictionary = new Dictionary<string, string>();
+			_propertyDictionary = new Dictionary<string, object>();
+		}
 
-    /// <summary>
-    /// Full name of the type of the custom attribute
-    /// </summary>
-    public string TypeName {
+		/// <summary>
+		/// Full name of the type of the custom attribute
+		/// </summary>
+		public string TypeName {
 			get { return typeName; }
 			set { typeName = value; }
-    }
+		}
 
-    /// <summary>
-    /// Returns a dictionary of nodes 
-    /// </summary>
-    public IDictionary<string, string> NodeDictionary { get {  return _nodeDictionary;} }
+		/// <summary>
+		/// Returns a dictionary of nodes 
+		/// </summary>
+		public IDictionary<string, string> NodeDictionary { get {  return _nodeDictionary;} }
 
-    /// <summary>
-    /// Returns a dictionary of properties
-    /// </summary>
-    public IDictionary<string, object> PropertyDictionary { get { return _propertyDictionary; } }
-  }
+		/// <summary>
+		/// Returns a dictionary of properties
+		/// </summary>
+		public IDictionary<string, object> PropertyDictionary { get { return _propertyDictionary; } }
+	}
 }
