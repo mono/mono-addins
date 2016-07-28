@@ -217,19 +217,19 @@ namespace Mono.Addins.CecilReflector
 				if (val == null)
 					continue;
 
-			  if (val is TypeReference)
-			  {
-			    var typeRef = (TypeReference) val;
-			    var typeDef = typeRef.Resolve();
-			    if (typeDef == null)
-            throw new InvalidOperationException(string.Format("Cannot resolve assembly '{0}'", typeDef.Module.Assembly.FullName));
+				if (val is TypeReference)
+				{
+					var typeRef = (TypeReference) val;
+					var typeDef = typeRef.Resolve();
+					if (typeDef == null)
+						throw new InvalidOperationException(string.Format("Cannot resolve assembly '{0}'", typeDef.Module.Assembly.FullName));
 
-			    val = Type.GetType(typeDef.FullName + ", " + typeDef.Module.Assembly.FullName, false);
-          if (val == null)
-            throw new InvalidOperationException(string.Format("Cannot resolve type '{0}' at assembly '{1}'", typeDef.FullName, typeDef.Module.Assembly.FullName));
-			  }
+					val = Type.GetType(typeDef.FullName + ", " + typeDef.Module.Assembly.FullName, false);
+					if (val == null)
+						throw new InvalidOperationException(string.Format("Cannot resolve type '{0}' at assembly '{1}'", typeDef.FullName, typeDef.Module.Assembly.FullName));
+				}
 
-        mat.PropertyDictionary.Add(pname, val);
+				mat.PropertyDictionary.Add(pname, val);
 
 				foreach (TypeDefinition td in GetInheritanceChain (attType)) {
 					PropertyDefinition prop = GetMember (td.Properties, pname);
