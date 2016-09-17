@@ -1,4 +1,3 @@
-dnl Warning: This is an automatically generated file, do not edit!
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.54])
 AC_INIT([mono-addins], [1.3])
