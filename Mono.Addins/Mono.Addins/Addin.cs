@@ -178,7 +178,7 @@ namespace Mono.Addins
 					string id, version;
 					Addin.GetIdParts (AddinInfo.Id, out id, out version);
 					var addins = database.GetInstalledAddins (null, AddinSearchFlagsInternal.IncludeAll | AddinSearchFlagsInternal.LatestVersionsOnly);
-					isLatestVersion = addins.Where (a => Addin.GetIdName (a.Id) == id && a.Version == version).Any ();
+					isLatestVersion = addins.Any (a => Addin.GetIdName (a.Id) == id && a.Version == version);
 				}
 				return isLatestVersion.Value;
 			}
