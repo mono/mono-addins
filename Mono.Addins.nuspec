@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Mono.Addins</id>
-    <version>1.3</version>
+    <version>1.3.1</version>
     <authors>Lluis Sanchez</authors>
     <description>Mono.Addins is a framework for creating extensible applications, and for creating add-ins which extend applications.</description>
     <language>en-US</language>
@@ -10,7 +10,7 @@
     <licenseUrl>https://github.com/mono/mono-addins/blob/master/COPYING</licenseUrl>
   </metadata>
   <files>
-  	<file src="bin/Mono.Addins.dll" target="lib\net40" />
+  	<file src="bin/Mono.Addins.dll" target="lib/net40" />
   	<file src="bin/mautil.exe" target="tools" />
   </files>
 </package>
