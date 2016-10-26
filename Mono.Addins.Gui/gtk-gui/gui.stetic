@@ -150,7 +150,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
-    <property name="Title" translatable="yes">Add-in Manager</property>
+    <property name="Title" translatable="yes">Extension Manager</property>
     <property name="TypeHint">Dialog</property>
     <property name="BorderWidth">6</property>
     <property name="DefaultWidth">700</property>
@@ -579,7 +579,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
-    <property name="Title" translatable="yes">Add-in Repository Management</property>
+    <property name="Title" translatable="yes">Extension Repository Management</property>
     <property name="TypeHint">Dialog</property>
     <property name="BorderWidth">6</property>
     <property name="DefaultWidth">600</property>
@@ -941,7 +941,7 @@
   <widget class="Gtk.Dialog" id="Mono.Addins.Gui.AddinInstallerDialog" design-size="593 433">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
-    <property name="Title" translatable="yes">Add-in Manager</property>
+    <property name="Title" translatable="yes">Extension Manager</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>
@@ -973,7 +973,7 @@
               <widget class="Gtk.Label" id="label2">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">The following add-ins will be installed:</property>
+                <property name="LabelProp" translatable="yes">The following extensions will be installed:</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -1488,7 +1488,7 @@
                                     <property name="MemberName" />
                                     <property name="WidthRequest">250</property>
                                     <property name="Xalign">0</property>
-                                    <property name="LabelProp" translatable="yes">Long description of the add-in. Long description of the add-in. Long description of the add-in. Long description of the add-in. Long description of the add-in. Long description of the add-in. </property>
+                                    <property name="LabelProp" translatable="yes">Long description of the extension. Long description of the extension. Long description of the extension. Long description of the extension. Long description of the extension. Long description of the extension. </property>
                                     <property name="Wrap">True</property>
                                   </widget>
                                   <packing>

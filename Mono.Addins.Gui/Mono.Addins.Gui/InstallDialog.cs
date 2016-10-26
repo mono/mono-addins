@@ -86,7 +86,7 @@ namespace Mono.Addins.Gui
 			}
 			
 			if (sinfos.Count > 0) {
-				sb.Append ("<b>").Append (Catalog.GetString ("There are other add-ins that depend on the previous ones which will also be uninstalled:")).Append ("</b>\n\n");
+				sb.Append ("<b>").Append (Catalog.GetString ("There are other extensions that depend on the previous ones which will also be uninstalled:")).Append ("</b>\n\n");
 				foreach (Addin si in sinfos)
 					sb.Append (si.Description.Name + "\n");
 			}
@@ -121,7 +121,7 @@ namespace Mono.Addins.Gui
 			
 			StringBuilder sb = new StringBuilder ();
 			if (!res) {
-				sb.Append ("<b><span foreground=\"red\">").Append (Catalog.GetString ("The selected add-ins can't be installed because there are dependency conflicts.")).Append ("</span></b>\n");
+				sb.Append ("<b><span foreground=\"red\">").Append (Catalog.GetString ("The selected extensions can't be installed because there are dependency conflicts.")).Append ("</span></b>\n");
 				foreach (string s in m.Errors) {
 					sb.Append ("<b><span foreground=\"red\">" + s + "</span></b>\n");
 				}
@@ -206,12 +206,12 @@ namespace Mono.Addins.Gui
 			ThreadStart oper;
 				
 			if (uninstallIds == null) {
-				installMonitor = new InstallMonitor (globalProgressLabel, mainProgressBar, Catalog.GetString ("Installing Add-ins"));
+				installMonitor = new InstallMonitor (globalProgressLabel, mainProgressBar, Catalog.GetString ("Installing Extensions"));
 				oper = new ThreadStart (RunInstall);
 				errmessage = Catalog.GetString ("The installation failed!");
 				warnmessage = Catalog.GetString ("The installation has completed with warnings.");
 			} else {
-				installMonitor = new InstallMonitor (globalProgressLabel, mainProgressBar, Catalog.GetString ("Uninstalling Add-ins"));
+				installMonitor = new InstallMonitor (globalProgressLabel, mainProgressBar, Catalog.GetString ("Uninstalling Extensions"));
 				oper = new ThreadStart (RunUninstall);
 				errmessage = Catalog.GetString ("The uninstallation failed!");
 				warnmessage = Catalog.GetString ("The uninstallation has completed with warnings.");

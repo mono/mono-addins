@@ -575,7 +575,7 @@ namespace Mono.Addins.GuiGtk3
 		protected virtual void OnButtonInstallFromFileClicked (object sender, System.EventArgs e)
 		{
 			string[] files;
-			Gtk.FileChooserDialog dlg = new Gtk.FileChooserDialog (Catalog.GetString ("Install Add-in Package"), this, FileChooserAction.Open);
+			Gtk.FileChooserDialog dlg = new Gtk.FileChooserDialog (Catalog.GetString ("Install Extension Package"), this, FileChooserAction.Open);
 			try {
 				if (lastFolder != null)
 					dlg.SetCurrentFolder (lastFolder);
@@ -585,7 +585,7 @@ namespace Mono.Addins.GuiGtk3
 				
 				Gtk.FileFilter f = new Gtk.FileFilter ();
 				f.AddPattern ("*.mpack");
-				f.Name = Catalog.GetString ("Add-in packages");
+				f.Name = Catalog.GetString ("Extension packages");
 				dlg.AddFilter (f);
 				
 				f = new Gtk.FileFilter ();

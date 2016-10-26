@@ -99,7 +99,7 @@ namespace Mono.Addins.Gui
 		
 		internal void ShowEmptyMessage ()
 		{
-			treeStore.AppendValues (null, null, Catalog.GetString ("No add-ins found"), "", false, false, null, false);
+			treeStore.AppendValues (null, null, Catalog.GetString ("No extensions found"), "", false, false, null, false);
 		}
 		
 		protected virtual void AddStoreTypes (ArrayList list)
@@ -117,7 +117,7 @@ namespace Mono.Addins.Gui
 		protected virtual void CreateColumns ()
 		{
 			TreeViewColumn col = new TreeViewColumn ();
-			col.Title = Catalog.GetString ("Add-in");
+			col.Title = Catalog.GetString ("Extension");
 			
 			CellRendererToggle crtog = new CellRendererToggle ();
 			crtog.Activatable = true;
