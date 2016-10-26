@@ -118,7 +118,6 @@ namespace Mono.Addins.GuiGtk3
 			eventbox3.Child = addininfoUpdates;
 
 //			Services.PlaceDialog (this, parent);
-			Show ();
 			
 			addininfoInstalled.Init (service);
 			addininfoGallery.Init (service);
