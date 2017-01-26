@@ -96,10 +96,10 @@ namespace UnitTests
 		public void Dependencies ()
 		{
 			Assert.AreEqual (4, desc.MainModule.Dependencies.Count);
-			Assert.IsInstanceOfType (typeof(AddinDependency), desc.MainModule.Dependencies[0]);
-			Assert.IsInstanceOfType (typeof(AddinDependency), desc.MainModule.Dependencies[1]);
-			Assert.IsInstanceOfType (typeof(AddinDependency), desc.MainModule.Dependencies[2]);
-			Assert.IsInstanceOfType (typeof(AddinDependency), desc.MainModule.Dependencies[3]);
+			Assert.IsInstanceOf<AddinDependency> (desc.MainModule.Dependencies[0]);
+			Assert.IsInstanceOf<AddinDependency>(desc.MainModule.Dependencies[1]);
+			Assert.IsInstanceOf<AddinDependency>(desc.MainModule.Dependencies[2]);
+			Assert.IsInstanceOf<AddinDependency>(desc.MainModule.Dependencies[3]);
 			Assert.AreEqual ("SimpleApp.Dep1,1.0", ((AddinDependency)desc.MainModule.Dependencies[0]).FullAddinId);
 			Assert.AreEqual ("SimpleApp.Dep2,2.0", ((AddinDependency)desc.MainModule.Dependencies[1]).FullAddinId);
 			Assert.AreEqual ("SimpleApp.Other.Dep3,3.0", ((AddinDependency)desc.MainModule.Dependencies[2]).FullAddinId);
@@ -199,7 +199,7 @@ namespace UnitTests
 		{
 			ModuleDescription mod = desc.OptionalModules [0];
 			Assert.AreEqual (1, mod.Dependencies.Count);
-			Assert.IsInstanceOfType (typeof(AddinDependency), mod.Dependencies[0]);
+			Assert.IsInstanceOf<AddinDependency> (mod.Dependencies[0]);
 			Assert.AreEqual ("SimpleApp.Dep1,1.0", ((AddinDependency)mod.Dependencies[0]).FullAddinId);
 		}
 		
