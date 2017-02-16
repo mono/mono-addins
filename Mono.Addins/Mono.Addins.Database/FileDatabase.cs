@@ -451,7 +451,7 @@ namespace Mono.Addins.Database
 		
 		string GetFileKey (string directory, string sharedFileName, string objectId)
 		{
-			int avlen = System.Math.Max (240 - directory.Length, 10);
+			int avlen = System.Math.Min (System.Math.Max (240 - directory.Length, 10), 130);
 			string name = sharedFileName + "_" + Util.GetStringHashCode (objectId).ToString ("x");
 			if (name.Length > avlen)
 				return name.Substring (name.Length - avlen);
