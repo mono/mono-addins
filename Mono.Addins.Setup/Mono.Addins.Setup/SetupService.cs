@@ -388,8 +388,8 @@ namespace Mono.Addins.Setup
 			doc.WriteTo (tw);
 			tw.Flush ();
 			byte[] data = ms.ToArray ();
-			
-			ZipEntry infoEntry = new ZipEntry ("addin.info");
+
+			var infoEntry = new ZipEntry ("addin.info") { Size = data.Length };
 			s.PutNextEntry (infoEntry);
 			s.Write (data, 0, data.Length);
 			
@@ -418,8 +418,8 @@ namespace Mono.Addins.Setup
 				using (FileStream fs = File.OpenRead (fp)) {
 					byte[] buffer = new byte [fs.Length];
 					fs.Read (buffer, 0, buffer.Length);
-					
-					ZipEntry entry = new ZipEntry (file);
+
+					var entry = new ZipEntry (file) { Size = fs.Length };
 					s.PutNextEntry (entry);
 					s.Write (buffer, 0, buffer.Length);
 				}

@@ -9,6 +9,7 @@
     <AssemblyName>FileContentExtension</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>FileContentExtension</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
