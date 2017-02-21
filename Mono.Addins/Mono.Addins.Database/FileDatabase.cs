@@ -451,6 +451,12 @@ namespace Mono.Addins.Database
 		
 		string GetFileKey (string directory, string sharedFileName, string objectId)
 		{
+			// We have two magic numbers here. 240 is a "room to spare" number based on 255,
+			// the Windows MAX_PATH length for the full path of a file on disk. Then 130 is
+			// a "room to spare" number based on 143-"ish", the maximum filename length for
+			// files stored on eCryptFS on Linux. 240 relates to the complete path
+			// (including the directory structure), and 130 is just the filename, so we pick
+			// whichever is the smaller of those two numbers when truncating.
 			int avlen = System.Math.Min (System.Math.Max (240 - directory.Length, 10), 130);
 			string name = sharedFileName + "_" + Util.GetStringHashCode (objectId).ToString ("x");
 			if (name.Length > avlen)
