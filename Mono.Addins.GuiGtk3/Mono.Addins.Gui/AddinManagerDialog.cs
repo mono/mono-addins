@@ -216,7 +216,6 @@ namespace Mono.Addins.GuiGtk3
 		{
 			filterEntry = new SearchEntry ();
 			filterEntry.Entry.SetSizeRequest (200, filterEntry.Entry.SizeRequest ().Height);
-			filterEntry.Parent = notebook;
 			filterEntry.Show ();
 			notebook.SizeAllocated += delegate {
 				RepositionFilter ();
@@ -238,6 +237,12 @@ namespace Mono.Addins.GuiGtk3
 			int h = filterEntry.SizeRequest ().Height;
 			var alloc = notebook.Allocation;
 			filterEntry.SetAllocation (new Gdk.Rectangle (alloc.Left + alloc.Width - 1 - w, alloc.Y, w, h));
+		}
+
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			filterEntry.Parent = notebook;
 		}
 		
 //		public override void Dispose ()
