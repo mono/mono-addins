@@ -161,7 +161,6 @@ namespace Mono.Addins.Gui
 		{
 			filterEntry = new SearchEntry ();
 			filterEntry.Entry.SetSizeRequest (200, filterEntry.Entry.SizeRequest ().Height);
-			filterEntry.Parent = notebook;
 			filterEntry.Show ();
 			notebook.SizeAllocated += delegate {
 				RepositionFilter ();
@@ -175,6 +174,12 @@ namespace Mono.Addins.Gui
 				galleryTreeView.ExpandAll ();
 			};
 			RepositionFilter ();
+		}
+
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			filterEntry.Parent = notebook;
 		}
 		
 		void RepositionFilter ()
