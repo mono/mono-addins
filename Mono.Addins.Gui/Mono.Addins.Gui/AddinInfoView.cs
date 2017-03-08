@@ -292,7 +292,7 @@ namespace Mono.Addins.Gui
 				if (downloadSize != null)
 					ver += "\n<small><b>" + Catalog.GetString ("Download size") + ":</b> " + downloadSize + "</small>";
 				if (missingDepsTxt != null)
-					ver += "\n\n" + GLib.Markup.EscapeText (Catalog.GetString ("The following depedencies required by this add-in are not available:")) + missingDepsTxt;
+					ver += "\n\n" + GLib.Markup.EscapeText (Catalog.GetString ("The following dependencies required by this add-in are not available:")) + missingDepsTxt;
 				labelVersion.Markup = ver;
 				
 				string desc = GLib.Markup.EscapeText (sinfo.Description);
