@@ -504,10 +504,11 @@ namespace Mono.Addins.Database
 		bool ScanConfigAssemblies (IProgressStatus monitor, string filePath, AddinScanResult scanResult, out AddinDescription config)
 		{
 			config = null;
-			
+
+			IAssemblyReflector reflector = null;
 			try {
-				IAssemblyReflector reflector = GetReflector (monitor, scanResult, filePath);
-				
+				reflector = GetReflector (monitor, scanResult, filePath);
+
 				string basePath = Path.GetDirectoryName (filePath);
 				
 				using (var s = fs.OpenFile (filePath)) {
@@ -523,6 +524,8 @@ namespace Mono.Addins.Database
 				// Something went wrong while scanning the assembly. We'll ignore it for now.
 				monitor.ReportError ("There was an error while scanning add-in: " + filePath, ex);
 				return false;
+			} finally {
+				(reflector as IDisposable)?.Dispose ();
 			}
 		}
 		
@@ -541,9 +544,10 @@ namespace Mono.Addins.Database
 		bool ScanAssembly (IProgressStatus monitor, string filePath, AddinScanResult scanResult, out AddinDescription config)
 		{
 			config = null;
-				
+
+			IAssemblyReflector reflector = null;
 			try {
-				IAssemblyReflector reflector = GetReflector (monitor, scanResult, filePath);
+				reflector = GetReflector (monitor, scanResult, filePath);
 				object asm = reflector.LoadAssembly (filePath);
 				if (asm == null)
 					throw new Exception ("Could not load assembly: " + filePath);
@@ -578,6 +582,8 @@ namespace Mono.Addins.Database
 				// Something went wrong while scanning the assembly. We'll ignore it for now.
 				monitor.ReportError ("There was an error while scanning assembly: " + filePath, ex);
 				return false;
+			} finally {
+				(reflector as IDisposable)?.Dispose ();
 			}
 		}
 

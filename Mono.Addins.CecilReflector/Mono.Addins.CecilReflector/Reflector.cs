@@ -37,7 +37,7 @@ using System.Collections.Generic;
 
 namespace Mono.Addins.CecilReflector
 {
-	public class Reflector: IAssemblyReflector
+	public class Reflector: IAssemblyReflector, IDisposable
 	{
 		IAssemblyLocator locator;
 		Hashtable cachedAssemblies = new Hashtable ();
@@ -427,8 +427,10 @@ namespace Mono.Addins.CecilReflector
 			if (type.BaseType != null)
 				GetBaseTypeFullNameList (visited, list, asm, type.BaseType);
 
-			foreach (TypeReference interf in type.Interfaces)
+			foreach (InterfaceImplementation ii in type.Interfaces) {
+				TypeReference interf = ii.InterfaceType;
 				GetBaseTypeFullNameList (visited, list, asm, interf);
+			}
 		}
 		
 		TypeDefinition FindTypeDefinition (AssemblyDefinition referencer, TypeReference rt)
@@ -494,6 +496,13 @@ namespace Mono.Addins.CecilReflector
 		public string GetFieldTypeFullName (object field)
 		{
 			return ((FieldDefinition)field).FieldType.FullName;
+		}
+
+		public void Dispose ()
+		{
+			foreach (AssemblyDefinition asm in cachedAssemblies) {
+				asm.Dispose ();
+			}
 		}
 	}
 }
