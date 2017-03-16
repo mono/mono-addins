@@ -33,6 +33,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.Specialized;
 using Mono.Addins.Serialization;
+using Mono.Addins.Database;
 
 namespace Mono.Addins.Description
 {
@@ -369,20 +370,33 @@ namespace Mono.Addins.Description
 
 		internal override void Write (BinaryXmlWriter writer)
 		{
-			writer.WriteValue ("Assemblies", Assemblies);
-			writer.WriteValue ("DataFiles", DataFiles);
+			// Normalize assembly and data file paths when saving as binary. Binary files are not supposed to be portable,
+			// so it is safe to store platform-specific path separators.
+
+			writer.WriteValue ("Assemblies", NormalizePaths (Assemblies));
+			writer.WriteValue ("DataFiles", NormalizePaths (DataFiles));
 			writer.WriteValue ("Dependencies", Dependencies);
 			writer.WriteValue ("Extensions", Extensions);
-			writer.WriteValue ("IgnorePaths", ignorePaths);
+			writer.WriteValue ("IgnorePaths", NormalizePaths (ignorePaths));
 		}
 		
 		internal override void Read (BinaryXmlReader reader)
 		{
+			// We can assume that paths read from a binary files are always normalized
+
 			assemblies = (StringCollection) reader.ReadValue ("Assemblies", new StringCollection ());
 			dataFiles = (StringCollection) reader.ReadValue ("DataFiles", new StringCollection ());
 			dependencies = (DependencyCollection) reader.ReadValue ("Dependencies", new DependencyCollection (this));
 			extensions = (ExtensionCollection) reader.ReadValue ("Extensions", new ExtensionCollection (this));
 			ignorePaths = (StringCollection) reader.ReadValue ("IgnorePaths", new StringCollection ());
+		}
+
+		StringCollection NormalizePaths (StringCollection collection)
+		{
+			var list = new StringCollection ();
+			foreach (var path in collection)
+				list.Add (Util.NormalizePath (path));
+			return list;
 		}
 	}
 }

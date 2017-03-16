@@ -38,6 +38,7 @@ using Mono.Addins.Setup.ProgressMonitoring;
 using Microsoft.Win32;
 using System.Diagnostics;
 using Mono.PkgConfig;
+using Mono.Addins.Database;
 
 namespace Mono.Addins.Setup
 {
@@ -399,13 +400,14 @@ namespace Mono.Addins.Setup
 			if (!conf.AllFiles.Contains (Path.GetFileName (filePath)))
 				list.Add (Path.GetFileName (filePath));
 			foreach (string f in conf.AllFiles) {
-				list.Add (f);
+				list.Add (Util.NormalizePath (f));
 			}
 			
 			foreach (var prop in conf.Properties) {
 				try {
-					if (File.Exists (Path.Combine (basePath, prop.Value)))
-						list.Add (prop.Value);
+					var file = Util.NormalizePath (prop.Value);
+					if (File.Exists (Path.Combine (basePath, file)))
+						list.Add (file);
 				} catch {
 					// Ignore errors
 				}
