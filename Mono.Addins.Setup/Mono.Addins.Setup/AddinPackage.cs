@@ -41,6 +41,7 @@ using Mono.Addins;
 using Mono.Addins.Description;
 using System.Collections.Generic;
 using System.Linq;
+using Mono.Addins.Database;
 
 namespace Mono.Addins.Setup
 {
@@ -272,7 +273,7 @@ namespace Mono.Addins.Setup
 		{
 			string basePath = Path.GetDirectoryName (conf.AddinFile);
 			foreach (string relPath in conf.AllFiles) {
-				string afile = Path.Combine (basePath, relPath);
+				string afile = Path.Combine (basePath, Util.NormalizePath (relPath));
 				if (File.Exists (afile))
 					yield return afile;
 			}
@@ -374,7 +375,7 @@ namespace Mono.Addins.Setup
 			string basePath = Path.GetDirectoryName (configFile);
 			
 			foreach (string relPath in conf.AllFiles) {
-				string path = Path.Combine (basePath, relPath);
+				string path = Path.Combine (basePath, Util.NormalizePath (relPath));
 				if (!File.Exists (path))
 					continue;
 				

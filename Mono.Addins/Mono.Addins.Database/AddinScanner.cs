@@ -335,7 +335,7 @@ namespace Mono.Addins.Database
 						if (config.IsRoot && scanResult.HostIndex != null) {
 							// If the add-in is a root, register its assemblies
 							foreach (string f in config.MainModule.Assemblies) {
-								string asmFile = Path.Combine (config.BasePath, f);
+								string asmFile = Path.Combine (config.BasePath, Util.NormalizePath (f));
 								scanResult.HostIndex.RegisterAssembly (asmFile, config.AddinId, config.AddinFile, config.Domain);
 							}
 						}
@@ -362,7 +362,7 @@ namespace Mono.Addins.Database
 				if (scanSuccessful && config != null) {
 					// Update the ignore list in the folder info object. To be used in the next scan
 					foreach (string df in config.AllIgnorePaths) {
-						string path = Path.Combine (config.BasePath, df);
+						string path = Path.Combine (config.BasePath, Util.NormalizePath (df));
 						ainfo.AddPathToIgnore (Path.GetFullPath (path));
 					}
 				}
@@ -624,7 +624,7 @@ namespace Mono.Addins.Database
 				// we use a for loop instead of a foreach
 				for (int n=0; n<config.MainModule.Assemblies.Count; n++) {
 					string s = config.MainModule.Assemblies [n];
-					string asmFile = Path.GetFullPath (Path.Combine (config.BasePath, s));
+					string asmFile = Path.GetFullPath (Path.Combine (config.BasePath, Util.NormalizePath (s)));
 					scanResult.AddPathToIgnore (asmFile);
 					if (s == rootAsmFile || config.MainModule.IgnorePaths.Contains (s))
 						continue;
@@ -637,11 +637,11 @@ namespace Mono.Addins.Database
 				// Add all data files to the ignore file list. It avoids scanning assemblies
 				// which are included as 'data' in an add-in.
 				foreach (string df in config.MainModule.DataFiles) {
-					string file = Path.Combine (config.BasePath, df);
+					string file = Path.Combine (config.BasePath, Util.NormalizePath (df));
 					scanResult.AddPathToIgnore (Path.GetFullPath (file));
 				}
 				foreach (string df in config.MainModule.IgnorePaths) {
-					string path = Path.Combine (config.BasePath, df);
+					string path = Path.Combine (config.BasePath, Util.NormalizePath (df));
 					scanResult.AddPathToIgnore (Path.GetFullPath (path));
 				}
 				
@@ -682,7 +682,7 @@ namespace Mono.Addins.Database
 							string s = mod.Assemblies [n];
 							if (mod.IgnorePaths.Contains (s))
 								continue;
-							string asmFile = Path.Combine (config.BasePath, s);
+							string asmFile = Path.Combine (config.BasePath, Util.NormalizePath (s));
 							object asm = reflector.LoadAssembly (asmFile);
 							asmList.Add (new Tuple<string,object> (asmFile,asm));
 							scanResult.AddPathToIgnore (Path.GetFullPath (asmFile));
@@ -691,11 +691,11 @@ namespace Mono.Addins.Database
 						// Add all data files to the ignore file list. It avoids scanning assemblies
 						// which are included as 'data' in an add-in.
 						foreach (string df in mod.DataFiles) {
-							string file = Path.Combine (config.BasePath, df);
+							string file = Path.Combine (config.BasePath, Util.NormalizePath (df));
 							scanResult.AddPathToIgnore (Path.GetFullPath (file));
 						}
 						foreach (string df in mod.IgnorePaths) {
-							string path = Path.Combine (config.BasePath, df);
+							string path = Path.Combine (config.BasePath, Util.NormalizePath (df));
 							scanResult.AddPathToIgnore (Path.GetFullPath (path));
 						}
 						

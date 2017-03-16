@@ -1144,7 +1144,7 @@ namespace Mono.Addins.Description
 				
 			if (bp != null) {
 				foreach (string file in AllFiles) {
-					string asmFile = Path.Combine (bp, file);
+					string asmFile = Path.Combine (bp, Util.NormalizePath (file));
 					if (!fs.FileExists (asmFile))
 						errors.Add ("The file '" + asmFile + "' referenced in the manifest could not be found.");
 				}

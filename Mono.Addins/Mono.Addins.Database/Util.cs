@@ -115,6 +115,8 @@ namespace Mono.Addins.Database
 		
 		public static string NormalizePath (string path)
 		{
+			if (path == null)
+				return null;
 			if (path.Length > 2 && path [0] == '[') {
 				int i = path.IndexOf (']', 1);
 				if (i != -1) {
