@@ -136,7 +136,12 @@ namespace Mono.Addins.Setup
 			using (FileStream fs = new FileStream (packFile, FileMode.Open, FileAccess.Read)) {
 				ZipFile zip = new ZipFile (fs);
 				foreach (ZipEntry entry in zip) {
-					string path = Path.Combine (tempFolder, entry.Name);
+					string name;
+					if (Path.PathSeparator == '\\')
+						name = entry.Name.Replace ('/', '\\');
+					else
+						name = entry.Name.Replace ('\\', '/');
+					string path = Path.Combine (tempFolder, name);
 					string dir = Path.GetDirectoryName (path);
 					if (!Directory.Exists (dir))
 						Directory.CreateDirectory (dir);
