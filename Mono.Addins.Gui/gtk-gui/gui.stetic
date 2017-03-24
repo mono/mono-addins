@@ -960,7 +960,7 @@
               <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Additional extensions are required to perform this operation.</property>
+                <property name="LabelProp" translatable="yes">Additional extension packages are required to perform this operation.</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -973,7 +973,7 @@
               <widget class="Gtk.Label" id="label2">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">The following extensions will be installed:</property>
+                <property name="LabelProp" translatable="yes">The following extension packages will be installed:</property>
               </widget>
               <packing>
                 <property name="Position">1</property>

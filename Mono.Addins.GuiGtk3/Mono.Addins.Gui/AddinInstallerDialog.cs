@@ -77,7 +77,7 @@ namespace Mono.Addins.GuiGtk3
 				if (ares.Length == 0) {
 					addinsNotFound = true;
 					if (updating)
-						txt += "<span foreground='grey'><b>" + name + " " + version + "</b> (searching extensions)</span>\n";
+						txt += "<span foreground='grey'><b>" + name + " " + version + "</b> (searching extension packages)</span>\n";
 					else
 						txt += "<span foreground='red'><b>" + name + " " + version + "</b> (not found)</span>\n";
 				} else {
@@ -167,7 +167,7 @@ namespace Mono.Addins.GuiGtk3
 		protected virtual void OnButtonOkClicked (object sender, System.EventArgs e)
 		{
 			if (addinsNotFound) {
-				errMessage = Catalog.GetString ("Some of the required extensions were not found");
+				errMessage = Catalog.GetString ("Some of the required extension packages were not found");
 				Respond (Gtk.ResponseType.Ok);
 			}
 			else {
