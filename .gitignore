@@ -17,6 +17,7 @@ packages
 *.userprefs
 *.usertasks
 *.sln.cache
+/.vs
 
 # Generated stuff
 /mautil/mautil

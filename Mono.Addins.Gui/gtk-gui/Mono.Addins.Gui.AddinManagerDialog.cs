@@ -47,7 +47,7 @@ namespace Mono.Addins.Gui
 			global::Stetic.Gui.Initialize (this);
 			// Widget Mono.Addins.Gui.AddinManagerDialog
 			this.Name = "Mono.Addins.Gui.AddinManagerDialog";
-			this.Title = global::Mono.Unix.Catalog.GetString ("Add-in Manager");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Extension Manager");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			this.BorderWidth = ((uint)(6));
 			this.DefaultWidth = 700;

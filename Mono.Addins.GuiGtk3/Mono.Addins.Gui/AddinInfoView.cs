@@ -295,7 +295,7 @@ namespace Mono.Addins.GuiGtk3
 						topHeaderBox.Show ();
 					}
 					else if (missingDeps.Any ()) {
-						labelHeader.Markup = "<b><span color='black'>" + Catalog.GetString ("This add-in can't be loaded due to missing dependencies") + "</span></b>";
+						labelHeader.Markup = "<b><span color='black'>" + Catalog.GetString ("This extension package can't be loaded due to missing dependencies") + "</span></b>";
 						topHeaderBox.BackgroundColor = new Gdk.Color (255, 176, 0);
 						imageHeader.SetFromStock (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
 						topHeaderBox.Show ();
@@ -327,7 +327,7 @@ namespace Mono.Addins.GuiGtk3
 				if (downloadSize != null)
 					ver += "\n<small><b>" + Catalog.GetString ("Download size") + ":</b> " + downloadSize + "</small>";
 				if (missingDepsTxt != null)
-					ver += "\n\n" + GLib.Markup.EscapeText (Catalog.GetString ("The following dependencies required by this add-in are not available:")) + missingDepsTxt;
+					ver += "\n\n" + GLib.Markup.EscapeText (Catalog.GetString ("The following dependencies required by this extension package are not available:")) + missingDepsTxt;
 				labelVersion.Markup = ver;
 				
 				string desc = GLib.Markup.EscapeText (sinfo.Description);

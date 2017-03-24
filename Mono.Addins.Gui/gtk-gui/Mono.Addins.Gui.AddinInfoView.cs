@@ -150,7 +150,7 @@ namespace Mono.Addins.Gui
 			this.labelDesc.WidthRequest = 250;
 			this.labelDesc.Name = "labelDesc";
 			this.labelDesc.Xalign = 0F;
-			this.labelDesc.LabelProp = global::Mono.Unix.Catalog.GetString ("Long description of the add-in. Long description of the add-in. Long description of the add-in. Long description of the add-in. Long description of the add-in. Long description of the add-in. ");
+			this.labelDesc.LabelProp = global::Mono.Unix.Catalog.GetString ("Long description of the extension. Long description of the extension. Long description of the extension. Long description of the extension. Long description of the extension. Long description of the extension. ");
 			this.labelDesc.Wrap = true;
 			this.vboxDesc.Add (this.labelDesc);
 			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vboxDesc [this.labelDesc]));

@@ -72,7 +72,6 @@ namespace Mono.Addins.Gui
 			TransientFor = parent;
 			HasSeparator = false;
 			Services.PlaceDialog (this, parent);
-			Show ();
 			
 			addininfoInstalled.Init (service);
 			addininfoGallery.Init (service);
@@ -162,7 +161,6 @@ namespace Mono.Addins.Gui
 		{
 			filterEntry = new SearchEntry ();
 			filterEntry.Entry.SetSizeRequest (200, filterEntry.Entry.SizeRequest ().Height);
-			filterEntry.Parent = notebook;
 			filterEntry.Show ();
 			notebook.SizeAllocated += delegate {
 				RepositionFilter ();
@@ -176,6 +174,12 @@ namespace Mono.Addins.Gui
 				galleryTreeView.ExpandAll ();
 			};
 			RepositionFilter ();
+		}
+
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			filterEntry.Parent = notebook;
 		}
 		
 		void RepositionFilter ()
@@ -520,7 +524,7 @@ namespace Mono.Addins.Gui
 		protected virtual void OnButtonInstallFromFileClicked (object sender, System.EventArgs e)
 		{
 			string[] files;
-			Gtk.FileChooserDialog dlg = new Gtk.FileChooserDialog (Catalog.GetString ("Install Add-in Package"), this, FileChooserAction.Open);
+			Gtk.FileChooserDialog dlg = new Gtk.FileChooserDialog (Catalog.GetString ("Install Extension Package"), this, FileChooserAction.Open);
 			try {
 				if (lastFolder != null)
 					dlg.SetCurrentFolder (lastFolder);
@@ -530,7 +534,7 @@ namespace Mono.Addins.Gui
 				
 				Gtk.FileFilter f = new Gtk.FileFilter ();
 				f.AddPattern ("*.mpack");
-				f.Name = Catalog.GetString ("Add-in packages");
+				f.Name = Catalog.GetString ("Extension packages");
 				dlg.AddFilter (f);
 				
 				f = new Gtk.FileFilter ();
