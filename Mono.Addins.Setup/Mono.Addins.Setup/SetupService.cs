@@ -393,6 +393,7 @@ namespace Mono.Addins.Setup
 			var infoEntry = new ZipEntry ("addin.info") { Size = data.Length };
 			s.PutNextEntry (infoEntry);
 			s.Write (data, 0, data.Length);
+			s.CloseEntry ();
 			
 			// Now add the add-in files
 			
@@ -424,6 +425,7 @@ namespace Mono.Addins.Setup
 					var entry = new ZipEntry (file) { Size = fs.Length };
 					s.PutNextEntry (entry);
 					s.Write (buffer, 0, buffer.Length);
+					s.CloseEntry ();
 				}
 			}
 			
@@ -582,29 +584,33 @@ namespace Mono.Addins.Setup
 		{
 			Random r = new Random ();
 			ZipFile zfile = new ZipFile (file);
-			foreach (var prop in ainfo.Properties) {
-				ZipEntry ze = zfile.GetEntry (prop.Value);
-				if (ze != null) {
-					string fname;
-					do {
-						fname = Path.Combine (targetDir, r.Next().ToString ("x") + Path.GetExtension (prop.Value));
-					} while (File.Exists (fname));
-					
-					if (!Directory.Exists (targetDir))
-						Directory.CreateDirectory (targetDir);
-					
-					using (var f = File.OpenWrite (fname)) {
-						using (Stream s = zfile.GetInputStream (ze)) {
-							byte[] buffer = new byte [8092];
-							int nr = 0;
-							while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
-								f.Write (buffer, 0, nr);
+			try {
+				foreach (var prop in ainfo.Properties) {
+					ZipEntry ze = zfile.GetEntry (prop.Value);
+					if (ze != null) {
+						string fname;
+						do {
+							fname = Path.Combine (targetDir, r.Next ().ToString ("x") + Path.GetExtension (prop.Value));
+						} while (File.Exists (fname));
+
+						if (!Directory.Exists (targetDir))
+							Directory.CreateDirectory (targetDir);
+
+						using (var f = File.OpenWrite (fname)) {
+							using (Stream s = zfile.GetInputStream (ze)) {
+								byte [] buffer = new byte [8092];
+								int nr = 0;
+								while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
+									f.Write (buffer, 0, nr);
+							}
 						}
+						prop.Value = Path.Combine (addinFilesDir, Path.GetFileName (fname));
 					}
-					prop.Value = Path.Combine (addinFilesDir, Path.GetFileName (fname));
 				}
+			} finally {
+				zfile.Close ();
 			}
-		}
+ 		}
 		
 		void GenerateIndexPage (Repository rep, ArrayList addins, string basePath)
 		{

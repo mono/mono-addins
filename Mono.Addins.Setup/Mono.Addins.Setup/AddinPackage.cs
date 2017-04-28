@@ -91,12 +91,16 @@ namespace Mono.Addins.Setup
 		static AddinInfo ReadAddinInfo (string file)
 		{
 			ZipFile zfile = new ZipFile (file);
-			foreach (ZipEntry ze in zfile) {
-				if (ze.Name == "addin.info") {
-					using (Stream s = zfile.GetInputStream (ze)) {
-						return AddinInfo.ReadFromAddinFile (new StreamReader (s));
+			try {
+				foreach (ZipEntry ze in zfile) {
+					if (ze.Name == "addin.info") {
+						using (Stream s = zfile.GetInputStream (ze)) {
+							return AddinInfo.ReadFromAddinFile (new StreamReader (s));
+						}
 					}
 				}
+			} finally {
+				zfile.Close ();
 			}
 			throw new InstallException ("Addin configuration file not found in package.");
 		}
@@ -135,32 +139,36 @@ namespace Mono.Addins.Setup
 			// Extract the files			
 			using (FileStream fs = new FileStream (packFile, FileMode.Open, FileAccess.Read)) {
 				ZipFile zip = new ZipFile (fs);
-				foreach (ZipEntry entry in zip) {
-					string name;
-					if (Path.PathSeparator == '\\')
-						name = entry.Name.Replace ('/', '\\');
-					else
-						name = entry.Name.Replace ('\\', '/');
-					string path = Path.Combine (tempFolder, name);
-					string dir = Path.GetDirectoryName (path);
-					if (!Directory.Exists (dir))
-						Directory.CreateDirectory (dir);
-						
-					byte[] buffer = new byte [8192];
-					int n=0;
-					Stream inStream = zip.GetInputStream (entry);
-					Stream outStream = null;
-					try {
-						outStream = File.Create (path);
-						while ((n = inStream.Read (buffer, 0, buffer.Length)) > 0)
-							outStream.Write (buffer, 0, n);
-					} finally {
-						inStream.Close ();
-						if (outStream != null)
-							outStream.Close ();
+				try {
+					foreach (ZipEntry entry in zip) {
+						string name;
+						if (Path.PathSeparator == '\\')
+							name = entry.Name.Replace ('/', '\\');
+						else
+							name = entry.Name.Replace ('\\', '/');
+						string path = Path.Combine (tempFolder, name);
+						string dir = Path.GetDirectoryName (path);
+						if (!Directory.Exists (dir))
+							Directory.CreateDirectory (dir);
+
+						byte [] buffer = new byte [8192];
+						int n = 0;
+						Stream inStream = zip.GetInputStream (entry);
+						Stream outStream = null;
+						try {
+							outStream = File.Create (path);
+							while ((n = inStream.Read (buffer, 0, buffer.Length)) > 0)
+								outStream.Write (buffer, 0, n);
+						} finally {
+							inStream.Close ();
+							if (outStream != null)
+								outStream.Close ();
+						}
 					}
+				} finally {
+					zip.Close ();
 				}
-			}
+ 			}
 			
 			foreach (string s in Directory.GetFiles (tempFolder)) {
 				if (Path.GetFileName (s) == "addin.info") {
