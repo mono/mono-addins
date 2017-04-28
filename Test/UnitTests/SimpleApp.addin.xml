@@ -40,6 +40,10 @@
 		<ExtensionNodeSet id = "WriterSet" />
 	</ExtensionPoint>
 	
+    <ExtensionPoint path = "/SimpleApp/ConditionedWriters">
+        <ExtensionNodeSet id = "WriterSet" />
+    </ExtensionPoint>
+	
 	<ExtensionPoint path = "/SimpleApp/Items">
 		<ExtensionNode type="UnitTests.ItemSetNode" />
 	</ExtensionPoint>

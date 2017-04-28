@@ -129,6 +129,7 @@
     <Compile Include="Mono.Addins.Database\SetupDomain.cs" />
     <Compile Include="Mono.Addins.Database\ISetupHandler.cs" />
     <Compile Include="Mono.Addins\ExtensionAttributeAttribute.cs" />
+    <Compile Include="Mono.Addins\CustomConditionAttribute.cs" />
     <Compile Include="Mono.Addins\CustomExtensionAttribute.cs" />
     <Compile Include="Mono.Addins\AddinAuthorAttribute.cs" />
     <Compile Include="Mono.Addins\AddinLocalizerGettextAttribute.cs" />

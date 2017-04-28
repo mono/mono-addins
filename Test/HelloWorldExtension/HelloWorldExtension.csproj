@@ -40,6 +40,7 @@
     <Compile Include="HelloSampleExtender.cs" />
     <Compile Include="AttributeExtensions.cs" />
     <Compile Include="HelloWriterWithMetadata.cs" />
+    <Compile Include="HelloWriterWithCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

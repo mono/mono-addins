@@ -73,6 +73,7 @@ namespace UnitTests
 			
 			string[] addinExtensions = new string[] {
 				"/SimpleApp/Writers",
+				"/SimpleApp/ConditionedWriters",
 				"/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender",
 				"/SimpleApp.Core/TypeExtensions/SimpleApp.IWriterWithMetadata",
 				"/SimpleApp/NodesWithAttribute",
@@ -173,6 +174,7 @@ namespace UnitTests
 			
 			string[] addinExtensions = new string[] {
 				"/SimpleApp/Writers",
+				"/SimpleApp/ConditionedWriters",
 				"/SimpleApp.Core/TypeExtensions/SimpleApp.ISampleExtender",
 				"/SimpleApp.Core/TypeExtensions/SimpleApp.IWriterWithMetadata",
 				"/SimpleApp/NodesWithAttribute",
