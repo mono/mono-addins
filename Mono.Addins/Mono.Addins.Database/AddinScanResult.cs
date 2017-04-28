@@ -48,7 +48,8 @@ namespace Mono.Addins.Database
 		Hashtable visitedFolders = new Hashtable ();
 		
 		Hashtable assemblyLocations = new Hashtable ();
-		Hashtable assemblyLocationsByFullName = new Hashtable (); 
+		Hashtable assemblyLocationsByFullName = new Hashtable();
+		List<string> assemblySearchLocations = new List<string>();
 		Hashtable filesToIgnore;
 		
 		bool regenerateRelationData;
@@ -164,6 +165,11 @@ namespace Mono.Addins.Database
 			}
 			list.Add (file);
 		}
+
+		public void AddAssemblySearchLocation(string directory)
+		{
+			assemblySearchLocations.Add(directory);
+		}
 		
 		public string GetAssemblyLocation (string fullName)
 		{
@@ -177,8 +183,24 @@ namespace Mono.Addins.Database
 				return GetType ().Assembly.Location;
 			ArrayList list = assemblyLocations [name] as ArrayList;
 			if (list == null)
+			{
+				var assemblyName = new AssemblyName(fullName);
+				foreach (var assemblySearchLocation in assemblySearchLocations)
+				{
+					string filePath = Path.Combine(assemblySearchLocation, assemblyName.Name + ".dll");
+					if (File.Exists(filePath))
+					{
+						var existingAssembly = AssemblyName.GetAssemblyName(filePath);
+						if (existingAssembly.FullName == assemblyName.FullName)
+						{
+							return filePath;
+						}
+					}
+				}
+
 				return null;
-			
+			}
+
 			string lastAsm = null;
 			foreach (string file in list.ToArray ()) {
 				try {

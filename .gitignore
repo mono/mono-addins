@@ -2,8 +2,8 @@
 *~
 
 # Build stuff
-obj
-/bin
+obj/
+bin/
 *policy*config
 *.pc
 *.dll
@@ -36,3 +36,8 @@ Makefile.in
 /configure
 /install-sh
 /missing
+.suo
+*.suo
+*.user
+/Test/
+/packages/
