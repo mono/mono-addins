@@ -35,6 +35,12 @@ namespace UnitTests
 	public abstract class TestVerifyAddinDescription
 	{
 		protected AddinDescription desc;
+
+		protected string GetFullPath (string relativePath)
+		{
+			string dir = Path.GetDirectoryName (new Uri (typeof (TestVerifyAddinDescription).Assembly.CodeBase).LocalPath);
+			return Path.Combine (dir, relativePath);
+		}
 		
 		[Test]
 		public void Header ()

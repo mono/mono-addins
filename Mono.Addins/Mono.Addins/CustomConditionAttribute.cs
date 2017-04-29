@@ -1,10 +1,7 @@
 // 
-// TestLoadXmlAddinDescription.cs
-//  
-// Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+// CustomConditionAttribute.cs
 // 
-// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) Microsoft Corp.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +20,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using NUnit.Framework;
-using System.IO;
-using Mono.Addins.Description;
-using System.Xml;
 
-namespace UnitTests
+using System;
+
+namespace Mono.Addins
 {
-	[TestFixture]
-	public class TestLoadXmlAddinDescription: TestVerifyAddinDescription
+	/// <summary>
+	/// Base class for custom condition attributes.
+	/// </summary>
+	/// <remarks>
+	/// Custom condition attributes can be used to apply conditions to extensions.
+	/// All custom condition attributes must subclass CustomConditionAttribute.
+	/// All arguments and properties must be tagged with NodeAttribute.
+	/// The ID of the condition is the simple name of this class without the "Attribute"
+	/// or "ConditionAttribute" suffix. For example "FooConditionAttribute" maps to the
+	/// condition ID "Foo" and "BarAttribute" maps to "Bar".
+	/// </remarks>
+	public class CustomConditionAttribute : Attribute
 	{
-		[SetUp]
-		public void Load ()
-		{
-			string path = GetFullPath ("TestManifest.xml");
-			desc = AddinDescription.Read (path);
-		}
-		
-		[Test]
-		public void TestSave ()
-		{
-			string path = GetFullPath ("TestManifest.xml");
-			XmlDocument doc1 = new XmlDocument ();
-			doc1.Load (path);
-			
-			XmlDocument doc2 = desc.SaveToXml ();
-			
-			Assert.AreEqual (Util.Infoset (doc1), Util.Infoset (doc2));
-		}
 	}
 }
-

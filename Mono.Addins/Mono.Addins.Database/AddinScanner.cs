@@ -1,4 +1,4 @@
-//
+﻿//
 // AddinScanner.cs
 //
 // Author:
@@ -918,16 +918,20 @@ namespace Mono.Addins.Database
 			// Look for extension nodes declared using assembly attributes
 			
 			foreach (CustomAttribute att in reflector.GetRawCustomAttributes (asm, typeof(CustomExtensionAttribute), true))
-				AddCustomAttributeExtension (module, att, "Type");
+				AddCustomAttributeExtension (module, att, "Type", null);
 			
 			// Get extensions or extension points applied to types
 			
 			foreach (object t in reflector.GetAssemblyTypes (asm)) {
 				
 				string typeFullName = reflector.GetTypeFullName (t);
-				
+
+				//condition attributes apply independently but identically to all extension attributes on this node
+				//depending on ordering is too messy due to inheritance etc
+				var conditionAtts = reflector.GetRawCustomAttributes (t, typeof (CustomConditionAttribute), false);
+
 				// Look for extensions
-				
+
 				object[] extensionAtts = reflector.GetCustomAttributes (t, typeof(ExtensionAttribute), false);
 				if (extensionAtts.Length > 0) {
 					Dictionary<string,ExtensionNodeDescription> nodes = new Dictionary<string, ExtensionNodeDescription> ();
@@ -950,7 +954,7 @@ namespace Mono.Addins.Database
 							path = eatt.Path;
 						}
 
-						ExtensionNodeDescription elem = module.AddExtensionNode (path, nodeName);
+						ExtensionNodeDescription elem = AddConditionedExtensionNode (module, path, nodeName, conditionAtts);
 						nodes [path] = elem;
 						uniqueNode = elem;
 						
@@ -1015,7 +1019,7 @@ namespace Mono.Addins.Database
 					else {
 						// Look for custom extension attribtues
 						foreach (CustomAttribute att in reflector.GetRawCustomAttributes (t, typeof(CustomExtensionAttribute), false)) {
-							ExtensionNodeDescription elem = AddCustomAttributeExtension (module, att, "Type");
+							ExtensionNodeDescription elem = AddCustomAttributeExtension (module, att, "Type", conditionAtts);
 							elem.SetAttribute ("type", typeFullName);
 							if (string.IsNullOrEmpty (elem.GetAttribute ("id")))
 								elem.SetAttribute ("id", typeFullName);
@@ -1024,14 +1028,77 @@ namespace Mono.Addins.Database
 				}
 			}
 		}
-		
-		ExtensionNodeDescription AddCustomAttributeExtension (ModuleDescription module, CustomAttribute att, string nameName)
+
+		static ExtensionNodeDescription AddConditionedExtensionNode (ModuleDescription module, string path, string nodeName, List<CustomAttribute> conditionAtts)
+		{
+			if (conditionAtts == null || conditionAtts.Count == 0) {
+				return module.AddExtensionNode (path, nodeName);
+			}
+
+			ExtensionNodeDescription conditionNode;
+
+			if (conditionAtts.Count == 1) {
+				conditionNode = CreateConditionNode (conditionAtts[0]);
+				module.GetExtension (path).ExtensionNodes.Add (conditionNode);
+			}
+			else {
+				conditionNode = new ExtensionNodeDescription ("ComplexCondition");
+				ExtensionNodeDescription andNode = new ExtensionNodeDescription ("And");
+				conditionNode.ChildNodes.Add (andNode);
+				foreach (var catt in conditionAtts) {
+					var cnode = CreateConditionNode (catt);
+					andNode.ChildNodes.Add (cnode);
+				}
+			}
+
+			var node = new ExtensionNodeDescription (nodeName);
+			conditionNode.ChildNodes.Add (node);
+			return node;
+		}
+
+		static ExtensionNodeDescription CreateConditionNode (CustomAttribute conditionAtt)
+		{
+			var conditionNode = new ExtensionNodeDescription ("Condition");
+
+			var id = GetConditionId (conditionAtt);
+			conditionNode.SetAttribute ("id", id);
+
+			foreach (KeyValuePair<string, string> prop in conditionAtt) {
+				if (string.IsNullOrEmpty (prop.Key)) {
+					throw new Exception ("Empty key in attribute '" + conditionAtt.TypeName + "'.");
+				}
+				conditionNode.SetAttribute (prop.Key, prop.Value);
+			}
+
+			return conditionNode;
+		}
+
+		static string GetConditionId (CustomAttribute conditionAtt)
+		{
+			var id = conditionAtt.TypeName;
+			var start = id.LastIndexOf ('.') + 1;
+			int length = id.Length - start;
+
+			if (id.EndsWith ("ConditionAttribute", StringComparison.Ordinal)) {
+				length -= "ConditionAttribute".Length;
+			} else if (id.EndsWith ("Attribute", StringComparison.Ordinal)) {
+				length -= "Attribute".Length;
+			}
+
+			id = id.Substring (start, length);
+			return id;
+		}
+
+		ExtensionNodeDescription AddCustomAttributeExtension (ModuleDescription module, CustomAttribute att, string nameName, List<CustomAttribute> conditionAtts)
 		{
 			string path;
 			if (!att.TryGetValue (CustomExtensionAttribute.PathFieldKey, out path))
 				path = "%" + att.TypeName;
-			ExtensionNodeDescription elem = module.AddExtensionNode (path, nameName);
+			ExtensionNodeDescription elem = AddConditionedExtensionNode (module, path, nameName, conditionAtts);
 			foreach (KeyValuePair<string,string> prop in att) {
+				if (string.IsNullOrEmpty (prop.Key)) {
+					throw new Exception ("Empty key in attribute '" + att.TypeName + "'.");
+				}
 				if (prop.Key != CustomExtensionAttribute.PathFieldKey)
 					elem.SetAttribute (prop.Key, prop.Value);
 			}
