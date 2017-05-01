@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CustomConditionAttribute.cs
 // 
 // Copyright (c) Microsoft Corp.
@@ -36,7 +36,8 @@ namespace Mono.Addins
 	/// or "ConditionAttribute" suffix. For example "FooConditionAttribute" maps to the
 	/// condition ID "Foo" and "BarAttribute" maps to "Bar".
 	/// </remarks>
-	public class CustomConditionAttribute : Attribute
+	[AttributeUsage (AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+	public abstract class CustomConditionAttribute : Attribute
 	{
 	}
 }
