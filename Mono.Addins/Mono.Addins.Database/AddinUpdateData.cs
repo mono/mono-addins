@@ -31,6 +31,7 @@ using System;
 using System.Collections;
 using Mono.Addins.Description;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Mono.Addins.Database
 {
@@ -163,7 +164,7 @@ namespace Mono.Addins.Database
 				if (!found)
 					monitor.ReportWarning ("The add-in '" + description.AddinId + "' is trying to register the class '" + extension.Path.Substring (1) + "', but there isn't any add-in defining a suitable extension point");
 			}
-			else if (extension.Path.StartsWith ("%")) {
+			else if (extension.Path.StartsWith ("%", StringComparison.Ordinal)) {
 				string[] objectTypes = extension.Path.Substring (1).Split (',');
 				bool found = false;
 				foreach (string s in objectTypes) {
@@ -174,8 +175,9 @@ namespace Mono.Addins.Database
 							ExtensionPoint ep = (ExtensionPoint) ((ExtensionNodeSet)nt.Parent).Parent;
 							if (IsAddinCompatible (ep.ParentAddinDescription, description, module)) {
 								extension.Path = ep.Path;
-								foreach (ExtensionNodeDescription node in extension.ExtensionNodes)
+								foreach (ExtensionNodeDescription node in GetNodesIgnoringConditions (extension)) {
 									node.NodeName = nt.NodeName;
+								}
 								RegisterExtension (description, module, ep.Path);
 							}
 						}
@@ -183,6 +185,25 @@ namespace Mono.Addins.Database
 				}
 				if (!found)
 					monitor.ReportWarning ("The add-in '" + description.AddinId + "' is trying to register the class '" + extension.Path.Substring (1) + "', but there isn't any add-in defining a suitable extension point");
+			}
+		}
+
+		static IEnumerable<ExtensionNodeDescription> GetNodesIgnoringConditions (Extension extension)
+		{
+			foreach (ExtensionNodeDescription node in extension.ExtensionNodes) {
+				if (node.IsCondition) {
+					//first node in a complex condition is the actual condition
+					bool skipFirst = node.NodeName == "ComplexCondition";
+					foreach (ExtensionNodeDescription child in node.ChildNodes) {
+						if (skipFirst) {
+							skipFirst = false;
+							continue;
+						}
+						yield return child;
+					}
+				} else {
+					yield return node;
+				}
 			}
 		}
 		
