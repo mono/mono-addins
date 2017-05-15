@@ -193,7 +193,8 @@ namespace Mono.Addins.Database
 
 		internal void CleanupReflector()
 		{
-			if (reflector is IDisposable disposable)
+			var disposable = reflector as IDisposable;
+			if (disposable != null)
 				disposable.Dispose ();
 		}
 		
