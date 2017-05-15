@@ -1323,60 +1323,63 @@ namespace Mono.Addins.Database
 			}
 			
 			AddinScanner scanner = new AddinScanner (this, scanResult, monitor);
-			
-			// Check if any of the previously scanned folders has been deleted
-			
-			foreach (string file in Directory.GetFiles (AddinFolderCachePath, "*.data")) {
-				AddinScanFolderInfo folderInfo;
-				bool res = ReadFolderInfo (monitor, file, out folderInfo);
-				bool validForDomain = scanResult.Domain == null || folderInfo.Domain == GlobalDomain || folderInfo.Domain == scanResult.Domain;
-				if (!res || (validForDomain && !fs.DirectoryExists (folderInfo.Folder))) {
-					if (res) {
-						// Folder has been deleted. Remove the add-ins it had.
-						scanner.UpdateDeletedAddins (monitor, folderInfo, scanResult);
+			try {
+
+				// Check if any of the previously scanned folders has been deleted
+
+				foreach (string file in Directory.GetFiles (AddinFolderCachePath, "*.data")) {
+					AddinScanFolderInfo folderInfo;
+					bool res = ReadFolderInfo (monitor, file, out folderInfo);
+					bool validForDomain = scanResult.Domain == null || folderInfo.Domain == GlobalDomain || folderInfo.Domain == scanResult.Domain;
+					if (!res || (validForDomain && !fs.DirectoryExists (folderInfo.Folder))) {
+						if (res) {
+							// Folder has been deleted. Remove the add-ins it had.
+							scanner.UpdateDeletedAddins (monitor, folderInfo, scanResult);
+						} else {
+							// Folder info file corrupt. Regenerate all.
+							scanResult.ChangesFound = true;
+							scanResult.RegenerateRelationData = true;
+						}
+
+						if (!scanResult.CheckOnly)
+							SafeDelete (monitor, file);
+						else if (scanResult.ChangesFound)
+							return;
 					}
-					else {
-						// Folder info file corrupt. Regenerate all.
-						scanResult.ChangesFound = true;
-						scanResult.RegenerateRelationData = true;
-					}
-					
-					if (!scanResult.CheckOnly)
-						SafeDelete (monitor, file);
-					else if (scanResult.ChangesFound)
-						return;
 				}
-			}
-			
-			// Look for changes in the add-in folders
-			
-			if (registry.StartupDirectory != null)
-				scanner.ScanFolder (monitor, registry.StartupDirectory, null, scanResult);
-			
-			if (scanResult.CheckOnly && (scanResult.ChangesFound || monitor.IsCanceled))
-				return;
-			
-			if (scanResult.Domain == null)
-				scanner.ScanFolder (monitor, HostsPath, GlobalDomain, scanResult);
-			
-			if (scanResult.CheckOnly && (scanResult.ChangesFound || monitor.IsCanceled))
-				return;
-			
-			foreach (string dir in registry.GlobalAddinDirectories) {
+
+				// Look for changes in the add-in folders
+
+				if (registry.StartupDirectory != null)
+					scanner.ScanFolder (monitor, registry.StartupDirectory, null, scanResult);
+
 				if (scanResult.CheckOnly && (scanResult.ChangesFound || monitor.IsCanceled))
 					return;
-				scanner.ScanFolderRec (monitor, dir, GlobalDomain, scanResult);
-			}
-			
-			if (scanResult.CheckOnly || !scanResult.ChangesFound)
-				return;
-			
-			// Scan the files which have been modified
-			
-			currentScanResult = scanResult;
 
-			foreach (FileToScan file in scanResult.FilesToScan)
-				scanner.ScanFile (monitor, file.File, file.AddinScanFolderInfo, scanResult);
+				if (scanResult.Domain == null)
+					scanner.ScanFolder (monitor, HostsPath, GlobalDomain, scanResult);
+
+				if (scanResult.CheckOnly && (scanResult.ChangesFound || monitor.IsCanceled))
+					return;
+
+				foreach (string dir in registry.GlobalAddinDirectories) {
+					if (scanResult.CheckOnly && (scanResult.ChangesFound || monitor.IsCanceled))
+						return;
+					scanner.ScanFolderRec (monitor, dir, GlobalDomain, scanResult);
+				}
+
+				if (scanResult.CheckOnly || !scanResult.ChangesFound)
+					return;
+
+				// Scan the files which have been modified
+
+				currentScanResult = scanResult;
+
+				foreach (FileToScan file in scanResult.FilesToScan)
+					scanner.ScanFile (monitor, file.File, file.AddinScanFolderInfo, scanResult);
+			} finally {
+				scanner.CleanupReflector ();
+			}
 
 			// Save folder info
 			
@@ -1461,6 +1464,7 @@ namespace Mono.Addins.Database
 					}
 				}
 				finally {
+					scanner.CleanupReflector ();
 					AppDomain.CurrentDomain.AssemblyResolve -= resolver;
 					if (einfo != null) einfo.RemoveEventHandler (AppDomain.CurrentDomain, resolver);
 				}
