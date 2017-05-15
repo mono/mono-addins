@@ -39,7 +39,6 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cecil">
       <HintPath>$(SolutionDir)\packages\Mono.Cecil.0.10.0-beta5\lib\net40\Mono.Cecil.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Cecil.Mdb">
       <HintPath>$(SolutionDir)\packages\Mono.Cecil.0.10.0-beta5\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
