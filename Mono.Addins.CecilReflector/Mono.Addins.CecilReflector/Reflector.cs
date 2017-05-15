@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using Mono.Addins;
 using Mono.Addins.Database;
@@ -40,9 +41,9 @@ namespace Mono.Addins.CecilReflector
 	public class Reflector: IAssemblyReflector, IDisposable
 	{
 		IAssemblyLocator locator;
-		Hashtable cachedAssemblies = new Hashtable ();
+		Dictionary<string, AssemblyDefinition> cachedAssemblies = new Dictionary<string, AssemblyDefinition> ();
 		DefaultAssemblyResolver defaultAssemblyResolver;
-		
+
 		public void Initialize (IAssemblyLocator locator)
 		{
 			this.locator = locator;
@@ -299,8 +300,8 @@ namespace Mono.Addins.CecilReflector
 
 		public AssemblyDefinition LoadAssembly (string file, bool cache)
 		{
-			AssemblyDefinition adef = (AssemblyDefinition) cachedAssemblies [file];
-			if (adef != null)
+			AssemblyDefinition adef;
+			if (cachedAssemblies.TryGetValue (file, out adef))
 				return adef;
 			var rp = new ReaderParameters (ReadingMode.Deferred);
 			rp.AssemblyResolver = defaultAssemblyResolver;
@@ -500,7 +501,7 @@ namespace Mono.Addins.CecilReflector
 
 		public void Dispose ()
 		{
-			foreach (AssemblyDefinition asm in cachedAssemblies) {
+			foreach (AssemblyDefinition asm in cachedAssemblies.Values) {
 				asm.Dispose ();
 			}
 		}
