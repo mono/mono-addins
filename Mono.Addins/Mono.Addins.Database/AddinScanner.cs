@@ -524,8 +524,6 @@ namespace Mono.Addins.Database
 				// Something went wrong while scanning the assembly. We'll ignore it for now.
 				monitor.ReportError ("There was an error while scanning add-in: " + filePath, ex);
 				return false;
-			} finally {
-				(reflector as IDisposable)?.Dispose ();
 			}
 		}
 		
@@ -582,8 +580,6 @@ namespace Mono.Addins.Database
 				// Something went wrong while scanning the assembly. We'll ignore it for now.
 				monitor.ReportError ("There was an error while scanning assembly: " + filePath, ex);
 				return false;
-			} finally {
-				(reflector as IDisposable)?.Dispose ();
 			}
 		}
 
@@ -1275,6 +1271,11 @@ namespace Mono.Addins.Database
 		internal string GetDefaultTypeExtensionPath (AddinDescription desc, string typeFullName)
 		{
 			return "/" + Addin.GetIdName (desc.AddinId) + "/TypeExtensions/" + typeFullName;
+		}
+
+		internal void CleanupReflector()
+		{
+			fs.CleanupReflector ();
 		}
 	}
 }

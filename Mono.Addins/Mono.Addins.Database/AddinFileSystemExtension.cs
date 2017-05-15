@@ -190,6 +190,12 @@ namespace Mono.Addins.Database
 			reflector.Initialize (locator);
 			return reflector;
 		}
+
+		internal void CleanupReflector()
+		{
+			if (reflector is IDisposable disposable)
+				disposable.Dispose ();
+		}
 		
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Mono.Addins.Database.AddinFileSystemExtension"/> needs to be isolated from the main execution process
