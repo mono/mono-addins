@@ -422,7 +422,8 @@ namespace Mono.Addins.Setup
 					byte[] buffer = new byte [fs.Length];
 					fs.Read (buffer, 0, buffer.Length);
 
-					var entry = new ZipEntry (file) { Size = fs.Length };
+					var fileName = Path.PathSeparator == '\\' ? file.Replace ('\\', '/') : file;
+					var entry = new ZipEntry (fileName) { Size = fs.Length };
 					s.PutNextEntry (entry);
 					s.Write (buffer, 0, buffer.Length);
 					s.CloseEntry ();
