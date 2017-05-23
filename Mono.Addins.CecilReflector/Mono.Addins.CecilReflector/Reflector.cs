@@ -295,7 +295,7 @@ namespace Mono.Addins.CecilReflector
 
 		public object LoadAssembly (string file)
 		{
-			return LoadAssembly (file, false);
+			return LoadAssembly (file, true);
 		}
 
 		public AssemblyDefinition LoadAssembly (string file, bool cache)
