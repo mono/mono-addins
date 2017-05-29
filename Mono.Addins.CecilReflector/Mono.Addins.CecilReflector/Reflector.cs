@@ -195,7 +195,7 @@ namespace Mono.Addins.CecilReflector
 			if (att.ConstructorArguments.Count > 0) {
 				var arguments = att.ConstructorArguments;
 				
-				MethodReference constructor = FindConstructor (att);
+				MethodReference constructor = FindConstructor (att, attType);
 				if (constructor == null)
 					throw new InvalidOperationException ("Custom attribute constructor not found");
 
@@ -271,12 +271,11 @@ namespace Mono.Addins.CecilReflector
 			}
 		}
 
-		MethodReference FindConstructor (CustomAttribute att)
+		MethodReference FindConstructor (CustomAttribute att, TypeDefinition atd)
 		{
 			// The constructor provided by CustomAttribute.Constructor is lacking some information, such as the parameter
 			// name and custom attributes. Since we need the full info, we have to look it up in the declaring type.
-			
-			TypeDefinition atd = FindTypeDefinition (att.Constructor.DeclaringType.Module.Assembly, att.Constructor.DeclaringType);
+
 			foreach (MethodReference met in atd.Methods) {
 				if (met.Name != ".ctor")
 					continue;

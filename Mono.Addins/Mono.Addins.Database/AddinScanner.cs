@@ -930,7 +930,7 @@ namespace Mono.Addins.Database
 
 				//condition attributes apply independently but identically to all extension attributes on this node
 				//depending on ordering is too messy due to inheritance etc
-				var conditionAtts = reflector.GetRawCustomAttributes (t, typeof (CustomConditionAttribute), false);
+				var conditionAtts = new Lazy<List<CustomAttribute>> (() => reflector.GetRawCustomAttributes (t, typeof (CustomConditionAttribute), false));
 
 				// Look for extensions
 
@@ -956,7 +956,7 @@ namespace Mono.Addins.Database
 							path = eatt.Path;
 						}
 
-						ExtensionNodeDescription elem = AddConditionedExtensionNode (module, path, nodeName, conditionAtts);
+						ExtensionNodeDescription elem = AddConditionedExtensionNode (module, path, nodeName, conditionAtts.Value);
 						nodes [path] = elem;
 						uniqueNode = elem;
 						
@@ -1021,7 +1021,7 @@ namespace Mono.Addins.Database
 					else {
 						// Look for custom extension attribtues
 						foreach (CustomAttribute att in reflector.GetRawCustomAttributes (t, typeof(CustomExtensionAttribute), false)) {
-							ExtensionNodeDescription elem = AddCustomAttributeExtension (module, att, "Type", conditionAtts);
+							ExtensionNodeDescription elem = AddCustomAttributeExtension (module, att, "Type", conditionAtts.Value);
 							elem.SetAttribute ("type", typeFullName);
 							if (string.IsNullOrEmpty (elem.GetAttribute ("id")))
 								elem.SetAttribute ("id", typeFullName);
