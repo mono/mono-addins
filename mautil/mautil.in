@@ -1,7 +1,0 @@
-#!/bin/sh
-
-prefix="@prefix@"
-exec_prefix="@exec_prefix@"
-libdir="@libdir@/mono/@PACKAGE@"
-
-exec mono  ${libdir}/"mautil.exe" "$@"

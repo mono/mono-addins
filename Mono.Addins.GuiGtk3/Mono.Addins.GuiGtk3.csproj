@@ -392,8 +392,4 @@
       <Name>Mono.Addins</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Makefile.am" />
-    <None Include="ChangeLog" />
-  </ItemGroup>
 </Project>

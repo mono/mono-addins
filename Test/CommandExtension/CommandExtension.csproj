@@ -43,15 +43,5 @@
   <ItemGroup>
     <Compile Include="CommandExtensionNode.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Makefile.am" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <Deployment.LinuxDeployData scriptName="commandextension" generatePcFile="False" />
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
 </Project>

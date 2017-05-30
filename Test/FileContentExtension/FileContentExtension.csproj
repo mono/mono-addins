@@ -45,15 +45,5 @@
     <Compile Include="FileSampleExtender.cs" />
     <Compile Include="IExtraFileContent.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Makefile.am" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <Deployment.LinuxDeployData scriptName="filecontentextension" generatePcFile="False" />
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
 </Project>

@@ -1,9 +1,0 @@
-2010-06-08  Lluis Sanchez Gual  <lluis@novell.com>
-
-	* OptionalModule.csproj: Add missing projects.
-
-2010-05-21  Lluis Sanchez Gual  <lluis@novell.com>
-
-	* Extensions.cs:
-	* OptionalModule.csproj: Added new tests.
-
