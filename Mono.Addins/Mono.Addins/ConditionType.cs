@@ -175,7 +175,7 @@ namespace Mono.Addins
 		
 		public override bool Evaluate (ExtensionContext ctx)
 		{
-			return !base.Evaluate (ctx);
+			return !baseCond.Evaluate (ctx);
 		}
 		
 		internal override void GetConditionTypes (System.Collections.ArrayList listToFill)
