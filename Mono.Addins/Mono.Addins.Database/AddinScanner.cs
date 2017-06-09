@@ -844,7 +844,7 @@ namespace Mono.Addins.Database
 			AddinLocalizerGettextAttribute locat = (AddinLocalizerGettextAttribute) reflector.GetCustomAttribute (asm, typeof(AddinLocalizerGettextAttribute), false);
 			if (locat != null) {
 				ExtensionNodeDescription node = new ExtensionNodeDescription ();
-				node.SetAttribute ("type", "Gettext");
+				node.SetAttribute ("type", locat.Type ?? "Gettext");
 				if (!string.IsNullOrEmpty (locat.Catalog))
 					node.SetAttribute ("catalog", locat.Catalog);
 				if (!string.IsNullOrEmpty (locat.Location))
