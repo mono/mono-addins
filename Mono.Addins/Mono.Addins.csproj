@@ -156,6 +156,7 @@
     <Compile Include="Mono.Addins\AddinUrlAttribute.cs" />
     <Compile Include="Mono.Addins\AddinCategoryAttribute.cs" />
     <Compile Include="Mono.Addins\AddinFlagsAttribute.cs" />
+    <Compile Include="Mono.Addins\AddinLocalizerAttribute.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
