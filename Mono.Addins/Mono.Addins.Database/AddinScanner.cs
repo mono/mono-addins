@@ -855,7 +855,7 @@ namespace Mono.Addins.Database
 			var customLocat = (AddinLocalizerAttribute) reflector.GetCustomAttribute (asm, typeof(AddinLocalizerAttribute), false);
 			if (customLocat != null) {
 				var node = new ExtensionNodeDescription ();
-				node.SetAttribute ("type", customLocat.Type);
+				node.SetAttribute ("type", customLocat.TypeName);
 				config.Localizer = node;
 			}
 			

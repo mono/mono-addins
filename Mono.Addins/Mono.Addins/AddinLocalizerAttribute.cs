@@ -34,7 +34,8 @@ namespace Mono.Addins
 	[AttributeUsage (AttributeTargets.Assembly)]
 	public class AddinLocalizerAttribute: Attribute
 	{
-		string type;
+		Type type;
+		string typeName;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Addins.AddinLocalizerAttribute"/> class.
@@ -47,20 +48,25 @@ namespace Mono.Addins
 		/// Initializes a new instance of the <see cref="Mono.Addins.AddinLocalizerAttribute"/> class.
 		/// </summary>
 		/// <param name='type'>
-		/// The type name of the localizer. This type must implement the
+		/// The type of the localizer. This type must implement the
 		/// <see cref="Mono.Addins.Localization.IAddinLocalizerFactory"/> interface.
 		/// </param>
-		public AddinLocalizerAttribute (string type)
+		public AddinLocalizerAttribute (Type type)
 		{
-			this.type = type;
+			Type = type;
 		}
 
 		/// <summary>
-		/// Type name of the localizer.
+		/// Type of the localizer.
 		/// </summary>
-		public string Type {
-			get { return this.type; }
-			set { this.type = value; }
+		public Type Type {
+			get { return type; }
+			set { type = value; typeName = type.FullName; }
+		}
+
+		internal string TypeName {
+			get { return typeName; }
+			set { typeName = value; type = null; }
 		}
 	}
 }
