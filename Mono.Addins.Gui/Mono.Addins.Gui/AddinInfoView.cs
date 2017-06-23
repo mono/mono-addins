@@ -412,7 +412,7 @@ namespace Mono.Addins.Gui
 		
 		void ImageDownloaded (object state)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				if (destroyed)
 					return;
 				try {

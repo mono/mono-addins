@@ -60,21 +60,21 @@ namespace Mono.Addins.Gui
 		
 		public void SetMessage (string msg)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				labelMessage.Text = msg;
 			});
 		}
 
 		public void SetProgress (double progress)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				progressbar.Fraction = progress;
 			});
 		}
 
 		public void Log (string msg)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				Gtk.TextIter it = textview.Buffer.EndIter;
 				textview.Buffer.Insert (ref it, msg + "\n");
 			});
@@ -90,7 +90,7 @@ namespace Mono.Addins.Gui
 			Log ("Error: " + message);
 			if (exception != null)
 				Log (exception.ToString ());
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				Services.ShowError (exception, message, null, true);
 			});
 			hadError = true;
@@ -98,7 +98,7 @@ namespace Mono.Addins.Gui
 
 		public void Cancel ()
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				cancelled = true;
 				buttonCancel.Sensitive = false;
 			});
