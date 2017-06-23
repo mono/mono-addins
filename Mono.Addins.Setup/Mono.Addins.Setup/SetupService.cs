@@ -28,17 +28,17 @@
 
 
 using System;
-using System.Xml;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Xml;
 using ICSharpCode.SharpZipLib.Zip;
+using Mono.Addins.Database;
 using Mono.Addins.Description;
 using Mono.Addins.Setup.ProgressMonitoring;
-using Microsoft.Win32;
-using System.Diagnostics;
 using Mono.PkgConfig;
-using Mono.Addins.Database;
 
 namespace Mono.Addins.Setup
 {
@@ -356,7 +356,7 @@ namespace Mono.Addins.Setup
 				return null;
 			}
 			
-			string basePath = Path.GetDirectoryName (filePath);
+			string basePath = Path.GetFullPath (Path.GetDirectoryName (filePath));
 			
 			if (targetDirectory == null)
 				targetDirectory = basePath;
@@ -394,29 +394,40 @@ namespace Mono.Addins.Setup
 			s.PutNextEntry (infoEntry);
 			s.Write (data, 0, data.Length);
 			s.CloseEntry ();
-			
+
 			// Now add the add-in files
-			
-			ArrayList list = new ArrayList ();
-			if (!conf.AllFiles.Contains (Path.GetFileName (filePath)))
-				list.Add (Path.GetFileName (filePath));
+
+			var files = new HashSet<string> ();
+
+			files.Add (Path.GetFileName (Util.NormalizePath (filePath)));
+
 			foreach (string f in conf.AllFiles) {
-				list.Add (Util.NormalizePath (f));
+				files.Add (Util.NormalizePath (f));
 			}
 			
 			foreach (var prop in conf.Properties) {
 				try {
 					var file = Util.NormalizePath (prop.Value);
-					if (File.Exists (Path.Combine (basePath, file)))
-						list.Add (file);
+					if (File.Exists (Path.Combine (basePath, file))) {
+						files.Add (file);
+					}
 				} catch {
 					// Ignore errors
+				}
+			}
+
+			//add satellite assemblies for assemblies in the list
+			var satelliteFinder = new SatelliteAssemblyFinder ();
+			foreach (var f in files.ToList ()) {
+				foreach (var satellite in satelliteFinder.FindSatellites (Path.Combine (basePath, f))) {
+					var relativeSatellite = satellite.Substring (basePath.Length + 1);
+					files.Add (relativeSatellite);
 				}
 			}
 			
 			monitor.Log ("Creating package " + Path.GetFileName (outFilePath));
 			
-			foreach (string file in list) {
+			foreach (string file in files) {
 				string fp = Path.Combine (basePath, file);
 				using (FileStream fs = File.OpenRead (fp)) {
 					byte[] buffer = new byte [fs.Length];
@@ -433,6 +444,48 @@ namespace Mono.Addins.Setup
 			s.Finish();
 			s.Close();		
 			return outFilePath;
+		}
+
+		class SatelliteAssemblyFinder
+		{
+			Dictionary<string, List<string>> cultureSubdirCache = new Dictionary<string, List<string>> ();
+			HashSet<string> cultureNames = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
+
+			public SatelliteAssemblyFinder ()
+			{
+				foreach (var cultureName in CultureInfo.GetCultures (CultureTypes.AllCultures)) {
+					cultureNames.Add (cultureName.Name);
+				}
+			}
+
+			List<string> GetCultureSubdirectories (string directory)
+			{
+				if (!cultureSubdirCache.TryGetValue (directory, out List<string> cultureDirs)) {
+					cultureDirs = Directory.EnumerateDirectories (directory)
+						.Where (d => cultureNames.Contains (Path.GetFileName ((d))))
+						.ToList ();
+
+					cultureSubdirCache [directory] = cultureDirs;
+				}
+				return cultureDirs;
+			}
+
+			public IEnumerable<string> FindSatellites (string assemblyPath)
+			{
+				if (!assemblyPath.EndsWith (".dll", StringComparison.OrdinalIgnoreCase)) {
+					yield break;
+				}
+
+				var satelliteName = Path.GetFileNameWithoutExtension (assemblyPath) + ".resources.dll";
+
+				foreach (var cultureDir in GetCultureSubdirectories (Path.GetDirectoryName (assemblyPath))) {
+					string cultureName = Path.GetFileName (cultureDir);
+					string satellitePath = Path.Combine (cultureDir, satelliteName);
+					if (File.Exists (satellitePath)) {
+						yield return satellitePath;
+					}
+				}
+			}
 		}
 		
 		void CleanDescription (XmlElement parent)
