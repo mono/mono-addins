@@ -282,7 +282,7 @@ namespace Mono.Addins.Gui
 					AddinRepositoryEntry arep = (AddinRepositoryEntry) dataItem;
 					string tmpId = iconId;
 					arep.BeginDownloadSupportFile (customIcom, delegate (IAsyncResult res) {
-						Gtk.Application.Invoke (delegate {
+						Gtk.Application.Invoke ((o, args) => {
 							LoadRemoteIcon (it, tmpId, arep, res, info, dataItem, status);
 						});
 					}, null);
