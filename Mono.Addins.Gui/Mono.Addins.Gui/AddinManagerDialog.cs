@@ -118,7 +118,7 @@ namespace Mono.Addins.Gui
 			tab.BorderWidth = 3;
 			tab.ShowAll ();
 			notebook.SetTabLabel (notebook.GetNthPage (0), tab);
-			
+
 			tab = new HBox (false, 3);
 			tab.PackStart (new Image (Gdk.Pixbuf.LoadFromResource ("plugin-update-22.png")), false, false, 0);
 			updatesTabLabel = new Label (Catalog.GetString ("Updates"));
@@ -161,7 +161,14 @@ namespace Mono.Addins.Gui
 		{
 			filterEntry = new SearchEntry ();
 			filterEntry.Entry.SetSizeRequest (200, filterEntry.Entry.SizeRequest ().Height);
+			filterEntry.SizeAllocated += (o, args) => {
+				RepositionFilter ();
+			};
+			ActionArea.PackEnd (filterEntry);
+			var btnCloseBoxChild = ((Box.BoxChild)(ActionArea [btnClose]));
+			btnCloseBoxChild.Position = 2;
 			filterEntry.Show ();
+
 			notebook.SizeAllocated += delegate {
 				RepositionFilter ();
 			};

@@ -46,11 +46,13 @@ namespace Mono.Addins.Gui
 		{
 			entry.HasFrame = false;
 			box.PackStart (entry, true, true, 0);
+
 			iconFind = new HoverImageButton (IconSize.Menu, Gtk.Stock.Find);
 			box.PackStart (iconFind, false, false, 0);
 			iconClean = new HoverImageButton (IconSize.Menu, Gtk.Stock.Clear);
 			box.PackStart (iconClean, false, false, 0);
 			box.BorderWidth = 1;
+
 			
 			HeaderBox hbox = new HeaderBox (1,1,1,1);
 			hbox.Show ();
@@ -61,10 +63,8 @@ namespace Mono.Addins.Gui
 			entry.StyleSet += UpdateStyle;
 			
 			iconClean.BorderWidth = 1;
-			iconClean.CanFocus = false;
 			iconFind.BorderWidth = 1;
-			iconFind.CanFocus = false;
-			
+
 			iconClean.Clicked += delegate {
 				entry.Text = string.Empty;
 			};
