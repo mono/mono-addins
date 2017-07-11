@@ -924,6 +924,7 @@ namespace Mono.Addins.Description
 				config = Read (s, Path.GetDirectoryName (configFile));
 			}
 			config.configFile = configFile;
+			config.SetBasePath (Path.GetDirectoryName (configFile));
 			return config;
 		}
 		
@@ -953,6 +954,7 @@ namespace Mono.Addins.Description
 		public static AddinDescription Read (TextReader reader, string basePath)
 		{
 			AddinDescription config = new AddinDescription ();
+			config.SetBasePath (basePath);
 			
 			try {
 				config.configDoc = new XmlDocument ();
