@@ -361,6 +361,8 @@ namespace Mono.Addins.Setup
 			if (targetDirectory == null)
 				targetDirectory = basePath;
 
+			conf.SetBasePath (basePath);
+
 			// Generate the file name
 			
 			string name;

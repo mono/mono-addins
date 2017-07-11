@@ -49,6 +49,9 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <PackageReference Include="NuGet.Build.Packaging" Version="0.1.276" />
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing">
+      <Version>1.1.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />

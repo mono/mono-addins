@@ -36,6 +36,8 @@ using System.Collections.Specialized;
 using Mono.Addins.Serialization;
 using Mono.Addins.Database;
 using System.Text;
+using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 
 namespace Mono.Addins.Description
 {
@@ -381,11 +383,11 @@ namespace Mono.Addins.Description
 			get {
 				StringCollection col = new StringCollection ();
 				foreach (string s in MainModule.AllFiles)
-					col.Add (s);
+					AddFileToCollection (col, s);
 
 				foreach (ModuleDescription mod in OptionalModules) {
 					foreach (string s in mod.AllFiles)
-						col.Add (s);
+						AddFileToCollection (col, s);
 				}
 				return col;
 			}
@@ -1071,6 +1073,21 @@ namespace Mono.Addins.Description
 				return defval;
 			else
 				return s == "true" || s == "yes";
+		}
+
+		void AddFileToCollection (StringCollection collection, string file)
+		{
+			bool isSimpleFile = file.IndexOf ('*') == -1;
+			if (isSimpleFile) {
+				collection.Add (file);
+				return;
+			}
+
+			var matcher = new Matcher (StringComparison.OrdinalIgnoreCase);
+			matcher.AddInclude (file);
+			var files = matcher.Execute (new DirectoryInfoWrapper (new DirectoryInfo (BasePath))).Files;
+			foreach (var globbedFile in files)
+				collection.Add (globbedFile.Path);
 		}
 		
 		internal static AddinDescription ReadBinary (FileDatabase fdb, string configFile)
