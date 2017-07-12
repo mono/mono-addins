@@ -37,7 +37,6 @@ using Mono.Addins.Serialization;
 using Mono.Addins.Database;
 using System.Text;
 using Microsoft.Extensions.FileSystemGlobbing;
-using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 
 namespace Mono.Addins.Description
 {
@@ -1087,7 +1086,7 @@ namespace Mono.Addins.Description
 
 			var matcher = new Matcher (StringComparison.OrdinalIgnoreCase);
 			matcher.AddInclude (file);
-			var files = matcher.Execute (new DirectoryInfoWrapper (new DirectoryInfo (BasePath))).Files;
+			var files = matcher.Execute (new DirectoryInfo (BasePath)).Files;
 			foreach (var globbedFile in files)
 				collection.Add (globbedFile.Path);
 		}

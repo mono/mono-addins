@@ -49,9 +49,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <PackageReference Include="NuGet.Build.Packaging" Version="0.1.276" />
-    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing">
-      <Version>1.1.1</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -160,6 +157,37 @@
     <Compile Include="Mono.Addins\AddinCategoryAttribute.cs" />
     <Compile Include="Mono.Addins\AddinFlagsAttribute.cs" />
     <Compile Include="Mono.Addins\AddinLocalizerAttribute.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Matcher.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\PatternMatchingResult.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\ILinearPattern.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\IPathSegment.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\IPattern.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\IPatternContext.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\IRaggedPattern.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\MatcherContext.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PatternTestResult.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PatternBuilder.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PathSegments\CurrentPathSegment.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PathSegments\LiteralPathSegment.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PathSegments\ParentPathSegment.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PathSegments\RecursiveWildcardSegment.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PathSegments\WildcardPathSegment.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\StringComparisonHelper.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\FilePatternMatch.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PatternContexts\PatternContext.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PatternContexts\PatternContextLinear.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PatternContexts\PatternContextLinearExclude.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PatternContexts\PatternContextLinearInclude.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PatternContexts\PatternContextRagged.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PatternContexts\PatternContextRaggedExclude.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PatternContexts\PatternContextRaggedInclude.cs" />
+    <Compile Include="Microsoft.Extensions.FileSystemGlobbing\HashCodeCombiner.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Microsoft.Extensions.FileSystemGlobbing\" />
+    <Folder Include="Microsoft.Extensions.FileSystemGlobbing\Internal\" />
+    <Folder Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PathSegments\" />
+    <Folder Include="Microsoft.Extensions.FileSystemGlobbing\Internal\PatternContexts\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
