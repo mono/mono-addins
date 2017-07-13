@@ -24,6 +24,9 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Addins\Mono.Addins.csproj">
@@ -38,8 +41,6 @@
       <Project>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</Project>
       <Name>Mono.Addins.Setup</Name>
     </ProjectReference>
-    <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
-    <PackageReference Include="NUnit" Version="3.7.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestExtensions.cs" />
@@ -89,6 +90,7 @@
     <None Include="SampleAddins\AddRemoveTest2.addin.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
