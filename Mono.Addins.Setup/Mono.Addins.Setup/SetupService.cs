@@ -356,7 +356,7 @@ namespace Mono.Addins.Setup
 				return null;
 			}
 			
-			string basePath = Path.GetFullPath (Path.GetDirectoryName (filePath));
+			string basePath = Path.GetDirectoryName (Path.GetFullPath (filePath));
 			
 			if (targetDirectory == null)
 				targetDirectory = basePath;
