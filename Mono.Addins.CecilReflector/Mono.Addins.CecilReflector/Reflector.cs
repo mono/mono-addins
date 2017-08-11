@@ -370,7 +370,7 @@ namespace Mono.Addins.CecilReflector
 			return true;
 		}
 
-		HashSet<string> assembliesNotReferencingMonoAddins = new HashSet<string> ();
+		HashSet<string> assembliesNotReferencingMonoAddins = new HashSet<string> (StringComparer.Ordinal);
 
 		public string [] GetResourceNames (object asm)
 		{
@@ -594,7 +594,7 @@ namespace Mono.Addins.CecilReflector
 
 		public void Dispose ()
 		{
-			foreach (AssemblyDefinition asm in cachedAssemblies.Values.OrderBy (a => a.FullName))
+			foreach (AssemblyDefinition asm in cachedAssemblies.Values)
 				asm.Dispose ();
 
 #if ASSEMBLY_LOAD_STATS
