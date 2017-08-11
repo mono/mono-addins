@@ -587,8 +587,6 @@ namespace Mono.Addins
 			if (depCheck.Contains (id))
 				throw new InvalidOperationException ("A cyclic addin dependency has been detected.");
 
-			depCheck.Push (id);
-
 			Addin iad = Registry.GetAddin (id);
 			if (iad == null || !iad.Enabled) {
 				if (optional)
@@ -603,34 +601,38 @@ namespace Mono.Addins
 			// of the list, so it is loaded earlier than before.
 			addins.Remove (iad);
 			addins.Add (iad);
-			
-			foreach (Dependency dep in iad.AddinInfo.Dependencies) {
-				AddinDependency adep = dep as AddinDependency;
-				if (adep != null) {
-					try {
-						string adepid = Addin.GetFullId (iad.AddinInfo.Namespace, adep.AddinId, adep.Version);
-						ResolveLoadDependencies (addins, depCheck, adepid, false);
-					} catch (MissingDependencyException) {
-						if (optional)
-							return false;
-						else
-							throw;
-					}
-				}
-			}
-			
-			if (iad.AddinInfo.OptionalDependencies != null) {
-				foreach (Dependency dep in iad.AddinInfo.OptionalDependencies) {
+
+			depCheck.Push (id);
+
+			try {
+				foreach (Dependency dep in iad.AddinInfo.Dependencies) {
 					AddinDependency adep = dep as AddinDependency;
 					if (adep != null) {
-						string adepid = Addin.GetFullId (iad.Namespace, adep.AddinId, adep.Version);
-						if (!ResolveLoadDependencies (addins, depCheck, adepid, true))
-						return false;
+						try {
+							string adepid = Addin.GetFullId (iad.AddinInfo.Namespace, adep.AddinId, adep.Version);
+							ResolveLoadDependencies (addins, depCheck, adepid, false);
+						} catch (MissingDependencyException) {
+							if (optional)
+								return false;
+							else
+								throw;
+						}
 					}
 				}
+
+				if (iad.AddinInfo.OptionalDependencies != null) {
+					foreach (Dependency dep in iad.AddinInfo.OptionalDependencies) {
+						AddinDependency adep = dep as AddinDependency;
+						if (adep != null) {
+							string adepid = Addin.GetFullId (iad.Namespace, adep.AddinId, adep.Version);
+							if (!ResolveLoadDependencies (addins, depCheck, adepid, true))
+								return false;
+						}
+					}
+				}
+			} finally {
+				depCheck.Pop ();
 			}
-				
-			depCheck.Pop ();
 			return true;
 		}
 		
