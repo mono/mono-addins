@@ -25,6 +25,8 @@
 //
 //
 
+//#define ASSEMBLY_LOAD_STATS
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,7 +36,7 @@ using Mono.Addins.Database;
 using Mono.Cecil;
 using CustomAttribute = Mono.Cecil.CustomAttribute;
 using MA = Mono.Addins.Database;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace Mono.Addins.CecilReflector
 {
@@ -72,7 +74,9 @@ namespace Mono.Addins.CecilReflector
 			if (inherit && (obj is TypeDefinition)) {
 				TypeDefinition td = (TypeDefinition) obj;
 				if (td.BaseType != null && td.BaseType.FullName != "System.Object") {
-					TypeDefinition bt = FindTypeDefinition (td.Module.Assembly, td.BaseType);
+					// The base type may be in an assembly that doesn't reference Mono.Addins, even though it may reference
+					// other assemblies that do reference Mono.Addins. So the Mono.Addins filter can't be applied here.
+					TypeDefinition bt = FindTypeDefinition (td.Module.Assembly, td.BaseType, assembliesReferencingMonoAddinsOnly: false);
 					if (bt != null)
 						atts.AddRange (GetCustomAttributes (bt, type, true));
 				}
@@ -167,26 +171,31 @@ namespace Mono.Addins.CecilReflector
 				return atts;
 			
 			foreach (CustomAttribute att in aprov.CustomAttributes) {
-				MA.CustomAttribute catt = ConvertToRawAttribute (att, type.FullName);
+				// The class of the attribute is always a subclass of a Mono.Addins class
+				MA.CustomAttribute catt = ConvertToRawAttribute (att, type.FullName, baseIsMonoAddinsType: true);
 				if (catt != null)
 					atts.Add (catt);
 			}
 			if (inherit && (obj is TypeDefinition)) {
 				TypeDefinition td = (TypeDefinition) obj;
 				if (td.BaseType != null && td.BaseType.FullName != "System.Object") {
-					TypeDefinition bt = FindTypeDefinition (td.Module.Assembly, td.BaseType);
+					// The base type may be in an assembly that doesn't reference Mono.Addins, even though it may reference
+					// other assemblies that do reference Mono.Addins. So the Mono.Addins filter can't be applied here.
+					TypeDefinition bt = FindTypeDefinition (td.Module.Assembly, td.BaseType, assembliesReferencingMonoAddinsOnly: false);
 					if (bt != null)
 						atts.AddRange (GetRawCustomAttributes (bt, type, true));
 				}
 			}
 			return atts;
 		}
-		
-		MA.CustomAttribute ConvertToRawAttribute (CustomAttribute att, string expectedType)
+
+		MA.CustomAttribute ConvertToRawAttribute (CustomAttribute att, string expectedType, bool baseIsMonoAddinsType)
 		{
-			TypeDefinition attType = FindTypeDefinition (att.Constructor.DeclaringType.Module.Assembly, att.Constructor.DeclaringType);
-			
-			if (attType == null || !TypeIsAssignableFrom (expectedType, attType))
+			// If the class of the attribute is a subclass of a Mono.Addins class, then the assembly where this
+			// custom attribute type is defined must reference Mono.Addins.
+			TypeDefinition attType = FindTypeDefinition (att.Constructor.DeclaringType.Module.Assembly, att.Constructor.DeclaringType, assembliesReferencingMonoAddinsOnly: baseIsMonoAddinsType);
+
+			if (attType == null || !TypeIsAssignableFrom (expectedType, attType, baseIsMonoAddinsType))
 				return null;
 
 			MA.CustomAttribute mat = new MA.CustomAttribute ();
@@ -211,14 +220,19 @@ namespace Mono.Addins.CecilReflector
 					}
 				}
 			}
-			
+
+			List<TypeDefinition> inheritanceChain = null;
+
 			foreach (Mono.Cecil.CustomAttributeNamedArgument namedArgument in att.Properties) {
 				string pname = namedArgument.Name;
 				object val = namedArgument.Argument.Value;
 				if (val == null)
 					continue;
 
-				foreach (TypeDefinition td in GetInheritanceChain (attType)) {
+				if (inheritanceChain == null)
+					inheritanceChain = GetInheritanceChain (attType, baseIsMonoAddinsType).ToList ();
+
+				foreach (TypeDefinition td in inheritanceChain) {
 					PropertyDefinition prop = GetMember (td.Properties, pname);
 					if (prop == null)
 						continue;
@@ -237,7 +251,10 @@ namespace Mono.Addins.CecilReflector
 				if (val == null)
 					continue;
 
-				foreach (TypeDefinition td in GetInheritanceChain (attType)) {
+				if (inheritanceChain == null)
+					inheritanceChain = GetInheritanceChain (attType, baseIsMonoAddinsType).ToList ();
+
+				foreach (TypeDefinition td in inheritanceChain) {
 					FieldDefinition field = GetMember (td.Fields, pname);
 					if (field != null) {
 						NodeAttributeAttribute bat = (NodeAttributeAttribute) GetCustomAttribute (field, typeof(NodeAttributeAttribute), false);
@@ -260,12 +277,14 @@ namespace Mono.Addins.CecilReflector
 
 			return null;
 		}
-		
-		IEnumerable<TypeDefinition> GetInheritanceChain (TypeDefinition td)
+
+		IEnumerable<TypeDefinition> GetInheritanceChain (TypeDefinition td, bool baseIsMonoAddinsType)
 		{
 			yield return td;
 			while (td != null && td.BaseType != null && td.BaseType.FullName != "System.Object") {
-				td = FindTypeDefinition (td.Module.Assembly, td.BaseType);
+				// If the class we are looking for is a subclass of a Mono.Addins class, then the assembly where this
+				// class is defined must reference Mono.Addins.
+				td = FindTypeDefinition (td.Module.Assembly, td.BaseType, assembliesReferencingMonoAddinsOnly: baseIsMonoAddinsType);
 				if (td != null)
 					yield return td;
 			}
@@ -305,14 +324,57 @@ namespace Mono.Addins.CecilReflector
 			var rp = new ReaderParameters (ReadingMode.Deferred);
 			rp.AssemblyResolver = defaultAssemblyResolver;
 			adef = AssemblyDefinition.ReadAssembly (file, rp);
-			if (adef != null && cache)
-				cachedAssemblies [file] = adef;
+			if (adef != null) {
+				if (cache)
+					cachedAssemblies [file] = adef;
+				// Since the assembly is loaded, we can quickly check now if it references Mono.Addins.
+				// This information may be useful later on.
+				if (adef.Name.Name != "Mono.Addins" && !adef.MainModule.AssemblyReferences.Any (r => r.Name == "Mono.Addins"))
+					assembliesNotReferencingMonoAddins.Add (adef.FullName);
+			}
+
+#if ASSEMBLY_LOAD_STATS
+			loadCounter.TryGetValue (file, out int num);
+			loadCounter [file] = num + 1;
+#endif
 			return adef;
 		}
-		
-		public string[] GetResourceNames (object asm)
+
+#if ASSEMBLY_LOAD_STATS
+		static Dictionary<string, int> loadCounter = new Dictionary<string, int> ();
+#endif
+
+		public void UnloadAssembly (object assembly)
 		{
-			AssemblyDefinition adef = (AssemblyDefinition) asm;
+			var adef = (AssemblyDefinition)assembly;
+			cachedAssemblies.Remove (adef.MainModule.FileName);
+			adef.Dispose ();
+		}
+
+		bool FoundToNotReferenceMonoAddins (AssemblyNameReference aref)
+		{
+			// Quick check to find out if an assembly references Mono.Addins, based only on cached information.
+			return assembliesNotReferencingMonoAddins.Contains (aref.FullName);
+		}
+
+		bool CheckHasMonoAddinsReference (AssemblyDefinition adef)
+		{
+			// Maybe the assembly is already in the blacklist
+			if (assembliesNotReferencingMonoAddins.Contains (adef.FullName))
+				return false;
+
+			if (adef.Name.Name != "Mono.Addins" && !adef.MainModule.AssemblyReferences.Any (r => r.Name == "Mono.Addins")) {
+				assembliesNotReferencingMonoAddins.Add (adef.FullName);
+				return false;
+			}
+			return true;
+		}
+
+		HashSet<string> assembliesNotReferencingMonoAddins = new HashSet<string> ();
+
+		public string [] GetResourceNames (object asm)
+		{
+			AssemblyDefinition adef = (AssemblyDefinition)asm;
 			List<string> names = new List<string> (adef.MainModule.Resources.Count);
 			foreach (Resource res in adef.MainModule.Resources) {
 				if (res is EmbeddedResource)
@@ -334,12 +396,35 @@ namespace Mono.Addins.CecilReflector
 
 		public object LoadAssemblyFromReference (object asmReference)
 		{
-			AssemblyNameReference aref = (AssemblyNameReference) asmReference;
-			string loc = locator.GetAssemblyLocation (aref.FullName);
-			if (loc != null)
-				return LoadAssembly (loc);
-			else
+			// The scanner only uses this method when looking for an extension node type, which is
+			// a subclass of a Mono.Addins type, so it must be defined in an assembly that references Mono.Addins.
+			return LoadAssemblyFromReference ((AssemblyNameReference)asmReference, assembliesReferencingMonoAddinsOnly: true);
+		}
+
+		AssemblyDefinition LoadAssemblyFromReference (AssemblyNameReference aref, bool assembliesReferencingMonoAddinsOnly)
+		{
+			// Fast check for Mono.Addins reference that sometimes will avoid loading the assembly 
+			if (assembliesReferencingMonoAddinsOnly && FoundToNotReferenceMonoAddins (aref))
 				return null;
+
+			string loc = locator.GetAssemblyLocation (aref.FullName);
+			if (loc == null)
+				return null;
+
+			AssemblyDefinition asm = LoadAssembly (loc, true);
+
+			// Check for Mono.Addins references first, that will update the cache.
+
+			if (!CheckHasMonoAddinsReference (asm) && assembliesReferencingMonoAddinsOnly) {
+				// We loaded an assembly we are not interested in, so we could unload it now.
+				// We already cached the information about whether it has a Mono.Addins reference
+				// or not, so the next we try to load the reference, the check can be done
+				// without loading. However, empirical tests should that the cache size doesn't
+				// increase much, while redundant assembly loads are significanly reduced.
+				//UnloadAssembly (asm);
+				return null;
+			}
+			return asm;
 		}
 
 		public System.Collections.IEnumerable GetAssemblyTypes (object asm)
@@ -400,43 +485,50 @@ namespace Mono.Addins.CecilReflector
 
 		public System.Collections.IEnumerable GetBaseTypeFullNameList (object type)
 		{
-			TypeDefinition t = (TypeDefinition) type;
-			AssemblyDefinition asm = GetAssemblyDefinition (t);
+			// The base type can be any type, so we can apply the Mono.Addins optimization in this case.
+			return GetBaseTypeFullNameList ((TypeDefinition)type, baseIsMonoAddinsType: false, includeInterfaces: true);
+		}
+
+		public System.Collections.IEnumerable GetBaseTypeFullNameList (TypeDefinition type, bool baseIsMonoAddinsType, bool includeInterfaces)
+		{
+			AssemblyDefinition asm = GetAssemblyDefinition (type);
 
 			ArrayList list = new ArrayList ();
 			Hashtable visited = new Hashtable ();
-			GetBaseTypeFullNameList (visited, list, asm, t);
-			list.Remove (t.FullName);
+			GetBaseTypeFullNameList (visited, list, asm, type, baseIsMonoAddinsType, includeInterfaces);
+			list.Remove (type.FullName);
 			return list;
 		}
 
-		void GetBaseTypeFullNameList (Hashtable visited, ArrayList list, AssemblyDefinition asm, TypeReference tr)
+		void GetBaseTypeFullNameList (Hashtable visited, ArrayList list, AssemblyDefinition asm, TypeReference tr, bool baseIsMonoAddinsType, bool includeInterfaces)
 		{
 			if (tr.FullName == "System.Object" || visited.Contains (tr.FullName))
 				return;
-			
+
 			visited [tr.FullName] = tr;
 			list.Add (tr.FullName);
-			
-			TypeDefinition type = FindTypeDefinition (asm, tr);
+
+			TypeDefinition type = FindTypeDefinition (asm, tr, assembliesReferencingMonoAddinsOnly: baseIsMonoAddinsType);
 			if (type == null)
 				return;
 
 			asm = GetAssemblyDefinition (type);
 
 			if (type.BaseType != null)
-				GetBaseTypeFullNameList (visited, list, asm, type.BaseType);
+				GetBaseTypeFullNameList (visited, list, asm, type.BaseType, baseIsMonoAddinsType, includeInterfaces);
 
-			foreach (InterfaceImplementation ii in type.Interfaces) {
-				TypeReference interf = ii.InterfaceType;
-				GetBaseTypeFullNameList (visited, list, asm, interf);
+			if (includeInterfaces) {
+				foreach (InterfaceImplementation ii in type.Interfaces) {
+					TypeReference interf = ii.InterfaceType;
+					GetBaseTypeFullNameList (visited, list, asm, interf, baseIsMonoAddinsType, includeInterfaces);
+				}
 			}
 		}
-		
-		TypeDefinition FindTypeDefinition (AssemblyDefinition referencer, TypeReference rt)
+
+		TypeDefinition FindTypeDefinition (AssemblyDefinition referencer, TypeReference rt, bool assembliesReferencingMonoAddinsOnly)
 		{
 			if (rt is TypeDefinition)
-				return (TypeDefinition) rt;
+				return (TypeDefinition)rt;
 
 			string name = rt.FullName;
 			TypeDefinition td = GetType (referencer, name) as TypeDefinition;
@@ -451,11 +543,11 @@ namespace Mono.Addins.CecilReflector
 			}
 			
 			foreach (AssemblyNameReference aref in referencer.MainModule.AssemblyReferences) {
-				string loc = locator.GetAssemblyLocation (aref.FullName);
-				if (loc == null)
-					continue;
 				try {
-					AssemblyDefinition asm = LoadAssembly (loc, true);
+					AssemblyDefinition asm = LoadAssemblyFromReference (aref, assembliesReferencingMonoAddinsOnly);
+					if (asm == null)
+						continue;
+
 					td = GetType (asm, name) as TypeDefinition;
 					if (td != null)
 						return td;
@@ -475,9 +567,11 @@ namespace Mono.Addins.CecilReflector
 			return false;
 		}
 
-		public bool TypeIsAssignableFrom (string baseTypeName, object type)
+		public bool TypeIsAssignableFrom (string baseTypeName, object type, bool baseIsMonoAddinsClass)
 		{
-			foreach (string bt in GetBaseTypeFullNameList (type))
+			// If the base is a Mono.Addins class then there is no need to include interfaces when getting
+			// the base type list (since we are looking for a class, not for an interface).
+			foreach (string bt in GetBaseTypeFullNameList ((TypeDefinition)type, baseIsMonoAddinsClass, !baseIsMonoAddinsClass))
 				if (bt == baseTypeName)
 					return true;
 			return false;
@@ -500,9 +594,17 @@ namespace Mono.Addins.CecilReflector
 
 		public void Dispose ()
 		{
-			foreach (AssemblyDefinition asm in cachedAssemblies.Values) {
+			foreach (AssemblyDefinition asm in cachedAssemblies.Values.OrderBy (a => a.FullName))
 				asm.Dispose ();
-			}
+
+#if ASSEMBLY_LOAD_STATS
+			Console.WriteLine ("Total assemblies: " + loadCounter.Count);
+			Console.WriteLine ("Assembly cache size: {0} ({1}%)", cachedAssemblies.Count, (cachedAssemblies.Count * 100) / loadCounter.Count);
+
+			Console.WriteLine ("Total assembly loads: " + loadCounter.Values.Sum ());
+			var redundant = loadCounter.Where (c => c.Value > 1).Select (c => c.Value - 1).Sum ();
+			Console.WriteLine ("Redundant loads: {0} ({1}%)", redundant, ((redundant * 100) / loadCounter.Count));
+#endif
 		}
 	}
 }
