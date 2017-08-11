@@ -538,15 +538,16 @@ namespace Mono.Addins.Database
 			}
 			return reflector;
 		}
-		
+
 		bool ScanAssembly (IProgressStatus monitor, string filePath, AddinScanResult scanResult, out AddinDescription config)
 		{
 			config = null;
 
 			IAssemblyReflector reflector = null;
+			object asm = null;
 			try {
 				reflector = GetReflector (monitor, scanResult, filePath);
-				object asm = reflector.LoadAssembly (filePath);
+				asm = reflector.LoadAssembly (filePath);
 				if (asm == null)
 					throw new Exception ("Could not load assembly: " + filePath);
 				
@@ -560,6 +561,7 @@ namespace Mono.Addins.Database
 					AddinAttribute att = (AddinAttribute) reflector.GetCustomAttribute (asm, typeof(AddinAttribute), false);
 					if (att == null) {
 						config = null;
+						reflector.UnloadAssembly (asm);
 						return true;
 					}
 
@@ -574,9 +576,14 @@ namespace Mono.Addins.Database
 				if (!config.MainModule.Assemblies.Contains (rasmFile))
 					config.MainModule.Assemblies.Add (rasmFile);
 				
-				return ScanDescription (monitor, reflector, config, asm, scanResult);
+				bool res = ScanDescription (monitor, reflector, config, asm, scanResult);
+				if (!res)
+					reflector.UnloadAssembly (asm);
+				return res;
 			}
 			catch (Exception ex) {
+				if (asm != null)
+					reflector.UnloadAssembly (asm);
 				// Something went wrong while scanning the assembly. We'll ignore it for now.
 				monitor.ReportError ("There was an error while scanning assembly: " + filePath, ex);
 				return false;

@@ -42,7 +42,11 @@ namespace Mono.Addins.Database
 		{
 			return Util.LoadAssemblyForReflection (file);
 		}
-		
+
+		public void UnloadAssembly (object assembly)
+		{
+		}
+
 		public string[] GetResourceNames (object asm)
 		{
 			return ((Assembly)asm).GetManifestResourceNames ();
