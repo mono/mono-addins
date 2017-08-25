@@ -68,5 +68,16 @@ namespace Mono.Addins.Gui
 				dlg.Destroy ();
 			}
 		}
+
+		public static int RunToInstallFile (Gtk.Window parent, Setup.SetupService service, string file)
+		{
+			var dlg = new InstallDialog (parent, service);
+			try {
+				dlg.InitForInstall (new [] { file });
+				return dlg.Run ();
+			} finally {
+				dlg.Destroy ();
+			}
+		}
 	}
 }
