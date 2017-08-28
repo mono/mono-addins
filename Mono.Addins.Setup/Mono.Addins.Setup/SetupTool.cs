@@ -472,7 +472,7 @@ namespace Mono.Addins.Setup
 			if (args.Length < 1)
 				throw new InstallException ("A file name is required.");
 				
-			service.BuildPackage (new ConsoleProgressStatus (verbose), GetOption ("d", "."), GetArguments ());
+			service.BuildPackage (new ConsoleProgressStatus (verbose), bool.Parse (GetOption ("debugSymbols", "false")), GetOption ("d", "."), GetArguments ());
 		}
 		
 		void PrintLibraries (string[] args)
@@ -1108,10 +1108,12 @@ namespace Mono.Addins.Setup
 	
 			cmd = new SetupCommand (cat, "pack", "p", new SetupCommandHandler (BuildPackage));
 			cmd.Description = "Creates a package from an add-in configuration file.";
-			cmd.Usage = "<file-path> [-d:output-directory]";
+			cmd.Usage = "<file-path> [-d:output-directory] [-debugSymbols:(true|false)]";
 			cmd.AppendDesc ("Creates an add-in package (.mpack file) which includes all files ");
 			cmd.AppendDesc ("needed to deploy an add-in. The command parameter is the path to");
-			cmd.AppendDesc ("the add-in's configuration file.");
+			cmd.AppendDesc ("the add-in's configuration file. If 'debugSymbols' is set to true");
+			cmd.AppendDesc ("then pdb or mdb debug symbols will automatically be included in the");
+			cmd.AppendDesc ("final package.");
 			commands.Add (cmd);
 	
 			cmd = new SetupCommand (cat, "help", "h", new SetupCommandHandler (PrintHelp));

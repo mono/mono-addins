@@ -339,16 +339,42 @@ namespace Mono.Addins.Setup
 		/// </remarks>
 		public string[] BuildPackage (IProgressStatus statusMonitor, string targetDirectory, params string[] filePaths)
 		{
+			return BuildPackage (statusMonitor, false, targetDirectory, filePaths);
+		}
+
+		/// <summary>
+		/// Packages an add-in
+		/// </summary>
+		/// <param name="statusMonitor">
+		/// Progress monitor where to show progress status
+		/// </param>
+		/// <param name="debugSymbols">
+		/// True if debug symbols (.pdb or .mdb) should be included in the package, if they exist
+		/// </param>
+		/// <param name="targetDirectory">
+		/// Directory where to generate the package
+		/// </param>
+		/// <param name="filePaths">
+		/// Paths to the add-ins to be packaged. Paths can be either the main assembly of an add-in, or an add-in
+		/// manifest (.addin or .addin.xml).
+		/// </param>
+		/// <remarks>
+		/// This method can be used to create a package for an add-in, which can then be pushed to an on-line
+		/// repository. The package will include the main assembly or manifest of the add-in and any external
+		/// file declared in the add-in metadata.
+		/// </remarks>
+		public string[] BuildPackage (IProgressStatus statusMonitor, bool debugSymbols, string targetDirectory, params string[] filePaths)
+		{
 			List<string> outFiles = new List<string> ();
 			foreach (string file in filePaths) {
-				string f = BuildPackageInternal (statusMonitor, targetDirectory, file);
+				string f = BuildPackageInternal (statusMonitor, debugSymbols, targetDirectory, file);
 				if (f != null)
 					outFiles.Add (f);
 			}
 			return outFiles.ToArray ();
 		}
 		
-		string BuildPackageInternal (IProgressStatus monitor, string targetDirectory, string filePath)
+		string BuildPackageInternal (IProgressStatus monitor, bool debugSymbols, string targetDirectory, string filePath)
 		{
 			AddinDescription conf = registry.GetAddinDescription (monitor, filePath);
 			if (conf == null) {
@@ -402,7 +428,14 @@ namespace Mono.Addins.Setup
 			files.Add (Path.GetFileName (Util.NormalizePath (filePath)));
 
 			foreach (string f in conf.AllFiles) {
-				files.Add (Util.NormalizePath (f));
+				var file = Util.NormalizePath (f);
+				files.Add (file);
+				if (debugSymbols) {
+					if (File.Exists (Path.ChangeExtension (file, ".pdb")))
+						files.Add (Path.ChangeExtension (file, ".pdb"));
+					else if (File.Exists (file + ".mdb"))
+						files.Add (file + ".mdb");
+				}
 			}
 			
 			foreach (var prop in conf.Properties) {
