@@ -249,7 +249,7 @@ namespace Mono.Addins.GuiGtk3
 					updateInfo = sinfo;
 				selectedEntry.Add (entry);
 				string rname = !string.IsNullOrEmpty (entry.RepositoryName) ? entry.RepositoryName : entry.RepositoryUrl;
-				repo = "<small><b>" + Catalog.GetString ("Available in repository:") + "</b>\n" + GLib.Markup.EscapeText (rname) + "\n\n</small>";
+				repo = "<span font='11'><b>" + Catalog.GetString ("Available in repository:") + "</b>\n" + GLib.Markup.EscapeText (rname) + "\n\n<span>";
 				foreach (var prop in sinfo.Properties) {
 					if (prop.Name.StartsWith ("PreviewImage"))
 						previewImages.Add (new ImageContainer (entry, prop.Value));
@@ -318,14 +318,14 @@ namespace Mono.Addins.GuiGtk3
 				
 				string ver;
 				if (newVersion != null) {
-					ver =  "<small><b>" + Catalog.GetString ("Installed version") + ":</b> " + version + "</small>\n";
-					ver += "<small><b>" + Catalog.GetString ("Repository version") + ":</b> " + newVersion + "</small>";
+					ver =  "<span font='11'><b>" + Catalog.GetString ("Installed version") + ":</b> " + version + "<span>\n";
+					ver += "<span font='11'><b>" + Catalog.GetString ("Repository version") + ":</b> " + newVersion + "<span>";
 				}
 				else
-					ver = "<small><b>" + Catalog.GetString ("Version") + " " + version + "</b></small>";
+					ver = "<span font='11'><b>" + Catalog.GetString ("Version") + " " + version + "</b><span>";
 				
 				if (downloadSize != null)
-					ver += "\n<small><b>" + Catalog.GetString ("Download size") + ":</b> " + downloadSize + "</small>";
+					ver += "\n<span font='11'><b>" + Catalog.GetString ("Download size") + ":</b> " + downloadSize + "<span>";
 				if (missingDepsTxt != null)
 					ver += "\n\n" + GLib.Markup.EscapeText (Catalog.GetString ("The following dependencies required by this extension package are not available:")) + missingDepsTxt;
 				labelVersion.Markup = ver;

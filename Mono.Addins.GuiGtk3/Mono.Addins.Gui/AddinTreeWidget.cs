@@ -238,7 +238,7 @@ namespace Mono.Addins.GuiGtk3
 				int i = desc.IndexOf ('\n');
 				if (i != -1)
 					desc = desc.Substring (0, i);
-				name += "\n<small><span foreground=\"darkgrey\">" + EscapeWithFilterMarker (desc) + "</span></small>";
+				name += "\n<span font='11'><span foreground=\"darkgrey\">" + EscapeWithFilterMarker (desc) + "</span><span>";
 			}
 			
 			if (status != AddinStatus.Disabled) {
