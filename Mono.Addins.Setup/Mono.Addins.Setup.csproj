@@ -54,7 +54,7 @@
       <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.1.276" />
+    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.Addins.Setup\AddinInfo.cs" />
