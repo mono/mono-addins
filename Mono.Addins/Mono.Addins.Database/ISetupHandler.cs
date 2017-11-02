@@ -30,7 +30,7 @@ namespace Mono.Addins.Database
 {
 	internal interface ISetupHandler
 	{
-		void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, string[] filesToIgnore);
+		void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, ScanContext context);
 		void GetAddinDescription (IProgressStatus monitor, AddinRegistry registry, string file, string outFile);
 	}
 }

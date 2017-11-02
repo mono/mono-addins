@@ -32,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Linq;
 
 namespace Mono.Addins.Database
 {
@@ -59,6 +60,8 @@ namespace Mono.Addins.Database
 		public bool LocateAssembliesOnly;
 		public string Domain;
 		
+		public List<string> AddinCacheDataFileGenerationRootDirs { get; set; }
+
 		public bool ChangesFound {
 			get { return changesFound; }
 			set { changesFound = value; }
@@ -94,6 +97,15 @@ namespace Mono.Addins.Database
 				file = Path.GetDirectoryName (file);
 			}
 			return false;
+		}
+
+		public void AddAddinCacheDataFileGenerationRootDir (string path)
+		{
+			if (AddinCacheDataFileGenerationRootDirs == null)
+				AddinCacheDataFileGenerationRootDirs = new List<string> ();
+			if (path [path.Length - 1] != Path.DirectorySeparatorChar)
+				path += Path.DirectorySeparatorChar;
+			AddinCacheDataFileGenerationRootDirs.Add (path);
 		}
 		
 		public void AddPathToIgnore (string path)
@@ -199,6 +211,13 @@ namespace Mono.Addins.Database
 				return lastAsm;
 			}
 			return null;
+		}
+
+		public bool ShouldGenerateAddinCacheDataFile (string file)
+		{
+			if (AddinCacheDataFileGenerationRootDirs == null || AddinCacheDataFileGenerationRootDirs.Count == 0)
+				return false;
+			return AddinCacheDataFileGenerationRootDirs.Any (d => file.StartsWith (d, StringComparison.Ordinal));
 		}
 	}
 		

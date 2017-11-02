@@ -651,7 +651,27 @@ namespace Mono.Addins
 			if (!string.IsNullOrEmpty (startupDirectory))
 				currentDomain = database.GetFolderDomain (null, startupDirectory);
 		}
-		
+
+		/// <summary>
+		/// Generates add-in data cache files for files in the provided directories
+		/// </summary>
+		/// <param name="monitor">
+		/// Progress monitor to keep track of the rebuild operation.
+		/// </param>
+		/// <param name="folders">
+		/// Folders that contain the add-ins for which to generate the cache files.
+		/// </param>
+		public void GenerateAddinDataCacheFiles (IProgressStatus monitor, IEnumerable<string> folders)
+		{
+			var context = new ScanContext ();
+			context.AddinCacheDataFileGenerationRootDirs.AddRange (folders);
+			database.Repair (monitor, currentDomain, context);
+
+			// A full rebuild may cause the domain to change
+			if (!string.IsNullOrEmpty (startupDirectory))
+				currentDomain = database.GetFolderDomain (null, startupDirectory);
+		}
+
 		/// <summary>
 		/// Registers an extension. Only AddinFileSystemExtension extensions are supported right now.
 		/// </summary>
@@ -691,9 +711,9 @@ namespace Mono.Addins
 			return database.AddinDependsOn (currentDomain, id1, id2);
 		}
 		
-		internal void ScanFolders (IProgressStatus monitor, string folderToScan, StringCollection filesToIgnore)
+		internal void ScanFolders (IProgressStatus monitor, string folderToScan, ScanContext context)
 		{
-			database.ScanFolders (monitor, currentDomain, folderToScan, filesToIgnore);
+			database.ScanFolders (monitor, currentDomain, folderToScan, context);
 		}
 		
 		internal void ParseAddin (IProgressStatus progressStatus, string file, string outFile)

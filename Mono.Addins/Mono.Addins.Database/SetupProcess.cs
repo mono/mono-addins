@@ -35,22 +35,29 @@ using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Database
 {
 	class SetupProcess: ISetupHandler
 	{
-		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, string[] filesToIgnore)
+		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, ScanContext context)
 		{
-			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, "scan", scanFolder, filesToIgnore);
+			List<string> data = new List<string> ();
+			data.Add (context.FilesToIgnore.Count.ToString ());
+			data.AddRange (context.FilesToIgnore);
+			data.Add (context.AddinCacheDataFileGenerationRootDirs.Count.ToString ());
+			data.AddRange (context.AddinCacheDataFileGenerationRootDirs);
+
+			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, "scan", scanFolder, data);
 		}
 		
 		public void GetAddinDescription (IProgressStatus monitor, AddinRegistry registry, string file, string outFile)
 		{
-			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, "get-desc", file, outFile);
+			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, "get-desc", file, new List<string> { outFile });
 		}
 		
-		internal static void ExecuteCommand (IProgressStatus monitor, string registryPath, string startupDir, string addinsDir, string databaseDir, string name, string arg1, params string[] args)
+		internal static void ExecuteCommand (IProgressStatus monitor, string registryPath, string startupDir, string addinsDir, string databaseDir, string name, string arg1, List<string> data)
 		{
 			string verboseParam = monitor.LogLevel.ToString ();
 			
@@ -58,9 +65,7 @@ namespace Mono.Addins.Database
 			StringBuilder sb = new StringBuilder ();
 			sb.Append (verboseParam).Append (' ').Append (name);
 			sb.Append (" \"").Append (arg1).Append ("\"");
-			foreach (string arg in args)
-				sb.Append (" \"").Append (arg).Append ("\"");
-			
+
 			Process process = new Process ();
 			
 			string asm = null;
@@ -85,11 +90,13 @@ namespace Mono.Addins.Database
 				process.StandardInput.WriteLine (startupDir);
 				process.StandardInput.WriteLine (addinsDir);
 				process.StandardInput.WriteLine (databaseDir);
+
+				if (data != null) {
+					foreach (var d in data)
+						process.StandardInput.WriteLine (d);
+				}
 				process.StandardInput.Flush ();
 	
-	//			string rr = process.StandardOutput.ReadToEnd ();
-	//			Console.WriteLine (rr);
-				
 				StringCollection progessLog = new StringCollection ();
 				ProcessProgressStatus.MonitorProcessStatus (monitor, process.StandardOutput, progessLog);
 				process.WaitForExit ();
@@ -125,12 +132,25 @@ namespace Mono.Addins.Database
 				case "scan":
 					string folder = args.Length > 2 ? args [2] : null;
 					if (folder.Length == 0) folder = null;
-					StringCollection filesToIgnore = new StringCollection ();
-					for (int n=3; n<args.Length; n++)
-						filesToIgnore.Add (args[n]);
-					reg.ScanFolders (monitor, folder, filesToIgnore);
+
+					int filesToIgnoreCount = int.Parse (Console.In.ReadLine ());
+					List<string> filesToIgnore = new List<string> (filesToIgnoreCount);
+					for (int n=0; n<filesToIgnoreCount; n++)
+						filesToIgnore.Add (Console.In.ReadLine());
+
+					int addinCacheDataFileGenerationRootDirsCount = int.Parse (Console.In.ReadLine ());
+					List<string> addinCacheDataFileGenerationRootDirs = new List<string> (addinCacheDataFileGenerationRootDirsCount);
+					for (int n = 0; n < addinCacheDataFileGenerationRootDirsCount; n++)
+						addinCacheDataFileGenerationRootDirs.Add (Console.In.ReadLine ());
+
+					var context = new ScanContext {
+						FilesToIgnore = filesToIgnore,
+						AddinCacheDataFileGenerationRootDirs = addinCacheDataFileGenerationRootDirs
+					};
+					reg.ScanFolders (monitor, folder, context);
 					break;
 				case "get-desc":
+					var outFile = Console.In.ReadLine ();
 					reg.ParseAddin (monitor, args[2], args[3]);
 					break;
 				}

@@ -1,21 +1,21 @@
-// 
-// SetupLocal.cs
-//  
+﻿//
+// ScanContext.cs
+//
 // Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
-// 
-// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
-// 
+//       Lluis Sanchez <llsan@microsoft.com>
+//
+// Copyright (c) 2017 Microsoft
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,23 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Database
 {
-	class SetupLocal: ISetupHandler
+	[Serializable]
+	class ScanContext
 	{
-		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, ScanContext context)
-		{
-			AddinRegistry reg = new AddinRegistry (registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath);
-			reg.CopyExtensionsFrom (registry);
-			reg.ScanFolders (monitor, scanFolder, context);
-		}
-		
-		public void GetAddinDescription (IProgressStatus monitor, AddinRegistry registry, string file, string outFile)
-		{
-			registry.ParseAddin (monitor, file, outFile);
-		}
+		public List<string> FilesToIgnore { get; set; } = new List<string> ();
+		public List<string> AddinCacheDataFileGenerationRootDirs { get; set; } = new List<string> ();
 	}
 }
-

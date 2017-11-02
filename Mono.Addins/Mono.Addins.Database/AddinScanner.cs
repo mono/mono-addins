@@ -229,30 +229,51 @@ namespace Mono.Addins.Database
 				return;
 			}
 			
+			string scannedAddinId = null;
+			bool scannedIsRoot = false;
+			bool scanSuccessful = false;
+			bool loadedFromCacheFile = false;
+			AddinDescription config = null;
+			
 			string ext = Path.GetExtension (file).ToLower ();
-			if ((ext == ".dll" || ext == ".exe") && !Util.IsManagedAssembly (file)) {
-				// Ignore dlls and exes which are not managed assemblies
-				folderInfo.SetLastScanTime (file, null, false, fs.GetLastWriteTime (file), true);
-				return;
-			}
 
-			if (monitor.LogLevel > 1)
-				monitor.Log ("Scanning file: " + file);
+			var cachedDataFile = Path.Combine (file, ".addindata");
+			if (File.Exists (cachedDataFile)) {
+				if (database.ReadAddinDescription (monitor, cachedDataFile, out config)) {
+					scanSuccessful = true;
+					loadedFromCacheFile = true;
+					if (monitor.LogLevel > 1)
+						monitor.Log ("Loading cached add-in data file: " + file);
+				} else if (monitor.LogLevel > 1)
+					monitor.Log ("Cached add-in data file could not be loaded, ignoring: " + file);
+			}
+			if (!loadedFromCacheFile) {
+				if ((ext == ".dll" || ext == ".exe") && !Util.IsManagedAssembly (file)) {
+					// Ignore dlls and exes which are not managed assemblies
+					folderInfo.SetLastScanTime (file, null, false, fs.GetLastWriteTime (file), true);
+					return;
+				}
+
+				if (monitor.LogLevel > 1)
+					monitor.Log ("Scanning file: " + file);
+			}
 			
 			// Log the file to be scanned, so in case of a process crash the main process
 			// will know what crashed
 			monitor.Log ("plog:scan:" + file);
 			
-			string scannedAddinId = null;
-			bool scannedIsRoot = false;
-			bool scanSuccessful = false;
-			AddinDescription config = null;
-			
 			try {
-				if (ext == ".dll" || ext == ".exe")
-					scanSuccessful = ScanAssembly (monitor, file, scanResult, out config);
-				else
-					scanSuccessful = ScanConfigAssemblies (monitor, file, scanResult, out config);
+				if (!loadedFromCacheFile) {
+					if (ext == ".dll" || ext == ".exe")
+						scanSuccessful = ScanAssembly (monitor, file, scanResult, out config);
+					else
+						scanSuccessful = ScanConfigAssemblies (monitor, file, scanResult, out config);
+
+					if (scanSuccessful && scanResult.ShouldGenerateAddinCacheDataFile (file)) {
+						// Save a binary data file next to the scanned file
+						database.SaveDescription (monitor, config, cachedDataFile);
+					}
+				}
 
 				if (config != null) {
 					

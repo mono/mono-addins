@@ -1001,7 +1001,7 @@ namespace Mono.Addins.Database
 			return false;
 		}
 		
-		public void Repair (IProgressStatus monitor, string domain)
+		public void Repair (IProgressStatus monitor, string domain, ScanContext context = null)
 		{
 			using (fileDatabase.LockWrite ()) {
 				try {
@@ -1018,10 +1018,10 @@ namespace Mono.Addins.Database
 			}
 			ResetBasicCachedData ();
 			
-			Update (monitor, domain);
+			Update (monitor, domain, context);
 		}
 		
-		public void Update (IProgressStatus monitor, string domain)
+		public void Update (IProgressStatus monitor, string domain, ScanContext context = null)
 		{
 			if (monitor == null)
 				monitor = new ConsoleProgressStatus (false);
@@ -1056,7 +1056,7 @@ namespace Mono.Addins.Database
 					}
 				}
 				
-				RunScannerProcess (monitor);
+				RunScannerProcess (monitor, context);
 			
 				ResetCachedData ();
 				
@@ -1137,29 +1137,30 @@ namespace Mono.Addins.Database
 				SaveConfiguration ();
 		}
 		
-		void RunScannerProcess (IProgressStatus monitor)
+		void RunScannerProcess (IProgressStatus monitor, ScanContext context)
 		{
 			ISetupHandler setup = GetSetupHandler ();
-			
+
+
 			IProgressStatus scanMonitor = monitor;
-			ArrayList pparams = new ArrayList ();
-			
+			context = context ?? new ScanContext ();
+
 			bool retry = false;
 			do {
 				try {
 					if (monitor.LogLevel > 1)
 						monitor.Log ("Looking for addins");
-					setup.Scan (scanMonitor, registry, null, (string[]) pparams.ToArray (typeof(string)));
+					setup.Scan (scanMonitor, registry, null, context);
 					retry = false;
 				}
 				catch (Exception ex) {
 					ProcessFailedException pex = ex as ProcessFailedException;
 					if (pex != null) {
 						// Get the last logged operation.
-						if (pex.LastLog.StartsWith ("scan:")) {
+						if (pex.LastLog.StartsWith ("scan:", StringComparison.Ordinal)) {
 							// It crashed while scanning a file. Add the file to the ignore list and try again.
 							string file = pex.LastLog.Substring (5);
-							pparams.Add (file);
+							context.FilesToIgnore.Add (file);
 							monitor.ReportWarning ("Could not scan file: " + file);
 							retry = true;
 							continue;
@@ -1234,11 +1235,12 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		internal void ScanFolders (IProgressStatus monitor, string currentDomain, string folderToScan, StringCollection filesToIgnore)
+		internal void ScanFolders (IProgressStatus monitor, string currentDomain, string folderToScan, ScanContext context)
 		{
 			AddinScanResult res = new AddinScanResult ();
 			res.Domain = currentDomain;
-			res.AddPathsToIgnore (filesToIgnore);
+			res.AddPathsToIgnore (context.FilesToIgnore);
+			res.AddinCacheDataFileGenerationRootDirs = context.AddinCacheDataFileGenerationRootDirs;
 			ScanFolders (monitor, res);
 		}
 		
