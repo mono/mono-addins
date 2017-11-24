@@ -331,7 +331,10 @@ namespace Mono.Addins.Setup
 			Exception error = null;
 			
 			try {
-				newRep = (Repository) service.Store.DownloadObject (monitor, absUri.ToString (), typeof(Repository));
+				if (baseUri.Host == "marketplace.visualstudio.com")
+					newRep = VisualStudioMarketplaceApi.Instance.CreateRepository (monitor, rr.CachedFilesDir);
+				else
+					newRep = (Repository) service.Store.DownloadObject (monitor, absUri.ToString (), typeof(Repository));
 			} catch (Exception ex) {
 				error = ex;
 			}

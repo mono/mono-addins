@@ -625,7 +625,7 @@ namespace Mono.Addins.Setup
 			}
 		}
 		
-		internal string DownloadFile (IProgressMonitor monitor, string url)
+		internal static string DownloadFile (IProgressMonitor monitor, string url)
 		{
 			if (url.StartsWith ("file://", StringComparison.Ordinal)) {
 				string tmpfile = Path.GetTempFileName ();

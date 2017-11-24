@@ -53,6 +53,9 @@
       <Private>False</Private>
     </ProjectReference>
     <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>10.0.3</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.Addins.Setup\AddinInfo.cs" />
@@ -87,6 +90,7 @@
     <Compile Include="Mono.Addins.Setup\PcFileCache.cs" />
     <Compile Include="Mono.Addins.Setup\TextFormatter.cs" />
     <Compile Include="Mono.Addins.Setup\WebRequestHelper.cs" />
+    <Compile Include="Mono.Addins.Setup\VisualStudioMarketplaceApi.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

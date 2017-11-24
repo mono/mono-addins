@@ -132,7 +132,7 @@ namespace Mono.Addins.Setup
 				throw new InstallException ("The addin " + info.Name + " v" + info.Version + " is already installed.");
 						
 			if (url != null)
-				packFile = service.DownloadFile (monitor, url);
+				packFile = AddinStore.DownloadFile (monitor, url);
 			
 			tempFolder = CreateTempFolder ();
 
