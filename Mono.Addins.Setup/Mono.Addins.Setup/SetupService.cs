@@ -367,14 +367,49 @@ namespace Mono.Addins.Setup
 		{
 			List<string> outFiles = new List<string> ();
 			foreach (string file in filePaths) {
-				string f = BuildPackageInternal (statusMonitor, debugSymbols, targetDirectory, file);
+				string f = BuildPackageInternal (statusMonitor, debugSymbols, targetDirectory, file, PackageFormat.Mpack);
+				if (f != null)
+					outFiles.Add (f);
+			}
+			return outFiles.ToArray ();
+		}
+
+		/// <summary>
+		/// Packages an add-in
+		/// </summary>
+		/// <param name="statusMonitor">
+		/// Progress monitor where to show progress status
+		/// </param>
+		/// <param name="debugSymbols">
+		/// True if debug symbols (.pdb or .mdb) should be included in the package, if they exist
+		/// </param>
+		/// <param name="targetDirectory">
+		/// Directory where to generate the package
+		/// </param>
+		/// <param name="format">
+		/// Which format to produce .mpack or .vsix
+		/// </param>
+		/// <param name="filePaths">
+		/// Paths to the add-ins to be packaged. Paths can be either the main assembly of an add-in, or an add-in
+		/// manifest (.addin or .addin.xml).
+		/// </param>
+		/// <remarks>
+		/// This method can be used to create a package for an add-in, which can then be pushed to an on-line
+		/// repository. The package will include the main assembly or manifest of the add-in and any external
+		/// file declared in the add-in metadata.
+		/// </remarks>
+		public string [] BuildPackage (IProgressStatus statusMonitor, bool debugSymbols, string targetDirectory, PackageFormat format , params string [] filePaths)
+		{
+			List<string> outFiles = new List<string> ();
+			foreach (string file in filePaths) {
+				string f = BuildPackageInternal (statusMonitor, debugSymbols, targetDirectory, file, format);
 				if (f != null)
 					outFiles.Add (f);
 			}
 			return outFiles.ToArray ();
 		}
 		
-		string BuildPackageInternal (IProgressStatus monitor, bool debugSymbols, string targetDirectory, string filePath)
+		string BuildPackageInternal (IProgressStatus monitor, bool debugSymbols, string targetDirectory, string filePath, PackageFormat format)
 		{
 			AddinDescription conf = registry.GetAddinDescription (monitor, filePath);
 			if (conf == null) {
@@ -396,30 +431,59 @@ namespace Mono.Addins.Setup
 				name = conf.LocalId;
 			name = Addin.GetFullId (conf.Namespace, name, conf.Version);
 			name = name.Replace (',','_').Replace (".__", ".");
-			
-			string outFilePath = Path.Combine (targetDirectory, name) + ".mpack";
+
+			string outFilePath = Path.Combine (targetDirectory, name);
+			switch(format){
+			case PackageFormat.Mpack:
+				outFilePath += ".mpack";
+				break;
+			case PackageFormat.Vsix:
+				outFilePath += ".vsix";
+				break;
+			default:
+				throw new NotSupportedException (format.ToString ());
+			}
 			
 			ZipOutputStream s = new ZipOutputStream (File.Create (outFilePath));
 			s.SetLevel(5);
-			
+
+			if (format == PackageFormat.Vsix) {
+				XmlDocument doc = new XmlDocument ();
+				doc.PreserveWhitespace = false;
+				doc.LoadXml (conf.SaveToVsixXml ().OuterXml);
+				MemoryStream ms = new MemoryStream ();
+				XmlTextWriter tw = new XmlTextWriter (ms, System.Text.Encoding.UTF8);
+				tw.Formatting = Formatting.Indented;
+				doc.WriteTo (tw);
+				tw.Flush ();
+				byte [] data = ms.ToArray ();
+
+				var infoEntry = new ZipEntry ("extension.vsixmanifest") { Size = data.Length };
+				s.PutNextEntry (infoEntry);
+				s.Write (data, 0, data.Length);
+				s.CloseEntry ();
+			}
+
 			// Generate a stripped down description of the add-in in a file, since the complete
 			// description may be declared as assembly attributes
-			
-			XmlDocument doc = new XmlDocument ();
-			doc.PreserveWhitespace = false;
-			doc.LoadXml (conf.SaveToXml ().OuterXml);
-			CleanDescription (doc.DocumentElement);
-			MemoryStream ms = new MemoryStream ();
-			XmlTextWriter tw = new XmlTextWriter (ms, System.Text.Encoding.UTF8);
-			tw.Formatting = Formatting.Indented;
-			doc.WriteTo (tw);
-			tw.Flush ();
-			byte[] data = ms.ToArray ();
 
-			var infoEntry = new ZipEntry ("addin.info") { Size = data.Length };
-			s.PutNextEntry (infoEntry);
-			s.Write (data, 0, data.Length);
-			s.CloseEntry ();
+			if (format == PackageFormat.Mpack || format == PackageFormat.Vsix) {
+				XmlDocument doc = new XmlDocument ();
+				doc.PreserveWhitespace = false;
+				doc.LoadXml (conf.SaveToXml ().OuterXml);
+				CleanDescription (doc.DocumentElement);
+				MemoryStream ms = new MemoryStream ();
+				XmlTextWriter tw = new XmlTextWriter (ms, System.Text.Encoding.UTF8);
+				tw.Formatting = Formatting.Indented;
+				doc.WriteTo (tw);
+				tw.Flush ();
+				byte [] data = ms.ToArray ();
+
+				var infoEntry = new ZipEntry ("addin.info") { Size = data.Length };
+				s.PutNextEntry (infoEntry);
+				s.Write (data, 0, data.Length);
+				s.CloseEntry ();
+			}
 
 			// Now add the add-in files
 
@@ -473,10 +537,65 @@ namespace Mono.Addins.Setup
 					s.CloseEntry ();
 				}
 			}
-			
-			s.Finish();
-			s.Close();		
+
+			if (format == PackageFormat.Vsix) {
+				files.Add ("addin.info");
+				files.Add ("extension.vsixmanifest");
+				XmlDocument doc = new XmlDocument ();
+				doc.PreserveWhitespace = false;
+				XmlDeclaration xmlDeclaration = doc.CreateXmlDeclaration ("1.0", "UTF-8", null);
+				XmlElement root = doc.DocumentElement;
+				doc.InsertBefore (xmlDeclaration, root);
+				HashSet<string> alreadyAddedExtensions = new HashSet<string> ();
+				var typesEl = doc.CreateElement ("Types");
+				typesEl.SetAttribute ("xmlns", "http://schemas.openxmlformats.org/package/2006/content-types");
+				foreach (var file in files) {
+					var extension = Path.GetExtension (file);
+					if (alreadyAddedExtensions.Contains (extension))
+						continue;
+					alreadyAddedExtensions.Add (extension);
+					var typeEl = doc.CreateElement ("Default");
+					typeEl.SetAttribute ("Extension", extension);
+					typeEl.SetAttribute ("ContentType", GetContentType (extension));
+					typesEl.AppendChild (typeEl);
+				}
+				doc.AppendChild (typesEl);
+				MemoryStream ms = new MemoryStream ();
+				XmlTextWriter tw = new XmlTextWriter (ms, System.Text.Encoding.UTF8);
+				tw.Formatting = Formatting.Indented;
+				doc.WriteTo (tw);
+				tw.Flush ();
+				byte [] data = ms.ToArray ();
+
+				var infoEntry = new ZipEntry ("[Content_Types].xml") { Size = data.Length };
+				s.PutNextEntry (infoEntry);
+				s.Write (data, 0, data.Length);
+				s.CloseEntry ();
+			}
+
+			s.Finish ();
+			s.Close ();
 			return outFilePath;
+		}
+
+		static string GetContentType (string extension)
+		{
+			switch (extension) {
+			case "txt": return "text/plain";
+			case "pkgdef": return "text/plain";
+			case "xml": return "text/xml";
+			case "vsixmanifest": return "text/xml";
+			case "htm or html": return "text/html";
+			case "rtf": return "application/rtf";
+			case "pdf": return "application/pdf";
+			case "gif": return "image/gif";
+			case "jpg or jpeg": return "image/jpg";
+			case "tiff": return "image/tiff";
+			case "vsix": return "application/zip";
+			case "zip": return "application/zip";
+			case "dll": return "application/octet-stream";
+			default: return "application/octet-stream";
+			}
 		}
 
 		class SatelliteAssemblyFinder

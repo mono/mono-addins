@@ -469,13 +469,24 @@ namespace Mono.Addins.Setup
 				throw new InstallException ("A directory name is required.");
 			service.BuildRepository (new ConsoleProgressStatus (verbose), args[0]);
 		}
-		
-		void BuildPackage (string[] args)
+
+		void BuildPackage (string [] args)
 		{
 			if (args.Length < 1)
 				throw new InstallException ("A file name is required.");
-				
-			service.BuildPackage (new ConsoleProgressStatus (verbose), bool.Parse (GetOption ("debugSymbols", "false")), GetOption ("d", "."), GetArguments ());
+			var formatString = GetOption ("format", "mpack");
+			PackageFormat format;
+			switch (formatString) {
+			case "mpack":
+				format = PackageFormat.Mpack;
+				break;
+			case "vsix":
+				format = PackageFormat.Vsix;
+				break;
+			default:
+				throw new ArgumentException ($"Unsupported package format \"{formatString}\", supported formats are mpack and vsix.");
+			}
+			service.BuildPackage (new ConsoleProgressStatus (verbose), bool.Parse (GetOption ("debugSymbols", "false")), GetOption ("d", "."), format, GetArguments ());
 		}
 		
 		void PrintLibraries (string[] args)
@@ -1111,8 +1122,8 @@ namespace Mono.Addins.Setup
 	
 			cmd = new SetupCommand (cat, "pack", "p", new SetupCommandHandler (BuildPackage));
 			cmd.Description = "Creates a package from an add-in configuration file.";
-			cmd.Usage = "<file-path> [-d:output-directory] [-debugSymbols:(true|false)]";
-			cmd.AppendDesc ("Creates an add-in package (.mpack file) which includes all files ");
+			cmd.Usage = "<file-path> [-d:output-directory] [-format:(mpack|vsix)] [-debugSymbols:(true|false)]";
+			cmd.AppendDesc ("Creates an add-in package (.mpack or .vsix file) which includes all files ");
 			cmd.AppendDesc ("needed to deploy an add-in. The command parameter is the path to");
 			cmd.AppendDesc ("the add-in's configuration file. If 'debugSymbols' is set to true");
 			cmd.AppendDesc ("then pdb or mdb debug symbols will automatically be included in the");
