@@ -204,8 +204,11 @@ namespace Mono.Addins.Setup
 			PackageCollection packs = new PackageCollection ();
 			for (int n=0; n<args.Length; n++) {
 				Addin addin = registry.GetAddin (GetFullId (args[n]));
-				if (addin != null)
+				if (addin != null) {
+					if (!addin.Enabled)
+						addin.Enabled = true;
 					continue;
+				}
 				string aname = Addin.GetIdName (GetFullId (args[n]));
 				string aversion = Addin.GetIdVersion (args[n]);
 				if (aversion.Length == 0) aversion = null;
