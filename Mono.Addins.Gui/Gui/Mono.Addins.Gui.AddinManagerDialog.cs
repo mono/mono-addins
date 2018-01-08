@@ -44,7 +44,7 @@ namespace Mono.Addins.Gui
 
 		protected virtual void Build ()
 		{
-			global::Stetic.Gui.Initialize (this);
+			Gui.Initialize (this);
 			// Widget Mono.Addins.Gui.AddinManagerDialog
 			this.Name = "Mono.Addins.Gui.AddinManagerDialog";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Extension Manager");
@@ -154,7 +154,7 @@ namespace Mono.Addins.Gui
 			this.buttonRefreshUpdates.Relief = ((global::Gtk.ReliefStyle)(2));
 			this.buttonRefreshUpdates.Label = global::Mono.Unix.Catalog.GetString ("Refresh");
 			global::Gtk.Image w9 = new global::Gtk.Image ();
-			w9.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-refresh", global::Gtk.IconSize.Menu);
+			w9.Pixbuf = IconLoader.LoadIcon (this, "gtk-refresh", global::Gtk.IconSize.Menu);
 			this.buttonRefreshUpdates.Image = w9;
 			this.hbox67.Add (this.buttonRefreshUpdates);
 			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox67 [this.buttonRefreshUpdates]));
@@ -261,7 +261,7 @@ namespace Mono.Addins.Gui
 			this.buttonRefresh.Relief = ((global::Gtk.ReliefStyle)(2));
 			this.buttonRefresh.Label = global::Mono.Unix.Catalog.GetString ("Refresh");
 			global::Gtk.Image w23 = new global::Gtk.Image ();
-			w23.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-refresh", global::Gtk.IconSize.Menu);
+			w23.Pixbuf = IconLoader.LoadIcon (this, "gtk-refresh", global::Gtk.IconSize.Menu);
 			this.buttonRefresh.Image = w23;
 			this.hbox66.Add (this.buttonRefresh);
 			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.hbox66 [this.buttonRefresh]));

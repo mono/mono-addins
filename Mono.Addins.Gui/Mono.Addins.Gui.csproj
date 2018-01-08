@@ -76,26 +76,26 @@
     <Compile Include="Mono.Addins.Gui\NewSiteDialog.cs" />
     <Compile Include="Mono.Addins.Gui\Services.cs" />
     <Compile Include="Mono.Addins.Gui\ErrorDialog.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="gtk-gui\Mono.Addins.Gui.AddinManagerDialog.cs" />
-    <Compile Include="gtk-gui\Mono.Addins.Gui.ErrorDialog.cs" />
-    <Compile Include="gtk-gui\Mono.Addins.Gui.ManageSitesDialog.cs" />
-    <Compile Include="gtk-gui\Mono.Addins.Gui.NewSiteDialog.cs" />
     <Compile Include="Mono.Addins.Gui\AddinManagerWindow.cs" />
     <Compile Include="Mono.Addins.Gui\AddinInstaller.cs" />
     <Compile Include="Mono.Addins.Gui\AddinInstallerDialog.cs" />
-    <Compile Include="gtk-gui\Mono.Addins.Gui.AddinInstallerDialog.cs" />
-    <Compile Include="gtk-gui\Mono.Addins.Gui.ProgressDialog.cs" />
     <Compile Include="Mono.Addins.Gui\ProgressDialog.cs" />
-    <Compile Include="gtk-gui\Mono.Addins.Gui.InstallDialog.cs" />
     <Compile Include="Mono.Addins.Gui\InstallDialog.cs" />
     <Compile Include="Mono.Addins.Gui\AddinInfoView.cs" />
-    <Compile Include="gtk-gui\Mono.Addins.Gui.AddinInfoView.cs" />
     <Compile Include="Mono.Addins.Gui\HeaderBox.cs" />
     <Compile Include="Mono.Addins.Gui\HslColor.cs" />
     <Compile Include="Mono.Addins.Gui\SearchEntry.cs" />
     <Compile Include="Mono.Addins.Gui\HoverImageButton.cs" />
     <Compile Include="Mono.Addins.Gui\InstallMonitor.cs" />
+    <Compile Include="Gui\generated.cs" />
+    <Compile Include="Gui\Mono.Addins.Gui.AddinInfoView.cs" />
+    <Compile Include="Gui\Mono.Addins.Gui.AddinInstallerDialog.cs" />
+    <Compile Include="Gui\Mono.Addins.Gui.AddinManagerDialog.cs" />
+    <Compile Include="Gui\Mono.Addins.Gui.ErrorDialog.cs" />
+    <Compile Include="Gui\Mono.Addins.Gui.InstallDialog.cs" />
+    <Compile Include="Gui\Mono.Addins.Gui.ManageSitesDialog.cs" />
+    <Compile Include="Gui\Mono.Addins.Gui.NewSiteDialog.cs" />
+    <Compile Include="Gui\Mono.Addins.Gui.ProgressDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\package-x-generic.png">
@@ -106,9 +106,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-x-generic_22.png">
       <LogicalName>package-x-generic_22.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-avail-16.png">
       <LogicalName>plugin-avail-16.png</LogicalName>
@@ -389,6 +386,9 @@
     <EmbeddedResource Include="icons\web-search-16~dark%402x.png">
       <LogicalName>web-search-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
