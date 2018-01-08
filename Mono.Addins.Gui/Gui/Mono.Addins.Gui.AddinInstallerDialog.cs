@@ -15,7 +15,7 @@ namespace Mono.Addins.Gui
 
 		protected virtual void Build ()
 		{
-			global::Stetic.Gui.Initialize (this);
+			Gui.Initialize (this);
 			// Widget Mono.Addins.Gui.AddinInstallerDialog
 			this.Name = "Mono.Addins.Gui.AddinInstallerDialog";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Extension Manager");

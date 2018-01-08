@@ -14,7 +14,7 @@ namespace Mono.Addins.Gui
 
 		protected virtual void Build ()
 		{
-			global::Stetic.Gui.Initialize (this);
+			Gui.Initialize (this);
 			// Widget Mono.Addins.Gui.ManageSitesDialog
 			this.Name = "Mono.Addins.Gui.ManageSitesDialog";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Extension Repository Management");

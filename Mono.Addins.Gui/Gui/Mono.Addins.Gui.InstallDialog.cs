@@ -17,7 +17,7 @@ namespace Mono.Addins.Gui
 
 		protected virtual void Build ()
 		{
-			global::Stetic.Gui.Initialize (this);
+			Gui.Initialize (this);
 			// Widget Mono.Addins.Gui.InstallDialog
 			this.Name = "Mono.Addins.Gui.InstallDialog";
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));

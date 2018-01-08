@@ -23,7 +23,7 @@ namespace Mono.Addins.Gui
 
 		protected virtual void Build ()
 		{
-			global::Stetic.Gui.Initialize (this);
+			Gui.Initialize (this);
 			// Widget Mono.Addins.Gui.NewSiteDialog
 			this.Name = "Mono.Addins.Gui.NewSiteDialog";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Add New Repository");

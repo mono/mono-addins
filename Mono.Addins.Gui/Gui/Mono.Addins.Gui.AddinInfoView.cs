@@ -31,9 +31,9 @@ namespace Mono.Addins.Gui
 
 		protected virtual void Build ()
 		{
-			global::Stetic.Gui.Initialize (this);
+			Gui.Initialize (this);
 			// Widget Mono.Addins.Gui.AddinInfoView
-			global::Stetic.BinContainer.Attach (this);
+			BinContainer.Attach (this);
 			this.Name = "Mono.Addins.Gui.AddinInfoView";
 			// Container child Mono.Addins.Gui.AddinInfoView.Gtk.Container+ContainerChild
 			this.ebox = new global::Gtk.EventBox ();
@@ -51,7 +51,7 @@ namespace Mono.Addins.Gui
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.imageHeader = new global::Gtk.Image ();
 			this.imageHeader.Name = "imageHeader";
-			this.imageHeader.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-warning", global::Gtk.IconSize.Menu);
+			this.imageHeader.Pixbuf = IconLoader.LoadIcon (this, "gtk-dialog-warning", global::Gtk.IconSize.Menu);
 			this.hbox2.Add (this.imageHeader);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.imageHeader]));
 			w1.Position = 0;
