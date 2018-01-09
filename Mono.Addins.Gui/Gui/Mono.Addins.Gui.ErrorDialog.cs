@@ -17,7 +17,7 @@ namespace Mono.Addins.Gui
 
 		protected virtual void Build ()
 		{
-			global::Stetic.Gui.Initialize (this);
+			Gui.Initialize (this);
 			// Widget Mono.Addins.Gui.ErrorDialog
 			this.Name = "Mono.Addins.Gui.ErrorDialog";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Error");
@@ -38,7 +38,7 @@ namespace Mono.Addins.Gui
 			// Container child vbox72.Gtk.Box+BoxChild
 			this.icon = new global::Gtk.Image ();
 			this.icon.Name = "icon";
-			this.icon.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-error", global::Gtk.IconSize.Dialog);
+			this.icon.Pixbuf = IconLoader.LoadIcon (this, "gtk-dialog-error", global::Gtk.IconSize.Dialog);
 			this.vbox72.Add (this.icon);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox72 [this.icon]));
 			w2.Position = 0;
