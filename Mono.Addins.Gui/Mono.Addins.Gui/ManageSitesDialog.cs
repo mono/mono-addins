@@ -103,7 +103,7 @@ namespace Mono.Addins.Gui
 						
 						ThreadPool.QueueUserWorkItem (delegate {
 							try {
-								rr = service.Repositories.RegisterRepository (pdlg, url, true);
+								rr = service.Repositories.RegisterRepository (pdlg, url, true, url.Contains ("marketplace") ? AddinRepositoryType.VisualStudioMarketplace : AddinRepositoryType.MonoAddins);
 							} catch (System.Exception ex) {
 								error = ex;
 							} finally {

@@ -37,12 +37,10 @@ namespace Mono.Addins.Setup
 	{
 		public static VisualStudioMarketplaceApi Instance = new VisualStudioMarketplaceApi ();
 
-		const string QueryUrl = "https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery";
-
-		public SearchResult Search (MarketplaceQuery query)
+		public SearchResult Search (Uri url, MarketplaceQuery query)
 		{
 			var searchResult = WebRequestHelper.GetResponse (() => {
-				var request = (HttpWebRequest)WebRequest.Create (QueryUrl);
+				var request = (HttpWebRequest)WebRequest.Create (new Uri (url, "_apis/public/gallery/extensionquery"));
 				request.Method = "POST";
 				request.Accept = "application/json;api-version=3.0-preview.1";
 				request.ContentType = "application/json";
@@ -64,10 +62,10 @@ namespace Mono.Addins.Setup
 			}
 		}
 
-		internal Repository CreateRepository (IProgressMonitor monitor, string cacheDir)
+		internal Repository CreateRepository (IProgressMonitor monitor, Uri url, string cacheDir)
 		{
-			const int AllExtensions = 100;//TODO: Bump this to higher number when we switch Target from VSCode to VSMac
-			var extensions = Search (new MarketplaceQuery () {
+			const int AllExtensions = 300;
+			var extensions = Search (url, new MarketplaceQuery () {
 				Filters = new Filter []{ new Filter(){
 						PageSize = AllExtensions,
 						SortBy = SortBy.LastUpdatedDate,
@@ -75,7 +73,7 @@ namespace Mono.Addins.Setup
 						SortOrder = SortOrder.Descending,
 						Criteria = new Criterion []{new Criterion{
 							FilterType = FilterType.Target,
-							Value = "Microsoft.VisualStudio.Code"//TODO: Change to .Mac
+							Value = "Microsoft.VisualStudio.Mac"
 							}}
 					}},
 				Flags = Flags.IncludeLatestVersionOnly | Flags.IncludeFiles,

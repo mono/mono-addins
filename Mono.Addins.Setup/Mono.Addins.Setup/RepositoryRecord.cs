@@ -50,6 +50,8 @@ namespace Mono.Addins.Setup
 			get { return id; }
 			set { id = value; }
 		}
+
+		public AddinRepositoryType Type { get; set; }
 		
 		public bool IsReference {
 			get { return isReference; }
@@ -119,7 +121,13 @@ namespace Mono.Addins.Setup
 			newRep.CachedFilesDir = CachedFilesDir;
 		}
 	}
-	
+
+	public enum AddinRepositoryType
+	{
+		MonoAddins,
+		VisualStudioMarketplace
+	}
+
 	/// <summary>
 	/// An on-line add-in repository
 	/// </summary>
@@ -168,6 +176,14 @@ namespace Mono.Addins.Setup
 		/// <c>true</c> if enabled; otherwise, <c>false</c>.
 		/// </value>
 		bool Enabled {
+			get;
+		}
+
+		/// <summary>
+		/// Defineds type of repository.
+		/// </summary>
+		/// <value>The type.</value>
+		AddinRepositoryType Type {
 			get;
 		}
 	}
