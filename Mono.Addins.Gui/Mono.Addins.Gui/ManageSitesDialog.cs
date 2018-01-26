@@ -82,6 +82,7 @@ namespace Mono.Addins.Gui
 			try {
 				if (dlg.Run ()) {
 					string url = dlg.Url;
+					var repositoryType = dlg.AddinRepositoryType;
 					if (!url.StartsWith ("http://") && !url.StartsWith ("https://") && !url.StartsWith ("file://")) {
 						url = "http://" + url;
 					}
@@ -103,7 +104,7 @@ namespace Mono.Addins.Gui
 						
 						ThreadPool.QueueUserWorkItem (delegate {
 							try {
-								rr = service.Repositories.RegisterRepository (pdlg, url, true, url.Contains ("marketplace") ? AddinRepositoryType.VisualStudioMarketplace : AddinRepositoryType.MonoAddins);
+								rr = service.Repositories.RegisterRepository (pdlg, url, true, repositoryType);
 							} catch (System.Exception ex) {
 								error = ex;
 							} finally {

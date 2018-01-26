@@ -125,7 +125,8 @@ namespace Mono.Addins.Setup
 	public enum AddinRepositoryType
 	{
 		MonoAddins,
-		VisualStudioMarketplace
+		VisualStudioMarketplace,
+		Unknown = -1
 	}
 
 	/// <summary>

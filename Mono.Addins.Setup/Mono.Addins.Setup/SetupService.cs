@@ -104,6 +104,13 @@ namespace Mono.Addins.Setup
 		}
 		
 		string RootConfigFile {
+			get { return Path.Combine (registry.RegistryPath, "addins-setup-v2.config"); }
+		}
+
+		/// <summary>
+		/// This should only be used for migration purposes
+		/// </summary>
+		string RootConfigFileOld {
 			get { return Path.Combine (registry.RegistryPath, "addins-setup.config"); }
 		}
 		
@@ -840,7 +847,10 @@ namespace Mono.Addins.Setup
 		internal AddinSystemConfiguration Configuration {
 			get {
 				if (config == null) {
-					config = (AddinSystemConfiguration) AddinStore.ReadObject (RootConfigFile, typeof(AddinSystemConfiguration));
+					if (File.Exists (RootConfigFile))
+						config = (AddinSystemConfiguration)AddinStore.ReadObject (RootConfigFile, typeof (AddinSystemConfiguration));
+					else
+						config = (AddinSystemConfiguration)AddinStore.ReadObject (RootConfigFileOld, typeof (AddinSystemConfiguration));
 					if (config == null)
 						config = new AddinSystemConfiguration ();
 				}
@@ -859,6 +869,8 @@ namespace Mono.Addins.Setup
 		{
 			if (File.Exists (RootConfigFile))
 				File.Delete (RootConfigFile);
+			if (File.Exists (RootConfigFileOld))
+				File.Delete (RootConfigFileOld);
 			ResetAddinInfo ();
 		}
 				

@@ -251,7 +251,10 @@ namespace Mono.Addins.Setup
 					} else if (Reader.LocalName == "Type" && Reader.NamespaceURI == "" && !b16) {
 						b16 = true;
 						string s22 = Reader.ReadElementString ();
-						ob.Type = (AddinRepositoryType)Enum.Parse (typeof (AddinRepositoryType), s22);
+						if (Enum.TryParse<AddinRepositoryType> (s22, out var typeAddIn))
+							ob.Type = typeAddIn;
+						else
+							ob.Type = AddinRepositoryType.Unknown;
 					} else if (Reader.LocalName == "LastModified" && Reader.NamespaceURI == "" && !b14) {
 						b14 = true;
 						string s21 = Reader.ReadElementString ();

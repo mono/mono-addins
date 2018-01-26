@@ -29,14 +29,34 @@
 
 using System;
 using Gtk;
+using Mono.Addins.Setup;
+using Mono.Unix;
 
 namespace Mono.Addins.Gui
 {
 	partial class NewSiteDialog : Dialog
 	{
+		ComboBox typeComboBox;
 		public NewSiteDialog (Gtk.Window parent)
 		{
 			Build ();
+			var hbox = new HBox ();
+			hbox.Spacing = 6;
+			hbox.PackStart (new Label(), false, false, 10);
+			var label = new Label ();
+			label.Text = Catalog.GetString ("Type:");
+			hbox.PackStart (label, false, false, 1);
+			typeComboBox = new ComboBox (new string [] {
+				Catalog.GetString ("Add-in Repository"),//AddinRepositoryType.MonoAddins
+				Catalog.GetString ("Visual Studio Marketplace")//AddinRepositoryType.VisualStudioMarketplace
+			});
+			typeComboBox.Active = 0;
+			hbox.PackStart (typeComboBox, true, true, 1);
+			hbox.ShowAll ();
+			vbox89.Add (hbox);
+			var w6 = (Box.BoxChild)vbox89 [hbox];
+			w6.Position = 3;
+
 			TransientFor = parent;
 			Services.PlaceDialog (this, parent);
 			pathEntry.Sensitive = false;
@@ -57,6 +77,12 @@ namespace Mono.Addins.Gui
 					return "file://" + pathEntry.Text;
 				else
 					return string.Empty;
+			}
+		}
+
+		public AddinRepositoryType AddinRepositoryType {
+			get {
+				return (AddinRepositoryType)typeComboBox.Active;
 			}
 		}
 		
@@ -80,9 +106,11 @@ namespace Mono.Addins.Gui
 		{
 			if (btnOnlineRep.Active) {
 				urlText.Sensitive = true;
+				typeComboBox.Sensitive = true;
 				pathEntry.Sensitive = false;
 			} else {
 				urlText.Sensitive = false;
+				typeComboBox.Sensitive = false;
 				pathEntry.Sensitive = true;
 			}
 			CheckValues ();
