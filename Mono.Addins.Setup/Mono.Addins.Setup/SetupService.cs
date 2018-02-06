@@ -558,6 +558,10 @@ namespace Mono.Addins.Setup
 				typesEl.SetAttribute ("xmlns", "http://schemas.openxmlformats.org/package/2006/content-types");
 				foreach (var file in files) {
 					var extension = Path.GetExtension (file);
+					if (string.IsNullOrEmpty (extension))
+						continue;
+					if (extension.StartsWith (".", StringComparison.Ordinal))
+						extension = extension.Substring (1);
 					if (alreadyAddedExtensions.Contains (extension))
 						continue;
 					alreadyAddedExtensions.Add (extension);
@@ -601,6 +605,7 @@ namespace Mono.Addins.Setup
 			case "vsix": return "application/zip";
 			case "zip": return "application/zip";
 			case "dll": return "application/octet-stream";
+			case "info": return "text/xml";//Mono.Addins info file
 			default: return "application/octet-stream";
 			}
 		}
