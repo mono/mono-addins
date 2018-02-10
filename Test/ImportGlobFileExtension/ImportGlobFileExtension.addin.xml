@@ -1,0 +1,20 @@
+<Addin id          = "ImportGlobFileExtension"
+       namespace   = "SimpleApp"
+       name        = "ImportGlobFileExtension"
+       author      = "Jeremie Laval"
+       copyright   = "GPL"
+       description = "ImportGlobFileExtension"
+	   category    = "SimpleApp/Extensions"
+       version     = "0.1.0">
+
+	<Runtime>
+	  <Import file="file1.txt" />
+	  <Import file="dir1/*.bin" />
+	  <Import file="dir2/**" />
+	</Runtime>
+	
+	<Dependencies>
+		<Addin id="Core" version="0.1.0" />
+	</Dependencies>
+
+</Addin>

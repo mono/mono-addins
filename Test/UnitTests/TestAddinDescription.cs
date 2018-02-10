@@ -186,6 +186,25 @@ namespace UnitTests
 			XmlDocument doc2 = desc.SaveToXml ();
 			Assert.AreEqual (Util.Infoset (doc1), Util.Infoset (doc2));
 		}
+
+		[Test]
+		public void FileGlobbingTest ()
+		{
+			string pathToTestFolder = Path.Combine ("..", "..", "..", "ImportGlobFileExtension");
+			AddinDescription desc = AddinDescription.Read (Path.Combine (pathToTestFolder, "ImportGlobFileExtension.addin.xml"));
+
+			var allFiles = desc.AllFiles;
+			Assert.IsNotNull (allFiles);
+			CollectionAssert.IsNotEmpty (allFiles);
+			Assert.AreEqual (5, allFiles.Count);
+			CollectionAssert.AreEquivalent (new string [] {
+				"file1.txt",
+				Path.Combine ("dir1", "bar.bin"),
+				Path.Combine ("dir1", "foo.bin"),
+				Path.Combine ("dir2", "subdir", "subfile.txt"),
+				Path.Combine ("dir2", "subdir", "subsubdir", "subsubfile.txt")
+			}, allFiles);
+		}
 	}
 }
 
