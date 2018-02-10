@@ -368,15 +368,6 @@ namespace Mono.Addins.Database
 				fileName = file;
 				return result;
 			}
-		
-			// The file is not the one we expected. There has been a name collision
-			
-			foreach (string f in GetDirectoryFiles (directory, name + "*" + extension)) {
-				if (f != file && OpenFileForPath (f, objectId, typeMap, checkOnly, out result)) {
-					fileName = f;
-					return result;
-				}
-			}
 			
 			// File not found
 			fileName = null;
