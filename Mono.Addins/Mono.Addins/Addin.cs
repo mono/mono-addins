@@ -336,7 +336,7 @@ namespace Mono.Addins
 		public static string GetFullId (string ns, string id, string version)
 		{
 			string res;
-			if (id.StartsWith ("::"))
+			if (id.StartsWith ("::", StringComparison.Ordinal))
 				res = id.Substring (2);
 			else if (ns != null && ns.Length > 0)
 				res = ns + "." + id;
