@@ -963,6 +963,7 @@ namespace Mono.Addins.Database
 			ResetBasicCachedData ();
 			hostIndex = null;
 			cachedAddinSetupInfos.Clear ();
+			dependsOnCache.Clear ();
 			if (addinEngine != null)
 				addinEngine.ResetCachedData ();
 		}
