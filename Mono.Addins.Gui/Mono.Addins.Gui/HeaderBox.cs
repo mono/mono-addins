@@ -145,7 +145,7 @@ namespace Mono.Addins.Gui
 						if (gcol.L < 0)
 							gcol.L = 0;
 						pat.AddColorStop (1, gcol);
-						cr.Pattern = pat;
+						cr.SetSource (pat);
 						cr.FillPreserve ();
 					}
 				}

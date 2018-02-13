@@ -536,6 +536,8 @@ namespace Mono.Addins.Setup
 			return ob;
 		}
 
+		#pragma warning disable CS0612 // Type or member is obsolete
+
 		public Mono.Addins.Description.NativeDependency ReadObject_NativeReference (bool isNullable, bool checkType)
 		{
 			Mono.Addins.Description.NativeDependency ob = null;
@@ -589,6 +591,7 @@ namespace Mono.Addins.Setup
 
 			return ob;
 		}
+		#pragma warning restore CS0612 // Type or member is obsolete
 
 		public Mono.Addins.Description.AddinDependency ReadObject_AddinReference (bool isNullable, bool checkType)
 		{
@@ -879,9 +882,11 @@ namespace Mono.Addins.Setup
 					else if (ob.@Dependencies[n53].GetType() == typeof(Mono.Addins.Description.AssemblyDependency)) {
 						WriteObject_AssemblyDependency (((Mono.Addins.Description.AssemblyDependency) ob.@Dependencies[n53]), "AssemblyDependency", "", false, false, true);
 					}
+					#pragma warning disable CS0612 // Type or member is obsolete
 					else if (ob.@Dependencies[n53].GetType() == typeof(Mono.Addins.Description.NativeDependency)) {
 						WriteObject_NativeReference (((Mono.Addins.Description.NativeDependency) ob.@Dependencies[n53]), "NativeDependency", "", false, false, true);
 					}
+					#pragma warning restore CS0612 // Type or member is obsolete
 					else if (ob.@Dependencies[n53].GetType() == typeof(Mono.Addins.Description.AddinDependency)) {
 						WriteObject_AddinReference (((Mono.Addins.Description.AddinDependency) ob.@Dependencies[n53]), "AddinDependency", "", false, false, true);
 					}
@@ -896,9 +901,11 @@ namespace Mono.Addins.Setup
 					else if (ob.@OptionalDependencies[n54].GetType() == typeof(Mono.Addins.Description.AssemblyDependency)) {
 						WriteObject_AssemblyDependency (((Mono.Addins.Description.AssemblyDependency) ob.@OptionalDependencies[n54]), "AssemblyDependency", "", false, false, true);
 					}
+					#pragma warning disable CS0612 // Type or member is obsolete
 					else if (ob.@OptionalDependencies[n54].GetType() == typeof(Mono.Addins.Description.NativeDependency)) {
 						WriteObject_NativeReference (((Mono.Addins.Description.NativeDependency) ob.@OptionalDependencies[n54]), "NativeDependency", "", false, false, true);
 					}
+					#pragma warning restore CS0612 // Type or member is obsolete
 					else if (ob.@OptionalDependencies[n54].GetType() == typeof(Mono.Addins.Description.AddinDependency)) {
 						WriteObject_AddinReference (((Mono.Addins.Description.AddinDependency) ob.@OptionalDependencies[n54]), "AddinDependency", "", false, false, true);
 					}
@@ -943,6 +950,8 @@ namespace Mono.Addins.Setup
 			if (writeWrappingElem) WriteEndElement (ob);
 		}
 
+		#pragma warning disable CS0612 // Type or member is obsolete
+
 		void WriteObject_NativeReference (Mono.Addins.Description.NativeDependency ob, string element, string namesp, bool isNullable, bool needType, bool writeWrappingElem)
 		{
 			if (((object)ob) == null)
@@ -967,6 +976,8 @@ namespace Mono.Addins.Setup
 
 			if (writeWrappingElem) WriteEndElement (ob);
 		}
+
+		#pragma warning restore CS0612 // Type or member is obsolete
 
 		void WriteObject_AddinReference (Mono.Addins.Description.AddinDependency ob, string element, string namesp, bool isNullable, bool needType, bool writeWrappingElem)
 		{
