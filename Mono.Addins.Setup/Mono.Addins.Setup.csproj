@@ -12,11 +12,7 @@
     <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <PackageId>Mono.Addins.Setup</PackageId>
-    <Authors>Microsoft</Authors>
-    <PackageLicenseUrl>https://github.com/mono/mono-addins/blob/master/COPYING</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/mono/mono-addins</PackageProjectUrl>
     <Description>Mono.Addins is a framework for creating extensible applications, and for creating add-ins which extend applications. Mono.Addins.Setup provides an API for managing add-ins, creating add-in packages and publishing add-ins in on-line repositories.</Description>
-    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
