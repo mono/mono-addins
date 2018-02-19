@@ -337,7 +337,7 @@ namespace Mono.Addins.Database
 		public object ReadSharedObject (string fullFileName, BinaryXmlTypeMap typeMap)
 		{
 			object result;
-			OpenFileForPath (fullFileName, null, typeMap, false, out result);
+			OpenFileResult res = OpenFileForPath (fullFileName, null, typeMap, false, out result);
 			return result;
 		}
 		
@@ -364,22 +364,50 @@ namespace Mono.Addins.Database
 			string file = Path.Combine (directory, name + extension);
 
 			object result;
-			if (OpenFileForPath (file, objectId, typeMap, checkOnly, out result)) {
+
+			OpenFileResult res = OpenFileForPath (file, objectId, typeMap, checkOnly, out result);
+			if (res == OpenFileResult.Found) {
 				fileName = file;
 				return result;
+			}
+
+			if (res == OpenFileResult.Collision) {
+				int count = 1;
+				file = Path.Combine (directory, name + "_" + count + extension);
+
+				while (true) {
+					res = OpenFileForPath (file, objectId, typeMap, checkOnly, out result);
+					if (res == OpenFileResult.NotFound)
+						break;
+
+					if (res == OpenFileResult.Found) {
+						fileName = file;
+						return result;
+					}
+
+					if (res == OpenFileResult.Collision)
+						count++;
+				}
 			}
 			
 			// File not found
 			fileName = null;
 			return null;
 		}
-		
-		bool OpenFileForPath (string f, string objectId, BinaryXmlTypeMap typeMap, bool checkOnly, out object result)
+
+		enum OpenFileResult
+		{
+			NotFound,
+			Found,
+			Collision,
+		}
+
+		OpenFileResult OpenFileForPath (string f, string objectId, BinaryXmlTypeMap typeMap, bool checkOnly, out object result)
 		{
 			result = null;
 			
 			if (!Exists (f)) {
-				return false;
+				return OpenFileResult.NotFound;
 			}
 			using (Stream s = OpenRead (f)) {
 				BinaryXmlReader reader = new BinaryXmlReader (s, typeMap);
@@ -388,10 +416,10 @@ namespace Mono.Addins.Database
 				if (objectId == null || objectId == id) {
 					if (!checkOnly)
 						result = reader.ReadValue ("data");
-					return true;
+					return OpenFileResult.Found;
 				}
 			}
-			return false;
+			return OpenFileResult.Collision;
 		}
 		
 		public void WriteSharedObject (string objectId, string targetFile, BinaryXmlTypeMap typeMap, IBinaryXmlElement obj)
