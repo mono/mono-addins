@@ -337,7 +337,7 @@ namespace Mono.Addins.Database
 		public object ReadSharedObject (string fullFileName, BinaryXmlTypeMap typeMap)
 		{
 			object result;
-			OpenFileResult res = OpenFileForPath (fullFileName, null, typeMap, false, out result);
+			OpenFileForPath (fullFileName, null, typeMap, false, out result);
 			return result;
 		}
 		
