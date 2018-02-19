@@ -371,6 +371,7 @@ namespace Mono.Addins.Database
 				return result;
 			}
 
+			// The file is not the one we expected. There has been a name collision
 			if (res == OpenFileResult.Collision) {
 				int count = 1;
 				file = Path.Combine (directory, name + "_" + count + extension);
