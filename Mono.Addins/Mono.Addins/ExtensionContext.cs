@@ -984,16 +984,16 @@ namespace Mono.Addins
 				runTimeDisabledAddins.Remove (addinId);
 		}
 		
-		internal ICollection GetAddinsForPath (string path, List<string> col)
+		internal List<string> GetAddinsForPath (List<string> col)
 		{
-			ArrayList newlist = null;
+			List<string> newlist = null;
 			
 			// Always consider add-ins which have been enabled at runtime since
 			// they may contain extension for this path.
 			// Ignore addins disabled at run-time.
 			
 			if (runTimeEnabledAddins != null && runTimeEnabledAddins.Count > 0) {
-				newlist = new ArrayList ();
+				newlist = new List<string> ();
 				newlist.AddRange (col);
 				foreach (string s in runTimeEnabledAddins)
 					if (!newlist.Contains (s))
@@ -1002,14 +1002,14 @@ namespace Mono.Addins
 			
 			if (runTimeDisabledAddins != null && runTimeDisabledAddins.Count > 0) {
 				if (newlist == null) {
-					newlist = new ArrayList ();
+					newlist = new List<string> ();
 					newlist.AddRange (col);
 				}
 				foreach (string s in runTimeDisabledAddins)
 					newlist.Remove (s);
 			}
 			
-			return newlist != null ? (ICollection)newlist : (ICollection)col;
+			return newlist != null ? newlist : col;
 		}
 		
 		// Load the extension nodes at the specified path. If the path
@@ -1025,21 +1025,22 @@ namespace Mono.Addins
 			ExtensionPoint ep = node.ExtensionPoint;
 
 			if (ep != null) {
-			
+
 				// Collect extensions to be loaded from add-ins. Before loading the extensions,
 				// they must be sorted, that's why loading is split in two steps (collecting + loading).
-				
-				ArrayList loadData = new ArrayList ();
-				
-				foreach (string addin in GetAddinsForPath (ep.Path, ep.Addins)) {
+
+				var addins = GetAddinsForPath (ep.Addins);
+				var loadData = new List<ExtensionLoadData> (addins.Count);
+
+				foreach (string addin in addins) {
 					ExtensionLoadData ed = GetAddinExtensions (addin, ep);
 					if (ed != null) {
 						// Insert the addin data taking into account dependencies.
 						// An add-in must be processed after all its dependencies.
 						bool added = false;
 						for (int n=0; n<loadData.Count; n++) {
-							ExtensionLoadData other = (ExtensionLoadData) loadData [n];
-							if (AddinEngine.Registry.AddinDependsOn (other.AddinId, ed.AddinId)) {
+							ExtensionLoadData other = loadData [n];
+							if (AddinEngine.Registry.AddinDependsOn (other.AddinName, ed.AddinName)) {
 								loadData.Insert (n, ed);
 								added = true;
 								break;
@@ -1087,9 +1088,8 @@ namespace Mono.Addins
 			}
 			if (!pinfo.Enabled || pinfo.Version != Addin.GetIdVersion (id))
 				return null;
-				
+
 			// Loads extensions defined in each module
-			
 			ExtensionLoadData data = null;
 			AddinDescription conf = pinfo.Description;
 			GetAddinExtensions (conf.MainModule, id, ep, ref data);
@@ -1107,12 +1107,14 @@ namespace Mono.Addins
 		void GetAddinExtensions (ModuleDescription module, string addinId, ExtensionPoint ep, ref ExtensionLoadData data)
 		{
 			string basePath = ep.Path + "/";
-			
+
+			string addinName = Addin.GetIdName (addinId);
 			foreach (Extension extension in module.Extensions) {
-				if (extension.Path == ep.Path || extension.Path.StartsWith (basePath)) {
+				if (extension.Path == ep.Path || extension.Path.StartsWith (basePath, StringComparison.Ordinal)) {
 					if (data == null) {
 						data = new ExtensionLoadData ();
 						data.AddinId = addinId;
+						data.AddinName = addinName;
 						data.Extensions = new ArrayList ();
 					}
 					data.Extensions.Add (extension);
@@ -1352,6 +1354,7 @@ namespace Mono.Addins
 	internal class ExtensionLoadData
 	{
 		public string AddinId;
+		public string AddinName;
 		public ArrayList Extensions;
 	}
 }

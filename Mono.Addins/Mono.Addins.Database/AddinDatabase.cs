@@ -963,42 +963,45 @@ namespace Mono.Addins.Database
 			ResetBasicCachedData ();
 			hostIndex = null;
 			cachedAddinSetupInfos.Clear ();
+			dependsOnCache.Clear ();
 			if (addinEngine != null)
 				addinEngine.ResetCachedData ();
 		}
-		
-		
+
+		Dictionary<string, HashSet<string>> dependsOnCache = new Dictionary<string, HashSet<string>> ();
 		public bool AddinDependsOn (string domain, string id1, string id2)
 		{
-			Hashtable visited = new Hashtable ();
-			return AddinDependsOn (visited, domain, id1, id2);
+			var depTree = GetOrCreateAddInDependencyTree (domain, id1);
+			return depTree.Contains (id2);
 		}
-		
-		bool AddinDependsOn (Hashtable visited, string domain, string id1, string id2)
+
+		HashSet<string> GetOrCreateAddInDependencyTree (string domain, string addin)
 		{
-			if (visited.Contains (id1))
-				return false;
-			
-			visited.Add (id1, id1);
-			
-			Addin addin1 = GetInstalledAddin (domain, id1, false);
-			
+			HashSet<string> cache;
+			if (dependsOnCache.TryGetValue (addin, out cache)) {
+				return cache;
+			}
+
+			dependsOnCache [addin] = cache = new HashSet<string> ();
+
+			Addin addin1 = GetInstalledAddin (domain, addin, false);
+
 			// We can assume that if the add-in is not returned here, it may be a root addin.
 			if (addin1 == null)
-				return false;
-
-			id2 = Addin.GetIdName (id2);
+				return cache;
+			
 			foreach (Dependency dep in addin1.AddinInfo.Dependencies) {
 				AddinDependency adep = dep as AddinDependency;
 				if (adep == null)
 					continue;
+				
 				string depid = Addin.GetFullId (addin1.AddinInfo.Namespace, adep.AddinId, null);
-				if (depid == id2)
-					return true;
-				else if (AddinDependsOn (visited, domain, depid, id2))
-					return true;
+				cache.Add (depid);
+
+				var recursiveDependencies = GetOrCreateAddInDependencyTree (domain, depid);
+				cache.UnionWith (recursiveDependencies);
 			}
-			return false;
+			return cache;
 		}
 		
 		public void Repair (IProgressStatus monitor, string domain)
