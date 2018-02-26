@@ -157,7 +157,12 @@
     <Compile Include="Mono.Addins\AddinCategoryAttribute.cs" />
     <Compile Include="Mono.Addins\AddinFlagsAttribute.cs" />
     <Compile Include="Mono.Addins\AddinLocalizerAttribute.cs" />
-    <Compile Include="Mono.Addins.Database\ScanContext.cs" />
+    <Compile Include="Mono.Addins.Database\ScanOptions.cs" />
+    <Compile Include="Mono.Addins.Database\AddinScanData.cs" />
+    <Compile Include="Mono.Addins.Database\AddinFolderVisitor.cs" />
+    <Compile Include="Mono.Addins.Database\AddinScanDataFileGenerator.cs" />
+    <Compile Include="Mono.Addins.Database\AddinRegistryUpdater.cs" />
+    <Compile Include="Mono.Addins.Database\AssemblyLocatorVisitor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

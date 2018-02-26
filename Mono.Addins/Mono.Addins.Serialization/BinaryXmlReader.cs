@@ -364,7 +364,7 @@ namespace Mono.Addins.Serialization
 		}
 		
 		public bool EndOfElement {
-			get { return currentType == TagEndElement; }
+			get { return currentType == TagEndElement || currentType == TagEndOfFile; }
 		}
 		
 		public void Skip ()

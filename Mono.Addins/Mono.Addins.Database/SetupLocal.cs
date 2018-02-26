@@ -30,11 +30,18 @@ namespace Mono.Addins.Database
 {
 	class SetupLocal: ISetupHandler
 	{
-		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, ScanContext context)
+		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, ScanOptions context)
 		{
 			AddinRegistry reg = new AddinRegistry (registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath);
 			reg.CopyExtensionsFrom (registry);
 			reg.ScanFolders (monitor, scanFolder, context);
+		}
+		
+		public void GenerateScanDataFiles (IProgressStatus monitor, AddinRegistry registry, string scanFolder, bool recursive)
+		{
+			AddinRegistry reg = new AddinRegistry (registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath);
+			reg.CopyExtensionsFrom (registry);
+			reg.GenerateScanDataFilesInProcess (monitor, scanFolder, recursive);
 		}
 		
 		public void GetAddinDescription (IProgressStatus monitor, AddinRegistry registry, string file, string outFile)

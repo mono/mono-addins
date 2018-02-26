@@ -634,6 +634,7 @@ namespace Mono.Addins
 		/// </remarks>
 		public void Update (IProgressStatus monitor)
 		{
+			var tt = System.Diagnostics.Stopwatch.StartNew ();
 			database.Update (monitor, currentDomain);
 		}
 
@@ -645,7 +646,9 @@ namespace Mono.Addins
 		/// </param>
 		public void Rebuild (IProgressStatus monitor)
 		{
-			database.Repair (monitor, currentDomain);
+			var context = new ScanOptions ();
+			context.CleanGeneratedAddinScanDataFiles = true;
+			database.Repair (monitor, currentDomain, context);
 
 			// A full rebuild may cause the domain to change
 			if (!string.IsNullOrEmpty (startupDirectory))
@@ -653,23 +656,22 @@ namespace Mono.Addins
 		}
 
 		/// <summary>
-		/// Generates add-in data cache files for files in the provided directories
+		/// Generates add-in data cache files for add-ins in the provided folder
+		/// and any other directory included through a .addins file.
+		/// If folder is not provided, it scans the startup directory.
 		/// </summary>
 		/// <param name="monitor">
 		/// Progress monitor to keep track of the rebuild operation.
 		/// </param>
-		/// <param name="folders">
-		/// Folders that contain the add-ins for which to generate the cache files.
+		/// <param name="folder">
+		/// Folder that contains the add-ins to be scanned.
 		/// </param>
-		public void GenerateAddinDataCacheFiles (IProgressStatus monitor, IEnumerable<string> folders)
+		/// <param name="recursive">
+		/// If true, sub-directories are scanned recursively
+		/// </param>
+		public void GenerateAddinScanDataFiles (IProgressStatus monitor, string folder = null, bool recursive = false)
 		{
-			var context = new ScanContext ();
-			context.AddinCacheDataFileGenerationRootDirs.AddRange (folders);
-			database.Repair (monitor, currentDomain, context);
-
-			// A full rebuild may cause the domain to change
-			if (!string.IsNullOrEmpty (startupDirectory))
-				currentDomain = database.GetFolderDomain (null, startupDirectory);
+			database.GenerateScanDataFiles (monitor, folder ?? StartupDirectory, recursive);
 		}
 
 		/// <summary>
@@ -711,9 +713,14 @@ namespace Mono.Addins
 			return database.AddinDependsOn (currentDomain, id1, id2);
 		}
 		
-		internal void ScanFolders (IProgressStatus monitor, string folderToScan, ScanContext context)
+		internal void ScanFolders (IProgressStatus monitor, string folderToScan, ScanOptions context)
 		{
 			database.ScanFolders (monitor, currentDomain, folderToScan, context);
+		}
+		
+		internal void GenerateScanDataFilesInProcess (IProgressStatus monitor, string folderToScan, bool recursive)
+		{
+			database.GenerateScanDataFilesInProcess (monitor, folderToScan, recursive);
 		}
 		
 		internal void ParseAddin (IProgressStatus progressStatus, string file, string outFile)

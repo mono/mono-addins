@@ -36,22 +36,16 @@ using System.Linq;
 
 namespace Mono.Addins.Database
 {
-	internal class AddinScanResult: MarshalByRefObject, IAssemblyLocator
+	internal class AddinScanResult: MarshalByRefObject
 	{
 		internal ArrayList AddinsToScan = new ArrayList ();
 		internal List<string> AddinsToUpdateRelations = new List<string> ();
 		internal List<string> AddinsToUpdate = new List<string> ();
 		internal ArrayList FilesToScan = new ArrayList ();
 		internal ArrayList ModifiedFolderInfos = new ArrayList ();
-		internal ArrayList FilesWithScanFailure = new ArrayList ();
 		internal AddinHostIndex HostIndex;
 		internal List<string> RemovedAddins = new List<string> ();
-		Hashtable visitedFolders = new Hashtable ();
-		
-		Hashtable assemblyLocations = new Hashtable ();
-		Hashtable assemblyLocationsByFullName = new Hashtable (); 
-		Hashtable filesToIgnore;
-		
+
 		bool regenerateRelationData;
 		bool changesFound;
 		
@@ -59,8 +53,12 @@ namespace Mono.Addins.Database
 		public bool CheckOnly;
 		public bool LocateAssembliesOnly;
 		public string Domain;
-		
-		public List<string> AddinCacheDataFileGenerationRootDirs { get; set; }
+
+		public ScanContext ScanContext { get; } = new ScanContext ();
+
+		public AssemblyIndex AssemblyIndex { get; } = new AssemblyIndex ();
+
+		public bool CleanGeneratedAddinScanDataFiles { get; set; }
 
 		public bool ChangesFound {
 			get { return changesFound; }
@@ -76,51 +74,6 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		public bool VisitFolder (string folder)
-		{
-			if (visitedFolders.Contains (folder) || IgnorePath (folder))
-				return false;
-			else {
-				visitedFolders.Add (folder, folder);
-				return true;
-			}
-		}
-		
-		public bool IgnorePath (string file)
-		{
-			if (filesToIgnore == null)
-				return false;
-			string root = Path.GetPathRoot (file);
-			while (root != file) {
-				if (filesToIgnore.Contains (file))
-					return true;
-				file = Path.GetDirectoryName (file);
-			}
-			return false;
-		}
-
-		public void AddAddinCacheDataFileGenerationRootDir (string path)
-		{
-			if (AddinCacheDataFileGenerationRootDirs == null)
-				AddinCacheDataFileGenerationRootDirs = new List<string> ();
-			if (path [path.Length - 1] != Path.DirectorySeparatorChar)
-				path += Path.DirectorySeparatorChar;
-			AddinCacheDataFileGenerationRootDirs.Add (path);
-		}
-		
-		public void AddPathToIgnore (string path)
-		{
-			if (filesToIgnore == null)
-				filesToIgnore = new Hashtable ();
-			filesToIgnore [path] = path;
-		}
-		
-		public void AddPathsToIgnore (IEnumerable paths)
-		{
-			foreach (string p in paths)
-				AddPathToIgnore (p);
-		}
-		
 		public void AddAddinToScan (string addinId)
 		{
 			if (!AddinsToScan.Contains (addinId))
@@ -133,17 +86,12 @@ namespace Mono.Addins.Database
 				RemovedAddins.Add (addinId);
 		}
 		
-		public void AddFileToWithFailure (string file)
-		{
-			if (!FilesWithScanFailure.Contains (file))
-				FilesWithScanFailure.Add (file);
-		}
-		
-		public void AddFileToScan (string file, AddinScanFolderInfo folderInfo)
+		public void AddFileToScan (string file, AddinScanFolderInfo folderInfo, AddinScanData scanData)
 		{
 			FileToScan di = new FileToScan ();
 			di.File = file;
 			di.AddinScanFolderInfo = folderInfo;
+			di.ScanDataMD5 = scanData?.MD5;
 			FilesToScan.Add (di);
 			RegisterModifiedFolderInfo (folderInfo);
 		}
@@ -165,65 +113,43 @@ namespace Mono.Addins.Database
 			if (!AddinsToUpdate.Contains (addinId))
 				AddinsToUpdate.Add (addinId);
 		}
-		
-		public void AddAssemblyLocation (string file)
-		{
-			string name = Path.GetFileNameWithoutExtension (file);
-			ArrayList list = assemblyLocations [name] as ArrayList;
-			if (list == null) {
-				list = new ArrayList ();
-				assemblyLocations [name] = list;
-			}
-			list.Add (file);
-		}
-		
-		public string GetAssemblyLocation (string fullName)
-		{
-			string loc = assemblyLocationsByFullName [fullName] as String;
-			if (loc != null)
-				return loc;
-
-			int i = fullName.IndexOf (',');
-			string name = fullName.Substring (0,i);
-			if (name == "Mono.Addins")
-				return GetType ().Assembly.Location;
-			ArrayList list = assemblyLocations [name] as ArrayList;
-			if (list == null)
-				return null;
-			
-			string lastAsm = null;
-			foreach (string file in list.ToArray ()) {
-				try {
-					list.Remove (file);
-					AssemblyName aname = AssemblyName.GetAssemblyName (file);
-					lastAsm = file;
-					assemblyLocationsByFullName [aname.FullName] = file;
-					if (aname.FullName == fullName)
-						return file;
-				} catch {
-					// Could not get the assembly name. The file either doesn't exist or it is not a valid assembly.
-					// In this case, just ignore it.
-				}
-			}
-			
-			if (lastAsm != null) {
-				// If an exact version is not found, just take any of them
-				return lastAsm;
-			}
-			return null;
-		}
-
-		public bool ShouldGenerateAddinCacheDataFile (string file)
-		{
-			if (AddinCacheDataFileGenerationRootDirs == null || AddinCacheDataFileGenerationRootDirs.Count == 0)
-				return false;
-			return AddinCacheDataFileGenerationRootDirs.Any (d => file.StartsWith (d, StringComparison.Ordinal));
-		}
 	}
 		
 	class FileToScan
 	{
 		public string File;
 		public AddinScanFolderInfo AddinScanFolderInfo;
+		public string ScanDataMD5;
+	}
+
+	class ScanContext
+	{
+		HashSet<string> filesToIgnore;
+
+		public void AddPathToIgnore (string path)
+		{
+			if (filesToIgnore == null)
+				filesToIgnore = new HashSet<string> ();
+			filesToIgnore.Add (path);
+		}
+
+		public bool IgnorePath (string file)
+		{
+			if (filesToIgnore == null)
+				return false;
+			string root = Path.GetPathRoot (file);
+			while (root != file) {
+				if (filesToIgnore.Contains (file))
+					return true;
+				file = Path.GetDirectoryName (file);
+			}
+			return false;
+		}
+
+		public void AddPathsToIgnore (IEnumerable paths)
+		{
+			foreach (string p in paths)
+				AddPathToIgnore (p);
+		}
 	}
 }

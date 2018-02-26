@@ -1,4 +1,4 @@
-﻿//
+//
 // ScanContext.cs
 //
 // Author:
@@ -29,9 +29,27 @@ using System.Collections.Generic;
 namespace Mono.Addins.Database
 {
 	[Serializable]
-	class ScanContext
+	class ScanOptions
 	{
 		public List<string> FilesToIgnore { get; set; } = new List<string> ();
-		public List<string> AddinCacheDataFileGenerationRootDirs { get; set; } = new List<string> ();
+		public bool CleanGeneratedAddinScanDataFiles { get; set; }
+
+		public IEnumerable<string> Write ()
+		{
+			yield return FilesToIgnore.Count.ToString ();
+			foreach (var file in FilesToIgnore)
+				yield return file;
+			
+			yield return CleanGeneratedAddinScanDataFiles.ToString ();
+		}
+
+		public void Read (TextReader reader)
+		{
+			int filesToIgnoreCount = int.Parse (reader.ReadLine ());
+			for (int n = 0; n < filesToIgnoreCount; n++)
+				FilesToIgnore.Add (reader.ReadLine ());
+			
+			CleanGeneratedAddinScanDataFiles = bool.Parse (Console.In.ReadLine ());
+		}
 	}
 }
