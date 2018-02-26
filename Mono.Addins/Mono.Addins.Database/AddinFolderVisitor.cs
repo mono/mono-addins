@@ -60,6 +60,9 @@ namespace Mono.Addins.Database
 
 		protected virtual void OnVisitFolder (IProgressStatus monitor, string path, string domain, bool recursive)
 		{
+			if (!FileSystem.DirectoryExists (path))
+				return;
+			
 			var files = FileSystem.GetFiles (path);
 
 			// First of all scan .addins files, since they can contain exclude paths.
