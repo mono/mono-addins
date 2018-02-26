@@ -34,6 +34,7 @@ using System.Reflection;
 using Mono.Addins.Description;
 using Mono.Addins.Serialization;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Mono.Addins.Database
 {

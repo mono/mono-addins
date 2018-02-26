@@ -43,11 +43,7 @@ namespace Mono.Addins.Database
 	{
 		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, ScanOptions context)
 		{
-			List<string> data = new List<string> ();
-			data.Add (context.FilesToIgnore.Count.ToString ());
-			data.AddRange (context.FilesToIgnore);
-			data.Add (context.AddinCacheDataFileGenerationRootDirs.Count.ToString ());
-			data.AddRange (context.AddinCacheDataFileGenerationRootDirs);
+			var data = new List<string> (context.Write ());
 
 			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, "scan", scanFolder, data);
 		}
