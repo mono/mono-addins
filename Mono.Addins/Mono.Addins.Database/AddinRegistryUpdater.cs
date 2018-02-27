@@ -203,10 +203,5 @@ namespace Mono.Addins.Database
 			if (!scanResult.CheckOnly && !added)
 				scanResult.AddFileToScan (file, folderInfo, scanData);
 		}
-
-		public void ScanAddins ()
-		{
-			
-		}
 	}
 }

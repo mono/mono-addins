@@ -634,7 +634,6 @@ namespace Mono.Addins
 		/// </remarks>
 		public void Update (IProgressStatus monitor)
 		{
-			var tt = System.Diagnostics.Stopwatch.StartNew ();
 			database.Update (monitor, currentDomain);
 		}
 
