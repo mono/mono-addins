@@ -248,13 +248,11 @@ namespace Mono.Addins.Setup
 						b12 = true;
 						string s20 = Reader.ReadElementString ();
 						ob.@Url = s20;
-					} else if (Reader.LocalName == "Type" && Reader.NamespaceURI == "" && !b16) {
+					} else if (Reader.LocalName == "ProviderId" && Reader.NamespaceURI == "" && !b16) {
 						b16 = true;
-						string s22 = Reader.ReadElementString ();
-						if (Enum.TryParse<AddinRepositoryType> (s22, out var typeAddIn))
-							ob.Type = typeAddIn;
-						else
-							ob.Type = AddinRepositoryType.Unknown;
+						ob.ProviderId = Reader.ReadElementString ();
+						if (string.IsNullOrEmpty (ob.ProviderId))
+							ob.ProviderId = "MonoAddins";
 					} else if (Reader.LocalName == "LastModified" && Reader.NamespaceURI == "" && !b14) {
 						b14 = true;
 						string s21 = Reader.ReadElementString ();
@@ -375,7 +373,7 @@ namespace Mono.Addins.Setup
 			WriteElementString ("IsReference", "", (ob.@IsReference?"true":"false"));
 			WriteElementString ("File", "", ob.@File);
 			WriteElementString ("Url", "", ob.@Url);
-			WriteElementString ("Type", "", ob.Type.ToString ());
+			WriteElementString ("ProviderId", "", ob.ProviderId.ToString ());
 			WriteElementString ("Name", "", ob.@Name);
 			WriteElementString ("LastModified", "", XmlConvert.ToString (ob.@LastModified, XmlDateTimeSerializationMode.RoundtripKind));
 			if (ob.@Enabled != true) {

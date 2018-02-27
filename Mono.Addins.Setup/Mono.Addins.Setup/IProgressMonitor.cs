@@ -32,7 +32,7 @@ using System.IO;
 
 namespace Mono.Addins
 {
-	internal interface IProgressMonitor: IDisposable
+	public interface IProgressMonitor: IDisposable
 	{
 		void BeginTask (string name, int totalWork);
 		void BeginStepTask (string name, int totalWork, int stepSize);

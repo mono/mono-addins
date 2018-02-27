@@ -29,46 +29,26 @@
 
 using System;
 using Gtk;
-using Mono.Addins.Setup;
-using Mono.Unix;
 
 namespace Mono.Addins.Gui
 {
 	partial class NewSiteDialog : Dialog
 	{
-		ComboBox typeComboBox;
 		public NewSiteDialog (Gtk.Window parent)
 		{
 			Build ();
-			var hbox = new HBox ();
-			hbox.Spacing = 6;
-			hbox.PackStart (new Label(), false, false, 10);
-			var label = new Label ();
-			label.Text = Catalog.GetString ("Type:");
-			hbox.PackStart (label, false, false, 1);
-			typeComboBox = new ComboBox (new string [] {
-				Catalog.GetString ("Add-in Repository"),//AddinRepositoryType.MonoAddins
-				Catalog.GetString ("Visual Studio Marketplace")//AddinRepositoryType.VisualStudioMarketplace
-			});
-			typeComboBox.Active = 0;
-			hbox.PackStart (typeComboBox, true, true, 1);
-			hbox.ShowAll ();
-			vbox89.Add (hbox);
-			var w6 = (Box.BoxChild)vbox89 [hbox];
-			w6.Position = 3;
-
 			TransientFor = parent;
 			Services.PlaceDialog (this, parent);
 			pathEntry.Sensitive = false;
 			CheckValues ();
 		}
-		
+
 		public override void Dispose ()
 		{
 			base.Dispose ();
 			Destroy ();
 		}
-		
+
 		public string Url {
 			get {
 				if (btnOnlineRep.Active)
@@ -80,51 +60,43 @@ namespace Mono.Addins.Gui
 			}
 		}
 
-		public AddinRepositoryType AddinRepositoryType {
-			get {
-				return (AddinRepositoryType)typeComboBox.Active;
-			}
-		}
-		
 		void CheckValues ()
 		{
 			btnOk.Sensitive = (Url != "");
 		}
-		
+
 		public new bool Run ()
 		{
 			ShowAll ();
-			return ((ResponseType) base.Run ()) == ResponseType.Ok;
+			return ((ResponseType)base.Run ()) == ResponseType.Ok;
 		}
-		
+
 		protected void OnClose (object sender, EventArgs args)
 		{
 			Destroy ();
 		}
-		
+
 		protected void OnOptionClicked (object sender, EventArgs e)
 		{
 			if (btnOnlineRep.Active) {
 				urlText.Sensitive = true;
-				typeComboBox.Sensitive = true;
 				pathEntry.Sensitive = false;
 			} else {
 				urlText.Sensitive = false;
-				typeComboBox.Sensitive = false;
 				pathEntry.Sensitive = true;
 			}
 			CheckValues ();
 		}
 
-		protected virtual void OnButtonBrowseClicked(object sender, System.EventArgs e)
+		protected virtual void OnButtonBrowseClicked (object sender, System.EventArgs e)
 		{
 			FileChooserDialog dlg = new FileChooserDialog ("Select Folder", this, FileChooserAction.SelectFolder);
 			try {
 				dlg.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
 				dlg.AddButton (Gtk.Stock.Open, Gtk.ResponseType.Ok);
-				
+
 				dlg.SetFilename (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
-				if (dlg.Run () == (int) ResponseType.Ok) {
+				if (dlg.Run () == (int)ResponseType.Ok) {
 					pathEntry.Text = dlg.Filename;
 				}
 			} finally {
@@ -132,7 +104,7 @@ namespace Mono.Addins.Gui
 			}
 		}
 
-		protected virtual void OnPathEntryChanged(object sender, System.EventArgs e)
+		protected virtual void OnPathEntryChanged (object sender, System.EventArgs e)
 		{
 			CheckValues ();
 		}

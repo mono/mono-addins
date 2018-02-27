@@ -34,7 +34,7 @@ using System.Threading;
 
 namespace Mono.Addins.Setup
 {
-	internal class PackageRepositoryEntry: RepositoryEntry, AddinRepositoryEntry, IComparable
+	public class PackageRepositoryEntry: RepositoryEntry, AddinRepositoryEntry, IComparable
 	{
 		AddinInfo addin;
 		

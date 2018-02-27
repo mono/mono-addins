@@ -35,7 +35,7 @@ using Mono.Addins.Description;
 
 namespace Mono.Addins.Setup
 {
-	internal class AddinInfo: AddinHeader
+	public class AddinInfo: AddinHeader
 	{
 		string id = "";
 		string namspace = "";

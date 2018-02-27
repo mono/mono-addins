@@ -82,7 +82,6 @@ namespace Mono.Addins.Gui
 			try {
 				if (dlg.Run ()) {
 					string url = dlg.Url;
-					var repositoryType = dlg.AddinRepositoryType;
 					if (!url.StartsWith ("http://") && !url.StartsWith ("https://") && !url.StartsWith ("file://")) {
 						url = "http://" + url;
 					}
@@ -104,7 +103,7 @@ namespace Mono.Addins.Gui
 						
 						ThreadPool.QueueUserWorkItem (delegate {
 							try {
-								rr = service.Repositories.RegisterRepository (pdlg, url, true, repositoryType);
+								rr = service.Repositories.RegisterRepository (pdlg, url, true, "MonoAddins");
 							} catch (System.Exception ex) {
 								error = ex;
 							} finally {

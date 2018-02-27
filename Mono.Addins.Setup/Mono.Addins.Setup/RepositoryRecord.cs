@@ -51,7 +51,7 @@ namespace Mono.Addins.Setup
 			set { id = value; }
 		}
 
-		public AddinRepositoryType Type { get; set; }
+		public string ProviderId { get; set; }
 		
 		public bool IsReference {
 			get { return isReference; }
@@ -122,13 +122,6 @@ namespace Mono.Addins.Setup
 		}
 	}
 
-	public enum AddinRepositoryType
-	{
-		MonoAddins,
-		VisualStudioMarketplace,
-		Unknown = -1
-	}
-
 	/// <summary>
 	/// An on-line add-in repository
 	/// </summary>
@@ -181,10 +174,10 @@ namespace Mono.Addins.Setup
 		}
 
 		/// <summary>
-		/// Defineds type of repository.
+		/// Defineds type of repository provider.
 		/// </summary>
-		/// <value>The type.</value>
-		AddinRepositoryType Type {
+		/// <value>Provider string id.</value>
+		string ProviderId {
 			get;
 		}
 	}

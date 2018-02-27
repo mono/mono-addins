@@ -31,7 +31,7 @@ using System;
 
 namespace Mono.Addins.Setup
 {
-	internal class RepositoryEntry
+	public class RepositoryEntry
 	{
 		string url;
 		internal Repository owner;

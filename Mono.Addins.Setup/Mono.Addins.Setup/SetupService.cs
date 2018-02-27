@@ -77,6 +77,7 @@ namespace Mono.Addins.Setup
 			
 			repositories = new RepositoryRegistry (this);
 			store = new AddinStore (this);
+			AddAddinRepositoryProvider ("MonoAddins", new MonoAddinsRepositoryProvider (this));
 		}
 		
 		/// <summary>
@@ -304,7 +305,26 @@ namespace Mono.Addins.Setup
 		{
 			return AddinInfo.ReadFromDescription (addin.Description);
 		}
-		
+
+		Dictionary<string, AddinRepositoryProvider> providersList = new Dictionary<string, AddinRepositoryProvider> ();
+
+		public AddinRepositoryProvider GetAddinRepositoryProvider (string providerId)
+		{
+			if (providersList.TryGetValue (providerId, out var addinRepositoryProvider))
+				return addinRepositoryProvider;
+			throw new KeyNotFoundException (providerId);
+		}
+
+		public void AddAddinRepositoryProvider (string providerId, AddinRepositoryProvider provider)
+		{
+			providersList [providerId] = provider;
+		}
+
+		public void RemoveAddinRepositoryProvider (string providerId)
+		{
+			providersList.Remove (providerId);
+		}
+
 		/// <summary>
 		/// Gets a list of add-ins which depend on an add-in
 		/// </summary>

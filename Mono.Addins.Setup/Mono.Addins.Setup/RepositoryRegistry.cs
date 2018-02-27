@@ -71,7 +71,7 @@ namespace Mono.Addins.Setup
 		[Obsolete ("Use different overload")]
 		public AddinRepository RegisterRepository (IProgressStatus monitor, string url)
 		{
-			return RegisterRepository (monitor, url, false, AddinRepositoryType.MonoAddins);
+			return RegisterRepository (monitor, url, false, "MonoAddins");
 		}
 
 		/// <summary>
@@ -92,7 +92,7 @@ namespace Mono.Addins.Setup
 		[Obsolete("Use different overload")]
 		public AddinRepository RegisterRepository (IProgressStatus monitor, string url, bool updateNow)
 		{
-			return RegisterRepository (monitor, url, updateNow, AddinRepositoryType.MonoAddins);
+			return RegisterRepository (monitor, url, updateNow, "MonoAddins");
 		}
 
 		/// <summary>
@@ -107,18 +107,18 @@ namespace Mono.Addins.Setup
 		/// <param name="updateNow">
 		/// When set to True, the repository index will be downloaded.
 		/// </param>
-		/// <param name="repositoryType">
+		/// <param name="providerId">
 		/// What kind of repository
 		/// </param>
 		/// <returns>
 		/// A repository reference
 		/// </returns>
-		public AddinRepository RegisterRepository (IProgressStatus monitor, string url, bool updateNow, AddinRepositoryType repositoryType)
+		public AddinRepository RegisterRepository (IProgressStatus monitor, string url, bool updateNow, string providerId)
 		{
 			if (string.IsNullOrEmpty (url))
 				throw new ArgumentException ("Emtpy url");
 
-			if (repositoryType == AddinRepositoryType.MonoAddins) {
+			if (providerId == "MonoAddins") {
 				if (!url.EndsWith (".mrep")) {
 					if (url [url.Length - 1] != '/')
 						url += "/";
@@ -130,7 +130,7 @@ namespace Mono.Addins.Setup
 			if (rr != null)
 				return rr;
 
-			rr = RegisterRepository (url, false, repositoryType);
+			rr = RegisterRepository (url, false, providerId);
 			
 			try {
 				if (updateNow) {
@@ -151,14 +151,14 @@ namespace Mono.Addins.Setup
 			}
 		}
 		
-		internal RepositoryRecord RegisterRepository (string url, bool isReference, AddinRepositoryType repositoryType)
+		internal RepositoryRecord RegisterRepository (string url, bool isReference, string providerId)
 		{
 			RepositoryRecord rr = FindRepositoryRecord (url);
 			if (rr != null) {
 				if (rr.IsReference && !isReference) {
 					rr.IsReference = false;
 				}
-				rr.Type = repositoryType;
+				rr.ProviderId = providerId;
 				service.SaveConfiguration ();
 				return rr;
 			}
@@ -166,7 +166,7 @@ namespace Mono.Addins.Setup
 			rr = new RepositoryRecord ();
 			rr.Url = url;
 			rr.IsReference = isReference;
-			rr.Type = repositoryType;
+			rr.ProviderId = providerId;
 			
 			string name = service.RepositoryCachePath;
 			if (!Directory.Exists (name))
@@ -360,16 +360,8 @@ namespace Mono.Addins.Setup
 			Exception error = null;
 
 			try {
-				switch (rr.Type) {
-				case AddinRepositoryType.MonoAddins:
-					newRep = (Repository)service.Store.DownloadObject (monitor, absUri.ToString (), typeof (Repository));
-					break;
-				case AddinRepositoryType.VisualStudioMarketplace:
-					newRep = VisualStudioMarketplaceApi.Instance.CreateRepository (monitor, absUri, rr.CachedFilesDir);
-					break;
-				default:
-					throw new NotImplementedException (rr.Type.ToString ());
-				}
+				var provider = service.GetAddinRepositoryProvider (rr.ProviderId);
+				newRep = provider.DownloadRepository (monitor, absUri, rr);
 			} catch (Exception ex) {
 				error = ex;
 			}
@@ -386,7 +378,7 @@ namespace Mono.Addins.Setup
 				string refRepUrl = refRepUri.ToString ();
 				RepositoryRecord refRep = FindRepositoryRecord (refRepUrl);
 				if (refRep == null)
-					refRep = RegisterRepository (refRepUrl, true, rr.Type);
+					refRep = RegisterRepository (refRepUrl, true, rr.ProviderId);
 				refRep.Enabled = rr.Enabled;
 				// Update the repo if the modified timestamp changes or if there is no timestamp info
 				if (refRep.LastModified != re.LastModified || re.LastModified == DateTime.MinValue || !File.Exists (refRep.File)) {
