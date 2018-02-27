@@ -91,6 +91,7 @@ namespace Mono.Addins.Setup
 			this.registry = registry;
 			repositories = new RepositoryRegistry (this);
 			store = new AddinStore (this);
+			AddAddinRepositoryProvider ("MonoAddins", new MonoAddinsRepositoryProvider (this));
 		}
 		
 		/// <summary>
@@ -310,6 +311,9 @@ namespace Mono.Addins.Setup
 
 		public AddinRepositoryProvider GetAddinRepositoryProvider (string providerId)
 		{
+
+			if (string.IsNullOrEmpty (providerId))
+				providerId = "MonoAddins";
 			if (providersList.TryGetValue (providerId, out var addinRepositoryProvider))
 				return addinRepositoryProvider;
 			throw new KeyNotFoundException (providerId);

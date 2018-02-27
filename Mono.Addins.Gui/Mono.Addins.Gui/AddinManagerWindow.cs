@@ -28,6 +28,7 @@
 
 
 using System;
+using Mono.Addins.Setup;
 
 namespace Mono.Addins.Gui
 {
@@ -50,17 +51,17 @@ namespace Mono.Addins.Gui
 			dlg.AllowInstall = AllowInstall;
 		}
 		
-		public static Gtk.Window Show (Gtk.Window parent)
+		public static Gtk.Window Show (Gtk.Window parent, SetupService service)
 		{
-			AddinManagerDialog dlg = new AddinManagerDialog (parent);
+			AddinManagerDialog dlg = new AddinManagerDialog (parent, service);
 			InitDialog (dlg);
 			dlg.Show ();
 			return dlg;
 		}
 		
-		public static void Run (Gtk.Window parent)
+		public static void Run (Gtk.Window parent, SetupService service)
 		{
-			AddinManagerDialog dlg = new AddinManagerDialog (parent);
+			AddinManagerDialog dlg = new AddinManagerDialog (parent, service);
 			try {
 				InitDialog (dlg);
 				dlg.Run ();

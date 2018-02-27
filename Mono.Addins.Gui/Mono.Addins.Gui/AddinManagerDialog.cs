@@ -43,8 +43,8 @@ namespace Mono.Addins.Gui
 		AddinTreeWidget tree;
 		AddinTreeWidget galleryTree;
 		AddinTreeWidget updatesTree;
-		
-		SetupService service = new SetupService ();
+
+		SetupService service;
 		ListStore repoStore;
 		int lastRepoActive;
 		SearchEntry filterEntry;
@@ -66,8 +66,9 @@ namespace Mono.Addins.Gui
 			}
 		}
 		
-		public AddinManagerDialog (Window parent)
+		public AddinManagerDialog (Window parent, SetupService service)
 		{
+			this.service = service;
 			Build ();
 			TransientFor = parent;
 			HasSeparator = false;
