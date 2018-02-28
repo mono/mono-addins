@@ -42,13 +42,13 @@ namespace Mono.Addins.Gui
 			pathEntry.Sensitive = false;
 			CheckValues ();
 		}
-
+		
 		public override void Dispose ()
 		{
 			base.Dispose ();
 			Destroy ();
 		}
-
+		
 		public string Url {
 			get {
 				if (btnOnlineRep.Active)
@@ -59,23 +59,23 @@ namespace Mono.Addins.Gui
 					return string.Empty;
 			}
 		}
-
+		
 		void CheckValues ()
 		{
 			btnOk.Sensitive = (Url != "");
 		}
-
+		
 		public new bool Run ()
 		{
 			ShowAll ();
-			return ((ResponseType)base.Run ()) == ResponseType.Ok;
+			return ((ResponseType) base.Run ()) == ResponseType.Ok;
 		}
-
+		
 		protected void OnClose (object sender, EventArgs args)
 		{
 			Destroy ();
 		}
-
+		
 		protected void OnOptionClicked (object sender, EventArgs e)
 		{
 			if (btnOnlineRep.Active) {
@@ -88,15 +88,15 @@ namespace Mono.Addins.Gui
 			CheckValues ();
 		}
 
-		protected virtual void OnButtonBrowseClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonBrowseClicked(object sender, System.EventArgs e)
 		{
 			FileChooserDialog dlg = new FileChooserDialog ("Select Folder", this, FileChooserAction.SelectFolder);
 			try {
 				dlg.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
 				dlg.AddButton (Gtk.Stock.Open, Gtk.ResponseType.Ok);
-
+				
 				dlg.SetFilename (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
-				if (dlg.Run () == (int)ResponseType.Ok) {
+				if (dlg.Run () == (int) ResponseType.Ok) {
 					pathEntry.Text = dlg.Filename;
 				}
 			} finally {
@@ -104,7 +104,7 @@ namespace Mono.Addins.Gui
 			}
 		}
 
-		protected virtual void OnPathEntryChanged (object sender, System.EventArgs e)
+		protected virtual void OnPathEntryChanged(object sender, System.EventArgs e)
 		{
 			CheckValues ();
 		}

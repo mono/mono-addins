@@ -50,6 +50,11 @@ namespace Mono.Addins.Gui
 		{
 			dlg.AllowInstall = AllowInstall;
 		}
+
+		public static Gtk.Window Show (Gtk.Window parent)
+		{
+			return Show (parent, new SetupService ());
+		}
 		
 		public static Gtk.Window Show (Gtk.Window parent, SetupService service)
 		{
@@ -58,7 +63,12 @@ namespace Mono.Addins.Gui
 			dlg.Show ();
 			return dlg;
 		}
-		
+
+		public static void Run (Gtk.Window parent)
+		{
+			Run (parent, new SetupService ());
+		}
+
 		public static void Run (Gtk.Window parent, SetupService service)
 		{
 			AddinManagerDialog dlg = new AddinManagerDialog (parent, service);

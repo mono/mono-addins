@@ -49,7 +49,7 @@ using System.Threading;
 
 namespace Mono.Addins.Setup
 {
-	public class AddinStore
+	internal class AddinStore
 	{
 		SetupService service;
 		
@@ -625,7 +625,7 @@ namespace Mono.Addins.Setup
 			}
 		}
 		
-		public static string DownloadFile (IProgressMonitor monitor, string url)
+		internal string DownloadFile (IProgressMonitor monitor, string url)
 		{
 			if (url.StartsWith ("file://", StringComparison.Ordinal)) {
 				string tmpfile = Path.GetTempFileName ();

@@ -53,7 +53,7 @@ namespace Mono.Addins.Setup
 		}
 		
 		/// <summary>
-		/// Subscribes to an on-line repository
+		/// Subscribes to an on-line repository, notice that default registry provider is "MonoAddins"
 		/// </summary>
 		/// <param name="monitor">
 		/// Progress monitor where to show progress status and log
@@ -68,14 +68,13 @@ namespace Mono.Addins.Setup
 		/// The repository index is not downloaded by default. It can be downloaded
 		/// by calling UpdateRepository.
 		/// </remarks>
-		[Obsolete ("Use different overload")]
 		public AddinRepository RegisterRepository (IProgressStatus monitor, string url)
 		{
 			return RegisterRepository (monitor, url, false, "MonoAddins");
 		}
 
 		/// <summary>
-		/// Subscribes to an on-line repository
+		/// Subscribes to an on-line repository, notice that default registry provider is "MonoAddins"
 		/// </summary>
 		/// <param name="monitor">
 		/// Progress monitor where to show progress status and log
@@ -89,7 +88,6 @@ namespace Mono.Addins.Setup
 		/// <returns>
 		/// A repository reference
 		/// </returns>
-		[Obsolete("Use different overload")]
 		public AddinRepository RegisterRepository (IProgressStatus monitor, string url, bool updateNow)
 		{
 			return RegisterRepository (monitor, url, updateNow, "MonoAddins");
