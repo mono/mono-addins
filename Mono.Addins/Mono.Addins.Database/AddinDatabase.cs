@@ -351,26 +351,46 @@ namespace Mono.Addins.Database
 		
 			if (dbLockCheck)
 				InternalCheck (domain);
-			
+
+			string version, name;
+			Addin.GetIdParts (id, out name, out version);
+
 			using ((dbLockCheck ? fileDatabase.LockRead () : null))
 			{
-				string path = GetDescriptionPath (domain, id);
-				if (sinfo == null && fileDatabase.Exists (path)) {
-					sinfo = new Addin (this, domain, id);
-					cachedAddinSetupInfos [idd] = sinfo;
-					if (!enabledOnly || sinfo.Enabled)
-						return sinfo;
-					if (exactVersionMatch) {
-						// Cache lookups with negative result
-						cachedAddinSetupInfos [idd] = this;
-						return null;
+				if (sinfo == null && !string.IsNullOrEmpty (version)) {
+					// If the same add-in with same version exists in both the global domain and the private domain,
+					// take the instance in the global domain. This is an edge case, since in general add-ins will
+					// have different versions. Taking the one from global domain in case of colision makes
+					// it easier to "replace" an add-in bundled in an app for unit testing purposes.
+					// So, look for an exact match in the global domain first:
+
+					string foundDomain = null;
+
+					string path = GetDescriptionPath (GlobalDomain, id);
+					if (fileDatabase.Exists (path))
+						foundDomain = GlobalDomain;
+					else {
+						path = GetDescriptionPath (domain, id);
+						if (fileDatabase.Exists (path))
+							foundDomain = domain;
+					}
+					if (foundDomain != null) {
+						sinfo = new Addin (this, foundDomain, id);
+						cachedAddinSetupInfos [idd] = sinfo;
+						if (!enabledOnly || sinfo.Enabled)
+							return sinfo;
+						if (exactVersionMatch) {
+							// Cache lookups with negative result
+							cachedAddinSetupInfos [idd] = this;
+							return null;
+						}
 					}
 				}
-				
+
 				// Exact version not found. Look for a compatible version
 				if (!exactVersionMatch) {
 					sinfo = null;
-					string version, name, bestVersion = null;
+					string bestVersion = null;
 					Addin.GetIdParts (id, out name, out version);
 					
 					foreach (Addin ia in InternalGetInstalledAddins (domain, name, AddinSearchFlagsInternal.IncludeAll)) 
