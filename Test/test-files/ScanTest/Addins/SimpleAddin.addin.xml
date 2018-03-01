@@ -1,0 +1,12 @@
+<Addin id          = "Ext"
+       namespace   = "SimpleApp"
+	   category    = "SimpleApp"
+       version     = "0.1.0">
+
+	<Runtime>
+	</Runtime>
+	
+	<Header>
+		<Origin>AddinsDir</Origin>
+	</Header>
+</Addin>
