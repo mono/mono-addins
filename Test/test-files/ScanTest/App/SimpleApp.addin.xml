@@ -1,0 +1,8 @@
+<Addin id          = "Core"
+       namespace   = "SimpleApp"
+	   category    = "SimpleApp"
+	   isroot      = "true"
+       version     = "0.1.0">
+
+	<ExtensionPoint path = "/SimpleApp/SampleExtension" />
+</Addin>
