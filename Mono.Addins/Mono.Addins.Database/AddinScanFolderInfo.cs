@@ -278,8 +278,7 @@ namespace Mono.Addins.Database
 			writer.WriteValue ("IsRoot", IsRoot);
 			writer.WriteValue ("ScanError", ScanError);
 			writer.WriteValue ("Domain", Domain);
-			if (IgnorePaths != null && IgnorePaths.Count > 0)
-				writer.WriteValue ("IgnorePaths", IgnorePaths);
+			writer.WriteValue ("IgnorePaths", IgnorePaths);
 			writer.WriteValue ("MD5", ScanDataMD5);
 		}
 		
