@@ -72,6 +72,7 @@
     <Compile Include="TestSetupService.cs" />
     <Compile Include="ExtensionModel\GlobalInfoConditionAttribute.cs" />
     <Compile Include="TestScan.cs" />
+    <Compile Include="TestScanDataFileGeneration.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SimpleApp.addin.xml">

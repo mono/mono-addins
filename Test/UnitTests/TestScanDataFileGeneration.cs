@@ -24,12 +24,216 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.IO;
+using Mono.Addins;
+using Mono.Addins.Database;
+using NUnit.Framework;
+using System.Linq;
+
 namespace UnitTests
 {
 	public class TestScanDataFileGeneration
 	{
-		public TestScanDataFileGeneration ()
+		static AddinRegistry GetRegistry (string dir)
 		{
+			return new AddinRegistry (Path.Combine (dir, "Config"), Path.Combine (dir, "App"), Path.Combine (dir, "UserAddins"));
+		}
+
+		[Test]
+		public void NormalScan ()
+		{
+			var dir = Util.GetSampleDirectory ("ScanDataFilesTest");
+			var registry = GetRegistry (dir);
+
+			var fs = new TestAddinFileSystemExtension ();
+			var scanData = fs.FileList;
+
+			registry.RegisterExtension (fs);
+			registry.Update ();
+
+			Assert.Contains (Path.Combine (dir, "App", "SimpleApp.addins"), scanData.OpenedFiles);
+			Assert.Contains (Path.Combine (dir, "App", "SimpleAddin1.addin.xml"), scanData.OpenedFiles);
+			Assert.Contains (Path.Combine (dir, "App", "SimpleApp.addin.xml"), scanData.OpenedFiles);
+			Assert.Contains (Path.Combine (dir, "Addins", "SimpleAddin2.addin.xml"), scanData.OpenedFiles);
+			Assert.Contains (Path.Combine (dir, "Addins", "SimpleAddin3.addin.xml"), scanData.OpenedFiles);
+			Assert.Contains (Path.Combine (dir, "UserAddins", "SimpleAddin4.addin.xml"), scanData.OpenedFiles);
+
+			var addins = registry.GetAddins ().Select (a => a.Id).ToArray ();
+			Assert.AreEqual (4, addins.Length);
+			Assert.Contains ("SimpleApp.Ext1,0.1.0", addins);
+			Assert.Contains ("SimpleApp.Ext2,0.1.0", addins);
+			Assert.Contains ("SimpleApp.Ext3,0.1.0", addins);
+			Assert.Contains ("SimpleApp.Ext4,0.1.0", addins);
+		}
+
+		[Test]
+		public void GenerateAndLoadScanDataFiles ()
+		{
+			var dir = Util.GetSampleDirectory ("ScanDataFilesTest");
+			var registry = GetRegistry (dir);
+
+			registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (true), recursive:true);
+
+			// Check that data files have been generated
+
+			Assert.IsTrue (File.Exists (Path.Combine (dir, "App", "dir.addindata")));
+			Assert.IsTrue (File.Exists (Path.Combine (dir, "App", "SimpleAddin1.addin.xml.addindata")));
+			Assert.IsTrue (File.Exists (Path.Combine (dir, "App", "SimpleApp.addin.xml.addindata")));
+			Assert.IsTrue (File.Exists (Path.Combine (dir, "Addins", "SimpleAddin2.addin.xml.addindata")));
+			Assert.IsTrue (File.Exists (Path.Combine (dir, "Addins", "SimpleAddin3.addin.xml.addindata")));
+
+			// But not for user add-ins
+			Assert.IsFalse (File.Exists (Path.Combine (dir, "UserAddins", "SimpleAddin4.addin.xml.addindata")));
+
+			var fs = new TestAddinFileSystemExtension ();
+			var scanData = fs.FileList;
+
+			registry.RegisterExtension (fs);
+			registry.Update ();
+
+			// Check that add-in files are not loaded, with the exception of user add-ins
+			Assert.AreEqual (1, scanData.OpenedFiles.Count);
+			Assert.Contains (Path.Combine (dir, "UserAddins", "SimpleAddin4.addin.xml"), scanData.OpenedFiles);
+
+			var addins = registry.GetAddins ().Select (a => a.Id).ToArray ();
+			Assert.AreEqual (4, addins.Length);
+			Assert.Contains ("SimpleApp.Ext1,0.1.0", addins);
+			Assert.Contains ("SimpleApp.Ext2,0.1.0", addins);
+			Assert.Contains ("SimpleApp.Ext3,0.1.0", addins);
+			Assert.Contains ("SimpleApp.Ext4,0.1.0", addins);
+
+			AddinEngine engine = new AddinEngine ();
+		}
+
+		[Test]
+		[TestCase (false, TestName ="Without scan data files")]
+		[TestCase (true, TestName = "With scan data files")]
+		public void ModifiedAddin (bool useScanDataFiles)
+		{
+			var dir = Util.GetSampleDirectory ("ScanDataFilesTest");
+			var registry = GetRegistry (dir);
+
+			if (useScanDataFiles)
+				registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (true), recursive: true);
+
+			registry.Update ();
+
+			var addin = registry.GetAddin ("SimpleApp.Ext2,0.1.0");
+			Assert.AreEqual ("FooValue", addin.Properties.GetPropertyValue ("Origin"));
+
+			var addinFile = Path.Combine (dir, "Addins", "SimpleAddin2.addin.xml");
+			var txt = File.ReadAllText (addinFile).Replace ("FooValue", "BarValue");
+			File.WriteAllText (addinFile, txt);
+
+			if (useScanDataFiles) {
+				// Changing the add-in should not have any effect, since scan data files have not changed
+				registry.Update ();
+				addin = registry.GetAddin ("SimpleApp.Ext2,0.1.0");
+				Assert.AreEqual ("FooValue", addin.Properties.GetPropertyValue ("Origin"));
+
+				registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (true), recursive: true);
+			}
+
+			registry.Update (new ConsoleProgressStatus (true));
+			addin = registry.GetAddin ("SimpleApp.Ext2,0.1.0");
+			Assert.AreEqual ("BarValue", addin.Properties.GetPropertyValue ("Origin"));
+		}
+
+		[Test]
+		[TestCase (false, TestName = "Without scan data files")]
+		[TestCase (true, TestName = "With scan data files")]
+		public void RemovedAddin (bool useScanDataFiles)
+		{
+			var dir = Util.GetSampleDirectory ("ScanDataFilesTest");
+			var registry = GetRegistry (dir);
+
+			if (useScanDataFiles)
+				registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (true), recursive: true);
+
+			registry.Update ();
+
+			var addin = registry.GetAddin ("SimpleApp.Ext2,0.1.0");
+			Assert.IsNotNull (addin);
+
+			var addinFile = Path.Combine (dir, "Addins", "SimpleAddin2.addin.xml");
+			File.Delete (addinFile);
+
+			// Removing the add-in file should result on the add-in being unloaded, no matter if
+			// scan data file is present or not
+
+			registry.Update ();
+			addin = registry.GetAddin ("SimpleApp.Ext2,0.1.0");
+			Assert.IsNull (addin);
+
+			registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (true), recursive: true);
+
+			registry.Update (new ConsoleProgressStatus (true));
+			addin = registry.GetAddin ("SimpleApp.Ext2,0.1.0");
+			Assert.IsNull (addin);
+		}
+
+		[Test]
+		[TestCase (false, TestName = "Without scan data files")]
+		[TestCase (true, TestName = "With scan data files")]
+		public void AddedAddin (bool useScanDataFiles)
+		{
+			var dir = Util.GetSampleDirectory ("ScanDataFilesTest");
+			var registry = GetRegistry (dir);
+
+			if (useScanDataFiles)
+				registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (true), recursive: true);
+
+			registry.Update ();
+
+			var addinFile = Path.Combine (dir, "Addins", "SimpleAddin2.addin.xml");
+			var txt = File.ReadAllText (addinFile).Replace ("Ext2", "Ext5");
+			var newAddinFile = Path.Combine (dir, "Addins", "SimpleAddin5.addin.xml");
+			File.WriteAllText (newAddinFile, txt);
+
+			Addin addin;
+
+			if (useScanDataFiles) {
+				// Adding an add-in should not have any effect, since scan data files have not changed
+				registry.Update ();
+				addin = registry.GetAddin ("SimpleApp.Ext5,0.1.0");
+				Assert.IsNull (addin);
+
+				registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (true), recursive: true);
+			}
+
+			registry.Update (new ConsoleProgressStatus (true));
+			addin = registry.GetAddin ("SimpleApp.Ext5,0.1.0");
+			Assert.IsNotNull (addin);
+		}
+	}
+
+	class FileList: MarshalByRefObject
+	{
+		public List<string> OpenedFiles { get; } = new List<string> ();
+
+		public void AddFile (string file)
+		{
+			if (!OpenedFiles.Contains (file))
+				OpenedFiles.Add (file);
+		}
+	}
+
+	[Serializable]
+	class TestAddinFileSystemExtension: AddinFileSystemExtension
+	{
+		public FileList FileList = new FileList ();
+
+		public override StreamReader OpenTextFile (string path)
+		{
+			FileList.AddFile (path);
+			return base.OpenTextFile (path);
+		}
+
+		public override Stream OpenFile (string path)
+		{
+			FileList.AddFile (path);
+			return base.OpenFile (path);
 		}
 	}
 }
