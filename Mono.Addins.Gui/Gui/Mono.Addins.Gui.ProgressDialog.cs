@@ -15,7 +15,7 @@ namespace Mono.Addins.Gui
 
 		protected virtual void Build ()
 		{
-			global::Stetic.Gui.Initialize (this);
+			Gui.Initialize (this);
 			// Widget Mono.Addins.Gui.ProgressDialog
 			this.Name = "Mono.Addins.Gui.ProgressDialog";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Progress");
