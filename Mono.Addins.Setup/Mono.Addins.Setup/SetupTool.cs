@@ -522,6 +522,20 @@ namespace Mono.Addins.Setup
 			registry.Rebuild (new ConsoleProgressStatus (verbose));
 		}
 		
+		void GenerateAddinScanDataFiles (string[] args)
+		{
+			bool recursive = false;
+			int i = 0;
+			if (args.Length > 0 && args [0] == "-r") {
+				recursive = true;
+				i = 1;
+			}
+			if (i >= args.Length)
+				registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (verbose), recursive:recursive);
+			else
+				registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (verbose), args[0], recursive);
+		}
+		
 		void DumpRegistryFile (string[] args)
 		{
 			if (args.Length < 1)
@@ -1086,7 +1100,20 @@ namespace Mono.Addins.Setup
 
 			cmd = new SetupCommand (cat, "reg-build", "rgb", new SetupCommandHandler (RepairRegistry));
 			cmd.Description = "Rebuilds the add-in registry.";
-			cmd.AppendDesc ("Regenerates the add-in registry");
+			cmd.AppendDesc ("Regenerates the add-in registry.");
+			commands.Add (cmd);
+
+			cmd = new SetupCommand (cat, "reg-gen-data", "rgd", new SetupCommandHandler (GenerateAddinScanDataFiles));
+			cmd.Usage = "[-r] <path>";
+			cmd.Description = "Generates add-in scan data files.";
+			cmd.AppendDesc ("Generates binary add-in scan data files next to each");
+			cmd.AppendDesc ("add-in file. When such a file is present for an");
+			cmd.AppendDesc ("add-in, the add-in scanner will load the information");
+			cmd.AppendDesc ("from the data file instead of doing a full scan.");
+			cmd.AppendDesc ("Data files will be generated only add-ins located");
+			cmd.AppendDesc ("in the provided folder.");
+			cmd.AppendDesc ("Options:");
+			cmd.AppendDesc ("-r: Recursively look in subdirectories.");
 			commands.Add (cmd);
 
 			cmd = new SetupCommand (cat, "info", null, new SetupCommandHandler (PrintAddinInfo));

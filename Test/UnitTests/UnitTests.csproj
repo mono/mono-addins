@@ -28,7 +28,7 @@
       <Version>3.9.0</Version>
     </PackageReference>
     <PackageReference Include="NUnit3TestAdapter">
-      <Version>3.9.0</Version>
+      <Version>3.10.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -72,6 +72,7 @@
     <Compile Include="TestSetupService.cs" />
     <Compile Include="ExtensionModel\GlobalInfoConditionAttribute.cs" />
     <Compile Include="TestScan.cs" />
+    <Compile Include="TestScanDataFileGeneration.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SimpleApp.addin.xml">

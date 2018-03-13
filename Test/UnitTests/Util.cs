@@ -104,11 +104,9 @@ namespace UnitTests
 		public static string GetSampleDirectory (string directoryName)
 		{
 			string srcDir = Path.Combine (TestsRootDir, "test-files", directoryName);
-			string projDir = srcDir;
-			srcDir = Path.GetDirectoryName (srcDir);
-			string tmpDir = CreateTmpDir (Path.GetFileName (projDir));
+			string tmpDir = CreateTmpDir (Path.GetFileName (srcDir));
 			CopyDir (srcDir, tmpDir);
-			return Path.Combine (tmpDir, Path.GetFileName (projDir));
+			return tmpDir;
 		}
 
 		public static string CreateTmpDir (string hint)
