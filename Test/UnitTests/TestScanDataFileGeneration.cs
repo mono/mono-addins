@@ -1,10 +1,10 @@
-//
-// ScanContext.cs
+﻿//
+// TestScanDataFileGeneration.cs
 //
 // Author:
 //       Lluis Sanchez <llsan@microsoft.com>
 //
-// Copyright (c) 2017 Microsoft
+// Copyright (c) 2018 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace Mono.Addins.Database
+namespace UnitTests
 {
-	[Serializable]
-	class ScanOptions
+	public class TestScanDataFileGeneration
 	{
-		public List<string> FilesToIgnore { get; set; } = new List<string> ();
-		public bool CleanGeneratedAddinScanDataFiles { get; set; }
-		public AddinFileSystemExtension FileSystemExtension { get; set; }
-
-		public IEnumerable<string> Write ()
+		public TestScanDataFileGeneration ()
 		{
-			yield return FilesToIgnore.Count.ToString ();
-			foreach (var file in FilesToIgnore)
-				yield return file;
-			
-			yield return CleanGeneratedAddinScanDataFiles.ToString ();
-		}
-
-		public void Read (TextReader reader)
-		{
-			int filesToIgnoreCount = int.Parse (reader.ReadLine ());
-			for (int n = 0; n < filesToIgnoreCount; n++)
-				FilesToIgnore.Add (reader.ReadLine ());
-			
-			CleanGeneratedAddinScanDataFiles = bool.Parse (Console.In.ReadLine ());
 		}
 	}
 }

@@ -37,6 +37,7 @@ using System.Reflection;
 using Mono.Addins.Description;
 using System.Collections.Generic;
 using System.Linq;
+using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Database
 {
@@ -1172,6 +1173,9 @@ namespace Mono.Addins.Database
 
 			IProgressStatus scanMonitor = monitor;
 			context = context ?? new ScanOptions ();
+
+			if (fs.GetType () != typeof (AddinFileSystemExtension))
+				context.FileSystemExtension = fs;
 
 			bool retry = false;
 			do {

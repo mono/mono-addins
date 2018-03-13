@@ -132,6 +132,8 @@ namespace Mono.Addins.Database
 		{
 			AddinDatabase.RunningSetupProcess = true;
 			AddinRegistry reg = new AddinRegistry (registryPath, startupDir, addinsDir, databaseDir);
+			if (context.FileSystemExtension != null)
+				reg.RegisterExtension (context.FileSystemExtension);
 			reg.ScanFolders (monitor, scanFolder, context);
 		}
 		

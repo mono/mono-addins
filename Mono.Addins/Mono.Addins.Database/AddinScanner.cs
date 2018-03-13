@@ -34,8 +34,6 @@ using System.IO;
 using System.Text;
 using System.Reflection;
 using System.Collections.Specialized;
-using System.Xml;
-using System.ComponentModel;
 
 using Mono.Addins.Description;
 
@@ -118,9 +116,9 @@ namespace Mono.Addins.Database
 			string addinScanDataFileMD5 = null;
 			var scanDataFile = file + ".addindata";
 
-			if (File.Exists (scanDataFile)) {
+			if (database.FileSystem.FileExists (scanDataFile)) {
 				if (cleanPreScanFile)
-					File.Delete (scanDataFile);
+					database.FileSystem.DeleteFile (scanDataFile);
 				else {
 					if (database.ReadAddinDescription (monitor, scanDataFile, out config)) {
 						config.SetBasePath (Path.GetDirectoryName (file));
