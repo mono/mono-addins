@@ -31,7 +31,7 @@ using System.Collections;
 
 namespace Mono.Addins.Setup
 {
-	internal class RepositoryEntryCollection: CollectionBase
+	public class RepositoryEntryCollection: CollectionBase
 	{
 		Repository owner;
 		

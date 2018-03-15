@@ -37,7 +37,7 @@ using System.Threading.Tasks;
 
 namespace Mono.Addins.Setup
 {
-	internal class Repository
+	public class Repository
 	{
 		RepositoryEntryCollection repositories;
 		RepositoryEntryCollection addins;

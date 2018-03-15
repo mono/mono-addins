@@ -219,7 +219,7 @@ namespace Mono.Addins.Setup
 			Reader.ReadStartElement();
 			Reader.MoveToContent();
 
-			bool b10=false, b11=false, b12=false, b13=false, b14=false, b15=false;
+			bool b10=false, b11=false, b12=false, b13=false, b14=false, b15=false, b16=false;
 
 			while (Reader.NodeType != System.Xml.XmlNodeType.EndElement) 
 			{
@@ -244,13 +244,14 @@ namespace Mono.Addins.Setup
 						b13 = true;
 						string s19 = Reader.ReadElementString ();
 						ob.@Name = s19;
-					}
-					else if (Reader.LocalName == "Url" && Reader.NamespaceURI == "" && !b12) {
+					} else if (Reader.LocalName == "Url" && Reader.NamespaceURI == "" && !b12) {
 						b12 = true;
 						string s20 = Reader.ReadElementString ();
 						ob.@Url = s20;
-					}
-					else if (Reader.LocalName == "LastModified" && Reader.NamespaceURI == "" && !b14) {
+					} else if (Reader.LocalName == "ProviderId" && Reader.NamespaceURI == "" && !b16) {
+						b16 = true;
+						ob.ProviderId = Reader.ReadElementString ();
+					} else if (Reader.LocalName == "LastModified" && Reader.NamespaceURI == "" && !b14) {
 						b14 = true;
 						string s21 = Reader.ReadElementString ();
 						ob.@LastModified = XmlConvert.ToDateTime (s21, XmlDateTimeSerializationMode.RoundtripKind);
@@ -370,6 +371,7 @@ namespace Mono.Addins.Setup
 			WriteElementString ("IsReference", "", (ob.@IsReference?"true":"false"));
 			WriteElementString ("File", "", ob.@File);
 			WriteElementString ("Url", "", ob.@Url);
+			WriteElementString ("ProviderId", "", ob.ProviderId);
 			WriteElementString ("Name", "", ob.@Name);
 			WriteElementString ("LastModified", "", XmlConvert.ToString (ob.@LastModified, XmlDateTimeSerializationMode.RoundtripKind));
 			if (ob.@Enabled != true) {

@@ -50,6 +50,8 @@ namespace Mono.Addins.Setup
 			get { return id; }
 			set { id = value; }
 		}
+
+		public string ProviderId { get; set; }
 		
 		public bool IsReference {
 			get { return isReference; }
@@ -119,7 +121,7 @@ namespace Mono.Addins.Setup
 			newRep.CachedFilesDir = CachedFilesDir;
 		}
 	}
-	
+
 	/// <summary>
 	/// An on-line add-in repository
 	/// </summary>
@@ -168,6 +170,14 @@ namespace Mono.Addins.Setup
 		/// <c>true</c> if enabled; otherwise, <c>false</c>.
 		/// </value>
 		bool Enabled {
+			get;
+		}
+
+		/// <summary>
+		/// Defineds type of repository provider.
+		/// </summary>
+		/// <value>Provider string id.</value>
+		string ProviderId {
 			get;
 		}
 	}
