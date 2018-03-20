@@ -985,6 +985,23 @@ namespace Mono.Addins.Description
 				iconAsset.SetAttribute ("Addressable", "true");
 				assetsEl.AppendChild (iconAsset);
 			}
+
+			var propertyToAssetTypeMappings = new Dictionary<string, string>{
+				{"VisualStudio.License", "Microsoft.VisualStudio.Services.Content.License"},
+				{"VisualStudio.Details", "Microsoft.VisualStudio.Services.Content.Details"},
+				{"VisualStudio.Changelog", "Microsoft.VisualStudio.Services.Content.Changelog"},
+			};
+
+			foreach (var mapping in propertyToAssetTypeMappings) {
+				if (!string.IsNullOrEmpty (Properties.GetPropertyValue (mapping.Key))) {
+					var asset = vsixDoc.CreateElement ("Asset");
+					asset.SetAttribute ("Type", mapping.Value);
+					asset.SetAttribute ("Path", icon);
+					asset.SetAttribute ("Addressable", "true");
+					assetsEl.AppendChild (asset);
+				}
+			}
+
 			packageManifestEl.AppendChild (assetsEl);
 
 			return vsixDoc;
