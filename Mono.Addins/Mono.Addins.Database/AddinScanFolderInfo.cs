@@ -79,13 +79,17 @@ namespace Mono.Addins.Database
 			return finfo;
 		}
 		
-		static string GetDomain (string path)
+		internal static string GetDomain (string path)
 		{
 			path = Path.GetFullPath (path);
 			string s = path.Replace (Path.DirectorySeparatorChar, '_');
 			s = s.Replace (Path.AltDirectorySeparatorChar, '_');
 			s = s.Replace (Path.VolumeSeparatorChar, '_');
 			s = s.Trim ('_');
+			if (Util.IsWindows) {
+				s = s.ToLowerInvariant();
+			}
+
 			return s;
 		}
 		

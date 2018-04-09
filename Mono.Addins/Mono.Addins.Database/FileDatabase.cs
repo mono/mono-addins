@@ -360,6 +360,10 @@ namespace Mono.Addins.Database
 		
 		object ReadSharedObject (string directory, string sharedFileName, string extension, string objectId, BinaryXmlTypeMap typeMap, bool checkOnly, out string fileName)
 		{
+			if (Util.IsWindows) {
+				objectId = objectId.ToLowerInvariant();
+			}
+
 			string name = GetFileKey (directory, sharedFileName, objectId);
 			string file = Path.Combine (directory, name + extension);
 
@@ -431,7 +435,11 @@ namespace Mono.Addins.Database
 		public string WriteSharedObject (string directory, string sharedFileName, string extension, string objectId, string readFileName, BinaryXmlTypeMap typeMap, IBinaryXmlElement obj)
 		{
 			string file = readFileName;
-			
+
+			if (Util.IsWindows) {
+				objectId = objectId.ToLowerInvariant();
+			}
+
 			if (file == null) {
 				int count = 1;
 				string name = GetFileKey (directory, sharedFileName, objectId);
