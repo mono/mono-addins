@@ -270,9 +270,17 @@ namespace Mono.Addins
 
 		internal void ResetCachedData ()
 		{
-			// The domain may have changed
-			if (sourceFile != null)
-				domain = database.GetFolderDomain (null, Path.GetDirectoryName (sourceFile));
+			// The domain may have changed (?!)
+
+			// This check has been commented out because GetFolderDomain will fail if sourceFile changed
+			// or if there is no folder info for the add-in (it may happen when using pre-generated add-in
+			// scan data files).
+			// A domain change at run-time is an unlikely scenario and not properly supported anyway in
+			// other parts of the code. In general, changes in an already loaded add-in are not supported.
+
+//			if (sourceFile != null)
+//				domain = database.GetFolderDomain (null, Path.GetDirectoryName (sourceFile));
+
 			desc = null;
 			addin = null;
 		}
