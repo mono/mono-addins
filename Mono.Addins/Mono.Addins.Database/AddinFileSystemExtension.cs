@@ -192,6 +192,10 @@ namespace Mono.Addins.Database
 			return reflector;
 		}
 
+		/// <summary>
+		/// Deletes a file
+		/// </summary>
+		/// <param name="filePath">File path.</param>
 		public virtual void DeleteFile (string filePath)
 		{
 			File.Delete (filePath);

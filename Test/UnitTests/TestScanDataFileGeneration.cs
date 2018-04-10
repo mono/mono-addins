@@ -30,6 +30,7 @@ using Mono.Addins;
 using Mono.Addins.Database;
 using NUnit.Framework;
 using System.Linq;
+using Mono.Addins.Description;
 
 namespace UnitTests
 {
@@ -205,6 +206,32 @@ namespace UnitTests
 			registry.Update (new ConsoleProgressStatus (true));
 			addin = registry.GetAddin ("SimpleApp.Ext5,0.1.0");
 			Assert.IsNotNull (addin);
+		}
+
+		[Test]
+		public void Rescan ()
+		{
+			var dir = Util.GetSampleDirectory ("ScanDataFilesTest");
+
+			// Generate the scan data files before initializing the engine
+			var registry = GetRegistry (dir);
+			registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (true), recursive: true);
+			registry.Dispose ();
+
+			AddinEngine engine = new AddinEngine ();
+			engine.Initialize (Path.Combine (dir, "Config"), Path.Combine (dir, "UserAddins"), null, Path.Combine (dir, "App"));
+			registry = engine.Registry;
+
+			registry.Update (new ConsoleProgressStatus (false));
+
+			engine.LoadAddin (null, "SimpleApp.Core,0.1.0");
+			engine.LoadAddin (null, "SimpleApp.Ext2,0.1.0");
+
+			File.Delete (Path.Combine (dir, "UserAddins", "SimpleAddin4.addin.xml"));
+
+			registry.Update (new ConsoleProgressStatus (false));
+
+			engine.Shutdown ();
 		}
 	}
 

@@ -59,7 +59,7 @@ namespace Mono.Addins
 			// Code not shared with the other Initialize since I need to get the calling assembly
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			AddinEngine.Initialize (asm, null, null, null);
+			AddinEngine.Initialize (asm, null, null, null, null);
 		}
 		
 		/// <summary>
@@ -84,7 +84,7 @@ namespace Mono.Addins
 		{
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			AddinEngine.Initialize (asm, configDir, null, null);
+			AddinEngine.Initialize (asm, null, configDir, null, null);
 		}
 		
 		/// <summary>
@@ -113,7 +113,7 @@ namespace Mono.Addins
 		{
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			AddinEngine.Initialize (asm, configDir, addinsDir, null);
+			AddinEngine.Initialize (asm, null, configDir, addinsDir, null);
 		}
 		
 		/// <summary>
@@ -147,7 +147,7 @@ namespace Mono.Addins
 		{
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			AddinEngine.Initialize (asm, configDir, addinsDir, databaseDir);
+			AddinEngine.Initialize (asm, null, configDir, addinsDir, databaseDir);
 		}
 		
 		/// <summary>

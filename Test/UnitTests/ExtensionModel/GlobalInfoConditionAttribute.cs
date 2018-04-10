@@ -30,6 +30,7 @@ namespace SimpleApp
     {
         public GlobalInfoConditionAttribute ([NodeAttribute("value")]string value)
         {
+			this.Value = value;
         }
 
         [NodeAttribute("value")]

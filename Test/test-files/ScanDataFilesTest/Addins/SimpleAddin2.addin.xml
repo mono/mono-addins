@@ -10,6 +10,8 @@
     <Dependencies>
         <Addin id="Core" version="0.1.0" />
     </Dependencies>
+    
+    <ExtensionPoint path = "/Ext2/SampleExtension" />
    
     <Extension path = "/SimpleApp/SampleExtension">
         <Class type="test2"/>
