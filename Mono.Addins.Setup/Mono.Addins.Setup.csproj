@@ -87,6 +87,8 @@
     <Compile Include="Mono.Addins.Setup\PcFileCache.cs" />
     <Compile Include="Mono.Addins.Setup\TextFormatter.cs" />
     <Compile Include="Mono.Addins.Setup\WebRequestHelper.cs" />
+    <Compile Include="Mono.Addins.Setup\AddinRepositoryProvider.cs" />
+    <Compile Include="Mono.Addins.Setup\MonoAddinsRepositoryProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

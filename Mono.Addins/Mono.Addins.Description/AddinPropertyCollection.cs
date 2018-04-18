@@ -119,7 +119,7 @@ namespace Mono.Addins.Description
 		bool HasProperty (string name);
 	}
 	
-	class AddinPropertyCollectionImpl: List<AddinProperty>, AddinPropertyCollection
+	public class AddinPropertyCollectionImpl: List<AddinProperty>, AddinPropertyCollection
 	{
 		AddinDescription desc;
 
