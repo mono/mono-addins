@@ -34,6 +34,7 @@ using System.Reflection;
 using Mono.Addins.Description;
 using Mono.Addins.Serialization;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Mono.Addins.Database
 {
@@ -316,6 +317,47 @@ namespace Mono.Addins.Database
 			catch (Exception)
 			{
 				return false;
+			}
+		}
+
+		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.VolumeSeparatorChar, Path.AltDirectorySeparatorChar };
+		public static string AbsoluteToRelativePath (string baseDirectoryPath, string absPath)
+		{
+			if (!Path.IsPathRooted (absPath))
+				return absPath;
+			absPath = Path.GetFullPath (absPath);
+			baseDirectoryPath = Path.GetFullPath (baseDirectoryPath.TrimEnd (Path.DirectorySeparatorChar));
+			string [] bPath = baseDirectoryPath.Split (separators);
+			string [] aPath = absPath.Split (separators);
+			int indx = 0;
+			for (; indx < Math.Min (bPath.Length, aPath.Length); indx++) {
+				if (!bPath [indx].Equals (aPath [indx]))
+					break;
+			}
+			if (indx == 0)
+				return absPath;
+			StringBuilder result = new StringBuilder ();
+			for (int i = indx; i < bPath.Length; i++) {
+				result.Append ("..");
+				if (i + 1 < bPath.Length || aPath.Length - indx > 0)
+					result.Append (Path.DirectorySeparatorChar);
+			}
+			result.Append (String.Join (Path.DirectorySeparatorChar.ToString (), aPath, indx, aPath.Length - indx));
+			if (result.Length == 0)
+				return ".";
+			return result.ToString ();
+		}
+
+		public static string GetMD5 (string file)
+		{
+			using (var md5 = System.Security.Cryptography.MD5.Create ()) {
+				using (var stream = File.OpenRead (file)) {
+					var bytes = md5.ComputeHash (stream);
+					StringBuilder sb = new StringBuilder ();
+					foreach (byte b in bytes)
+						sb.Append (b.ToString ("x"));
+					return sb.ToString ();
+				}
 			}
 		}
 	}

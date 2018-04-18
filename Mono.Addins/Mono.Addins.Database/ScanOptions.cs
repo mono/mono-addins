@@ -1,7 +1,10 @@
-﻿//
-// GlobalInfoConditionAttribute.cs
 //
-// Copyright (c) Microsoft Corp.
+// ScanContext.cs
+//
+// Author:
+//       Lluis Sanchez <llsan@microsoft.com>
+//
+// Copyright (c) 2017 Microsoft
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,20 +23,35 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using Mono.Addins;
+using System.Collections.Generic;
+using System.IO;
 
-namespace SimpleApp
+namespace Mono.Addins.Database
 {
-    public class GlobalInfoConditionAttribute : CustomConditionAttribute
-    {
-        public GlobalInfoConditionAttribute ([NodeAttribute("value")]string value)
-        {
-			this.Value = value;
-        }
+	[Serializable]
+	class ScanOptions
+	{
+		public List<string> FilesToIgnore { get; set; } = new List<string> ();
+		public bool CleanGeneratedAddinScanDataFiles { get; set; }
+		public AddinFileSystemExtension FileSystemExtension { get; set; }
 
-        [NodeAttribute("value")]
-        public string Value { get; set; }
-    }
+		public IEnumerable<string> Write ()
+		{
+			yield return FilesToIgnore.Count.ToString ();
+			foreach (var file in FilesToIgnore)
+				yield return file;
+			
+			yield return CleanGeneratedAddinScanDataFiles.ToString ();
+		}
+
+		public void Read (TextReader reader)
+		{
+			int filesToIgnoreCount = int.Parse (reader.ReadLine ());
+			for (int n = 0; n < filesToIgnoreCount; n++)
+				FilesToIgnore.Add (reader.ReadLine ());
+			
+			CleanGeneratedAddinScanDataFiles = bool.Parse (Console.In.ReadLine ());
+		}
+	}
 }

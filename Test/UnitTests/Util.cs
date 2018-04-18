@@ -33,6 +33,29 @@ namespace UnitTests
 {
 	public static class Util
 	{
+		static string rootDir;
+		static int projectId;
+		static bool tempDirClean;
+
+		public static string TestsRootDir {
+			get {
+				if (rootDir == null)
+					rootDir = Path.GetFullPath (Path.Combine (Path.GetDirectoryName (typeof(Util).Assembly.Location), "..", "..", ".."));
+				return rootDir;
+			}
+		}
+
+		public static string TmpDir {
+			get {
+				var dir = Path.Combine (TestsRootDir, "tmp");
+				if (!tempDirClean) {
+					tempDirClean = true;
+					ClearTmpDir ();
+				}
+				return dir;
+			}
+		}
+
 		public static string Infoset (XmlNode nod)
 		{
 			StringBuilder sb = new StringBuilder ();
@@ -76,6 +99,43 @@ namespace UnitTests
 				sb.Append (nod.OuterXml);
 				break;
 			}
+		}
+
+		public static string GetSampleDirectory (string directoryName)
+		{
+			string srcDir = Path.Combine (TestsRootDir, "test-files", directoryName);
+			string tmpDir = CreateTmpDir (Path.GetFileName (srcDir));
+			CopyDir (srcDir, tmpDir);
+			return tmpDir;
+		}
+
+		public static string CreateTmpDir (string hint)
+		{
+			string tmpDir = Path.Combine (TmpDir, hint + "-" + projectId.ToString ());
+			projectId++;
+
+			if (!Directory.Exists (tmpDir))
+				Directory.CreateDirectory (tmpDir);
+			return tmpDir;
+		}
+
+		public static void ClearTmpDir ()
+		{
+			if (Directory.Exists (TmpDir))
+				Directory.Delete (TmpDir, true);
+			projectId = 1;
+		}
+
+		static void CopyDir (string src, string dst)
+		{
+			if (!Directory.Exists (dst))
+				Directory.CreateDirectory (dst);
+
+			foreach (string file in Directory.GetFiles (src))
+				File.Copy (file, Path.Combine (dst, Path.GetFileName (file)), overwrite: true);
+
+			foreach (string dir in Directory.GetDirectories (src))
+				CopyDir (dir, Path.Combine (dst, Path.GetFileName (dir)));
 		}
 	}
 }

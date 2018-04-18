@@ -35,12 +35,26 @@ namespace Mono.Addins.Database
 		RemoteSetupDomain remoteSetupDomain;
 		int useCount;
 		
-		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, string[] filesToIgnore)
+		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, ScanOptions context)
 		{
 			RemoteProgressStatus remMonitor = new RemoteProgressStatus (monitor);
 			try {
 				RemoteSetupDomain rsd = GetDomain ();
-				rsd.Scan (remMonitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, scanFolder, filesToIgnore);
+				rsd.Scan (remMonitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, scanFolder, context);
+			} catch (Exception ex) {
+				throw new ProcessFailedException (remMonitor.ProgessLog, ex);
+			} finally {
+				System.Runtime.Remoting.RemotingServices.Disconnect (remMonitor);
+				ReleaseDomain ();
+			}
+		}
+		
+		public void GenerateScanDataFiles (IProgressStatus monitor, AddinRegistry registry, string scanFolder, bool recursive)
+		{
+			RemoteProgressStatus remMonitor = new RemoteProgressStatus (monitor);
+			try {
+				RemoteSetupDomain rsd = GetDomain ();
+				rsd.PreScan (remMonitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, scanFolder, recursive);
 			} catch (Exception ex) {
 				throw new ProcessFailedException (remMonitor.ProgessLog, ex);
 			} finally {
@@ -114,14 +128,20 @@ namespace Mono.Addins.Database
 			return null;
 		}
 		
-		public void Scan (IProgressStatus monitor, string registryPath, string startupDir, string addinsDir, string databaseDir, string scanFolder, string[] filesToIgnore)
+		public void Scan (IProgressStatus monitor, string registryPath, string startupDir, string addinsDir, string databaseDir, string scanFolder, ScanOptions context)
 		{
 			AddinDatabase.RunningSetupProcess = true;
 			AddinRegistry reg = new AddinRegistry (registryPath, startupDir, addinsDir, databaseDir);
-			StringCollection files = new StringCollection ();
-			for (int n=0; n<filesToIgnore.Length; n++)
-				files.Add (filesToIgnore[n]);
-			reg.ScanFolders (monitor, scanFolder, files);
+			if (context.FileSystemExtension != null)
+				reg.RegisterExtension (context.FileSystemExtension);
+			reg.ScanFolders (monitor, scanFolder, context);
+		}
+		
+		public void PreScan (IProgressStatus monitor, string registryPath, string startupDir, string addinsDir, string databaseDir, string scanFolder, bool recursive)
+		{
+			AddinDatabase.RunningSetupProcess = true;
+			AddinRegistry reg = new AddinRegistry (registryPath, startupDir, addinsDir, databaseDir);
+			reg.GenerateScanDataFilesInProcess (monitor, scanFolder, recursive);
 		}
 		
 		public void GetAddinDescription (IProgressStatus monitor, string registryPath, string startupDir, string addinsDir, string databaseDir, string file, string outFile)

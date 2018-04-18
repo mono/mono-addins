@@ -1,0 +1,14 @@
+<Addin id          = "Ext4"
+       namespace   = "SimpleApp"
+	   category    = "SimpleApp"
+       version     = "0.1.0">
+
+    <Dependencies>
+        <Addin id="Core" version="0.1.0" />
+    </Dependencies>
+    
+    <Extension path = "/SimpleApp/SampleExtension">
+        <Class type="test4"/>
+    </Extension>
+	
+</Addin>

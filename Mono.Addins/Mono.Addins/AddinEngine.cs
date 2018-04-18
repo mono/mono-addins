@@ -105,7 +105,7 @@ namespace Mono.Addins
 			
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			Initialize (asm, configDir, null, null);
+			Initialize (asm, null, configDir, null, null);
 		}
 		
 		/// <summary>
@@ -137,7 +137,7 @@ namespace Mono.Addins
 			
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			Initialize (asm, configDir, addinsDir, null);
+			Initialize (asm, null, configDir, addinsDir, null);
 		}
 		
 		/// <summary>
@@ -174,19 +174,64 @@ namespace Mono.Addins
 			
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			Initialize (asm, configDir, addinsDir, databaseDir);
+			Initialize (asm, null, configDir, addinsDir, databaseDir);
 		}
 		
-		internal void Initialize (Assembly startupAsm, string configDir, string addinsDir, string databaseDir)
+		/// <summary>
+		/// Initializes the add-in engine.
+		/// </summary>
+		/// <param name='configDir'>
+		/// Location of the add-in registry.
+		/// </param>
+		/// <param name='addinsDir'>
+		/// Add-ins directory. If the path is relative, it is considered to be relative
+		/// to the configDir directory.
+		/// </param>
+		/// <param name='databaseDir'>
+		/// Location of the add-in database. If the path is relative, it is considered to be relative
+		/// to the configDir directory.
+		/// </param>
+		/// <param name='startupDirectory'>
+		/// Statup directory. This is the directory where add-in scans will start.
+		/// </param>
+		/// <remarks>
+		/// The add-in engine needs to be initialized before doing any add-in operation.
+		/// Configuration information about the add-in registry will be stored in the
+		/// provided location. The add-in engine will look for add-ins in the provided
+		/// 'addinsDir' directory. Cached information about add-ins will be stored in
+		/// the 'databaseDir' directory.
+		/// 
+		/// When specifying a path, it is possible to use a special folder name as root.
+		/// For example: [Personal]/.config/MyApp. In this case, [Personal] will be replaced
+		/// by the location of the Environment.SpecialFolder.Personal folder. Any value
+		/// of the Environment.SpecialFolder enumeration can be used (always between square
+		/// brackets)
+		/// </remarks>
+		public void Initialize (string configDir, string addinsDir, string databaseDir, string startupDirectory)
+		{
+			if (initialized)
+				return;
+			
+			Assembly asm = Assembly.GetEntryAssembly ();
+			if (asm == null) asm = Assembly.GetCallingAssembly ();
+			Initialize (null, startupDirectory, configDir, addinsDir, databaseDir);
+		}
+		
+		internal void Initialize (Assembly startupAsm, string customStartupDirectory, string configDir, string addinsDir, string databaseDir)
 		{
 			lock (LocalLock) {
 				if (initialized)
 					return;
 				
 				Initialize (this);
-				
-				string asmFile = new Uri (startupAsm.CodeBase).LocalPath;
-				startupDirectory = System.IO.Path.GetDirectoryName (asmFile);
+
+				string asmFile = null;
+
+				if (startupAsm != null) {
+					asmFile = new Uri (startupAsm.CodeBase).LocalPath;
+					startupDirectory = System.IO.Path.GetDirectoryName (asmFile);
+				} else
+					startupDirectory = customStartupDirectory;
 				
 				string customDir = Environment.GetEnvironmentVariable ("MONO_ADDINS_REGISTRY");
 				if (customDir != null && customDir.Length > 0)
@@ -197,7 +242,7 @@ namespace Mono.Addins
 				else
 					registry = new AddinRegistry (this, configDir, startupDirectory, addinsDir, databaseDir);
 
-				if (registry.CreateHostAddinsFile (asmFile) || registry.UnknownDomain)
+				if ((asmFile != null && registry.CreateHostAddinsFile (asmFile)) || registry.UnknownDomain)
 					registry.Update (new ConsoleProgressStatus (false));
 				
 				initialized = true;
