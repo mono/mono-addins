@@ -46,7 +46,7 @@ namespace Mono.Addins.Database
 		public const string GlobalDomain = "global";
 		public const string UnknownDomain = "unknown";
 		
-		public const string VersionTag = "002";
+		public const string VersionTag = "003";
 
 		List<Addin> allSetupInfos;
 		List<Addin> addinSetupInfos;
