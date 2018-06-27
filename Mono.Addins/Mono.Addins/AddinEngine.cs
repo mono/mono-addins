@@ -80,6 +80,11 @@ namespace Mono.Addins
 		/// Raised when an add-in is unloaded
 		/// </summary>
 		public static event AddinEventHandler AddinUnloaded;
+
+		/// <summary>
+		/// Raised when the add-in assemblies are loaded.
+		/// </summary>
+		public static event AddinEventHandler AddinAssembliesLoaded;
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Addins.AddinEngine"/> class.
@@ -879,6 +884,18 @@ namespace Mono.Addins
 		internal void ReportAddinUnload (string id)
 		{
 			var handler = AddinUnloaded;
+			if (handler != null) {
+				try {
+					handler (null, new AddinEventArgs (id));
+				} catch {
+					// Ignore subscriber exceptions
+				}
+			}
+		}
+
+		internal void ReportAddinAssembliesLoad (string id)
+		{
+			var handler = AddinAssembliesLoaded;
 			if (handler != null) {
 				try {
 					handler (null, new AddinEventArgs (id));

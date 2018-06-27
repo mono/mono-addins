@@ -716,6 +716,7 @@ namespace Mono.Addins
 			// Load the assemblies of the module
 			CheckAddinDependencies (module, true);
 			LoadModule (module, asmList);
+			addinEngine.ReportAddinAssembliesLoad (id);
 			
 			assemblies = (Assembly[]) asmList.ToArray (typeof(Assembly));
 			addinEngine.RegisterAssemblies (this);
