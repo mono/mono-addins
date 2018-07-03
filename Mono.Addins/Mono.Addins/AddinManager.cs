@@ -816,6 +816,17 @@ namespace Mono.Addins
 			add { AddinEngine.AddinUnloaded += value; }
 			remove { AddinEngine.AddinUnloaded -= value; }
 		}
+
+		/// <summary>
+		/// Add-in assembly loaded event.
+		/// </summary>
+		/// <remarks>
+		/// Fired when the add-in assemblies are loaded.
+		/// </remarks>
+		public static event AddinEventHandler AddinAssembliesLoaded {
+			add { AddinEngine.AddinAssembliesLoaded += value; }
+			remove { AddinEngine.AddinAssembliesLoaded -= value; }
+		}
 		
 		internal static bool CheckAssembliesLoaded (HashSet<string> files)
 		{
