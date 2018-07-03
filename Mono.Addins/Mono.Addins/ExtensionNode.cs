@@ -412,7 +412,7 @@ namespace Mono.Addins
 
 				if (memberType == typeof(string)) {
 					if (f.Localizable)
-						val = Addin.Localizer.GetString (at.value);
+						val = GetAddinLocalizer ().GetString (at.value);
 					else
 						val = at.value;
 				}
@@ -448,6 +448,21 @@ namespace Mono.Addins
 						throw new InvalidOperationException ("Required attribute '" + e.Key + "' not found.");
 				}
 			}
+		}
+
+		/// <summary>
+		/// Tries to avoid loading the addin dependencies when getting the localizer.
+		/// </summary>
+		AddinLocalizer GetAddinLocalizer ()
+		{
+			if (addin != null || addinId == null)
+				return Addin.Localizer;
+
+			Addin foundAddin = addinEngine.Registry.GetAddin (addinId);
+			if (foundAddin == null || foundAddin.Description.Localizer != null)
+				return Addin.Localizer;
+
+			return addinEngine.DefaultLocalizer;
 		}
 		
 		internal bool NotifyChildChanged ()
