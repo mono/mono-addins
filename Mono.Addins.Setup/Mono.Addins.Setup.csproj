@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\TargetFrameworks.props" />
   <Import Project="..\Version.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,7 +11,6 @@
     <RootNamespace>Mono.Addins.Setup</RootNamespace>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <PackageId>Mono.Addins.Setup</PackageId>
     <Description>Mono.Addins is a framework for creating extensible applications, and for creating add-ins which extend applications. Mono.Addins.Setup provides an API for managing add-ins, creating add-in packages and publishing add-ins in on-line repositories.</Description>
     <ProductVersion>8.0.30703</ProductVersion>
