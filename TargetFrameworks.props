@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <InMonoDevelopTree Condition="Exists('..\..\msbuild\MonoDevelop.props')">true</InMonoDevelopTree>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion Condition=" '$(InMonoDevelopTree)' == 'true' ">v4.6.1</TargetFrameworkVersion>
+  </PropertyGroup>
+</Project>
