@@ -666,13 +666,21 @@ namespace Mono.Addins.Database
 					node.SetAttribute ("catalog", locat.Catalog);
 				if (!string.IsNullOrEmpty (locat.Location))
 					node.SetAttribute ("location", locat.Location);
+				if (!string.IsNullOrEmpty (locat.RegisterId))
+					node.SetAttribute ("registerId", locat.RegisterId);
 				config.Localizer = node;
 			}
 
 			var customLocat = (AddinLocalizerAttribute) reflector.GetCustomAttribute (asm, typeof(AddinLocalizerAttribute), false);
 			if (customLocat != null) {
 				var node = new ExtensionNodeDescription ();
-				node.SetAttribute ("type", customLocat.TypeName);
+				if (!string.IsNullOrEmpty (customLocat.Id))
+					node.SetAttribute ("id", customLocat.Id);
+				else {
+					node.SetAttribute ("type", customLocat.TypeName);
+					if (!string.IsNullOrEmpty (customLocat.RegisterId))
+						node.SetAttribute ("registerId", customLocat.RegisterId);
+				}
 				config.Localizer = node;
 			}
 			
