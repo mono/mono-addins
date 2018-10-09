@@ -36,12 +36,25 @@ namespace Mono.Addins
 	{
 		Type type;
 		string typeName;
+		string registerId;
+		string id;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Addins.AddinLocalizerAttribute"/> class.
 		/// </summary>
 		public AddinLocalizerAttribute ()
 		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.AddinLocalizerAttribute"/> class.
+		/// </summary>
+		/// <param name="id">
+		/// The id of the localizer to use.
+		/// </param>
+		public AddinLocalizerAttribute (string id)
+		{
+			Id = id;
 		}
 
 		/// <summary>
@@ -57,16 +70,50 @@ namespace Mono.Addins
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.AddinLocalizerAttribute"/> class.
+		/// </summary>
+		/// <param name='type'>
+		/// The type of the localizer. This type must implement the
+		/// <see cref="Mono.Addins.Localization.IAddinLocalizerFactory"/> interface.
+		/// </param>
+		/// <param name='registerId'>
+		/// The ID to register this localizer as to be reusable from other addins.
+		/// </param>
+		public AddinLocalizerAttribute (Type type, string registerId)
+		{
+			Type = type;
+			RegisterId = registerId;
+		}
+
+		/// <summary>
 		/// Type of the localizer.
 		/// </summary>
 		public Type Type {
 			get { return type; }
-			set { type = value; typeName = type.FullName; }
+			set { type = value; typeName = type.FullName; id = null; }
 		}
 
 		internal string TypeName {
 			get { return typeName; }
-			set { typeName = value; type = null; }
+			set { typeName = value; type = null; id = null; }
+		}
+
+		/// <summary>
+		/// Gets or sets the identifier to register this localizer on
+		/// </summary>
+		/// <value>The identifier registration name.</value>
+		public string RegisterId {
+			get { return registerId; }
+			set { registerId = value; }
+		}
+
+		/// <summary>
+		/// This value is used when there is an existing localizer so we don't have to load everything.
+		/// </summary>
+		/// <value>The ID of the addin localizer.</value>
+		public string Id {
+			get { return id; }
+			set { id = value; typeName = null; type = null; }
 		}
 	}
 }

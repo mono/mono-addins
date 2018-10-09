@@ -607,21 +607,25 @@ namespace Mono.Addins
 			module.RuntimeAddin = this;
 			
 			if (description.Localizer != null) {
-				string cls = description.Localizer.GetAttribute ("type");
-				
-				// First try getting one of the stock localizers. If none of found try getting the type.
-				object fob = null;
-				Type t = Type.GetType ("Mono.Addins.Localization." + cls + "Localizer, " + GetType().Assembly.FullName, false);
-				if (t != null)
-					fob = Activator.CreateInstance (t);
-				
-				if (fob == null)
-					fob = CreateInstance (cls, true);
-				
-				IAddinLocalizerFactory factory = fob as IAddinLocalizerFactory;
-				if (factory == null)
-					throw new InvalidOperationException ("Localizer factory type '" + cls + "' must implement IAddinLocalizerFactory");
-				localizer = new AddinLocalizer (factory.CreateLocalizer (this, description.Localizer));
+				if (!addinEngine.TryGetLocalizer (description, out localizer)) {
+					string cls = description.Localizer.GetAttribute ("type");
+
+					// First try getting one of the stock localizers. If none of found try getting the type.
+					object fob = null;
+					Type t = Type.GetType ("Mono.Addins.Localization." + cls + "Localizer, " + GetType ().Assembly.FullName, false);
+					if (t != null)
+						fob = Activator.CreateInstance (t);
+
+					if (fob == null)
+						fob = CreateInstance (cls, true);
+
+					IAddinLocalizerFactory factory = fob as IAddinLocalizerFactory;
+					if (factory == null)
+						throw new InvalidOperationException ("Localizer factory type '" + cls + "' must implement IAddinLocalizerFactory");
+					localizer = new AddinLocalizer (factory.CreateLocalizer (this, description.Localizer));
+
+					addinEngine.AddLocalizer (description, localizer);
+				}
 			}
 			
 			return description;
@@ -686,6 +690,8 @@ namespace Mono.Addins
 		internal void UnloadExtensions ()
 		{
 			addinEngine.UnregisterAddinNodeSets (id);
+
+			addinEngine.RemoveLocalizer (Addin.Description);
 		}
 		
 		bool CheckAddinDependencies (ModuleDescription module, bool forceLoadAssemblies)
