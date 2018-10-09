@@ -36,6 +36,8 @@ namespace Mono.Addins
 	{
 		Type type;
 		string typeName;
+		string id;
+		bool register;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Addins.AddinLocalizerAttribute"/> class.
@@ -57,16 +59,51 @@ namespace Mono.Addins
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Addins.AddinLocalizerAttribute"/> class.
+		/// </summary>
+		/// <param name='type'>
+		/// The type of the localizer. This type must implement the
+		/// <see cref="Mono.Addins.Localization.IAddinLocalizerFactory"/> interface.
+		/// </param>
+		/// <param name='registerId'>
+		/// The ID to register this localizer as to be reusable from other addins.
+		/// </param>
+		public AddinLocalizerAttribute (Type type, string id, bool register)
+		{
+			Type = type;
+			Id = id;
+			Register = register;
+		}
+
+		/// <summary>
 		/// Type of the localizer.
 		/// </summary>
 		public Type Type {
 			get { return type; }
-			set { type = value; typeName = type.FullName; }
+			set { type = value; typeName = type.FullName; id = null; }
 		}
 
 		internal string TypeName {
 			get { return typeName; }
-			set { typeName = value; type = null; }
+			set { typeName = value; type = null; id = null; }
+		}
+
+		/// <summary>
+		/// Gets or sets whether this addin registers the localizer
+		/// </summary>
+		/// <value>Whether or not to register</value>
+		public bool Register {
+			get { return register; }
+			set { register = value; }
+		}
+
+		/// <summary>
+		/// This value is used to reuse the same localizer created by a different addin
+		/// </summary>
+		/// <value>The ID of the addin localizer.</value>
+		public string Id {
+			get { return id; }
+			set { id = value; }
 		}
 	}
 }

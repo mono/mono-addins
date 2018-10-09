@@ -1264,8 +1264,12 @@ namespace Mono.Addins.Description
 				}
 			}
 			
-			if (localizer != null && localizer.GetAttribute ("type").Length == 0) {
-				errors.Add ("The attribute 'type' in the Location element is required.");
+			if (localizer != null) {
+				if (localizer.GetAttribute ("id").Length == 0) {
+					if (localizer.GetAttribute ("type").Length == 0) {
+						errors.Add ("The attribute 'type' or 'id' in the Location element is required.");
+					}
+				}
 			}
 			
 			// Ensure that there are no duplicated properties

@@ -36,6 +36,7 @@ namespace Mono.Addins
 	{
 		string catalog;
 		string location;
+		string id;
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Addins.AddinLocalizerGettextAttribute"/> class.
@@ -103,6 +104,15 @@ namespace Mono.Addins
 		public string Location {
 			get { return this.location; }
 			set { this.location = value; }
+		}
+
+		/// <summary>
+		/// This value is used to reuse the same localizer created by a different addin, registering it under this addin.
+		/// </summary>
+		/// <value>The ID of the addin localizer.</value>
+		public string Id {
+			get { return id; }
+			set { id = value; }
 		}
 	}
 }

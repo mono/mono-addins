@@ -459,8 +459,15 @@ namespace Mono.Addins
 				return Addin.Localizer;
 
 			Addin foundAddin = addinEngine.Registry.GetAddin (addinId);
-			if (foundAddin == null || foundAddin.Description.Localizer != null)
+			if (foundAddin == null || foundAddin.Description.Localizer != null) {
+				// Try checking if there's any id for a reusable localizer without having to load the addin.
+
+				AddinLocalizer localizer;
+				if (addinEngine.TryGetLocalizer (foundAddin.Description, out localizer))
+					return localizer;
+
 				return Addin.Localizer;
+			}
 
 			return addinEngine.DefaultLocalizer;
 		}
