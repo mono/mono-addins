@@ -391,7 +391,6 @@ namespace Mono.Addins.Database
 				if (!exactVersionMatch) {
 					sinfo = null;
 					string bestVersion = null;
-					Addin.GetIdParts (id, out name, out version);
 					
 					foreach (Addin ia in InternalGetInstalledAddins (domain, name, AddinSearchFlagsInternal.IncludeAll)) 
 					{
