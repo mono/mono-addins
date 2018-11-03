@@ -39,7 +39,7 @@ namespace Mono.Addins.Database
 	[Serializable]
 	public class AddinFileSystemExtension
 	{
-		IAssemblyReflector reflector;
+		protected IAssemblyReflector reflector;
 		
 		/// <summary>
 		/// Called when the add-in scan is about to start
@@ -201,22 +201,18 @@ namespace Mono.Addins.Database
 			File.Delete (filePath);
 		}
 
-		internal void CleanupReflector()
+		protected internal virtual void CleanupReflector()
 		{
-			var disposable = reflector as IDisposable;
-			if (disposable != null)
-				disposable.Dispose ();
+			using (reflector as IDisposable) { }
 		}
-		
+
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Mono.Addins.Database.AddinFileSystemExtension"/> needs to be isolated from the main execution process
 		/// </summary>
 		/// <value>
 		/// <c>true</c> if requires isolation; otherwise, <c>false</c>.
 		/// </value>
-		public virtual bool RequiresIsolation {
-			get { return true; }
-		}
+		public virtual bool RequiresIsolation { get; set; } = true;
 	}
 }
 
