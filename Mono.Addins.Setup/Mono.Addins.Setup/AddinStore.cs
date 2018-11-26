@@ -643,8 +643,7 @@ namespace Mono.Addins.Setup
 			try {
 				monitor.BeginTask ("Requesting " + url, 2);
 				var task = DownloadFileRequest.DownloadFile (url, noCache: true);
-				if (!WaitForTask (task, monitor))
-					throw new InstallException ("Installation cancelled.");
+				task.Wait ();
 
 				using (var request = task.Result) {
 					monitor.Step (1);
@@ -677,19 +676,6 @@ namespace Mono.Addins.Setup
 			} finally {
 				monitor.EndTask ();
 			}
-		}
-
-		static bool WaitForTask (Task<DownloadFileRequest> task, IProgressMonitor monitor)
-		{
-			bool result = SpinWait.SpinUntil (() => {
-				return monitor.IsCancelRequested || task.IsCompleted || task.IsFaulted;
-			}, 100000); // Use same default timeout as HttpClient.
-
-			if (monitor.IsCancelRequested)
-				return false;
-			if (!result)
-				throw new InstallException ("Timed out.");
-			return result;
 		}
 
 		internal bool HasWriteAccess (string file)
