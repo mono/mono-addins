@@ -29,7 +29,7 @@ namespace Mono.Addins.Description
 	/// <summary>
 	/// A collection of localizer types
 	/// </summary>
-	public class LocalizerTypeDescriptionCollection : ObjectDescriptionCollection<ConditionTypeDescription>
+	public class LocalizerTypeDescriptionCollection : ObjectDescriptionCollection<LocalizerTypeDescription>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LocalizerTypeDescriptionCollection"/> class.
@@ -51,8 +51,8 @@ namespace Mono.Addins.Description
 		/// <returns>
 		/// The condition.
 		/// </returns>
-		public LocalizerTypeDescriptionCollection this [int n] {
-			get { return (LocalizerTypeDescriptionCollection)List [n]; }
+		public LocalizerTypeDescription this [int n] {
+			get { return (LocalizerTypeDescription)List [n]; }
 		}
 	}
 }

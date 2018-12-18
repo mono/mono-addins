@@ -114,9 +114,9 @@ namespace Mono.Addins.Description
 
 		internal override void SaveXml (XmlElement parent)
 		{
-			CreateElement (parent, "Localizer");
-			Element.SetAttribute ("id", id);
-			Element.SetAttribute ("type", typeName);
+			CreateElement (parent, "LocalizerType");
+			Element.SetAttribute ("Id", id);
+			Element.SetAttribute ("TypeName", typeName);
 			SaveXmlDescription (description);
 		}
 
