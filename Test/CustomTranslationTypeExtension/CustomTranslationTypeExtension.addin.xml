@@ -22,8 +22,10 @@
 		<ExtensionNode name="String" type="TranslatedStringExtensionNode" />
 	</ExtensionPoint>
 	
-	<Extension path = "/SimpleApp/LocalizedTexts">
-		<String id="Translated_One" _text="One" />
-		<String id="Translated_Two" _text="Two" />
-	</Extension>
+	<Condition id="GlobalInfo" value="testTranslationTypes">
+		<Extension path = "/SimpleApp/LocalizedTexts">
+			<String id="Translated_One" _text="One" />
+			<String id="Translated_Two" _text="Two" />
+		</Extension>
+	</Condition>
 </Addin>
