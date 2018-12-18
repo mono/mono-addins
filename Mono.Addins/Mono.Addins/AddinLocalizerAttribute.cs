@@ -36,7 +36,6 @@ namespace Mono.Addins
 	{
 		Type type;
 		string typeName;
-		string registerId;
 		string id;
 
 		/// <summary>
