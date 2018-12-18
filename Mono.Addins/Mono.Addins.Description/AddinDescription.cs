@@ -75,6 +75,7 @@ namespace Mono.Addins.Description
 		ModuleCollection optionalModules;
 		ExtensionNodeSetCollection nodeSets;
 		ConditionTypeDescriptionCollection conditionTypes;
+		LocalizerTypeDescriptionCollection localizerTypes;
 		ExtensionPointCollection extensionPoints;
 		ExtensionNodeDescription localizer;
 		object[] fileInfo;
@@ -95,6 +96,7 @@ namespace Mono.Addins.Description
 			typeMap.RegisterType (typeof(ExtensionPoint), "ExtensionPoint");
 			typeMap.RegisterType (typeof(ModuleDescription), "ModuleDescription");
 			typeMap.RegisterType (typeof(ConditionTypeDescription), "ConditionType");
+			typeMap.RegisterType (typeof(LocalizerTypeDescriptionCollection), "LocalizerType");
 			typeMap.RegisterType (typeof(Condition), "Condition");
 			typeMap.RegisterType (typeof(AddinDependency), "AddinDependency");
 			typeMap.RegisterType (typeof(AssemblyDependency), "AssemblyDependency");
@@ -526,7 +528,26 @@ namespace Mono.Addins.Description
 				return conditionTypes;
 			}
 		}
-		
+
+		/// <summary>
+		/// Gets the localizer types.
+		/// </summary>
+		/// <value>
+		/// The localizer types.
+		/// </value>
+		public LocalizerTypeDescriptionCollection LocalizerTypes {
+			get {
+				if (localizerTypes == null) {
+					localizerTypes = new LocalizerTypeDescriptionCollection (this);
+					if (RootElement != null) {
+						foreach (XmlElement elem in RootElement.SelectNodes ("LocalizerType"))
+							localizerTypes.Add (new LocalizerTypeDescription (elem));
+					}
+				}
+				return localizerTypes;
+			}
+		}
+
 		/// <summary>
 		/// Gets or sets the add-in localizer.
 		/// </summary>
@@ -1263,13 +1284,17 @@ namespace Mono.Addins.Description
 						errors.Add ("The file '" + asmFile + "' referenced in the manifest could not be found.");
 				}
 			}
-			
-			if (localizer != null && localizer.GetAttribute ("type").Length == 0) {
-				errors.Add ("The attribute 'type' in the Location element is required.");
+
+			if (localizer != null) {
+				if (localizer.GetAttribute ("id").Length == 0) {
+					if (localizer.GetAttribute ("type").Length == 0) {
+						errors.Add ("The attribute 'type' or 'id' in the Location element is required.");
+					}
+				}
 			}
-			
+
 			// Ensure that there are no duplicated properties
-			
+
 			if (properties != null) {
 				HashSet<string> props = new HashSet<string> ();
 				foreach (var prop in properties) {
@@ -1363,6 +1388,7 @@ namespace Mono.Addins.Description
 			writer.WriteValue ("NodeSets", ExtensionNodeSets);
 			writer.WriteValue ("ExtensionPoints", ExtensionPoints);
 			writer.WriteValue ("ConditionTypes", ConditionTypes);
+			writer.WriteValue ("LocalizerTypes", LocalizerTypes);
 			writer.WriteValue ("FilesInfo", fileInfo);
 			writer.WriteValue ("Localizer", localizer);
 			writer.WriteValue ("flags", (int)flags);
@@ -1392,6 +1418,7 @@ namespace Mono.Addins.Description
 			nodeSets = (ExtensionNodeSetCollection) reader.ReadValue ("NodeSets", new ExtensionNodeSetCollection (this));
 			extensionPoints = (ExtensionPointCollection) reader.ReadValue ("ExtensionPoints", new ExtensionPointCollection (this));
 			conditionTypes = (ConditionTypeDescriptionCollection) reader.ReadValue ("ConditionTypes", new ConditionTypeDescriptionCollection (this));
+			localizerTypes = (LocalizerTypeDescriptionCollection)reader.ReadValue ("LocalizerTypes", new LocalizerTypeDescriptionCollection (this));
 			fileInfo = (object[]) reader.ReadValue ("FilesInfo", null);
 			localizer = (ExtensionNodeDescription) reader.ReadValue ("Localizer");
 			flags = (AddinFlags) reader.ReadInt32Value ("flags");

@@ -582,7 +582,12 @@ namespace Mono.Addins
 					return addinEngine.DefaultLocalizer;
 			}
 		}
-		
+
+		internal AddinLocalizer LocalizerRaw {
+			get { return localizer; }
+			set { localizer = value; }
+		}
+
 		internal RuntimeAddin GetModule (ModuleDescription module)
 		{
 			// If requesting the root module, return this
@@ -605,10 +610,14 @@ namespace Mono.Addins
 			baseDirectory = description.BasePath;
 			module = description.MainModule;
 			module.RuntimeAddin = this;
-			
-			if (description.Localizer != null) {
-				if (!addinEngine.TryGetLocalizer (description, out localizer)) {
-					string cls = description.Localizer.GetAttribute ("type");
+
+			var localizerDescription = description.Localizer;
+			if (localizerDescription != null) {
+				var localizerType = addinEngine.GetLocalizerType (localizerDescription);
+				if (localizerType != null) {
+					localizer = new LocalizerTypeAddinLocalizer (localizerType);
+				} else {
+					string cls = localizerDescription.GetAttribute ("type");
 
 					// First try getting one of the stock localizers. If none of found try getting the type.
 					object fob = null;
@@ -622,15 +631,13 @@ namespace Mono.Addins
 					IAddinLocalizerFactory factory = fob as IAddinLocalizerFactory;
 					if (factory == null)
 						throw new InvalidOperationException ("Localizer factory type '" + cls + "' must implement IAddinLocalizerFactory");
-					localizer = new AddinLocalizer (factory.CreateLocalizer (this, description.Localizer));
-
-					addinEngine.AddLocalizer (description, localizer);
+					localizer = new AddinLocalizer (factory.CreateLocalizer (this, localizerDescription));
 				}
 			}
 			
 			return description;
 		}
-		
+
 		RuntimeAddin[] GetDepAddins ()
 		{
 			if (depAddins != null)
@@ -690,8 +697,6 @@ namespace Mono.Addins
 		internal void UnloadExtensions ()
 		{
 			addinEngine.UnregisterAddinNodeSets (id);
-
-			addinEngine.RemoveLocalizer (Addin.Description);
 		}
 		
 		bool CheckAddinDependencies (ModuleDescription module, bool forceLoadAssemblies)

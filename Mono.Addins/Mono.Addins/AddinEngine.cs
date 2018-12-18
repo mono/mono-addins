@@ -59,7 +59,6 @@ namespace Mono.Addins
 		IAddinInstaller installer;
 		
 		bool checkAssemblyLoadConflicts;
-		Dictionary<string,AddinLocalizer> registeredLocalizers = new Dictionary<string, AddinLocalizer> ();
 		Dictionary<string,RuntimeAddin> loadedAddins = new Dictionary<string,RuntimeAddin> ();
 		Dictionary<string,ExtensionNodeSet> nodeSets = new Dictionary<string, ExtensionNodeSet> ();
 		Hashtable autoExtensionTypes = new Hashtable ();
@@ -562,38 +561,6 @@ namespace Mono.Addins
 			}
 		}
 
-		internal void AddLocalizer (AddinDescription description, AddinLocalizer addinLocalizer)
-		{
-			string id;
-			if (TryGetLocalizerId ("registerId", description, out id))
-				registeredLocalizers.Add (id, addinLocalizer);
-		}
-
-		internal bool TryGetLocalizer (AddinDescription description, out AddinLocalizer addinLocalizer)
-		{
-			addinLocalizer = null;
-
-			string id;
-			return TryGetLocalizerId ("id", description, out id) && registeredLocalizers.TryGetValue (id, out addinLocalizer);
-		}
-
-		internal bool RemoveLocalizer (AddinDescription description)
-		{
-			string id;
-			return TryGetLocalizerId ("registerId", description, out id) && registeredLocalizers.Remove (id);
-		}
-
-		bool TryGetLocalizerId (string attributeName, AddinDescription description, out string id)
-		{
-			id = null;
-
-			if (description.Localizer == null)
-				return false;
-
-			id = description.Localizer.GetAttribute (attributeName);
-			return !string.IsNullOrEmpty (id);
-		}
-
 		internal override void ResetCachedData ()
 		{
 			foreach (RuntimeAddin ad in loadedAddins.Values)
@@ -622,6 +589,11 @@ namespace Mono.Addins
 					foreach (ConditionTypeDescription cond in description.ConditionTypes) {
 						Type ctype = p.GetType (cond.TypeName, true);
 						RegisterCondition (cond.Id, ctype);
+					}
+
+					foreach (LocalizerTypeDescription localizer in description.LocalizerTypes) {
+						Type ctype = p.GetType (localizer.TypeName, true);
+						RegisterLocalizer (localizer.Id, ctype);
 					}
 				}
 					

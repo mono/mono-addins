@@ -32,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Mono.Addins.Description;
+using Mono.Addins.Localization;
 
 namespace Mono.Addins
 {
@@ -49,6 +50,7 @@ namespace Mono.Addins
 	{
 		internal object LocalLock = new object ();
 
+		Dictionary<string, Type> localizerTypes = new Dictionary<string, Type> ();
 		Hashtable conditionTypes = new Hashtable ();
 		Hashtable conditionsToNodes = new Hashtable ();
 		List<WeakReference> childContexts;
@@ -87,6 +89,7 @@ namespace Mono.Addins
 		
 		internal void ClearContext ()
 		{
+			localizerTypes.Clear ();
 			conditionTypes.Clear ();
 			conditionsToNodes.Clear ();
 			childContexts = null;
@@ -181,7 +184,21 @@ namespace Mono.Addins
 				ot.Changed -= new EventHandler (OnConditionChanged);
 			info.CondType = type;
 		}
-		
+
+		/// <summary>
+		/// Registers a new localizer in the extension context.
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the localizer.
+		/// </param>
+		/// <param name="type">
+		/// Localizer type.
+		/// </param>
+		public void RegisterLocalizer (string id, Type type)
+		{
+			localizerTypes [id] = type;
+		}
+
 		ConditionInfo CreateConditionInfo (string id)
 		{
 			ConditionInfo info = conditionTypes [id] as ConditionInfo;
@@ -221,7 +238,33 @@ namespace Mono.Addins
 			else
 				return null;
 		}
-		
+
+		internal LocalizerType GetLocalizerType (ExtensionNodeDescription localizerDescription)
+		{
+			if (localizerDescription == null)
+				return null;
+
+			var localizerId = localizerDescription.GetAttribute ("id");
+			if (localizerId != null) {
+				return GetLocalizerType (localizerId);
+			}
+			return null;
+		}
+
+		internal LocalizerType GetLocalizerType (string id)
+		{
+			Type type;
+			if (localizerTypes.TryGetValue (id, out type) && type != null) {
+				var lt = (LocalizerType)Activator.CreateInstance (type);
+				lt.Id = id;
+				return lt;
+			}
+
+			if (parentContext != null)
+				return parentContext.GetLocalizerType (id);
+			return null;
+		}
+
 		internal void RegisterNodeCondition (TreeNode node, BaseCondition cond)
 		{
 			ArrayList list = (ArrayList) conditionsToNodes [cond];

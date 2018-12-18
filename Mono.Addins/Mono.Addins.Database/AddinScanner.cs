@@ -549,6 +549,10 @@ namespace Mono.Addins.Database
 					monitor.ReportError ("Submodules can't define condition types: " + assemblyName, null);
 					return false;
 				}
+				if (mconfig.LocalizerTypes.Count != 0) {
+					monitor.ReportError ("Submodules can't define localizer types: " + assemblyName, null);
+					return false;
+				}
 				if (mconfig.ExtensionNodeSets.Count != 0) {
 					monitor.ReportError ("Submodules can't define extension node sets: " + assemblyName, null);
 					return false;
@@ -666,8 +670,6 @@ namespace Mono.Addins.Database
 					node.SetAttribute ("catalog", locat.Catalog);
 				if (!string.IsNullOrEmpty (locat.Location))
 					node.SetAttribute ("location", locat.Location);
-				if (!string.IsNullOrEmpty (locat.RegisterId))
-					node.SetAttribute ("registerId", locat.RegisterId);
 				config.Localizer = node;
 			}
 
@@ -676,11 +678,8 @@ namespace Mono.Addins.Database
 				var node = new ExtensionNodeDescription ();
 				if (!string.IsNullOrEmpty (customLocat.Id))
 					node.SetAttribute ("id", customLocat.Id);
-				else {
+				if (!string.IsNullOrEmpty (customLocat.TypeName))
 					node.SetAttribute ("type", customLocat.TypeName);
-					if (!string.IsNullOrEmpty (customLocat.RegisterId))
-						node.SetAttribute ("registerId", customLocat.RegisterId);
-				}
 				config.Localizer = node;
 			}
 			
