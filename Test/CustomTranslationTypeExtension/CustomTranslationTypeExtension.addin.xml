@@ -1,0 +1,29 @@
+﻿<Addin id          = "CustomTranslationTypeExtension"
+       namespace   = "SimpleApp"
+       name        = "CustomTranslationTypeExtension"
+       author      = "Marius Ungureanu"
+       copyright   = "MIT"
+       description = "CustomTranslationTypeExtension"
+	   category    = "SimpleApp/Extensions"
+       version     = "0.1.0">
+
+	<Runtime>
+		<Import assembly="CustomTranslationTypeExtension.dll"/>
+	</Runtime>
+	
+	<Dependencies>
+		<Addin id="Core" version="0.1.0" />
+	</Dependencies>
+	
+	<LocalizerType id="custom" type="CustomTranslationTypeExtension.CustomLocalizer"/>
+	<Localizer id="custom" />
+	
+	<ExtensionPoint path = "/SimpleApp/LocalizedTexts">
+		<ExtensionNode name="String" type="TranslatedStringExtensionNode" />
+	</ExtensionPoint>
+	
+	<Extension path = "/SimpleApp/LocalizedTexts">
+		<String id="Translated_One" _text="One" />
+		<String id="Translated_Two" _text="Two" />
+	</Extension>
+</Addin>

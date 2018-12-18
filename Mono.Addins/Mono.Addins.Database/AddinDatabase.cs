@@ -1901,26 +1901,6 @@ namespace Mono.Addins.Database
 			return null;
 		}
 
-		public string FindLocalizer (AddinDescription desc, ModuleDescription mod, string conditionId)
-		{
-			if (desc.Localizer.Any (c => c.Id == conditionId))
-				return desc.AddinId;
-
-			foreach (Dependency dep in mod.Dependencies) {
-				AddinDependency adep = dep as AddinDependency;
-
-				if (adep == null)
-					continue;
-				var descs = FindDescriptions (desc.Domain, adep.FullAddinId);
-				foreach (var d in descs) {
-					var c = FindCondition (d, d.MainModule, conditionId);
-					if (c != null)
-						return c;
-				}
-			}
-			return null;
-		}
-
 		public List<AddinDescription> GetSortedAddins ()
 		{
 			var inserted = new HashSet<string> ();

@@ -72,6 +72,7 @@
     <Compile Include="ExtensionModel\GlobalInfoConditionAttribute.cs" />
     <Compile Include="TestScan.cs" />
     <Compile Include="TestScanDataFileGeneration.cs" />
+    <Compile Include="TestLocalization_Types.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SimpleApp.addin.xml">
