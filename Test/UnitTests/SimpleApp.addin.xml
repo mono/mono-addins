@@ -69,6 +69,10 @@
 	<ExtensionPoint path = "/SimpleApp/DefaultInsertBefore" defaultInsertBefore="Mid">
 		<ExtensionNode name="Node" />
 	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SimpleApp/LocalizedTexts">
+		<ExtensionNode name="LocalizedText" type="UnitTests.TranslatedStringExtensionNode" />
+	</ExtensionPoint>
 	
 	<!-- Extensions -->
 	

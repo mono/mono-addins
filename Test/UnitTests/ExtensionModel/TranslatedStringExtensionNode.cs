@@ -26,19 +26,12 @@
 using System;
 using Mono.Addins;
 
-namespace CustomTranslationTypeExtension
+namespace UnitTests
 {
-	public class TranslatedStringExtensionNode : ExtensionNode
+	public class TranslatedStringExtensionNode : TypeExtensionNode
 	{
-		[NodeAttribute]
-		protected string id;
-
 		[NodeAttribute (Localizable = true)]
 		protected string text;
-
-		public string FileName {
-			get { return id; }
-		}
 
 		public string Text {
 			get { return text; }
@@ -47,6 +40,11 @@ namespace CustomTranslationTypeExtension
 		public override string ToString ()
 		{
 			return text;
+		}
+
+		public override object CreateInstance ()
+		{
+			return this;
 		}
 	}
 }

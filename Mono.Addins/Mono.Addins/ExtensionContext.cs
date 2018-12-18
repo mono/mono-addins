@@ -244,7 +244,7 @@ namespace Mono.Addins
 			if (localizerDescription == null)
 				return null;
 
-			var localizerId = localizerDescription.GetAttribute ("id");
+			var localizerId = localizerDescription.Id;
 			if (localizerId != null) {
 				return GetLocalizerType (localizerId);
 			}

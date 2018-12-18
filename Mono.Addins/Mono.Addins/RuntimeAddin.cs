@@ -612,7 +612,7 @@ namespace Mono.Addins
 			module.RuntimeAddin = this;
 
 			var localizerDescription = description.Localizer;
-			if (localizerDescription != null) {
+			if (localizerDescription != null && localizer == null) {
 				var localizerType = addinEngine.GetLocalizerType (localizerDescription);
 				if (localizerType != null) {
 					localizer = new LocalizerTypeAddinLocalizer (localizerType);

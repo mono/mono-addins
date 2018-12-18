@@ -45,8 +45,6 @@ namespace UnitTests
 		[Test]
 		public void TestCustomLocalizer ()
 		{
-			GlobalInfoCondition.Value = "testTranslationTypes";
-
 			ExtensionContext ctx;
 			ExtensionNode node;
 

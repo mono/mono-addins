@@ -73,6 +73,7 @@
     <Compile Include="TestScan.cs" />
     <Compile Include="TestScanDataFileGeneration.cs" />
     <Compile Include="TestLocalization_Types.cs" />
+    <Compile Include="ExtensionModel\TranslatedStringExtensionNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SimpleApp.addin.xml">
