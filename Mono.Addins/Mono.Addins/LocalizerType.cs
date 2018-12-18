@@ -29,11 +29,6 @@ namespace Mono.Addins
 {
 	public abstract class LocalizerType : IAddinLocalizer, IPluralAddinLocalizer
 	{
-		internal string Id {
-			get;
-			set;
-		}
-
 		public abstract string GetString (string msgid);
 
 		public abstract string GetPluralString (string singular, string defaultPlural, int n);

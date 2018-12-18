@@ -583,11 +583,6 @@ namespace Mono.Addins
 			}
 		}
 
-		internal AddinLocalizer LocalizerRaw {
-			get { return localizer; }
-			set { localizer = value; }
-		}
-
 		internal RuntimeAddin GetModule (ModuleDescription module)
 		{
 			// If requesting the root module, return this
@@ -611,11 +606,17 @@ namespace Mono.Addins
 			module = description.MainModule;
 			module.RuntimeAddin = this;
 
+			// Register localizer types.
+			foreach (LocalizerTypeDescription localizerType in iad.Description.LocalizerTypes) {
+				Type ltype = GetType (localizerType.TypeName, true);
+				addinEngine.RegisterLocalizer (localizerType.Id, (LocalizerType)Activator.CreateInstance (ltype));
+			}
+
 			var localizerDescription = description.Localizer;
 			if (localizerDescription != null && localizer == null) {
 				var localizerType = addinEngine.GetLocalizerType (localizerDescription);
 				if (localizerType != null) {
-					localizer = new LocalizerTypeAddinLocalizer (localizerType);
+					localizer = localizerType;
 				} else {
 					string cls = localizerDescription.GetAttribute ("type");
 

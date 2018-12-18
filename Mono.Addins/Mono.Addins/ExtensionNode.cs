@@ -411,9 +411,11 @@ namespace Mono.Addins
 				Type memberType = f.MemberType;
 
 				if (memberType == typeof(string)) {
-					if (f.Localizable)
-						val = GetAddinLocalizer ().GetString (at.value);
-					else
+					if (f.Localizable) {
+						var localizer = GetAddinLocalizer ();
+						var stringValue = localizer.GetString (at.value);
+						val = stringValue;
+					} else
 						val = at.value;
 				}
 				else if (memberType == typeof(string[])) {
@@ -459,17 +461,12 @@ namespace Mono.Addins
 				return Addin.Localizer;
 
 			Addin foundAddin = addinEngine.Registry.GetAddin (addinId);
-			if (foundAddin == null || foundAddin.Description.Localizer != null) {
+			ExtensionNodeDescription localizerDescription = foundAddin != null ? foundAddin.Description.Localizer : null;
+			if (foundAddin == null || localizerDescription != null) {
 				// Try checking if there's any id for a reusable localizer without having to load the addin.
-
-				var localizerType = addinEngine.GetLocalizerType (foundAddin.Description.Localizer.Id);
+				var localizerType = addinEngine.GetLocalizerType (foundAddin.Description.Localizer);
 				if (localizerType != null) {
-					var rawLocalizer = addin.LocalizerRaw as LocalizerTypeAddinLocalizer;
-					if (rawLocalizer == null) {
-						rawLocalizer = new LocalizerTypeAddinLocalizer (localizerType);
-						addin.LocalizerRaw = rawLocalizer;
-					}
-					return rawLocalizer;
+					return localizerType;
 				}
 
 				return Addin.Localizer;

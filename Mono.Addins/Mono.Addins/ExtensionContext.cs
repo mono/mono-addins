@@ -50,7 +50,7 @@ namespace Mono.Addins
 	{
 		internal object LocalLock = new object ();
 
-		Dictionary<string, Type> localizerTypes = new Dictionary<string, Type> ();
+		Dictionary<string, LocalizerTypeAddinLocalizer> localizerTypes = new Dictionary<string, LocalizerTypeAddinLocalizer> ();
 		Hashtable conditionTypes = new Hashtable ();
 		Hashtable conditionsToNodes = new Hashtable ();
 		List<WeakReference> childContexts;
@@ -185,20 +185,6 @@ namespace Mono.Addins
 			info.CondType = type;
 		}
 
-		/// <summary>
-		/// Registers a new localizer in the extension context.
-		/// </summary>
-		/// <param name="id">
-		/// Identifier of the localizer.
-		/// </param>
-		/// <param name="type">
-		/// Localizer type.
-		/// </param>
-		public void RegisterLocalizer (string id, Type type)
-		{
-			localizerTypes [id] = type;
-		}
-
 		ConditionInfo CreateConditionInfo (string id)
 		{
 			ConditionInfo info = conditionTypes [id] as ConditionInfo;
@@ -239,29 +225,53 @@ namespace Mono.Addins
 				return null;
 		}
 
-		internal LocalizerType GetLocalizerType (ExtensionNodeDescription localizerDescription)
+		/// <summary>
+		/// Registers a new localizer in the extension context.
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the localizer.
+		/// </param>
+		/// <param name="type">
+		/// Localizer type.
+		/// </param>
+		public void RegisterLocalizer (string id, LocalizerType type)
+		{
+			var localizer = new LocalizerTypeAddinLocalizer (type);
+			localizerTypes [id] = localizer;
+		}
+
+		internal LocalizerTypeAddinLocalizer GetLocalizerType (ExtensionNodeDescription localizerDescription)
 		{
 			if (localizerDescription == null)
 				return null;
 
-			var localizerId = localizerDescription.Id;
-			if (localizerId != null) {
-				return GetLocalizerType (localizerId);
-			}
-			return null;
+			var sourceAddin = localizerDescription.GetAttribute (Condition.SourceAddinAttribute);
+			return GetLocalizerType (localizerDescription.Id, sourceAddin);
 		}
 
-		internal LocalizerType GetLocalizerType (string id)
+		LocalizerTypeAddinLocalizer GetLocalizerType (string localizerId, string sourceAddin)
 		{
-			Type type;
-			if (localizerTypes.TryGetValue (id, out type) && type != null) {
-				var lt = (LocalizerType)Activator.CreateInstance (type);
-				lt.Id = id;
-				return lt;
-			}
+			if (localizerId != null) {
+				LocalizerTypeAddinLocalizer type;
+				if (localizerTypes.TryGetValue (localizerId, out type)) {
+					if (type != null)
+						return type;
+				} else {
+					// Try loading the source addin once.
+					if (!string.IsNullOrEmpty (sourceAddin)) {
+						AddinEngine.LoadAddin (null, sourceAddin);
+					}
 
-			if (parentContext != null)
-				return parentContext.GetLocalizerType (id);
+					if (!localizerTypes.TryGetValue (localizerId, out type)) {
+						localizerTypes [localizerId] = type = null;
+					}
+					if (type != null)
+						return type;
+				}
+
+				if (parentContext != null)
+					return parentContext.GetLocalizerType (localizerId, sourceAddin);
+			}
 			return null;
 		}
 

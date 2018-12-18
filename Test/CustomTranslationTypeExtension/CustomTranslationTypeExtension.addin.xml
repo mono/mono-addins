@@ -19,7 +19,7 @@
 	<Localizer id="custom" />
 	
 	<Extension path = "/SimpleApp/LocalizedTexts">
-		<LocalizedText id="Translated_One" _text="One" />
-		<LocalizedText id="Translated_Two" _text="Two" />
+		<LocalizedText id="Translated_One" text="One" />
+		<LocalizedText id="Translated_Two" text="Two" />
 	</Extension>
 </Addin>

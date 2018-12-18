@@ -876,8 +876,19 @@ namespace Mono.Addins.Database
 				monitor.ReportWarning (w);
 				return;
 			}
-			
-			CollectModuleExtensionData (conf, conf.MainModule, updateData, addinHash);
+
+			var mainModule = conf.MainModule;
+
+			var localizer = conf.Localizer;
+			if (localizer != null) {
+				// Set the source addin of the localizer so it is loaded on demand.
+				var locAsm = addinHash.FindLocalizer (conf, mainModule, localizer.Id);
+				if (locAsm != null) {
+					localizer.SetAttribute (Condition.SourceAddinAttribute, locAsm);
+				}
+			}
+
+			CollectModuleExtensionData (conf, mainModule, updateData, addinHash);
 			
 			foreach (ModuleDescription module in conf.OptionalModules) {
 				missingDeps = addinHash.GetMissingDependencies (conf, module);
@@ -1896,6 +1907,28 @@ namespace Mono.Addins.Database
 					var c = FindCondition (d, d.MainModule, conditionId);
 					if (c != null)
 						return c;
+				}
+			}
+			return null;
+		}
+
+		public string FindLocalizer (AddinDescription desc, ModuleDescription mod, string localizerId)
+		{
+			foreach (LocalizerTypeDescription localizer in desc.LocalizerTypes) {
+				if (localizer.Id == localizerId)
+					return desc.AddinId;
+			}
+
+			foreach (Dependency dep in mod.Dependencies) {
+				AddinDependency adep = dep as AddinDependency;
+				if (adep == null)
+					continue;
+
+				var descs = FindDescriptions (desc.Domain, adep.FullAddinId);
+				foreach (var d in descs) {
+					var l = FindLocalizer (d, d.MainModule, localizerId);
+					if (l != null)
+						return l;
 				}
 			}
 			return null;

@@ -45,36 +45,27 @@ namespace UnitTests
 		[Test]
 		public void TestCustomLocalizer ()
 		{
-			ExtensionContext ctx;
-			ExtensionNode node;
-
 			// Use a new extension context for every check, since strings are cached in
 			// the nodes, and every extension has its own copy of the tree
 
-			Thread.CurrentThread.CurrentCulture = new CultureInfo ("en-US");
-			ctx = AddinManager.CreateExtensionContext ();
+			AssertNodeTexts ("en-US", "One", "No translation");
+			AssertNodeTexts ("de-DE", "Eins", "No translation");
+			AssertNodeTexts ("ja-JP", "Unknown locale", "No translation");
+		}
 
-			node = ctx.GetExtensionNode ("/SimpleApp/LocalizedTexts/Translated_One");
-			Assert.IsNotNull (node, "t1.1");
-			Assert.AreEqual ("One", node.ToString ());
-			node = ctx.GetExtensionNode ("/SimpleApp/LocalizedTexts/Translated_Two");
-			Assert.IsNotNull (node, "t1.2");
-			Assert.AreEqual ("No translation", node.ToString ());
+		void AssertNodeTexts (string culture, string text1, string text2)
+		{
+			Thread.CurrentThread.CurrentCulture = new CultureInfo (culture);
 
-			Thread.CurrentThread.CurrentCulture = new CultureInfo ("de-DE");
-			node = ctx.GetExtensionNode ("/SimpleApp/LocalizedTexts/Translated_One");
-			Assert.IsNotNull (node, "t1.1");
-			Assert.AreEqual ("Eins", node.ToString ());
-			node = ctx.GetExtensionNode ("/SimpleApp/LocalizedTexts/Translated_Two");
-			Assert.IsNotNull (node, "t1.2");
-			Assert.AreEqual ("No translation", node.ToString ());
+			var ctx = AddinManager.CreateExtensionContext ();
 
-			Thread.CurrentThread.CurrentCulture = new CultureInfo ("jp-JP");
-			Assert.IsNotNull (node, "t1.1");
-			Assert.AreEqual ("Unknown locale", node.ToString ());
-			node = ctx.GetExtensionNode ("/SimpleApp/LocalizedTexts/Translated_Two");
-			Assert.IsNotNull (node, "t1.2");
-			Assert.AreEqual ("No translation", node.ToString ());
+			var node = ctx.GetExtensionNode<TranslatedStringExtensionNode> ("/SimpleApp/LocalizedTexts/Translated_One");
+			Assert.IsNotNull (node, culture + " n1");
+			Assert.AreEqual (text1, node.Text, culture + " n1");
+
+			node = ctx.GetExtensionNode<TranslatedStringExtensionNode> ("/SimpleApp/LocalizedTexts/Translated_Two");
+			Assert.IsNotNull (node, culture + " n2");
+			Assert.AreEqual (text2, node.Text, culture + " n2");
 		}
 	}
 }

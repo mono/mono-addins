@@ -590,11 +590,6 @@ namespace Mono.Addins
 						Type ctype = p.GetType (cond.TypeName, true);
 						RegisterCondition (cond.Id, ctype);
 					}
-
-					foreach (LocalizerTypeDescription localizer in description.LocalizerTypes) {
-						Type ctype = p.GetType (localizer.TypeName, true);
-						RegisterLocalizer (localizer.Id, ctype);
-					}
 				}
 					
 				foreach (ExtensionPoint ep in description.ExtensionPoints)

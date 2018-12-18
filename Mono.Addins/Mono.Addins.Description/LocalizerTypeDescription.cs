@@ -37,7 +37,6 @@ namespace Mono.Addins.Description
 	{
 		string id;
 		string typeName;
-		string addinId;
 		string description;
 
 		/// <summary>
@@ -64,7 +63,6 @@ namespace Mono.Addins.Description
 		{
 			id = cond.id;
 			typeName = cond.typeName;
-			addinId = cond.AddinId;
 			description = cond.description;
 		}
 
@@ -107,11 +105,6 @@ namespace Mono.Addins.Description
 			set { description = value; }
 		}
 
-		internal string AddinId {
-			get { return addinId; }
-			set { addinId = value; }
-		}
-
 		internal override void SaveXml (XmlElement parent)
 		{
 			CreateElement (parent, "LocalizerType");
@@ -125,7 +118,6 @@ namespace Mono.Addins.Description
 			writer.WriteValue ("Id", Id);
 			writer.WriteValue ("TypeName", TypeName);
 			writer.WriteValue ("Description", Description);
-			writer.WriteValue ("AddinId", AddinId);
 		}
 
 		internal override void Read (BinaryXmlReader reader)
@@ -134,7 +126,6 @@ namespace Mono.Addins.Description
 			TypeName = reader.ReadStringValue ("TypeName");
 			if (!reader.IgnoreDescriptionData)
 				Description = reader.ReadStringValue ("Description");
-			AddinId = reader.ReadStringValue ("AddinId");
 		}
 	}
 }
