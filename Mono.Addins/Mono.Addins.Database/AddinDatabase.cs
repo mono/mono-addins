@@ -880,7 +880,7 @@ namespace Mono.Addins.Database
 			var mainModule = conf.MainModule;
 
 			var localizer = conf.Localizer;
-			if (localizer != null) {
+			if (localizer != null && !string.IsNullOrEmpty(localizer.Id)) {
 				// Set the source addin of the localizer so it is loaded on demand.
 				var locAsm = addinHash.FindLocalizer (conf, mainModule, localizer.Id);
 				if (locAsm != null) {
