@@ -75,7 +75,7 @@ namespace Mono.Addins.Description
 		ModuleCollection optionalModules;
 		ExtensionNodeSetCollection nodeSets;
 		ConditionTypeDescriptionCollection conditionTypes;
-		LocalizerTypeDescriptionCollection localizerTypes;
+		ExtensionNodeDescriptionCollection localizerTypes;
 		ExtensionPointCollection extensionPoints;
 		ExtensionNodeDescription localizer;
 		object[] fileInfo;
@@ -96,7 +96,6 @@ namespace Mono.Addins.Description
 			typeMap.RegisterType (typeof(ExtensionPoint), "ExtensionPoint");
 			typeMap.RegisterType (typeof(ModuleDescription), "ModuleDescription");
 			typeMap.RegisterType (typeof(ConditionTypeDescription), "ConditionType");
-			typeMap.RegisterType (typeof(LocalizerTypeDescription), "LocalizerType");
 			typeMap.RegisterType (typeof(Condition), "Condition");
 			typeMap.RegisterType (typeof(AddinDependency), "AddinDependency");
 			typeMap.RegisterType (typeof(AssemblyDependency), "AssemblyDependency");
@@ -535,13 +534,13 @@ namespace Mono.Addins.Description
 		/// <value>
 		/// The localizer types.
 		/// </value>
-		public LocalizerTypeDescriptionCollection LocalizerTypes {
+		public ExtensionNodeDescriptionCollection LocalizerTypes {
 			get {
 				if (localizerTypes == null) {
-					localizerTypes = new LocalizerTypeDescriptionCollection (this);
+					localizerTypes = new ExtensionNodeDescriptionCollection (this);
 					if (RootElement != null) {
 						foreach (XmlElement elem in RootElement.SelectNodes ("LocalizerType"))
-							localizerTypes.Add (new LocalizerTypeDescription (elem));
+							localizerTypes.Add (new ExtensionNodeDescription (elem));
 					}
 				}
 				return localizerTypes;
@@ -1421,7 +1420,7 @@ namespace Mono.Addins.Description
 			nodeSets = (ExtensionNodeSetCollection) reader.ReadValue ("NodeSets", new ExtensionNodeSetCollection (this));
 			extensionPoints = (ExtensionPointCollection) reader.ReadValue ("ExtensionPoints", new ExtensionPointCollection (this));
 			conditionTypes = (ConditionTypeDescriptionCollection) reader.ReadValue ("ConditionTypes", new ConditionTypeDescriptionCollection (this));
-			localizerTypes = (LocalizerTypeDescriptionCollection) reader.ReadValue ("LocalizerTypes", new LocalizerTypeDescriptionCollection (this));
+			localizerTypes = (ExtensionNodeDescriptionCollection) reader.ReadValue ("LocalizerTypes", new ExtensionNodeDescriptionCollection (this));
 			fileInfo = (object[]) reader.ReadValue ("FilesInfo", null);
 			localizer = (ExtensionNodeDescription) reader.ReadValue ("Localizer");
 			flags = (AddinFlags) reader.ReadInt32Value ("flags");

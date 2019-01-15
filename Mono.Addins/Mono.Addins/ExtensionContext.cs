@@ -50,7 +50,7 @@ namespace Mono.Addins
 	{
 		internal object LocalLock = new object ();
 
-		Dictionary<string, LocalizerTypeAddinLocalizer> localizerTypes = new Dictionary<string, LocalizerTypeAddinLocalizer> ();
+		Dictionary<string, AddinLocalizer> localizerTypes = new Dictionary<string, AddinLocalizer> ();
 		Hashtable conditionTypes = new Hashtable ();
 		Hashtable conditionsToNodes = new Hashtable ();
 		List<WeakReference> childContexts;
@@ -231,16 +231,15 @@ namespace Mono.Addins
 		/// <param name="id">
 		/// Identifier of the localizer.
 		/// </param>
-		/// <param name="type">
-		/// Localizer type.
+		/// <param name="localizer">
+		/// The localizer instance.
 		/// </param>
-		public void RegisterLocalizer (string id, LocalizerType type)
+		public void RegisterLocalizer (string id, AddinLocalizer localizer)
 		{
-			var localizer = new LocalizerTypeAddinLocalizer (type);
 			localizerTypes [id] = localizer;
 		}
 
-		internal LocalizerTypeAddinLocalizer GetLocalizerType (ExtensionNodeDescription localizerDescription)
+		internal AddinLocalizer GetLocalizerType (ExtensionNodeDescription localizerDescription)
 		{
 			if (localizerDescription == null)
 				return null;
@@ -249,10 +248,10 @@ namespace Mono.Addins
 			return GetLocalizerType (localizerDescription.Id, sourceAddin);
 		}
 
-		LocalizerTypeAddinLocalizer GetLocalizerType (string localizerId, string sourceAddin)
+		AddinLocalizer GetLocalizerType (string localizerId, string sourceAddin)
 		{
 			if (localizerId != null) {
-				LocalizerTypeAddinLocalizer type;
+				AddinLocalizer type;
 				if (localizerTypes.TryGetValue (localizerId, out type)) {
 					if (type != null)
 						return type;

@@ -1914,7 +1914,7 @@ namespace Mono.Addins.Database
 
 		public string FindLocalizer (AddinDescription desc, ModuleDescription mod, string localizerId)
 		{
-			foreach (LocalizerTypeDescription localizer in desc.LocalizerTypes) {
+			foreach (ExtensionNodeDescription localizer in desc.LocalizerTypes) {
 				if (localizer.Id == localizerId)
 					return desc.AddinId;
 			}

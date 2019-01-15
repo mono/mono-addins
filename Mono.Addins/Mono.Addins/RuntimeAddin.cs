@@ -607,9 +607,11 @@ namespace Mono.Addins
 			module.RuntimeAddin = this;
 
 			// Register localizer types.
-			foreach (LocalizerTypeDescription localizerType in iad.Description.LocalizerTypes) {
-				Type ltype = GetType (localizerType.TypeName, true);
-				addinEngine.RegisterLocalizer (localizerType.Id, (LocalizerType)Activator.CreateInstance (ltype));
+			foreach (ExtensionNodeDescription localizerType in iad.Description.LocalizerTypes) {
+				var typeName = localizerType.GetAttribute ("type");
+
+				var registeredLocalizer = (IAddinLocalizer)CreateInstance (typeName, true);
+				addinEngine.RegisterLocalizer (localizerType.Id, new AddinLocalizer (registeredLocalizer));
 			}
 
 			var localizerDescription = description.Localizer;

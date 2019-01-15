@@ -162,9 +162,6 @@
     <Compile Include="Mono.Addins.Database\AddinScanDataFileGenerator.cs" />
     <Compile Include="Mono.Addins.Database\AddinRegistryUpdater.cs" />
     <Compile Include="Mono.Addins.Database\AssemblyLocatorVisitor.cs" />
-    <Compile Include="Mono.Addins.Description\LocalizerTypeDescription.cs" />
-    <Compile Include="Mono.Addins.Description\LocalizerTypeDescriptionCollection.cs" />
-    <Compile Include="Mono.Addins\LocalizerType.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

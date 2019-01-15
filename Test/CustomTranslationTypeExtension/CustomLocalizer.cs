@@ -26,17 +26,13 @@
 using System;
 using System.Threading;
 using Mono.Addins;
+using Mono.Addins.Localization;
 
 namespace CustomTranslationTypeExtension
 {
-	public class CustomLocalizer : LocalizerType
+	public class CustomLocalizer : IAddinLocalizer
 	{
-		public override string GetPluralString (string singular, string defaultPlural, int n)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public override string GetString (string msgid)
+		public string GetString (string msgid)
 		{
 			if (msgid == "One") {
 				string name = Thread.CurrentThread.CurrentCulture.Name;
