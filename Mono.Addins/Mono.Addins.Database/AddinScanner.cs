@@ -397,10 +397,11 @@ namespace Mono.Addins.Database
 				return res;
 			}
 			catch (Exception ex) {
-				if (asm != null)
-					reflector.UnloadAssembly (asm);
 				// Something went wrong while scanning the assembly. We'll ignore it for now.
 				monitor.ReportError ("There was an error while scanning assembly: " + filePath, ex);
+
+				if (asm != null)
+					reflector.UnloadAssembly (asm);
 				return false;
 			}
 		}
