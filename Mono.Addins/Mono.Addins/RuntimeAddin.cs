@@ -610,8 +610,8 @@ namespace Mono.Addins
 			foreach (ExtensionNodeDescription localizerType in iad.Description.LocalizerTypes) {
 				var typeName = localizerType.GetAttribute ("type");
 
-				var registeredLocalizer = (IAddinLocalizer)CreateInstance (typeName, true);
-				addinEngine.RegisterLocalizer (localizerType.Id, new AddinLocalizer (registeredLocalizer));
+				var factory = (IAddinLocalizerFactory)CreateInstance (typeName, true);
+				addinEngine.RegisterLocalizer (localizerType.Id, new AddinLocalizer (factory.CreateLocalizer (this, localizerType)));
 			}
 
 			var localizerDescription = description.Localizer;

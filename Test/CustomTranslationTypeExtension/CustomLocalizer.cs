@@ -30,8 +30,13 @@ using Mono.Addins.Localization;
 
 namespace CustomTranslationTypeExtension
 {
-	public class CustomLocalizer : IAddinLocalizer
+	public class CustomLocalizer : IAddinLocalizerFactory, IAddinLocalizer
 	{
+		public IAddinLocalizer CreateLocalizer (RuntimeAddin addin, NodeElement element)
+		{
+			return this;
+		}
+
 		public string GetString (string msgid)
 		{
 			if (msgid == "One") {
