@@ -60,6 +60,9 @@ namespace Mono.Addins.Gui
 		{
 			AddinManagerDialog dlg = new AddinManagerDialog (parent, service);
 			InitDialog (dlg);
+			if (parent == null) {
+				dlg.SetPosition (Gtk.WindowPosition.Center);
+			}
 			dlg.Show ();
 			return dlg;
 		}
