@@ -183,12 +183,6 @@ namespace Mono.Addins.Gui
 			};
 			RepositionFilter ();
 		}
-
-		protected override void OnShown ()
-		{
-			base.OnShown ();
-			filterEntry.Parent = notebook;
-		}
 		
 		void RepositionFilter ()
 		{
