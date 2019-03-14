@@ -91,7 +91,7 @@ namespace Mono.Addins.Database
 
 					if (File.Exists(assemblyFileName))
 					{
-						return Assembly.LoadFrom(assemblyFileName);
+						return Util.LoadAssemblyForReflection (assemblyFileName);
 					}
 				}
 			}
