@@ -81,7 +81,7 @@ namespace Mono.Addins.Database
 
 		Assembly OnResolveAddinAssembly (object s, ResolveEventArgs args)
 		{
-			string[] paths = Environment.GetEnvironmentVariable("MONO_ADDIN_ADDITIONAL_PATH")?.Split(Path.PathSeparator);
+			string[] paths = Environment.GetEnvironmentVariable("MONO_ADDINS_RESOLVER_PATH")?.Split(Path.PathSeparator);
 			if (paths != null)
 			{
 				foreach (string path in paths)
