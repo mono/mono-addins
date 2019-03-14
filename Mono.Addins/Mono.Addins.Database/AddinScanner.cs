@@ -81,6 +81,21 @@ namespace Mono.Addins.Database
 
 		Assembly OnResolveAddinAssembly (object s, ResolveEventArgs args)
 		{
+			string[] paths = Environment.GetEnvironmentVariable("MONO_ADDIN_ADDITIONAL_PATH")?.Split(';');
+			if (paths != null)
+			{
+				foreach (string path in paths)
+				{
+					var assemblyName = new AssemblyName(args.Name).Name;
+					var assemblyFileName = Path.Combine(path, assemblyName + ".dll");
+
+					if (File.Exists(assemblyFileName))
+					{
+						return Assembly.LoadFrom(assemblyFileName);
+					}
+				}
+			}
+
 			string file = assemblyLocator != null ? assemblyLocator.GetAssemblyLocation (args.Name) : null;
 			if (file != null)
 				return Util.LoadAssemblyForReflection (file);
