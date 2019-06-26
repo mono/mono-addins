@@ -171,7 +171,14 @@ namespace Mono.Addins
 					try {
 						value (this, new ExtensionNodeEventArgs (ExtensionChange.Add, node));
 					} catch (Exception ex) {
-						addinEngine.ReportError (null, node.Addin != null ? node.Addin.Id : null, ex, false);
+						RuntimeAddin nodeAddin;
+						try {
+							nodeAddin = node.Addin;
+						} catch (Exception addinException) {
+							addinEngine.ReportError (null, null, addinException, false);
+							nodeAddin = null;
+						}
+						addinEngine.ReportError (null, nodeAddin != null ? nodeAddin.Id : null, ex, false);
 					}
 				}
 			}
