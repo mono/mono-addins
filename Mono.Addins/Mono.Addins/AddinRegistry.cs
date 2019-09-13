@@ -220,8 +220,6 @@ namespace Mono.Addins
 				currentDomain = database.GetFolderDomain (null, this.startupDirectory);
 			} else
 				currentDomain = AddinDatabase.GlobalDomain;
-
-			database.UpdateEnabledStatus (currentDomain);
 		}
 
 		/// <summary>

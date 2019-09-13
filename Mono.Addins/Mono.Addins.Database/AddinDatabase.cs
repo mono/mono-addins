@@ -548,13 +548,13 @@ namespace Mono.Addins.Database
 				addinEngine.UnloadAddin (id);
 		}
 
-		public void UpdateEnabledStatus (string domain)
+		public void UpdateEnabledStatus ()
 		{
 			// Ensure that all enabled addins that have dependencies also have their dependencies enabled.
 			HashSet<Addin> updatedAddins = new HashSet<Addin> ();
-			var allAddins = GetInstalledAddins (domain, AddinSearchFlagsInternal.IncludeAddins | AddinSearchFlagsInternal.LatestVersionsOnly).ToList ();
+			var allAddins = GetInstalledAddins (registry.CurrentDomain, AddinSearchFlagsInternal.IncludeAddins | AddinSearchFlagsInternal.LatestVersionsOnly).ToList ();
 			foreach (Addin addin in allAddins)
-				UpdateEnabledStatus (domain, addin, allAddins, updatedAddins);
+				UpdateEnabledStatus (registry.CurrentDomain, addin, allAddins, updatedAddins);
 		}
 
 		void UpdateEnabledStatus (string domain, Addin addin, List<Addin> allAddins, HashSet<Addin> updatedAddins)
@@ -1157,8 +1157,9 @@ namespace Mono.Addins.Database
 					}
 				}
 			}
+			UpdateEnabledStatus ();
 		}
-		
+
 		void RunPendingUninstalls (IProgressStatus monitor)
 		{
 			bool changesDone = false;
