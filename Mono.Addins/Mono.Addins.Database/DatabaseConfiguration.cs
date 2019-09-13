@@ -39,7 +39,7 @@ namespace Mono.Addins.Database
 	internal class DatabaseConfiguration
 	{
 		Dictionary<string,AddinStatus> addinStatus = new Dictionary<string,AddinStatus> ();
-		
+
 		internal class AddinStatus
 		{
 			public AddinStatus (string addinId)
@@ -48,11 +48,15 @@ namespace Mono.Addins.Database
 			}
 
 			public string AddinId;
-			public bool Enabled;
+			public bool ConfigEnabled;
+			public bool? SessionEnabled;
 			public bool Uninstalled;
 			public List<string> Files;
+			public bool Enabled {
+				get { return SessionEnabled ?? ConfigEnabled; }
+			}
 		}
-		
+
 		public bool IsEnabled (string addinId, bool defaultValue)
 		{
 			var addinName = Addin.GetIdName (addinId);
@@ -71,7 +75,7 @@ namespace Mono.Addins.Database
 				return defaultValue;
 		}
 		
-		public void SetEnabled (string addinId, bool enabled, bool defaultValue, bool exactVersionMatch)
+		public void SetEnabled (string addinId, bool enabled, bool defaultValue, bool exactVersionMatch, bool onlyForTheSession = false)
 		{
 			if (IsRegisteredForUninstall (addinId))
 				return;
@@ -83,11 +87,16 @@ namespace Mono.Addins.Database
 			
 			if (s == null)
 				s = addinStatus [addinName] = new AddinStatus (addinName);
-			s.Enabled = enabled;
+			if (onlyForTheSession)
+				s.SessionEnabled = enabled;
+			else {
+				s.ConfigEnabled = enabled;
+				s.SessionEnabled = null;
+			}
 
 			// If enabling a specific version of an add-in, make sure the add-in is enabled as a whole
 			if (enabled && exactVersionMatch)
-				SetEnabled (addinId, true, defaultValue, false);
+				SetEnabled (addinId, true, defaultValue, false, onlyForTheSession);
 		}
 		
 		public void RegisterForUninstall (string addinId, IEnumerable<string> files)
@@ -96,7 +105,7 @@ namespace Mono.Addins.Database
 			if (!addinStatus.TryGetValue (addinId, out s))
 				s = addinStatus [addinId] = new AddinStatus (addinId);
 			
-			s.Enabled = false;
+			s.ConfigEnabled = false;
 			s.Uninstalled = true;
 			s.Files = new List<string> (files);
 		}
@@ -171,7 +180,7 @@ namespace Mono.Addins.Database
 				foreach (XmlElement elem in statusElem.SelectNodes ("Addin")) {
 					AddinStatus status = new AddinStatus (elem.GetAttribute ("id"));
 					string senabled = elem.GetAttribute ("enabled");
-					status.Enabled = senabled.Length == 0 || senabled == "True";
+					status.ConfigEnabled = senabled.Length == 0 || senabled == "True";
 					status.Uninstalled = elem.GetAttribute ("uninstalled") == "True";
 					config.addinStatus [status.AddinId] = status;
 					foreach (XmlElement fileElem in elem.SelectNodes ("File")) {
@@ -196,7 +205,7 @@ namespace Mono.Addins.Database
 				foreach (AddinStatus e in addinStatus.Values) {
 					tw.WriteStartElement ("Addin");
 					tw.WriteAttributeString ("id", e.AddinId);
-					tw.WriteAttributeString ("enabled", e.Enabled.ToString ());
+					tw.WriteAttributeString ("enabled", e.ConfigEnabled.ToString ());
 					if (e.Uninstalled)
 						tw.WriteAttributeString ("uninstalled", "True");
 					if (e.Files != null && e.Files.Count > 0) {

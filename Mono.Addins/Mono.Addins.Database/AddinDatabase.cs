@@ -497,7 +497,7 @@ namespace Mono.Addins.Database
 				addinEngine.ActivateAddin (id);
 		}
 		
-		public void DisableAddin (string domain, string id, bool exactVersionMatch = false)
+		public void DisableAddin (string domain, string id, bool exactVersionMatch = false, bool onlyForCurrentSession = false)
 		{
 			Addin ai = GetInstalledAddin (domain, id, true);
 			if (ai == null)
@@ -505,8 +505,8 @@ namespace Mono.Addins.Database
 
 			if (!IsAddinEnabled (domain, id, exactVersionMatch))
 				return;
-			
-			Configuration.SetEnabled (id, false, ai.AddinInfo.EnabledByDefault, exactVersionMatch);
+
+			Configuration.SetEnabled (id, false, ai.AddinInfo.EnabledByDefault, exactVersionMatch, onlyForCurrentSession);
 			SaveConfiguration ();
 			
 			// Disable all add-ins which depend on it
@@ -531,7 +531,7 @@ namespace Mono.Addins.Database
 						Addin adepinfo = GetInstalledAddin (domain, adepid, false, true);
 						
 						if (adepinfo == null) {
-							DisableAddin (domain, ainfo.Id);
+							DisableAddin (domain, ainfo.Id, onlyForCurrentSession: onlyForCurrentSession);
 							break;
 						}
 					}
@@ -539,7 +539,7 @@ namespace Mono.Addins.Database
 			}
 			catch {
 				// If something goes wrong, enable the add-in again
-				Configuration.SetEnabled (id, true, ai.AddinInfo.EnabledByDefault, false);
+				Configuration.SetEnabled (id, true, ai.AddinInfo.EnabledByDefault, false, onlyForCurrentSession);
 				SaveConfiguration ();
 				throw;
 			}
@@ -547,7 +547,46 @@ namespace Mono.Addins.Database
 			if (addinEngine != null && addinEngine.IsInitialized)
 				addinEngine.UnloadAddin (id);
 		}
-		
+
+		public void UpdateEnabledStatus (string domain)
+		{
+			// Ensure that all enabled addins that have dependencies also have their dependencies enabled.
+			HashSet<Addin> updatedAddins = new HashSet<Addin> ();
+			var allAddins = GetInstalledAddins (domain, AddinSearchFlagsInternal.IncludeAddins | AddinSearchFlagsInternal.LatestVersionsOnly).ToList ();
+			foreach (Addin addin in allAddins)
+				UpdateEnabledStatus (domain, addin, allAddins, updatedAddins);
+		}
+
+		void UpdateEnabledStatus (string domain, Addin addin, List<Addin> allAddins, HashSet<Addin> updatedAddins)
+		{
+			if (!updatedAddins.Add (addin))
+				return;
+
+			if (!addin.Enabled)
+				return;
+
+			// Make sure all dependencies of this add-in have an up to date enabled status
+
+			foreach (Dependency dep in addin.AddinInfo.Dependencies) {
+				var adep = dep as AddinDependency;
+				if (adep == null)
+					continue;
+
+				string adepid = Addin.GetFullId (addin.AddinInfo.Namespace, adep.AddinId, null);
+				var dependency = allAddins.FirstOrDefault (a => Addin.GetFullId (a.Namespace, a.LocalId, null) == adepid);
+				if (dependency != null) {
+					UpdateEnabledStatus (domain, dependency, allAddins, updatedAddins);
+					if (!dependency.Enabled) {
+						// One of the dependencies is disabled, so this add-in also needs to be disabled.
+						// However, we disabled only for the current configuration, we don't want to change
+						// what the user configured.
+						DisableAddin (domain, addin.Id, onlyForCurrentSession: true);
+						return;
+					}
+				}
+			}
+		}
+
 		public void RegisterForUninstall (string domain, string id, IEnumerable<string> files)
 		{
 			DisableAddin (domain, id, true);
@@ -1955,6 +1994,7 @@ namespace Mono.Addins.Database
 	}
 	
 	// Keep in sync with AddinSearchFlags
+	[Flags]
 	enum AddinSearchFlagsInternal
 	{
 		IncludeAddins = 1,
