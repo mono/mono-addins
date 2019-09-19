@@ -34,9 +34,12 @@ namespace Mono.Addins.Gui
 		bool cancelled;
 		bool hadError;
 		
+		readonly Gtk.Window parent;
+
 		public ProgressDialog (Gtk.Window parent)
 		{
 			this.Build();
+			this.parent = parent;
 			Services.PlaceDialog (this, parent);
 		}
 
@@ -91,7 +94,7 @@ namespace Mono.Addins.Gui
 			if (exception != null)
 				Log (exception.ToString ());
 			Gtk.Application.Invoke ((o, args) => {
-				Services.ShowError (exception, message, null, true);
+				Services.ShowError (exception, message, parent, true);
 			});
 			hadError = true;
 		}

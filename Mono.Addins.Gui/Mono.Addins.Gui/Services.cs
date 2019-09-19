@@ -74,6 +74,10 @@ namespace Mono.Addins.Gui
 				dlg.AddDetails (ex.ToString (), false);
 			}
 
+			if (parent != null) {
+				CenterWindow (dlg, parent);
+			}
+
 			if (modal) {
 				dlg.Run ();
 				dlg.Destroy ();
