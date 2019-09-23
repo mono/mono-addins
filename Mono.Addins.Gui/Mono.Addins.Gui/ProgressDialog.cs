@@ -34,12 +34,12 @@ namespace Mono.Addins.Gui
 		bool cancelled;
 		bool hadError;
 		
-		readonly Gtk.Window parent;
+		readonly WeakReference<Gtk.Window> parent;
 
 		public ProgressDialog (Gtk.Window parent)
 		{
 			this.Build();
-			this.parent = parent;
+			this.parent = new WeakReference<Gtk.Window> (parent);
 			Services.PlaceDialog (this, parent);
 		}
 
@@ -94,7 +94,8 @@ namespace Mono.Addins.Gui
 			if (exception != null)
 				Log (exception.ToString ());
 			Gtk.Application.Invoke ((o, args) => {
-				Services.ShowError (exception, message, parent, true);
+				if (parent.TryGetTarget (out var parentWindow))
+					Services.ShowError (exception, message, parentWindow, true);
 			});
 			hadError = true;
 		}
