@@ -107,8 +107,8 @@ namespace Mono.Addins.Gui
 			
 			// Make sure the tree has the focus when switching tabs
 			
-			vboxUpdates.FocusChain = new Widget [] { scrolledUpdates, eboxRepoUpdates };
-			vboxGallery.FocusChain = new Widget [] { scrolledGallery, eboxRepo };
+			vboxUpdates.FocusChain = new Widget [] { eboxRepoUpdates, scrolledUpdates };
+			vboxGallery.FocusChain = new Widget [] { eboxRepo, scrolledGallery };
 				
 			// Improve the look of the headers
 			
