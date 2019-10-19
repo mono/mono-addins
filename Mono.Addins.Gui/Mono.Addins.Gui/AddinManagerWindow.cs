@@ -51,6 +51,16 @@ namespace Mono.Addins.Gui
 			dlg.AllowInstall = AllowInstall;
 		}
 
+		public static Gtk.Dialog Create (Gtk.Window parent = null, SetupService service = null)
+		{
+			if (service == null) {
+				service = new SetupService ();
+			}
+			var dlg = new AddinManagerDialog (parent, service);
+			InitDialog (dlg);
+			return dlg;
+		}
+
 		public static Gtk.Window Show (Gtk.Window parent)
 		{
 			return Show (parent, new SetupService ());
@@ -58,8 +68,7 @@ namespace Mono.Addins.Gui
 		
 		public static Gtk.Window Show (Gtk.Window parent, SetupService service)
 		{
-			AddinManagerDialog dlg = new AddinManagerDialog (parent, service);
-			InitDialog (dlg);
+			var dlg = Create (parent, service);
 			if (parent == null) {
 				dlg.SetPosition (Gtk.WindowPosition.Center);
 			}
@@ -74,7 +83,7 @@ namespace Mono.Addins.Gui
 
 		public static void Run (Gtk.Window parent, SetupService service)
 		{
-			AddinManagerDialog dlg = new AddinManagerDialog (parent, service);
+			var dlg = (AddinManagerDialog) Create (parent, service);
 			try {
 				InitDialog (dlg);
 				dlg.Run ();
