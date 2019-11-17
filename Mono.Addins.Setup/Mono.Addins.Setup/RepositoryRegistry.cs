@@ -53,7 +53,7 @@ namespace Mono.Addins.Setup
 		}
 		
 		/// <summary>
-		/// Subscribes to an on-line repository
+		/// Subscribes to an on-line repository, notice that default registry provider is "MonoAddins"
 		/// </summary>
 		/// <param name="monitor">
 		/// Progress monitor where to show progress status and log
@@ -70,11 +70,11 @@ namespace Mono.Addins.Setup
 		/// </remarks>
 		public AddinRepository RegisterRepository (IProgressStatus monitor, string url)
 		{
-			return RegisterRepository (monitor, url, false);
+			return RegisterRepository (monitor, url, false, "MonoAddins");
 		}
-		
+
 		/// <summary>
-		/// Subscribes to an on-line repository
+		/// Subscribes to an on-line repository, notice that default registry provider is "MonoAddins"
 		/// </summary>
 		/// <param name="monitor">
 		/// Progress monitor where to show progress status and log
@@ -90,20 +90,45 @@ namespace Mono.Addins.Setup
 		/// </returns>
 		public AddinRepository RegisterRepository (IProgressStatus monitor, string url, bool updateNow)
 		{
+			return RegisterRepository (monitor, url, updateNow, "MonoAddins");
+		}
+
+		/// <summary>
+		/// Subscribes to an on-line repository
+		/// </summary>
+		/// <param name="monitor">
+		/// Progress monitor where to show progress status and log
+		/// </param>
+		/// <param name="url">
+		/// URL of the repository
+		/// </param>
+		/// <param name="updateNow">
+		/// When set to True, the repository index will be downloaded.
+		/// </param>
+		/// <param name="providerId">
+		/// What kind of repository
+		/// </param>
+		/// <returns>
+		/// A repository reference
+		/// </returns>
+		public AddinRepository RegisterRepository (IProgressStatus monitor, string url, bool updateNow, string providerId)
+		{
 			if (string.IsNullOrEmpty (url))
 				throw new ArgumentException ("Emtpy url");
-			
-			if (!url.EndsWith (".mrep")) {
-				if (url [url.Length - 1] != '/')
-					url += "/";
-				url = url + "main.mrep";
+
+			if (providerId == "MonoAddins") {
+				if (!url.EndsWith (".mrep")) {
+					if (url [url.Length - 1] != '/')
+						url += "/";
+					url = url + "main.mrep";
+				}
 			}
 			
 			RepositoryRecord rr = FindRepositoryRecord (url);
 			if (rr != null)
 				return rr;
 
-			rr = RegisterRepository (url, false);
+			rr = RegisterRepository (url, false, providerId);
 			
 			try {
 				if (updateNow) {
@@ -124,20 +149,22 @@ namespace Mono.Addins.Setup
 			}
 		}
 		
-		internal RepositoryRecord RegisterRepository (string url, bool isReference)
+		internal RepositoryRecord RegisterRepository (string url, bool isReference, string providerId)
 		{
 			RepositoryRecord rr = FindRepositoryRecord (url);
 			if (rr != null) {
 				if (rr.IsReference && !isReference) {
 					rr.IsReference = false;
-					service.SaveConfiguration ();
 				}
+				rr.ProviderId = providerId;
+				service.SaveConfiguration ();
 				return rr;
 			}
 			
 			rr = new RepositoryRecord ();
 			rr.Url = url;
 			rr.IsReference = isReference;
+			rr.ProviderId = providerId;
 			
 			string name = service.RepositoryCachePath;
 			if (!Directory.Exists (name))
@@ -329,9 +356,10 @@ namespace Mono.Addins.Setup
 			monitor.BeginTask ("Updating from " + absUri.ToString (), 2);
 			Repository newRep = null;
 			Exception error = null;
-			
+
 			try {
-				newRep = (Repository) service.Store.DownloadObject (monitor, absUri.ToString (), typeof(Repository));
+				var provider = service.GetAddinRepositoryProvider (rr.ProviderId);
+				newRep = provider.DownloadRepository (monitor, absUri, rr);
 			} catch (Exception ex) {
 				error = ex;
 			}
@@ -348,7 +376,7 @@ namespace Mono.Addins.Setup
 				string refRepUrl = refRepUri.ToString ();
 				RepositoryRecord refRep = FindRepositoryRecord (refRepUrl);
 				if (refRep == null)
-					refRep = RegisterRepository (refRepUrl, true);
+					refRep = RegisterRepository (refRepUrl, true, rr.ProviderId);
 				refRep.Enabled = rr.Enabled;
 				// Update the repo if the modified timestamp changes or if there is no timestamp info
 				if (refRep.LastModified != re.LastModified || re.LastModified == DateTime.MinValue || !File.Exists (refRep.File)) {

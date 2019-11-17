@@ -204,8 +204,11 @@ namespace Mono.Addins.Setup
 			PackageCollection packs = new PackageCollection ();
 			for (int n=0; n<args.Length; n++) {
 				Addin addin = registry.GetAddin (GetFullId (args[n]));
-				if (addin != null)
+				if (addin != null) {
+					if (!addin.Enabled)
+						addin.Enabled = true;
 					continue;
+				}
 				string aname = Addin.GetIdName (GetFullId (args[n]));
 				string aversion = Addin.GetIdVersion (args[n]);
 				if (aversion.Length == 0) aversion = null;
@@ -466,13 +469,24 @@ namespace Mono.Addins.Setup
 				throw new InstallException ("A directory name is required.");
 			service.BuildRepository (new ConsoleProgressStatus (verbose), args[0]);
 		}
-		
-		void BuildPackage (string[] args)
+
+		void BuildPackage (string [] args)
 		{
 			if (args.Length < 1)
 				throw new InstallException ("A file name is required.");
-				
-			service.BuildPackage (new ConsoleProgressStatus (verbose), GetOption ("d", "."), GetArguments ());
+			var formatString = GetOption ("format", "mpack");
+			PackageFormat format;
+			switch (formatString) {
+			case "mpack":
+				format = PackageFormat.Mpack;
+				break;
+			case "vsix":
+				format = PackageFormat.Vsix;
+				break;
+			default:
+				throw new ArgumentException ($"Unsupported package format \"{formatString}\", supported formats are mpack and vsix.");
+			}
+			service.BuildPackage (new ConsoleProgressStatus (verbose), bool.Parse (GetOption ("debugSymbols", "false")), GetOption ("d", "."), format, GetArguments ());
 		}
 		
 		void PrintLibraries (string[] args)
@@ -517,6 +531,20 @@ namespace Mono.Addins.Setup
 		void RepairRegistry (string[] args)
 		{
 			registry.Rebuild (new ConsoleProgressStatus (verbose));
+		}
+		
+		void GenerateAddinScanDataFiles (string[] args)
+		{
+			bool recursive = false;
+			int i = 0;
+			if (args.Length > 0 && args [0] == "-r") {
+				recursive = true;
+				i = 1;
+			}
+			if (i >= args.Length)
+				registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (verbose), recursive:recursive);
+			else
+				registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (verbose), args[0], recursive);
 		}
 		
 		void DumpRegistryFile (string[] args)
@@ -1083,7 +1111,20 @@ namespace Mono.Addins.Setup
 
 			cmd = new SetupCommand (cat, "reg-build", "rgb", new SetupCommandHandler (RepairRegistry));
 			cmd.Description = "Rebuilds the add-in registry.";
-			cmd.AppendDesc ("Regenerates the add-in registry");
+			cmd.AppendDesc ("Regenerates the add-in registry.");
+			commands.Add (cmd);
+
+			cmd = new SetupCommand (cat, "reg-gen-data", "rgd", new SetupCommandHandler (GenerateAddinScanDataFiles));
+			cmd.Usage = "[-r] <path>";
+			cmd.Description = "Generates add-in scan data files.";
+			cmd.AppendDesc ("Generates binary add-in scan data files next to each");
+			cmd.AppendDesc ("add-in file. When such a file is present for an");
+			cmd.AppendDesc ("add-in, the add-in scanner will load the information");
+			cmd.AppendDesc ("from the data file instead of doing a full scan.");
+			cmd.AppendDesc ("Data files will be generated only add-ins located");
+			cmd.AppendDesc ("in the provided folder.");
+			cmd.AppendDesc ("Options:");
+			cmd.AppendDesc ("-r: Recursively look in subdirectories.");
 			commands.Add (cmd);
 
 			cmd = new SetupCommand (cat, "info", null, new SetupCommandHandler (PrintAddinInfo));
@@ -1108,10 +1149,12 @@ namespace Mono.Addins.Setup
 	
 			cmd = new SetupCommand (cat, "pack", "p", new SetupCommandHandler (BuildPackage));
 			cmd.Description = "Creates a package from an add-in configuration file.";
-			cmd.Usage = "<file-path> [-d:output-directory]";
-			cmd.AppendDesc ("Creates an add-in package (.mpack file) which includes all files ");
+			cmd.Usage = "<file-path> [-d:output-directory] [-format:(mpack|vsix)] [-debugSymbols:(true|false)]";
+			cmd.AppendDesc ("Creates an add-in package (.mpack or .vsix file) which includes all files ");
 			cmd.AppendDesc ("needed to deploy an add-in. The command parameter is the path to");
-			cmd.AppendDesc ("the add-in's configuration file.");
+			cmd.AppendDesc ("the add-in's configuration file. If 'debugSymbols' is set to true");
+			cmd.AppendDesc ("then pdb or mdb debug symbols will automatically be included in the");
+			cmd.AppendDesc ("final package.");
 			commands.Add (cmd);
 	
 			cmd = new SetupCommand (cat, "help", "h", new SetupCommandHandler (PrintHelp));

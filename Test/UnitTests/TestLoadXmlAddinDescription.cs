@@ -37,14 +37,14 @@ namespace UnitTests
 		[SetUp]
 		public void Load ()
 		{
-			string path = Path.GetFullPath ("TestManifest.xml");
+			string path = GetFullPath ("TestManifest.xml");
 			desc = AddinDescription.Read (path);
 		}
 		
 		[Test]
 		public void TestSave ()
 		{
-			string path = Path.GetFullPath ("TestManifest.xml");
+			string path = GetFullPath ("TestManifest.xml");
 			XmlDocument doc1 = new XmlDocument ();
 			doc1.Load (path);
 			

@@ -68,7 +68,7 @@ namespace Mono.Addins.MSBuild
 					return false;
 				}
 				foreach (string asm in addin.Description.MainModule.Assemblies) {
-					string file = Path.Combine (addin.Description.BasePath, asm);
+					string file = Path.Combine (addin.Description.BasePath, Util.NormalizePath (asm));
 					TaskItem ti = new TaskItem (file);
 					references.Add (ti);
 				}

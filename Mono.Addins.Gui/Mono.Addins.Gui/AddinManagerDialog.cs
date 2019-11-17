@@ -43,8 +43,8 @@ namespace Mono.Addins.Gui
 		AddinTreeWidget tree;
 		AddinTreeWidget galleryTree;
 		AddinTreeWidget updatesTree;
-		
-		SetupService service = new SetupService ();
+
+		SetupService service;
 		ListStore repoStore;
 		int lastRepoActive;
 		SearchEntry filterEntry;
@@ -66,13 +66,13 @@ namespace Mono.Addins.Gui
 			}
 		}
 		
-		public AddinManagerDialog (Window parent)
+		public AddinManagerDialog (Window parent, SetupService service)
 		{
+			this.service = service;
 			Build ();
 			TransientFor = parent;
 			HasSeparator = false;
 			Services.PlaceDialog (this, parent);
-			Show ();
 			
 			addininfoInstalled.Init (service);
 			addininfoGallery.Init (service);
@@ -107,8 +107,8 @@ namespace Mono.Addins.Gui
 			
 			// Make sure the tree has the focus when switching tabs
 			
-			vboxUpdates.FocusChain = new Widget [] { scrolledUpdates, eboxRepoUpdates };
-			vboxGallery.FocusChain = new Widget [] { scrolledGallery, eboxRepo };
+			vboxUpdates.FocusChain = new Widget [] { eboxRepoUpdates, scrolledUpdates };
+			vboxGallery.FocusChain = new Widget [] { eboxRepo, scrolledGallery };
 				
 			// Improve the look of the headers
 			
@@ -119,7 +119,7 @@ namespace Mono.Addins.Gui
 			tab.BorderWidth = 3;
 			tab.ShowAll ();
 			notebook.SetTabLabel (notebook.GetNthPage (0), tab);
-			
+
 			tab = new HBox (false, 3);
 			tab.PackStart (new Image (Gdk.Pixbuf.LoadFromResource ("plugin-update-22.png")), false, false, 0);
 			updatesTabLabel = new Label (Catalog.GetString ("Updates"));
@@ -129,7 +129,7 @@ namespace Mono.Addins.Gui
 			notebook.SetTabLabel (notebook.GetNthPage (1), tab);
 			
 			tab = new HBox (false, 3);
-			tab.PackStart (new Image (Gdk.Pixbuf.LoadFromResource ("system-software-update_22.png")), false, false, 0);
+			tab.PackStart (new Image (Gdk.Pixbuf.LoadFromResource ("update-16.png")), false, false, 0);
 			galleryTabLabel = new Label (Catalog.GetString ("Gallery"));
 			tab.PackStart (galleryTabLabel, true, true, 0);
 			tab.BorderWidth = 3;
@@ -162,8 +162,14 @@ namespace Mono.Addins.Gui
 		{
 			filterEntry = new SearchEntry ();
 			filterEntry.Entry.SetSizeRequest (200, filterEntry.Entry.SizeRequest ().Height);
-			filterEntry.Parent = notebook;
+			filterEntry.SizeAllocated += (o, args) => {
+				RepositionFilter ();
+			};
+			ActionArea.PackEnd (filterEntry);
+			var btnCloseBoxChild = ((Box.BoxChild)(ActionArea [btnClose]));
+			btnCloseBoxChild.Position = 2;
 			filterEntry.Show ();
+
 			notebook.SizeAllocated += delegate {
 				RepositionFilter ();
 			};
@@ -520,7 +526,7 @@ namespace Mono.Addins.Gui
 		protected virtual void OnButtonInstallFromFileClicked (object sender, System.EventArgs e)
 		{
 			string[] files;
-			Gtk.FileChooserDialog dlg = new Gtk.FileChooserDialog (Catalog.GetString ("Install Add-in Package"), this, FileChooserAction.Open);
+			Gtk.FileChooserDialog dlg = new Gtk.FileChooserDialog (Catalog.GetString ("Install Extension Package"), this, FileChooserAction.Open);
 			try {
 				if (lastFolder != null)
 					dlg.SetCurrentFolder (lastFolder);
@@ -530,7 +536,7 @@ namespace Mono.Addins.Gui
 				
 				Gtk.FileFilter f = new Gtk.FileFilter ();
 				f.AddPattern ("*.mpack");
-				f.Name = Catalog.GetString ("Add-in packages");
+				f.Name = Catalog.GetString ("Extension packages");
 				dlg.AddFilter (f);
 				
 				f = new Gtk.FileFilter ();

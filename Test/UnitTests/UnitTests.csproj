@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\TargetFrameworks.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,11 +10,13 @@
     <AssemblyName>UnitTests</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>UnitTests</RootNamespace>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\mono-addins.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>True</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -23,9 +26,8 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="nunit.core" />
-    <Reference Include="nunit.core.interfaces" />
-    <Reference Include="nunit.framework" />
+    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Addins\Mono.Addins.csproj">
@@ -45,6 +47,7 @@
     <Compile Include="TestExtensions.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="TestEvents.cs" />
+    <Compile Include="TestFileDatabase.cs" />
     <Compile Include="TestLoadUnload.cs" />
     <Compile Include="TestConditions.cs" />
     <Compile Include="TestSetup.cs" />
@@ -66,6 +69,9 @@
     <Compile Include="ExtensionModel\Properties.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="TestSetupService.cs" />
+    <Compile Include="ExtensionModel\GlobalInfoConditionAttribute.cs" />
+    <Compile Include="TestScan.cs" />
+    <Compile Include="TestScanDataFileGeneration.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SimpleApp.addin.xml">
@@ -76,7 +82,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile.am" />
     <None Include="TestManifest.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -91,20 +96,6 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <Policies>
-          <DotNetNamingPolicy DirectoryNamespaceAssociation="None" ResourceNamePolicy="FileName" />
-        </Policies>
-        <Deployment.LinuxDeployData scriptName="unittests" generatePcFile="False" />
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
-  <ItemGroup>
-    <Folder Include="ExtensionModel\" />
-    <Folder Include="SampleAddins\" />
-  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestManifest2.xml">
       <LogicalName>TestManifest2.xml</LogicalName>

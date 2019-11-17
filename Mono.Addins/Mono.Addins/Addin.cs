@@ -178,7 +178,7 @@ namespace Mono.Addins
 					string id, version;
 					Addin.GetIdParts (AddinInfo.Id, out id, out version);
 					var addins = database.GetInstalledAddins (null, AddinSearchFlagsInternal.IncludeAll | AddinSearchFlagsInternal.LatestVersionsOnly);
-					isLatestVersion = addins.Where (a => Addin.GetIdName (a.Id) == id && a.Version == version).Any ();
+					isLatestVersion = addins.Any (a => Addin.GetIdName (a.Id) == id && a.Version == version);
 				}
 				return isLatestVersion.Value;
 			}
@@ -270,9 +270,17 @@ namespace Mono.Addins
 
 		internal void ResetCachedData ()
 		{
-			// The domain may have changed
-			if (sourceFile != null)
-				domain = database.GetFolderDomain (null, Path.GetDirectoryName (sourceFile));
+			// The domain may have changed (?!)
+
+			// This check has been commented out because GetFolderDomain will fail if sourceFile changed
+			// or if there is no folder info for the add-in (it may happen when using pre-generated add-in
+			// scan data files).
+			// A domain change at run-time is an unlikely scenario and not properly supported anyway in
+			// other parts of the code. In general, changes in an already loaded add-in are not supported.
+
+//			if (sourceFile != null)
+//				domain = database.GetFolderDomain (null, Path.GetDirectoryName (sourceFile));
+
 			desc = null;
 			addin = null;
 		}
@@ -336,7 +344,7 @@ namespace Mono.Addins
 		public static string GetFullId (string ns, string id, string version)
 		{
 			string res;
-			if (id.StartsWith ("::"))
+			if (id.StartsWith ("::", StringComparison.Ordinal))
 				res = id.Substring (2);
 			else if (ns != null && ns.Length > 0)
 				res = ns + "." + id;

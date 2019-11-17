@@ -37,7 +37,7 @@ using System.Threading.Tasks;
 
 namespace Mono.Addins.Setup
 {
-	internal class Repository
+	public class Repository
 	{
 		RepositoryEntryCollection repositories;
 		RepositoryEntryCollection addins;
@@ -128,21 +128,27 @@ namespace Mono.Addins.Setup
 			}
 
 			res.FilePath = cachedFile;
-			WebRequestHelper.GetResponseAsync (() => (HttpWebRequest)WebRequest.Create (u)).ContinueWith (t => {
+			var request = DownloadFileRequest.DownloadFile (u.ToString (), false).ContinueWith (t => {
 				try {
-					var resp = t.Result;
-					string dir = Path.GetDirectoryName (res.FilePath);
-					lock (this) {
-						if (!Directory.Exists (dir))
-							Directory.CreateDirectory (dir);
-					}
-					byte[] buffer = new byte [8092];
-					using (var s = resp.GetResponseStream ()) {
-						using (var f = File.OpenWrite (res.FilePath)) {
-							int nr = 0;
-							while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
-								f.Write (buffer, 0, nr);
+					using (var resp = t.Result) {
+						string dir = Path.GetDirectoryName (res.FilePath);
+						lock (this) {
+							if (!Directory.Exists (dir))
+								Directory.CreateDirectory (dir);
 						}
+						if (File.Exists (res.FilePath)) {
+							res.SetDone ();
+							return;
+						}
+						byte [] buffer = new byte [8092];
+						using (var s = resp.Stream) {
+							using (var f = File.OpenWrite (res.FilePath)) {
+								int nr = 0;
+								while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
+									f.Write (buffer, 0, nr);
+							}
+						}
+						res.SetDone ();
 					}
 				} catch (Exception ex) {
 					res.Error = ex;

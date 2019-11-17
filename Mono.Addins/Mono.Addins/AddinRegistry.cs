@@ -512,6 +512,28 @@ namespace Mono.Addins
 		}
 
 		/// <summary>
+		/// Disables an add-in.
+		/// </summary>
+		/// <param name="id">
+		/// Identifier of the add-in.
+		/// </param>
+		/// <param name="exactVersionMatch">
+		/// If true, it disables the add-in that exactly matches the provided version. If false, it disables
+		/// all versions of add-ins with the same Id
+		/// </param>
+		/// <remarks>
+		/// When an add-in is disabled, all extension points it defines will be ignored
+		/// by the add-in engine. Other add-ins which depend on the disabled add-in will
+		/// also automatically be disabled.
+		/// </remarks>
+		public void DisableAddin (string id, bool exactVersionMatch)
+		{
+			if (currentDomain == AddinDatabase.UnknownDomain)
+				return;
+			database.DisableAddin (currentDomain, id, exactVersionMatch);
+		}
+
+		/// <summary>
 		/// Registers a set of add-ins for uninstallation.
 		/// </summary>
 		/// <param name='id'>
@@ -623,13 +645,34 @@ namespace Mono.Addins
 		/// </param>
 		public void Rebuild (IProgressStatus monitor)
 		{
-			database.Repair (monitor, currentDomain);
+			var context = new ScanOptions ();
+			context.CleanGeneratedAddinScanDataFiles = true;
+			database.Repair (monitor, currentDomain, context);
 
 			// A full rebuild may cause the domain to change
 			if (!string.IsNullOrEmpty (startupDirectory))
 				currentDomain = database.GetFolderDomain (null, startupDirectory);
 		}
-		
+
+		/// <summary>
+		/// Generates add-in data cache files for add-ins in the provided folder
+		/// and any other directory included through a .addins file.
+		/// If folder is not provided, it scans the startup directory.
+		/// </summary>
+		/// <param name="monitor">
+		/// Progress monitor to keep track of the rebuild operation.
+		/// </param>
+		/// <param name="folder">
+		/// Folder that contains the add-ins to be scanned.
+		/// </param>
+		/// <param name="recursive">
+		/// If true, sub-directories are scanned recursively
+		/// </param>
+		public void GenerateAddinScanDataFiles (IProgressStatus monitor, string folder = null, bool recursive = false)
+		{
+			database.GenerateScanDataFiles (monitor, folder ?? StartupDirectory, recursive);
+		}
+
 		/// <summary>
 		/// Registers an extension. Only AddinFileSystemExtension extensions are supported right now.
 		/// </summary>
@@ -669,9 +712,14 @@ namespace Mono.Addins
 			return database.AddinDependsOn (currentDomain, id1, id2);
 		}
 		
-		internal void ScanFolders (IProgressStatus monitor, string folderToScan, StringCollection filesToIgnore)
+		internal void ScanFolders (IProgressStatus monitor, string folderToScan, ScanOptions context)
 		{
-			database.ScanFolders (monitor, currentDomain, folderToScan, filesToIgnore);
+			database.ScanFolders (monitor, currentDomain, folderToScan, context);
+		}
+		
+		internal void GenerateScanDataFilesInProcess (IProgressStatus monitor, string folderToScan, bool recursive)
+		{
+			database.GenerateScanDataFilesInProcess (monitor, folderToScan, recursive);
 		}
 		
 		internal void ParseAddin (IProgressStatus progressStatus, string file, string outFile)

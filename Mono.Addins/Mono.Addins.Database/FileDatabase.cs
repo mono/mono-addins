@@ -327,7 +327,7 @@ namespace Mono.Addins.Database
 
 		
 		// The ReadSharedObject and WriteSharedObject methods can be used to read/write objects from/to files.
-		// What's special about those methods is that they handle file name colisions.
+		// What's special about those methods is that they handle file name collisions.
 		
 		public string[] GetObjectSharedFiles (string directory, string sharedFileName, string extension)
 		{
@@ -360,21 +360,38 @@ namespace Mono.Addins.Database
 		
 		object ReadSharedObject (string directory, string sharedFileName, string extension, string objectId, BinaryXmlTypeMap typeMap, bool checkOnly, out string fileName)
 		{
+			if (Util.IsWindows) {
+				objectId = objectId.ToLowerInvariant();
+			}
+
 			string name = GetFileKey (directory, sharedFileName, objectId);
 			string file = Path.Combine (directory, name + extension);
 
 			object result;
-			if (OpenFileForPath (file, objectId, typeMap, checkOnly, out result)) {
+
+			OpenFileResult res = OpenFileForPath (file, objectId, typeMap, checkOnly, out result);
+			if (res == OpenFileResult.Found) {
 				fileName = file;
 				return result;
 			}
-		
-			// The file is not the one we expected. There has been a name colision
-			
-			foreach (string f in GetDirectoryFiles (directory, name + "*" + extension)) {
-				if (f != file && OpenFileForPath (f, objectId, typeMap, checkOnly, out result)) {
-					fileName = f;
-					return result;
+
+			// The file is not the one we expected. There has been a name collision
+			if (res == OpenFileResult.Collision) {
+				int count = 1;
+				file = Path.Combine (directory, name + "_" + count + extension);
+
+				while (true) {
+					res = OpenFileForPath (file, objectId, typeMap, checkOnly, out result);
+					if (res == OpenFileResult.NotFound)
+						break;
+
+					if (res == OpenFileResult.Found) {
+						fileName = file;
+						return result;
+					}
+
+					if (res == OpenFileResult.Collision)
+						count++;
 				}
 			}
 			
@@ -382,13 +399,20 @@ namespace Mono.Addins.Database
 			fileName = null;
 			return null;
 		}
-		
-		bool OpenFileForPath (string f, string objectId, BinaryXmlTypeMap typeMap, bool checkOnly, out object result)
+
+		enum OpenFileResult
+		{
+			NotFound,
+			Found,
+			Collision,
+		}
+
+		OpenFileResult OpenFileForPath (string f, string objectId, BinaryXmlTypeMap typeMap, bool checkOnly, out object result)
 		{
 			result = null;
 			
 			if (!Exists (f)) {
-				return false;
+				return OpenFileResult.NotFound;
 			}
 			using (Stream s = OpenRead (f)) {
 				BinaryXmlReader reader = new BinaryXmlReader (s, typeMap);
@@ -397,10 +421,10 @@ namespace Mono.Addins.Database
 				if (objectId == null || objectId == id) {
 					if (!checkOnly)
 						result = reader.ReadValue ("data");
-					return true;
+					return OpenFileResult.Found;
 				}
 			}
-			return false;
+			return OpenFileResult.Collision;
 		}
 		
 		public void WriteSharedObject (string objectId, string targetFile, BinaryXmlTypeMap typeMap, IBinaryXmlElement obj)
@@ -411,7 +435,11 @@ namespace Mono.Addins.Database
 		public string WriteSharedObject (string directory, string sharedFileName, string extension, string objectId, string readFileName, BinaryXmlTypeMap typeMap, IBinaryXmlElement obj)
 		{
 			string file = readFileName;
-			
+
+			if (Util.IsWindows) {
+				objectId = objectId.ToLowerInvariant();
+			}
+
 			if (file == null) {
 				int count = 1;
 				string name = GetFileKey (directory, sharedFileName, objectId);
@@ -451,7 +479,13 @@ namespace Mono.Addins.Database
 		
 		string GetFileKey (string directory, string sharedFileName, string objectId)
 		{
-			int avlen = System.Math.Max (240 - directory.Length, 10);
+			// We have two magic numbers here. 240 is a "room to spare" number based on 255,
+			// the Windows MAX_PATH length for the full path of a file on disk. Then 130 is
+			// a "room to spare" number based on 143-"ish", the maximum filename length for
+			// files stored on eCryptFS on Linux. 240 relates to the complete path
+			// (including the directory structure), and 130 is just the filename, so we pick
+			// whichever is the smaller of those two numbers when truncating.
+			int avlen = System.Math.Min (System.Math.Max (240 - directory.Length, 10), 130);
 			string name = sharedFileName + "_" + Util.GetStringHashCode (objectId).ToString ("x");
 			if (name.Length > avlen)
 				return name.Substring (name.Length - avlen);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\TargetFrameworks.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -11,12 +12,11 @@
     <AssemblyName>Mono.Addins.GuiGtk3</AssemblyName>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>True</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>..\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +25,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>..\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -33,6 +33,7 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -67,11 +68,41 @@
     <Compile Include="Mono.Addins.Gui\Services.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="icons\download.png">
-      <LogicalName>download.png</LogicalName>
+    <EmbeddedResource Include="icons\download-16.png">
+      <LogicalName>download-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\installed-overlay.png">
-      <LogicalName>installed-overlay.png</LogicalName>
+    <EmbeddedResource Include="icons\download-16%402x.png">
+      <LogicalName>download-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\download-16~dark.png">
+      <LogicalName>download-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\download-16~dark%402x.png">
+      <LogicalName>download-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\installed-overlay-16.png">
+      <LogicalName>installed-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\installed-overlay-16%402x.png">
+      <LogicalName>installed-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\installed-overlay-16~dark.png">
+      <LogicalName>installed-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\installed-overlay-16~dark%402x.png">
+      <LogicalName>installed-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\installed-overlay-16~sel.png">
+      <LogicalName>installed-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\installed-overlay-16~sel%402x.png">
+      <LogicalName>installed-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\installed-overlay-16~dark~sel.png">
+      <LogicalName>installed-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\installed-overlay-16~dark~sel%402x.png">
+      <LogicalName>installed-overlay-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-x-generic.png">
       <LogicalName>package-x-generic.png</LogicalName>
@@ -85,14 +116,98 @@
     <EmbeddedResource Include="icons\plugin-16.png">
       <LogicalName>plugin-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-16%402x.png">
+      <LogicalName>plugin-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-16~dark.png">
+      <LogicalName>plugin-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-16~dark%402x.png">
+      <LogicalName>plugin-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-16~sel.png">
+      <LogicalName>plugin-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-16~sel%402x.png">
+      <LogicalName>plugin-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-16~dark~sel.png">
+      <LogicalName>plugin-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-16~dark~sel%402x.png">
+      <LogicalName>plugin-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-22.png">
       <LogicalName>plugin-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-22%402x.png">
+      <LogicalName>plugin-22@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-22~dark.png">
+      <LogicalName>plugin-22~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-22~dark%402x.png">
+      <LogicalName>plugin-22~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-22~sel.png">
+      <LogicalName>plugin-22~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-22~sel%402x.png">
+      <LogicalName>plugin-22~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-22~dark~sel.png">
+      <LogicalName>plugin-22~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-22~dark~sel%402x.png">
+      <LogicalName>plugin-22~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-32.png">
       <LogicalName>plugin-32.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-32%402x.png">
+      <LogicalName>plugin-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-32~dark.png">
+      <LogicalName>plugin-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-32~dark%402x.png">
+      <LogicalName>plugin-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-32~sel.png">
+      <LogicalName>plugin-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-32~sel%402x.png">
+      <LogicalName>plugin-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-32~dark~sel.png">
+      <LogicalName>plugin-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-32~dark~sel%402x.png">
+      <LogicalName>plugin-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-avail-16.png">
       <LogicalName>plugin-avail-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-avail-16%402x.png">
+      <LogicalName>plugin-avail-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-avail-16~dark.png">
+      <LogicalName>plugin-avail-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-avail-16~dark%402x.png">
+      <LogicalName>plugin-avail-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-avail-16~sel.png">
+      <LogicalName>plugin-avail-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-avail-16~sel%402x.png">
+      <LogicalName>plugin-avail-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-avail-16~dark~sel.png">
+      <LogicalName>plugin-avail-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-avail-16~dark~sel%402x.png">
+      <LogicalName>plugin-avail-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-avail-32.png">
       <LogicalName>plugin-avail-32.png</LogicalName>
@@ -100,32 +215,146 @@
     <EmbeddedResource Include="icons\plugin-disabled-32.png">
       <LogicalName>plugin-disabled-32.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-disabled-32%402x.png">
+      <LogicalName>plugin-disabled-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-disabled-32~dark.png">
+      <LogicalName>plugin-disabled-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-disabled-32~dark%402x.png">
+      <LogicalName>plugin-disabled-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-disabled-32~sel%402x.png">
+      <LogicalName>plugin-disabled-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-disabled-32~sel.png">
+      <LogicalName>plugin-disabled-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-disabled-32~dark~sel%402x.png">
+      <LogicalName>plugin-disabled-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-disabled-32~dark~sel.png">
+      <LogicalName>plugin-disabled-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-update-16.png">
       <LogicalName>plugin-update-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-16%402x.png">
+      <LogicalName>plugin-update-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-16~dark.png">
+      <LogicalName>plugin-update-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-16~dark%402x.png">
+      <LogicalName>plugin-update-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-16~sel.png">
+      <LogicalName>plugin-update-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-16~sel%402x.png">
+      <LogicalName>plugin-update-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-16~dark~sel.png">
+      <LogicalName>plugin-update-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-16~dark~sel%402x.png">
+      <LogicalName>plugin-update-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-update-22.png">
       <LogicalName>plugin-update-22.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-22%402x.png">
+      <LogicalName>plugin-update-22@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-22~dark.png">
+      <LogicalName>plugin-update-22~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-22~dark%402x.png">
+      <LogicalName>plugin-update-22~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-22~sel.png">
+      <LogicalName>plugin-update-22~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-22~sel%402x.png">
+      <LogicalName>plugin-update-22~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-22~dark~sel.png">
+      <LogicalName>plugin-update-22~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-22~dark~sel%402x.png">
+      <LogicalName>plugin-update-22~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-update-32.png">
       <LogicalName>plugin-update-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\software-update-available.png">
-      <LogicalName>software-update-available.png</LogicalName>
+    <EmbeddedResource Include="icons\plugin-update-32%402x.png">
+      <LogicalName>plugin-update-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\software-update-available-overlay.png">
-      <LogicalName>software-update-available-overlay.png</LogicalName>
+    <EmbeddedResource Include="icons\plugin-update-32~dark.png">
+      <LogicalName>plugin-update-32~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\system-software-update.png">
-      <LogicalName>system-software-update.png</LogicalName>
+    <EmbeddedResource Include="icons\plugin-update-32~dark%402x.png">
+      <LogicalName>plugin-update-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\system-software-update_22.png">
-      <LogicalName>system-software-update_22.png</LogicalName>
+    <EmbeddedResource Include="icons\plugin-update-32~sel.png">
+      <LogicalName>plugin-update-32~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\user-package.png">
-      <LogicalName>user-package.png</LogicalName>
+    <EmbeddedResource Include="icons\plugin-update-32~sel%402x.png">
+      <LogicalName>plugin-update-32~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\web.png">
-      <LogicalName>icons.web.png</LogicalName>
+    <EmbeddedResource Include="icons\plugin-update-32~dark~sel.png">
+      <LogicalName>plugin-update-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\plugin-update-32~dark~sel%402x.png">
+      <LogicalName>plugin-update-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\update-16.png">
+      <LogicalName>update-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\update-16%402x.png">
+      <LogicalName>update-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\update-16~dark.png">
+      <LogicalName>update-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\update-16~dark%402x.png">
+      <LogicalName>update-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\update-available-overlay-16.png">
+      <LogicalName>update-available-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\update-available-overlay-16%402x.png">
+      <LogicalName>update-available-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\update-available-overlay-16~dark.png">
+      <LogicalName>update-available-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\update-available-overlay-16~dark%402x.png">
+      <LogicalName>update-available-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\update-available-overlay-16~sel.png">
+      <LogicalName>update-available-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\update-available-overlay-16~sel%402x.png">
+      <LogicalName>update-available-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\update-available-overlay-16~dark~sel.png">
+      <LogicalName>update-available-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\update-available-overlay-16~dark~sel%402x.png">
+      <LogicalName>update-available-overlay-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\web-search-16.png">
+      <LogicalName>icons.web-search-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\web-search-16%402x.png">
+      <LogicalName>icons.web-search-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\web-search-16~dark.png">
+      <LogicalName>icons.web-search-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\web-search-16~dark%402x.png">
+      <LogicalName>icons.web-search-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="interfaces\AddinManagerDialog.ui.xml">
       <LogicalName>Mono.Addins.GuiGtk3.interfaces.AddinManagerDialog.ui</LogicalName>
@@ -162,9 +391,5 @@
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Makefile.am" />
-    <None Include="ChangeLog" />
   </ItemGroup>
 </Project>

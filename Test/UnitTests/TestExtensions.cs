@@ -4,6 +4,7 @@ using System.IO;
 using NUnit.Framework;
 using Mono.Addins;
 using SimpleApp;
+using System.Linq;
 
 namespace UnitTests
 {
@@ -175,8 +176,8 @@ namespace UnitTests
 		{
 			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/SimpleApp/DataExtensionWithAttribute");
 			Assert.AreEqual (2, nodes.Count, "Node count");
-			ExtensionNode<SimpleExtensionAttribute> n1 = nodes [0] as ExtensionNode<SimpleExtensionAttribute>;
-			ExtensionNode<SimpleExtensionAttribute> n2 = nodes [1] as ExtensionNode<SimpleExtensionAttribute>;
+			TypeExtensionNode<SimpleExtensionAttribute> n1 = nodes [0] as TypeExtensionNode<SimpleExtensionAttribute>;
+			TypeExtensionNode<SimpleExtensionAttribute> n2 = nodes [1] as TypeExtensionNode<SimpleExtensionAttribute>;
 			Assert.IsNotNull (n1);
 			Assert.IsNotNull (n2);
 			Assert.AreEqual ("test3", n1.Data.Name, "t1");
@@ -199,6 +200,40 @@ namespace UnitTests
 		{
 			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/SimpleApp/MultiAssemblyTestExtensionPoint");
 			Assert.AreEqual (6, nodes.Count, "Node count");
+		}
+
+		[Test]
+		public void TestDefaultInsertAfter ()
+		{
+			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/SimpleApp/DefaultInsertAfter");
+			Assert.AreEqual (8, nodes.Count, "Node count");
+			var ids = nodes.OfType<ExtensionNode> ().Select (n => n.Id).ToArray ();
+
+			Assert.AreEqual ("n0", ids[0]);
+			Assert.AreEqual ("First", ids[1]);
+			Assert.AreEqual ("Mid", ids[2]);
+			Assert.AreEqual ("n1", ids[3]);
+			Assert.AreEqual ("n2", ids[4]);
+			Assert.AreEqual ("Last", ids[5]);
+			Assert.AreEqual ("n3", ids[6]);
+			Assert.AreEqual ("n4", ids[7]);
+		}
+
+		[Test]
+		public void TestDefaultInsertBefore ()
+		{
+			ExtensionNodeList nodes = AddinManager.GetExtensionNodes ("/SimpleApp/DefaultInsertBefore");
+			Assert.AreEqual (8, nodes.Count, "Node count");
+			var ids = nodes.OfType<ExtensionNode> ().Select (n => n.Id).ToArray ();
+
+			Assert.AreEqual ("n0", ids[0]);
+			Assert.AreEqual ("First", ids[1]);
+			Assert.AreEqual ("n1", ids[2]);
+			Assert.AreEqual ("n2", ids[3]);
+			Assert.AreEqual ("Mid", ids[4]);
+			Assert.AreEqual ("Last", ids[5]);
+			Assert.AreEqual ("n3", ids[6]);
+			Assert.AreEqual ("n4", ids[7]);
 		}
 	}
 }

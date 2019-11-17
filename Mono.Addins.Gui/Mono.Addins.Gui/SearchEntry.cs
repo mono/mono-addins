@@ -46,26 +46,25 @@ namespace Mono.Addins.Gui
 		{
 			entry.HasFrame = false;
 			box.PackStart (entry, true, true, 0);
+
 			iconFind = new HoverImageButton (IconSize.Menu, Gtk.Stock.Find);
 			box.PackStart (iconFind, false, false, 0);
 			iconClean = new HoverImageButton (IconSize.Menu, Gtk.Stock.Clear);
 			box.PackStart (iconClean, false, false, 0);
 			box.BorderWidth = 1;
+
 			
 			HeaderBox hbox = new HeaderBox (1,1,1,1);
 			hbox.Show ();
 			hbox.Add (box);
 			Add (hbox);
-			
-			ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));
-			iconClean.ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));
-			iconFind.ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));
+
+			UpdateStyle ();
+			entry.StyleSet += UpdateStyle;
 			
 			iconClean.BorderWidth = 1;
-			iconClean.CanFocus = false;
 			iconFind.BorderWidth = 1;
-			iconFind.CanFocus = false;
-			
+
 			iconClean.Clicked += delegate {
 				entry.Text = string.Empty;
 			};
@@ -94,7 +93,10 @@ namespace Mono.Addins.Gui
 				return this.entry;
 			}
 			set {
+				if (entry != null)
+					entry.StyleSet -= UpdateStyle;
 				entry = value;
+				entry.StyleSet += UpdateStyle;
 			}
 		}
 		
@@ -125,6 +127,21 @@ namespace Mono.Addins.Gui
 					return false;
 				});
 			}
+		}
+
+		void UpdateStyle (object o = null, StyleSetArgs args = null)
+		{
+			if (entry != null) {
+				ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));
+				iconClean.ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));
+				iconFind.ModifyBg (StateType.Normal, entry.Style.Base (StateType.Normal));
+			}
+		}
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			UpdateStyle ();
 		}
 	}
 }

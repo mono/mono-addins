@@ -34,9 +34,12 @@ namespace Mono.Addins.Gui
 		bool cancelled;
 		bool hadError;
 		
+		readonly WeakReference<Gtk.Window> parent;
+
 		public ProgressDialog (Gtk.Window parent)
 		{
 			this.Build();
+			this.parent = new WeakReference<Gtk.Window> (parent);
 			Services.PlaceDialog (this, parent);
 		}
 
@@ -60,21 +63,21 @@ namespace Mono.Addins.Gui
 		
 		public void SetMessage (string msg)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				labelMessage.Text = msg;
 			});
 		}
 
 		public void SetProgress (double progress)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				progressbar.Fraction = progress;
 			});
 		}
 
 		public void Log (string msg)
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				Gtk.TextIter it = textview.Buffer.EndIter;
 				textview.Buffer.Insert (ref it, msg + "\n");
 			});
@@ -90,15 +93,16 @@ namespace Mono.Addins.Gui
 			Log ("Error: " + message);
 			if (exception != null)
 				Log (exception.ToString ());
-			Gtk.Application.Invoke (delegate {
-				Services.ShowError (exception, message, null, true);
+			Gtk.Application.Invoke ((o, args) => {
+				if (parent.TryGetTarget (out var parentWindow))
+					Services.ShowError (exception, message, parentWindow, true);
 			});
 			hadError = true;
 		}
 
 		public void Cancel ()
 		{
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke ((o, args) => {
 				cancelled = true;
 				buttonCancel.Sensitive = false;
 			});

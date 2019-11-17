@@ -236,5 +236,17 @@ namespace UnitTests
 				Assert.AreEqual (result[n], nwrit, "t2: result #" + n);
 			}
 		}
+
+		[Test]
+		public void ChildConditionAttribute ()
+		{
+			GlobalInfoCondition.Value = "";
+			var writers = ctx.GetExtensionObjects<IWriter> ("/SimpleApp/ConditionedWriters");
+			Assert.AreEqual (0, writers.Length);
+
+			GlobalInfoCondition.Value = "foo";
+			writers = ctx.GetExtensionObjects<IWriter> ("/SimpleApp/ConditionedWriters");
+			Assert.AreEqual (1, writers.Length);
+		}
 	}
 }

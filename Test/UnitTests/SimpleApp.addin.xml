@@ -40,6 +40,10 @@
 		<ExtensionNodeSet id = "WriterSet" />
 	</ExtensionPoint>
 	
+    <ExtensionPoint path = "/SimpleApp/ConditionedWriters">
+        <ExtensionNodeSet id = "WriterSet" />
+    </ExtensionPoint>
+	
 	<ExtensionPoint path = "/SimpleApp/Items">
 		<ExtensionNode type="UnitTests.ItemSetNode" />
 	</ExtensionPoint>
@@ -57,6 +61,14 @@
 	<ExtensionPoint path = "/SimpleApp/InstallUninstallTest">
 		<ExtensionNode name="Node" type="UnitTests.ItemSetNode" />
 	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SimpleApp/DefaultInsertAfter" defaultInsertAfter="Mid">
+		<ExtensionNode name="Node" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/SimpleApp/DefaultInsertBefore" defaultInsertBefore="Mid">
+		<ExtensionNode name="Node" />
+	</ExtensionPoint>
 	
 	<!-- Extensions -->
 	
@@ -69,6 +81,18 @@
 		<!-- FileContentExtension add one Node
 		     SystemInfoExtension adds one child to node1
 		-->
+	</Extension>
+
+	<Extension path="/SimpleApp/DefaultInsertAfter">
+		<Node id="First" type="test" />
+		<Node id="Mid" type="test" />
+		<Node id="Last" type="test" />
+	</Extension>
+
+	<Extension path="/SimpleApp/DefaultInsertBefore">
+		<Node id="First" type="test" />
+		<Node id="Mid" type="test" />
+		<Node id="Last" type="test" />
 	</Extension>
 	
 </Addin>

@@ -35,22 +35,30 @@ using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Database
 {
 	class SetupProcess: ISetupHandler
 	{
-		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, string[] filesToIgnore)
+		public void Scan (IProgressStatus monitor, AddinRegistry registry, string scanFolder, ScanOptions context)
 		{
-			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, "scan", scanFolder, filesToIgnore);
+			var data = new List<string> (context.Write ());
+
+			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, "scan", scanFolder, data);
+		}
+		
+		public void GenerateScanDataFiles (IProgressStatus monitor, AddinRegistry registry, string scanFolder, bool recursive)
+		{
+			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, "pre-scan", scanFolder, new List<string> { recursive.ToString() });
 		}
 		
 		public void GetAddinDescription (IProgressStatus monitor, AddinRegistry registry, string file, string outFile)
 		{
-			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, "get-desc", file, outFile);
+			ExecuteCommand (monitor, registry.RegistryPath, registry.StartupDirectory, registry.DefaultAddinsFolder, registry.AddinCachePath, "get-desc", file, new List<string> { outFile });
 		}
 		
-		internal static void ExecuteCommand (IProgressStatus monitor, string registryPath, string startupDir, string addinsDir, string databaseDir, string name, string arg1, params string[] args)
+		internal static void ExecuteCommand (IProgressStatus monitor, string registryPath, string startupDir, string addinsDir, string databaseDir, string name, string arg1, List<string> data)
 		{
 			string verboseParam = monitor.LogLevel.ToString ();
 			
@@ -58,9 +66,7 @@ namespace Mono.Addins.Database
 			StringBuilder sb = new StringBuilder ();
 			sb.Append (verboseParam).Append (' ').Append (name);
 			sb.Append (" \"").Append (arg1).Append ("\"");
-			foreach (string arg in args)
-				sb.Append (" \"").Append (arg).Append ("\"");
-			
+
 			Process process = new Process ();
 			
 			string asm = null;
@@ -85,11 +91,13 @@ namespace Mono.Addins.Database
 				process.StandardInput.WriteLine (startupDir);
 				process.StandardInput.WriteLine (addinsDir);
 				process.StandardInput.WriteLine (databaseDir);
+
+				if (data != null) {
+					foreach (var d in data)
+						process.StandardInput.WriteLine (d);
+				}
 				process.StandardInput.Flush ();
 	
-	//			string rr = process.StandardOutput.ReadToEnd ();
-	//			Console.WriteLine (rr);
-				
 				StringCollection progessLog = new StringCollection ();
 				ProcessProgressStatus.MonitorProcessStatus (monitor, process.StandardOutput, progessLog);
 				process.WaitForExit ();
@@ -107,31 +115,40 @@ namespace Mono.Addins.Database
 				}
 			}
 		}
-		
-		public static int Main (string[] args)
+
+		public static int Main (string [] args)
 		{
-			ProcessProgressStatus monitor = new ProcessProgressStatus (int.Parse (args[0]));
-			
+			ProcessProgressStatus monitor = new ProcessProgressStatus (int.Parse (args [0]));
+
 			try {
 				string registryPath = Console.In.ReadLine ();
 				string startupDir = Console.In.ReadLine ();
 				string addinsDir = Console.In.ReadLine ();
 				string databaseDir = Console.In.ReadLine ();
-				
+
 				AddinDatabase.RunningSetupProcess = true;
 				AddinRegistry reg = new AddinRegistry (registryPath, startupDir, addinsDir, databaseDir);
-			
+
 				switch (args [1]) {
-				case "scan":
-					string folder = args.Length > 2 ? args [2] : null;
-					if (folder.Length == 0) folder = null;
-					StringCollection filesToIgnore = new StringCollection ();
-					for (int n=3; n<args.Length; n++)
-						filesToIgnore.Add (args[n]);
-					reg.ScanFolders (monitor, folder, filesToIgnore);
-					break;
+				case "scan": {
+						string folder = args.Length > 2 ? args [2] : null;
+						if (folder.Length == 0) folder = null;
+
+						var context = new ScanOptions ();
+						context.Read (Console.In);
+						reg.ScanFolders (monitor, folder, context);
+						break;
+					}
+				case "pre-scan": {
+						string folder = args.Length > 2 ? args [2] : null;
+						if (folder.Length == 0) folder = null;
+						var recursive = bool.Parse (Console.In.ReadLine ());
+						reg.GenerateScanDataFilesInProcess (monitor, folder, recursive);
+						break;
+					}
 				case "get-desc":
-					reg.ParseAddin (monitor, args[2], args[3]);
+					var outFile = Console.In.ReadLine ();
+					reg.ParseAddin (monitor, args [2], args [3]);
 					break;
 				}
 			} catch (Exception ex) {

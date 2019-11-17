@@ -118,7 +118,6 @@ namespace Mono.Addins.GuiGtk3
 			eventbox3.Child = addininfoUpdates;
 
 //			Services.PlaceDialog (this, parent);
-			Show ();
 			
 			addininfoInstalled.Init (service);
 			addininfoGallery.Init (service);
@@ -182,7 +181,7 @@ namespace Mono.Addins.GuiGtk3
 			notebook.SetTabLabel (notebook.GetNthPage (1), tab);
 			
 			tab = new HBox (false, 3);
-			tab.PackStart (new Image (Gdk.Pixbuf.LoadFromResource ("system-software-update_22.png")), false, false, 0);
+			tab.PackStart (new Image (Gdk.Pixbuf.LoadFromResource ("update-16.png")), false, false, 0);
 			galleryTabLabel = new Label (Catalog.GetString ("Gallery"));
 			tab.PackStart (galleryTabLabel, true, true, 0);
 			tab.BorderWidth = 3;
@@ -217,7 +216,6 @@ namespace Mono.Addins.GuiGtk3
 		{
 			filterEntry = new SearchEntry ();
 			filterEntry.Entry.SetSizeRequest (200, filterEntry.Entry.SizeRequest ().Height);
-			filterEntry.Parent = notebook;
 			filterEntry.Show ();
 			notebook.SizeAllocated += delegate {
 				RepositionFilter ();
@@ -239,6 +237,12 @@ namespace Mono.Addins.GuiGtk3
 			int h = filterEntry.SizeRequest ().Height;
 			var alloc = notebook.Allocation;
 			filterEntry.SetAllocation (new Gdk.Rectangle (alloc.Left + alloc.Width - 1 - w, alloc.Y, w, h));
+		}
+
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			filterEntry.Parent = notebook;
 		}
 		
 //		public override void Dispose ()
@@ -575,7 +579,7 @@ namespace Mono.Addins.GuiGtk3
 		protected virtual void OnButtonInstallFromFileClicked (object sender, System.EventArgs e)
 		{
 			string[] files;
-			Gtk.FileChooserDialog dlg = new Gtk.FileChooserDialog (Catalog.GetString ("Install Add-in Package"), this, FileChooserAction.Open);
+			Gtk.FileChooserDialog dlg = new Gtk.FileChooserDialog (Catalog.GetString ("Install Extension Package"), this, FileChooserAction.Open);
 			try {
 				if (lastFolder != null)
 					dlg.SetCurrentFolder (lastFolder);
@@ -585,7 +589,7 @@ namespace Mono.Addins.GuiGtk3
 				
 				Gtk.FileFilter f = new Gtk.FileFilter ();
 				f.AddPattern ("*.mpack");
-				f.Name = Catalog.GetString ("Add-in packages");
+				f.Name = Catalog.GetString ("Extension packages");
 				dlg.AddFilter (f);
 				
 				f = new Gtk.FileFilter ();

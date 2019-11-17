@@ -46,6 +46,10 @@ namespace Mono.Addins.Setup
 			_handler = handler;
 		}
 
+		static internal bool HasCustomRequestHandler {
+			get { return _handler != null; }
+		}
+
 		/// <summary>
 		/// Gets the web response, using the request handler to handle proxy authentication
 		/// if necessary.

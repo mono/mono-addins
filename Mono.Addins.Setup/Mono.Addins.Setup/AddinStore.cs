@@ -46,6 +46,7 @@ using Mono.Addins.Serialization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Mono.Addins.Setup
 {
@@ -641,28 +642,29 @@ namespace Mono.Addins.Setup
 
 			try {
 				monitor.BeginTask ("Requesting " + url, 2);
-				var resp = WebRequestHelper.GetResponse (
-					() => (HttpWebRequest)WebRequest.Create (url),
-					r => r.Headers ["Pragma"] = "no-cache"
-				);
-				monitor.Step (1);
-				monitor.BeginTask ("Downloading " + url, (int) resp.ContentLength);
+				var task = DownloadFileRequest.DownloadFile (url, noCache: true);
+				task.Wait ();
 
-				file = Path.GetTempFileName ();
-				fs = new FileStream (file, FileMode.Create, FileAccess.Write);
-					s = resp.GetResponseStream ();
-				byte[] buffer = new byte [4096];
-				
-				int n;
-				while ((n = s.Read (buffer, 0, buffer.Length)) != 0) {
-					monitor.Step (n);
-					fs.Write (buffer, 0, n);
-					if (monitor.IsCancelRequested)
-						throw new InstallException ("Installation cancelled.");
+				using (var request = task.Result) {
+					monitor.Step (1);
+					monitor.BeginTask ("Downloading " + url, (int) request.ContentLength);
+
+					file = Path.GetTempFileName ();
+					fs = new FileStream (file, FileMode.Create, FileAccess.Write);
+					s = request.Stream;
+					byte[] buffer = new byte [4096];
+
+					int n;
+					while ((n = s.Read (buffer, 0, buffer.Length)) != 0) {
+						monitor.Step (n);
+						fs.Write (buffer, 0, n);
+						if (monitor.IsCancelRequested)
+							throw new InstallException ("Installation cancelled.");
+					}
+					fs.Close ();
+					s.Close ();
+					return file;
 				}
-				fs.Close ();
-				s.Close ();
-				return file;
 			} catch {
 				if (fs != null)
 					fs.Close ();
@@ -673,10 +675,9 @@ namespace Mono.Addins.Setup
 				throw;
 			} finally {
 				monitor.EndTask ();
-				monitor.EndTask ();
 			}
 		}
-			
+
 		internal bool HasWriteAccess (string file)
 		{
 			FileInfo f = new FileInfo (file);

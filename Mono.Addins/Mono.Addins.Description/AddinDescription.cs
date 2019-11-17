@@ -698,6 +698,28 @@ namespace Mono.Addins.Description
 			if (val != null)
 				flags = (AddinFlags) Enum.Parse (typeof(AddinFlags), val);
 		}
+
+		bool TryGetVariableValue (string name, out string value)
+		{
+			if (variables != null && variables.TryGetValue (name, out value))
+				return true;
+			
+			switch (name) {
+				case "Id": value = id; return true;
+				case "Namespace": value = ns; return true;
+				case "Version": value = version; return true;
+				case "CompatVersion": value = compatVersion; return true;
+				case "DefaultEnabled": value = defaultEnabled.ToString (); return true;
+				case "IsRoot": value = isroot.ToString (); return true;
+				case "Flags": value = flags.ToString (); return true;
+			}
+			if (properties != null && properties.HasProperty (name)) {
+				value = properties.GetPropertyValue (name);
+				return true;
+			}
+			value = null;
+			return false;
+		}
 		
 		/// <summary>
 		/// Saves the add-in description.
@@ -870,6 +892,120 @@ namespace Mono.Addins.Description
 				}
 			}
 		}
+
+		public XmlDocument SaveToVsixXml ()
+		{
+			if (!canWrite)
+				throw new InvalidOperationException ("Can't write incomplete description.");
+
+			XmlElement packageManifestEl;
+
+			var vsixDoc = new XmlDocument ();
+			vsixDoc.AppendChild (vsixDoc.CreateElement ("PackageManifest"));
+
+			packageManifestEl = vsixDoc.DocumentElement;
+			packageManifestEl.SetAttribute ("Version", "2.0.0");
+			packageManifestEl.SetAttribute ("xmlns", "http://schemas.microsoft.com/developer/vsx-schema/2011");
+
+			var metadata = vsixDoc.CreateElement ("Metadata");
+			var identity = vsixDoc.CreateElement ("Identity");
+			identity.SetAttribute ("Language", "en-US");
+			identity.SetAttribute ("Id", LocalId);
+			identity.SetAttribute ("Version", Version);
+			identity.SetAttribute ("Publisher", Properties.GetPropertyValue ("VisualStudio.Publisher"));
+			metadata.AppendChild (identity);
+
+			var displayNameEl = vsixDoc.CreateElement ("DisplayName");
+			displayNameEl.InnerText = Name;
+			metadata.AppendChild (displayNameEl);
+
+			var descriptionEl = vsixDoc.CreateElement ("Description");
+			descriptionEl.SetAttribute ("xml:space", "preserve");
+			descriptionEl.InnerText = Description;
+			metadata.AppendChild (descriptionEl);
+
+			var moreInfoEl = vsixDoc.CreateElement ("MoreInfo");
+			moreInfoEl.InnerText = Url;
+			metadata.AppendChild (moreInfoEl);
+
+			var tagsEl = vsixDoc.CreateElement ("Tags");
+			if (!string.IsNullOrEmpty (Properties.GetPropertyValue ("VisualStudio.Tags")))
+				tagsEl.InnerText = Properties.GetPropertyValue ("VisualStudio.Tags");
+			metadata.AppendChild (tagsEl);
+
+			var categoriesEl = vsixDoc.CreateElement ("Categories");
+			categoriesEl.InnerText = Category;
+			metadata.AppendChild (categoriesEl);
+
+			var galleryFlagsEl = vsixDoc.CreateElement ("GalleryFlags");
+			var galleryFlags = Properties.GetPropertyValue ("VisualStudio.GalleryFlags");
+			if (string.IsNullOrEmpty (galleryFlags))
+				galleryFlags = "Public";
+			galleryFlagsEl.InnerText = galleryFlags;
+			metadata.AppendChild (galleryFlagsEl);
+
+			var badgesEl = vsixDoc.CreateElement ("Badges");
+			//TODO:Add Badges support
+			metadata.AppendChild (badgesEl);
+
+			var icon = Properties.GetPropertyValue ("Icon32");
+			if (!string.IsNullOrEmpty (icon)) {
+				var iconEl = vsixDoc.CreateElement ("Icon");
+				iconEl.InnerText = icon;
+				metadata.AppendChild (iconEl);
+			}
+			var license = Copyright;
+			if (!string.IsNullOrEmpty (license)) {
+				var licenseEl = vsixDoc.CreateElement ("License");
+				licenseEl.InnerText = license;
+				metadata.AppendChild (licenseEl);
+			}
+
+			packageManifestEl.AppendChild (metadata);
+
+			var installationEl = vsixDoc.CreateElement ("Installation");
+			var installationTargetEl = vsixDoc.CreateElement ("InstallationTarget");
+			installationTargetEl.SetAttribute ("Id", "Microsoft.VisualStudio.Mac");
+			installationEl.AppendChild (installationTargetEl);
+			packageManifestEl.AppendChild (installationEl);
+
+			packageManifestEl.AppendChild (vsixDoc.CreateElement ("Dependencies"));
+
+			var assetsEl = vsixDoc.CreateElement ("Assets");
+			var addinInfoAsset = vsixDoc.CreateElement ("Asset");
+			addinInfoAsset.SetAttribute ("Type", "Microsoft.VisualStudio.Mac.AddinInfo");
+			addinInfoAsset.SetAttribute ("Path", "addin.info");
+			addinInfoAsset.SetAttribute ("Addressable", "true");
+			assetsEl.AppendChild (addinInfoAsset);
+
+			if (!string.IsNullOrEmpty (icon)) {
+				var iconAsset = vsixDoc.CreateElement ("Asset");
+				iconAsset.SetAttribute ("Type", "Microsoft.VisualStudio.Services.Icons.Default");
+				iconAsset.SetAttribute ("Path", icon);
+				iconAsset.SetAttribute ("Addressable", "true");
+				assetsEl.AppendChild (iconAsset);
+			}
+
+			var propertyToAssetTypeMappings = new Dictionary<string, string>{
+				{"VisualStudio.License", "Microsoft.VisualStudio.Services.Content.License"},
+				{"VisualStudio.Details", "Microsoft.VisualStudio.Services.Content.Details"},
+				{"VisualStudio.Changelog", "Microsoft.VisualStudio.Services.Content.Changelog"},
+			};
+
+			foreach (var mapping in propertyToAssetTypeMappings) {
+				if (!string.IsNullOrEmpty (Properties.GetPropertyValue (mapping.Key))) {
+					var asset = vsixDoc.CreateElement ("Asset");
+					asset.SetAttribute ("Type", mapping.Value);
+					asset.SetAttribute ("Path", icon);
+					asset.SetAttribute ("Addressable", "true");
+					assetsEl.AppendChild (asset);
+				}
+			}
+
+			packageManifestEl.AppendChild (assetsEl);
+
+			return vsixDoc;
+		}
 		
 		void SaveCoreProperty (XmlElement elem, string val, string attr, string prop)
 		{
@@ -1002,14 +1138,15 @@ namespace Mono.Addins.Description
 
 		internal string ParseString (string input)
 		{
-			if (input == null || input.Length < 4 || variables == null || variables.Count == 0)
+			if (input == null || input.Length < 4)
 				return input;
 
 			int i = input.IndexOf ("$(");
 			if (i == -1)
 				return input;
 
-			StringBuilder result = new StringBuilder (input.Substring (0, i), input.Length);
+			StringBuilder result = new StringBuilder (input.Length);
+			result.Append (input, 0, i);
 
 			while (i < input.Length) {
 				if (input [i] == '$') {
@@ -1028,7 +1165,7 @@ namespace Mono.Addins.Description
 					string tag = input.Substring (start, i - start);
 
 					string tagValue;
-					if (variables.TryGetValue (tag, out tagValue))
+					if (TryGetVariableValue (tag, out tagValue))
 						result.Append (tagValue);
 					else {
 						result.Append ('$');
@@ -1121,7 +1258,7 @@ namespace Mono.Addins.Description
 				
 			if (bp != null) {
 				foreach (string file in AllFiles) {
-					string asmFile = Path.Combine (bp, file);
+					string asmFile = Path.Combine (bp, Util.NormalizePath (file));
 					if (!fs.FileExists (asmFile))
 						errors.Add ("The file '" + asmFile + "' referenced in the manifest could not be found.");
 				}

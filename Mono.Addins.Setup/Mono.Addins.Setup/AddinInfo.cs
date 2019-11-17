@@ -35,7 +35,7 @@ using Mono.Addins.Description;
 
 namespace Mono.Addins.Setup
 {
-	internal class AddinInfo: AddinHeader
+	public class AddinInfo: AddinHeader
 	{
 		string id = "";
 		string namspace = "";
@@ -148,6 +148,8 @@ namespace Mono.Addins.Setup
 			set { category = value; }
 		}
 		
+		#pragma warning disable CS0612 // Type or member is obsolete
+
 		[XmlArrayItem ("AddinDependency", typeof(AddinDependency))]
 		[XmlArrayItem ("NativeDependency", typeof(NativeDependency))]
 		[XmlArrayItem ("AssemblyDependency", typeof(AssemblyDependency))]
@@ -161,7 +163,9 @@ namespace Mono.Addins.Setup
 		public DependencyCollection OptionalDependencies {
 			get { return optionalDependencies; }
 		}
-		
+
+		#pragma warning restore CS0612 // Type or member is obsolete
+
 		[XmlArrayItem ("Property", typeof(AddinProperty))]
 		public AddinPropertyCollectionImpl Properties {
 			get { return properties; }

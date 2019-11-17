@@ -109,9 +109,17 @@ namespace Mono.Addins.Description
 		/// Locale of the property
 		/// </param>
 		void RemoveProperty (string name, string locale);
+
+
+		/// <summary>
+		/// Checks whether this collection contains a property
+		/// </summary>
+		/// <returns><c>true</c>, if the collection has the property, <c>false</c> otherwise.</returns>
+		/// <param name="name">Name of the property</param>
+		bool HasProperty (string name);
 	}
 	
-	class AddinPropertyCollectionImpl: List<AddinProperty>, AddinPropertyCollection
+	public class AddinPropertyCollectionImpl: List<AddinProperty>, AddinPropertyCollection
 	{
 		AddinDescription desc;
 
@@ -236,7 +244,7 @@ namespace Mono.Addins.Description
 			}
 		}
 		
-		internal bool HasProperty (string name)
+		public bool HasProperty (string name)
 		{
 			return this.Any (p => p.Name == name);
 		}

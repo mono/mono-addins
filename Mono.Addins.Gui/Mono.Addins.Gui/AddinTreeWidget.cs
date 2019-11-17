@@ -70,9 +70,9 @@ namespace Mono.Addins.Gui
 		public AddinTreeWidget (Gtk.TreeView treeView)
 		{
 			iconInstalled = Gdk.Pixbuf.LoadFromResource ("plugin-32.png");
-			updateOverlay = Gdk.Pixbuf.LoadFromResource ("software-update-available-overlay.png");
-			installedOverlay = Gdk.Pixbuf.LoadFromResource ("installed-overlay.png");
-			
+			updateOverlay = Gdk.Pixbuf.LoadFromResource ("update-available-overlay-16.png");
+			installedOverlay = Gdk.Pixbuf.LoadFromResource ("installed-overlay-16.png");
+
 			this.treeView = treeView;
 			ArrayList list = new ArrayList ();
 			AddStoreTypes (list);
@@ -99,7 +99,7 @@ namespace Mono.Addins.Gui
 		
 		internal void ShowEmptyMessage ()
 		{
-			treeStore.AppendValues (null, null, Catalog.GetString ("No add-ins found"), "", false, false, null, false);
+			treeStore.AppendValues (null, null, Catalog.GetString ("No extension packages found"), "", false, false, null, false);
 		}
 		
 		protected virtual void AddStoreTypes (ArrayList list)
@@ -117,7 +117,7 @@ namespace Mono.Addins.Gui
 		protected virtual void CreateColumns ()
 		{
 			TreeViewColumn col = new TreeViewColumn ();
-			col.Title = Catalog.GetString ("Add-in");
+			col.Title = Catalog.GetString ("Extension Package");
 			
 			CellRendererToggle crtog = new CellRendererToggle ();
 			crtog.Activatable = true;
@@ -282,7 +282,7 @@ namespace Mono.Addins.Gui
 					AddinRepositoryEntry arep = (AddinRepositoryEntry) dataItem;
 					string tmpId = iconId;
 					arep.BeginDownloadSupportFile (customIcom, delegate (IAsyncResult res) {
-						Gtk.Application.Invoke (delegate {
+						Gtk.Application.Invoke ((o, args) => {
 							LoadRemoteIcon (it, tmpId, arep, res, info, dataItem, status);
 						});
 					}, null);
@@ -352,7 +352,7 @@ namespace Mono.Addins.Gui
 			int i = txt.IndexOf (filter, StringComparison.CurrentCultureIgnoreCase);
 			while (i != -1) {
 				sb.Append (GLib.Markup.EscapeText (txt.Substring (last, i - last)));
-				sb.Append ("<span color='blue'>").Append (txt.Substring (i, filter.Length)).Append ("</span>");
+				sb.Append ("<span color='blue'>").Append (txt, i, filter.Length).Append ("</span>");
 				last = i + filter.Length;
 				i = txt.IndexOf (filter, last, StringComparison.CurrentCultureIgnoreCase);
 			}

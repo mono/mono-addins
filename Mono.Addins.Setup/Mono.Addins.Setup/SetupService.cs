@@ -28,15 +28,16 @@
 
 
 using System;
-using System.Xml;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Xml;
 using ICSharpCode.SharpZipLib.Zip;
+using Mono.Addins.Database;
 using Mono.Addins.Description;
 using Mono.Addins.Setup.ProgressMonitoring;
-using Microsoft.Win32;
-using System.Diagnostics;
 using Mono.PkgConfig;
 
 namespace Mono.Addins.Setup
@@ -76,6 +77,7 @@ namespace Mono.Addins.Setup
 			
 			repositories = new RepositoryRegistry (this);
 			store = new AddinStore (this);
+			AddAddinRepositoryProvider ("MonoAddins", new MonoAddinsRepositoryProvider (this));
 		}
 		
 		/// <summary>
@@ -89,6 +91,7 @@ namespace Mono.Addins.Setup
 			this.registry = registry;
 			repositories = new RepositoryRegistry (this);
 			store = new AddinStore (this);
+			AddAddinRepositoryProvider ("MonoAddins", new MonoAddinsRepositoryProvider (this));
 		}
 		
 		/// <summary>
@@ -103,6 +106,13 @@ namespace Mono.Addins.Setup
 		}
 		
 		string RootConfigFile {
+			get { return Path.Combine (registry.RegistryPath, "addins-setup-v2.config"); }
+		}
+
+		/// <summary>
+		/// This should only be used for migration purposes
+		/// </summary>
+		string RootConfigFileOld {
 			get { return Path.Combine (registry.RegistryPath, "addins-setup.config"); }
 		}
 		
@@ -296,7 +306,29 @@ namespace Mono.Addins.Setup
 		{
 			return AddinInfo.ReadFromDescription (addin.Description);
 		}
-		
+
+		Dictionary<string, AddinRepositoryProvider> providersList = new Dictionary<string, AddinRepositoryProvider> ();
+
+		public AddinRepositoryProvider GetAddinRepositoryProvider (string providerId)
+		{
+
+			if (string.IsNullOrEmpty (providerId))
+				providerId = "MonoAddins";
+			if (providersList.TryGetValue (providerId, out var addinRepositoryProvider))
+				return addinRepositoryProvider;
+			throw new KeyNotFoundException (providerId);
+		}
+
+		public void AddAddinRepositoryProvider (string providerId, AddinRepositoryProvider provider)
+		{
+			providersList [providerId] = provider;
+		}
+
+		public void RemoveAddinRepositoryProvider (string providerId)
+		{
+			providersList.Remove (providerId);
+		}
+
 		/// <summary>
 		/// Gets a list of add-ins which depend on an add-in
 		/// </summary>
@@ -338,16 +370,77 @@ namespace Mono.Addins.Setup
 		/// </remarks>
 		public string[] BuildPackage (IProgressStatus statusMonitor, string targetDirectory, params string[] filePaths)
 		{
+			return BuildPackage (statusMonitor, false, targetDirectory, filePaths);
+		}
+
+		/// <summary>
+		/// Packages an add-in
+		/// </summary>
+		/// <param name="statusMonitor">
+		/// Progress monitor where to show progress status
+		/// </param>
+		/// <param name="debugSymbols">
+		/// True if debug symbols (.pdb or .mdb) should be included in the package, if they exist
+		/// </param>
+		/// <param name="targetDirectory">
+		/// Directory where to generate the package
+		/// </param>
+		/// <param name="filePaths">
+		/// Paths to the add-ins to be packaged. Paths can be either the main assembly of an add-in, or an add-in
+		/// manifest (.addin or .addin.xml).
+		/// </param>
+		/// <remarks>
+		/// This method can be used to create a package for an add-in, which can then be pushed to an on-line
+		/// repository. The package will include the main assembly or manifest of the add-in and any external
+		/// file declared in the add-in metadata.
+		/// </remarks>
+		public string[] BuildPackage (IProgressStatus statusMonitor, bool debugSymbols, string targetDirectory, params string[] filePaths)
+		{
 			List<string> outFiles = new List<string> ();
 			foreach (string file in filePaths) {
-				string f = BuildPackageInternal (statusMonitor, targetDirectory, file);
+				string f = BuildPackageInternal (statusMonitor, debugSymbols, targetDirectory, file, PackageFormat.Mpack);
+				if (f != null)
+					outFiles.Add (f);
+			}
+			return outFiles.ToArray ();
+		}
+
+		/// <summary>
+		/// Packages an add-in
+		/// </summary>
+		/// <param name="statusMonitor">
+		/// Progress monitor where to show progress status
+		/// </param>
+		/// <param name="debugSymbols">
+		/// True if debug symbols (.pdb or .mdb) should be included in the package, if they exist
+		/// </param>
+		/// <param name="targetDirectory">
+		/// Directory where to generate the package
+		/// </param>
+		/// <param name="format">
+		/// Which format to produce .mpack or .vsix
+		/// </param>
+		/// <param name="filePaths">
+		/// Paths to the add-ins to be packaged. Paths can be either the main assembly of an add-in, or an add-in
+		/// manifest (.addin or .addin.xml).
+		/// </param>
+		/// <remarks>
+		/// This method can be used to create a package for an add-in, which can then be pushed to an on-line
+		/// repository. The package will include the main assembly or manifest of the add-in and any external
+		/// file declared in the add-in metadata.
+		/// </remarks>
+		public string [] BuildPackage (IProgressStatus statusMonitor, bool debugSymbols, string targetDirectory, PackageFormat format , params string [] filePaths)
+		{
+			List<string> outFiles = new List<string> ();
+			foreach (string file in filePaths) {
+				string f = BuildPackageInternal (statusMonitor, debugSymbols, targetDirectory, file, format);
 				if (f != null)
 					outFiles.Add (f);
 			}
 			return outFiles.ToArray ();
 		}
 		
-		string BuildPackageInternal (IProgressStatus monitor, string targetDirectory, string filePath)
+		string BuildPackageInternal (IProgressStatus monitor, bool debugSymbols, string targetDirectory, string filePath, PackageFormat format)
 		{
 			AddinDescription conf = registry.GetAddinDescription (monitor, filePath);
 			if (conf == null) {
@@ -355,7 +448,7 @@ namespace Mono.Addins.Setup
 				return null;
 			}
 			
-			string basePath = Path.GetDirectoryName (filePath);
+			string basePath = Path.GetDirectoryName (Path.GetFullPath (filePath));
 			
 			if (targetDirectory == null)
 				targetDirectory = basePath;
@@ -369,65 +462,218 @@ namespace Mono.Addins.Setup
 				name = conf.LocalId;
 			name = Addin.GetFullId (conf.Namespace, name, conf.Version);
 			name = name.Replace (',','_').Replace (".__", ".");
-			
-			string outFilePath = Path.Combine (targetDirectory, name) + ".mpack";
+
+			string outFilePath = Path.Combine (targetDirectory, name);
+			switch(format){
+			case PackageFormat.Mpack:
+				outFilePath += ".mpack";
+				break;
+			case PackageFormat.Vsix:
+				outFilePath += ".vsix";
+				break;
+			default:
+				throw new NotSupportedException (format.ToString ());
+			}
 			
 			ZipOutputStream s = new ZipOutputStream (File.Create (outFilePath));
 			s.SetLevel(5);
-			
+
+			if (format == PackageFormat.Vsix) {
+				XmlDocument doc = new XmlDocument ();
+				doc.PreserveWhitespace = false;
+				doc.LoadXml (conf.SaveToVsixXml ().OuterXml);
+				MemoryStream ms = new MemoryStream ();
+				XmlTextWriter tw = new XmlTextWriter (ms, System.Text.Encoding.UTF8);
+				tw.Formatting = Formatting.Indented;
+				doc.WriteTo (tw);
+				tw.Flush ();
+				byte [] data = ms.ToArray ();
+
+				var infoEntry = new ZipEntry ("extension.vsixmanifest") { Size = data.Length };
+				s.PutNextEntry (infoEntry);
+				s.Write (data, 0, data.Length);
+				s.CloseEntry ();
+			}
+
 			// Generate a stripped down description of the add-in in a file, since the complete
 			// description may be declared as assembly attributes
-			
-			XmlDocument doc = new XmlDocument ();
-			doc.PreserveWhitespace = false;
-			doc.LoadXml (conf.SaveToXml ().OuterXml);
-			CleanDescription (doc.DocumentElement);
-			MemoryStream ms = new MemoryStream ();
-			XmlTextWriter tw = new XmlTextWriter (ms, System.Text.Encoding.UTF8);
-			tw.Formatting = Formatting.Indented;
-			doc.WriteTo (tw);
-			tw.Flush ();
-			byte[] data = ms.ToArray ();
-			
-			ZipEntry infoEntry = new ZipEntry ("addin.info");
-			s.PutNextEntry (infoEntry);
-			s.Write (data, 0, data.Length);
-			
+
+			if (format == PackageFormat.Mpack || format == PackageFormat.Vsix) {
+				XmlDocument doc = new XmlDocument ();
+				doc.PreserveWhitespace = false;
+				doc.LoadXml (conf.SaveToXml ().OuterXml);
+				CleanDescription (doc.DocumentElement);
+				MemoryStream ms = new MemoryStream ();
+				XmlTextWriter tw = new XmlTextWriter (ms, System.Text.Encoding.UTF8);
+				tw.Formatting = Formatting.Indented;
+				doc.WriteTo (tw);
+				tw.Flush ();
+				byte [] data = ms.ToArray ();
+
+				var infoEntry = new ZipEntry ("addin.info") { Size = data.Length };
+				s.PutNextEntry (infoEntry);
+				s.Write (data, 0, data.Length);
+				s.CloseEntry ();
+			}
+
 			// Now add the add-in files
-			
-			ArrayList list = new ArrayList ();
-			if (!conf.AllFiles.Contains (Path.GetFileName (filePath)))
-				list.Add (Path.GetFileName (filePath));
+
+			var files = new HashSet<string> ();
+
+			files.Add (Path.GetFileName (Util.NormalizePath (filePath)));
+
 			foreach (string f in conf.AllFiles) {
-				list.Add (f);
+				var file = Util.NormalizePath (f);
+				files.Add (file);
+				if (debugSymbols) {
+					if (File.Exists (Path.ChangeExtension (file, ".pdb")))
+						files.Add (Path.ChangeExtension (file, ".pdb"));
+					else if (File.Exists (file + ".mdb"))
+						files.Add (file + ".mdb");
+				}
 			}
 			
 			foreach (var prop in conf.Properties) {
 				try {
-					if (File.Exists (Path.Combine (basePath, prop.Value)))
-						list.Add (prop.Value);
+					var file = Util.NormalizePath (prop.Value);
+					if (File.Exists (Path.Combine (basePath, file))) {
+						files.Add (file);
+					}
 				} catch {
 					// Ignore errors
+				}
+			}
+
+			//add satellite assemblies for assemblies in the list
+			var satelliteFinder = new SatelliteAssemblyFinder ();
+			foreach (var f in files.ToList ()) {
+				foreach (var satellite in satelliteFinder.FindSatellites (Path.Combine (basePath, f))) {
+					var relativeSatellite = satellite.Substring (basePath.Length + 1);
+					files.Add (relativeSatellite);
 				}
 			}
 			
 			monitor.Log ("Creating package " + Path.GetFileName (outFilePath));
 			
-			foreach (string file in list) {
+			foreach (string file in files) {
 				string fp = Path.Combine (basePath, file);
 				using (FileStream fs = File.OpenRead (fp)) {
 					byte[] buffer = new byte [fs.Length];
 					fs.Read (buffer, 0, buffer.Length);
-					
-					ZipEntry entry = new ZipEntry (file);
+
+					var fileName = Path.DirectorySeparatorChar == '\\' ? file.Replace ('\\', '/') : file;
+					var entry = new ZipEntry (fileName) { Size = fs.Length };
 					s.PutNextEntry (entry);
 					s.Write (buffer, 0, buffer.Length);
+					s.CloseEntry ();
 				}
 			}
-			
-			s.Finish();
-			s.Close();		
+
+			if (format == PackageFormat.Vsix) {
+				files.Add ("addin.info");
+				files.Add ("extension.vsixmanifest");
+				XmlDocument doc = new XmlDocument ();
+				doc.PreserveWhitespace = false;
+				XmlDeclaration xmlDeclaration = doc.CreateXmlDeclaration ("1.0", "UTF-8", null);
+				XmlElement root = doc.DocumentElement;
+				doc.InsertBefore (xmlDeclaration, root);
+				HashSet<string> alreadyAddedExtensions = new HashSet<string> ();
+				var typesEl = doc.CreateElement ("Types");
+				typesEl.SetAttribute ("xmlns", "http://schemas.openxmlformats.org/package/2006/content-types");
+				foreach (var file in files) {
+					var extension = Path.GetExtension (file);
+					if (string.IsNullOrEmpty (extension))
+						continue;
+					if (extension.StartsWith (".", StringComparison.Ordinal))
+						extension = extension.Substring (1);
+					if (alreadyAddedExtensions.Contains (extension))
+						continue;
+					alreadyAddedExtensions.Add (extension);
+					var typeEl = doc.CreateElement ("Default");
+					typeEl.SetAttribute ("Extension", extension);
+					typeEl.SetAttribute ("ContentType", GetContentType (extension));
+					typesEl.AppendChild (typeEl);
+				}
+				doc.AppendChild (typesEl);
+				MemoryStream ms = new MemoryStream ();
+				XmlTextWriter tw = new XmlTextWriter (ms, System.Text.Encoding.UTF8);
+				tw.Formatting = Formatting.Indented;
+				doc.WriteTo (tw);
+				tw.Flush ();
+				byte [] data = ms.ToArray ();
+
+				var infoEntry = new ZipEntry ("[Content_Types].xml") { Size = data.Length };
+				s.PutNextEntry (infoEntry);
+				s.Write (data, 0, data.Length);
+				s.CloseEntry ();
+			}
+
+			s.Finish ();
+			s.Close ();
 			return outFilePath;
+		}
+
+		static string GetContentType (string extension)
+		{
+			switch (extension) {
+			case "txt": return "text/plain";
+			case "pkgdef": return "text/plain";
+			case "xml": return "text/xml";
+			case "vsixmanifest": return "text/xml";
+			case "htm or html": return "text/html";
+			case "rtf": return "application/rtf";
+			case "pdf": return "application/pdf";
+			case "gif": return "image/gif";
+			case "jpg or jpeg": return "image/jpg";
+			case "tiff": return "image/tiff";
+			case "vsix": return "application/zip";
+			case "zip": return "application/zip";
+			case "dll": return "application/octet-stream";
+			case "info": return "text/xml";//Mono.Addins info file
+			default: return "application/octet-stream";
+			}
+		}
+
+		class SatelliteAssemblyFinder
+		{
+			Dictionary<string, List<string>> cultureSubdirCache = new Dictionary<string, List<string>> ();
+			HashSet<string> cultureNames = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
+
+			public SatelliteAssemblyFinder ()
+			{
+				foreach (var cultureName in CultureInfo.GetCultures (CultureTypes.AllCultures)) {
+					cultureNames.Add (cultureName.Name);
+				}
+			}
+
+			List<string> GetCultureSubdirectories (string directory)
+			{
+				if (!cultureSubdirCache.TryGetValue (directory, out List<string> cultureDirs)) {
+					cultureDirs = Directory.EnumerateDirectories (directory)
+						.Where (d => cultureNames.Contains (Path.GetFileName ((d))))
+						.ToList ();
+
+					cultureSubdirCache [directory] = cultureDirs;
+				}
+				return cultureDirs;
+			}
+
+			public IEnumerable<string> FindSatellites (string assemblyPath)
+			{
+				if (!assemblyPath.EndsWith (".dll", StringComparison.OrdinalIgnoreCase)) {
+					yield break;
+				}
+
+				var satelliteName = Path.GetFileNameWithoutExtension (assemblyPath) + ".resources.dll";
+
+				foreach (var cultureDir in GetCultureSubdirectories (Path.GetDirectoryName (assemblyPath))) {
+					string cultureName = Path.GetFileName (cultureDir);
+					string satellitePath = Path.Combine (cultureDir, satelliteName);
+					if (File.Exists (satellitePath)) {
+						yield return satellitePath;
+					}
+				}
+			}
 		}
 		
 		void CleanDescription (XmlElement parent)
@@ -580,29 +826,33 @@ namespace Mono.Addins.Setup
 		{
 			Random r = new Random ();
 			ZipFile zfile = new ZipFile (file);
-			foreach (var prop in ainfo.Properties) {
-				ZipEntry ze = zfile.GetEntry (prop.Value);
-				if (ze != null) {
-					string fname;
-					do {
-						fname = Path.Combine (targetDir, r.Next().ToString ("x") + Path.GetExtension (prop.Value));
-					} while (File.Exists (fname));
-					
-					if (!Directory.Exists (targetDir))
-						Directory.CreateDirectory (targetDir);
-					
-					using (var f = File.OpenWrite (fname)) {
-						using (Stream s = zfile.GetInputStream (ze)) {
-							byte[] buffer = new byte [8092];
-							int nr = 0;
-							while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
-								f.Write (buffer, 0, nr);
+			try {
+				foreach (var prop in ainfo.Properties) {
+					ZipEntry ze = zfile.GetEntry (prop.Value);
+					if (ze != null) {
+						string fname;
+						do {
+							fname = Path.Combine (targetDir, r.Next ().ToString ("x") + Path.GetExtension (prop.Value));
+						} while (File.Exists (fname));
+
+						if (!Directory.Exists (targetDir))
+							Directory.CreateDirectory (targetDir);
+
+						using (var f = File.OpenWrite (fname)) {
+							using (Stream s = zfile.GetInputStream (ze)) {
+								byte [] buffer = new byte [8092];
+								int nr = 0;
+								while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
+									f.Write (buffer, 0, nr);
+							}
 						}
+						prop.Value = Path.Combine (addinFilesDir, Path.GetFileName (fname));
 					}
-					prop.Value = Path.Combine (addinFilesDir, Path.GetFileName (fname));
 				}
+			} finally {
+				zfile.Close ();
 			}
-		}
+ 		}
 		
 		void GenerateIndexPage (Repository rep, ArrayList addins, string basePath)
 		{
@@ -626,7 +876,10 @@ namespace Mono.Addins.Setup
 		internal AddinSystemConfiguration Configuration {
 			get {
 				if (config == null) {
-					config = (AddinSystemConfiguration) AddinStore.ReadObject (RootConfigFile, typeof(AddinSystemConfiguration));
+					if (File.Exists (RootConfigFile))
+						config = (AddinSystemConfiguration)AddinStore.ReadObject (RootConfigFile, typeof (AddinSystemConfiguration));
+					else
+						config = (AddinSystemConfiguration)AddinStore.ReadObject (RootConfigFileOld, typeof (AddinSystemConfiguration));
 					if (config == null)
 						config = new AddinSystemConfiguration ();
 				}
@@ -645,6 +898,8 @@ namespace Mono.Addins.Setup
 		{
 			if (File.Exists (RootConfigFile))
 				File.Delete (RootConfigFile);
+			if (File.Exists (RootConfigFileOld))
+				File.Delete (RootConfigFileOld);
 			ResetAddinInfo ();
 		}
 				

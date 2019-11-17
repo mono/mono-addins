@@ -36,6 +36,7 @@ namespace Mono.Addins.Database
 	/// File system extensions can override the behavior of the add-in scanner and provide custom rules for
 	/// locating and scanning assemblies.
 	/// </remarks>
+	[Serializable]
 	public class AddinFileSystemExtension
 	{
 		IAssemblyReflector reflector;
@@ -189,6 +190,22 @@ namespace Mono.Addins.Database
 			
 			reflector.Initialize (locator);
 			return reflector;
+		}
+
+		/// <summary>
+		/// Deletes a file
+		/// </summary>
+		/// <param name="filePath">File path.</param>
+		public virtual void DeleteFile (string filePath)
+		{
+			File.Delete (filePath);
+		}
+
+		internal void CleanupReflector()
+		{
+			var disposable = reflector as IDisposable;
+			if (disposable != null)
+				disposable.Dispose ();
 		}
 		
 		/// <summary>

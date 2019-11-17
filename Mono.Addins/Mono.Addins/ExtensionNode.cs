@@ -171,7 +171,14 @@ namespace Mono.Addins
 					try {
 						value (this, new ExtensionNodeEventArgs (ExtensionChange.Add, node));
 					} catch (Exception ex) {
-						addinEngine.ReportError (null, node.Addin != null ? node.Addin.Id : null, ex, false);
+						RuntimeAddin nodeAddin;
+						try {
+							nodeAddin = node.Addin;
+						} catch (Exception addinException) {
+							addinEngine.ReportError (null, null, addinException, false);
+							nodeAddin = null;
+						}
+						addinEngine.ReportError (null, nodeAddin != null ? nodeAddin.Id : null, ex, false);
 					}
 				}
 			}
@@ -371,7 +378,7 @@ namespace Mono.Addins
 		/// The element containing the extension data
 		/// </param>
 		/// <remarks>
-		/// This method can be overriden to provide a custom method for reading extension node data from an element.
+		/// This method can be overridden to provide a custom method for reading extension node data from an element.
 		/// The default implementation reads the attributes if the element and assigns the values to the fields
 		/// and properties of the extension node that have the corresponding [NodeAttribute] decoration.
 		/// </remarks>
@@ -412,7 +419,7 @@ namespace Mono.Addins
 
 				if (memberType == typeof(string)) {
 					if (f.Localizable)
-						val = Addin.Localizer.GetString (at.value);
+						val = GetAddinLocalizer ().GetString (at.value);
 					else
 						val = at.value;
 				}
@@ -448,6 +455,21 @@ namespace Mono.Addins
 						throw new InvalidOperationException ("Required attribute '" + e.Key + "' not found.");
 				}
 			}
+		}
+
+		/// <summary>
+		/// Tries to avoid loading the addin dependencies when getting the localizer.
+		/// </summary>
+		AddinLocalizer GetAddinLocalizer ()
+		{
+			if (addin != null || addinId == null)
+				return Addin.Localizer;
+
+			Addin foundAddin = addinEngine.Registry.GetAddin (addinId);
+			if (foundAddin == null || foundAddin.Description.Localizer != null)
+				return Addin.Localizer;
+
+			return addinEngine.DefaultLocalizer;
 		}
 		
 		internal bool NotifyChildChanged ()

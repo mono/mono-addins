@@ -45,8 +45,8 @@ namespace Mono.Addins
 	/// </summary>
 	/// <remarks>
 	/// This class allows hosting several independent add-in engines in a single application domain.
-	/// In general, applications use the AddinManager class to query and manage extensions. This class is static,
-	/// so the API is easily accessible. However, some kind applications may need to use several isolated
+	/// In general, applications use the AddinManager class to query and manage extensions. Most of the API is
+	/// static, so easily accessible. However, some kind applications may need to use several isolated
 	/// add-in engines, and in this case the AddinManager class can't be used, because it is bound to a single
 	/// add-in engine. Those applications can instead create several instances of the AddinEngine class. Each
 	/// add-in engine can be independently initialized with different add-in registries and extension models.
@@ -80,6 +80,11 @@ namespace Mono.Addins
 		/// Raised when an add-in is unloaded
 		/// </summary>
 		public static event AddinEventHandler AddinUnloaded;
+
+		/// <summary>
+		/// Raised when the add-in assemblies are loaded.
+		/// </summary>
+		public static event AddinEventHandler AddinAssembliesLoaded;
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Addins.AddinEngine"/> class.
@@ -105,7 +110,7 @@ namespace Mono.Addins
 			
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			Initialize (asm, configDir, null, null);
+			Initialize (asm, null, configDir, null, null);
 		}
 		
 		/// <summary>
@@ -137,7 +142,7 @@ namespace Mono.Addins
 			
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			Initialize (asm, configDir, addinsDir, null);
+			Initialize (asm, null, configDir, addinsDir, null);
 		}
 		
 		/// <summary>
@@ -174,19 +179,64 @@ namespace Mono.Addins
 			
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			Initialize (asm, configDir, addinsDir, databaseDir);
+			Initialize (asm, null, configDir, addinsDir, databaseDir);
 		}
 		
-		internal void Initialize (Assembly startupAsm, string configDir, string addinsDir, string databaseDir)
+		/// <summary>
+		/// Initializes the add-in engine.
+		/// </summary>
+		/// <param name='configDir'>
+		/// Location of the add-in registry.
+		/// </param>
+		/// <param name='addinsDir'>
+		/// Add-ins directory. If the path is relative, it is considered to be relative
+		/// to the configDir directory.
+		/// </param>
+		/// <param name='databaseDir'>
+		/// Location of the add-in database. If the path is relative, it is considered to be relative
+		/// to the configDir directory.
+		/// </param>
+		/// <param name='startupDirectory'>
+		/// Statup directory. This is the directory where add-in scans will start.
+		/// </param>
+		/// <remarks>
+		/// The add-in engine needs to be initialized before doing any add-in operation.
+		/// Configuration information about the add-in registry will be stored in the
+		/// provided location. The add-in engine will look for add-ins in the provided
+		/// 'addinsDir' directory. Cached information about add-ins will be stored in
+		/// the 'databaseDir' directory.
+		/// 
+		/// When specifying a path, it is possible to use a special folder name as root.
+		/// For example: [Personal]/.config/MyApp. In this case, [Personal] will be replaced
+		/// by the location of the Environment.SpecialFolder.Personal folder. Any value
+		/// of the Environment.SpecialFolder enumeration can be used (always between square
+		/// brackets)
+		/// </remarks>
+		public void Initialize (string configDir, string addinsDir, string databaseDir, string startupDirectory)
+		{
+			if (initialized)
+				return;
+			
+			Assembly asm = Assembly.GetEntryAssembly ();
+			if (asm == null) asm = Assembly.GetCallingAssembly ();
+			Initialize (null, startupDirectory, configDir, addinsDir, databaseDir);
+		}
+		
+		internal void Initialize (Assembly startupAsm, string customStartupDirectory, string configDir, string addinsDir, string databaseDir)
 		{
 			lock (LocalLock) {
 				if (initialized)
 					return;
 				
 				Initialize (this);
-				
-				string asmFile = new Uri (startupAsm.CodeBase).LocalPath;
-				startupDirectory = System.IO.Path.GetDirectoryName (asmFile);
+
+				string asmFile = null;
+
+				if (startupAsm != null) {
+					asmFile = new Uri (startupAsm.CodeBase).LocalPath;
+					startupDirectory = System.IO.Path.GetDirectoryName (asmFile);
+				} else
+					startupDirectory = customStartupDirectory;
 				
 				string customDir = Environment.GetEnvironmentVariable ("MONO_ADDINS_REGISTRY");
 				if (customDir != null && customDir.Length > 0)
@@ -197,7 +247,7 @@ namespace Mono.Addins
 				else
 					registry = new AddinRegistry (this, configDir, startupDirectory, addinsDir, databaseDir);
 
-				if (registry.CreateHostAddinsFile (asmFile) || registry.UnknownDomain)
+				if ((asmFile != null && registry.CreateHostAddinsFile (asmFile)) || registry.UnknownDomain)
 					registry.Update (new ConsoleProgressStatus (false));
 				
 				initialized = true;
@@ -426,7 +476,7 @@ namespace Mono.Addins
 					loadedAddinsCopy.Remove (Addin.GetIdName (id));
 					loadedAddins = loadedAddinsCopy;
 					if (addin.AssembliesLoaded) {
-						var loadedAssembliesCopy = new Dictionary<Assembly,RuntimeAddin> ();
+						var loadedAssembliesCopy = new Dictionary<Assembly,RuntimeAddin> (loadedAssemblies);
 						foreach (Assembly asm in addin.Assemblies)
 							loadedAssembliesCopy.Remove (asm);
 						loadedAssemblies = loadedAssembliesCopy;
@@ -448,7 +498,7 @@ namespace Mono.Addins
 		/// <remarks>
 		/// This method loads all assemblies that belong to an add-in in memory.
 		/// All add-ins on which the specified add-in depends will also be loaded.
-		/// Notice that in general add-ins don't need to be explicitely loaded using
+		/// Notice that in general add-ins don't need to be explicitly loaded using
 		/// this method, since the add-in engine will load them on demand.
 		/// </remarks>
 		public void LoadAddin (IProgressStatus statusMonitor, string id)
@@ -587,8 +637,6 @@ namespace Mono.Addins
 			if (depCheck.Contains (id))
 				throw new InvalidOperationException ("A cyclic addin dependency has been detected.");
 
-			depCheck.Push (id);
-
 			Addin iad = Registry.GetAddin (id);
 			if (iad == null || !iad.Enabled) {
 				if (optional)
@@ -603,34 +651,38 @@ namespace Mono.Addins
 			// of the list, so it is loaded earlier than before.
 			addins.Remove (iad);
 			addins.Add (iad);
-			
-			foreach (Dependency dep in iad.AddinInfo.Dependencies) {
-				AddinDependency adep = dep as AddinDependency;
-				if (adep != null) {
-					try {
-						string adepid = Addin.GetFullId (iad.AddinInfo.Namespace, adep.AddinId, adep.Version);
-						ResolveLoadDependencies (addins, depCheck, adepid, false);
-					} catch (MissingDependencyException) {
-						if (optional)
-							return false;
-						else
-							throw;
-					}
-				}
-			}
-			
-			if (iad.AddinInfo.OptionalDependencies != null) {
-				foreach (Dependency dep in iad.AddinInfo.OptionalDependencies) {
+
+			depCheck.Push (id);
+
+			try {
+				foreach (Dependency dep in iad.AddinInfo.Dependencies) {
 					AddinDependency adep = dep as AddinDependency;
 					if (adep != null) {
-						string adepid = Addin.GetFullId (iad.Namespace, adep.AddinId, adep.Version);
-						if (!ResolveLoadDependencies (addins, depCheck, adepid, true))
-						return false;
+						try {
+							string adepid = Addin.GetFullId (iad.AddinInfo.Namespace, adep.AddinId, adep.Version);
+							ResolveLoadDependencies (addins, depCheck, adepid, false);
+						} catch (MissingDependencyException) {
+							if (optional)
+								return false;
+							else
+								throw;
+						}
 					}
 				}
+
+				if (iad.AddinInfo.OptionalDependencies != null) {
+					foreach (Dependency dep in iad.AddinInfo.OptionalDependencies) {
+						AddinDependency adep = dep as AddinDependency;
+						if (adep != null) {
+							string adepid = Addin.GetFullId (iad.Namespace, adep.AddinId, adep.Version);
+							if (!ResolveLoadDependencies (addins, depCheck, adepid, true))
+								return false;
+						}
+					}
+				}
+			} finally {
+				depCheck.Pop ();
 			}
-				
-			depCheck.Pop ();
 			return true;
 		}
 		
@@ -832,6 +884,18 @@ namespace Mono.Addins
 		internal void ReportAddinUnload (string id)
 		{
 			var handler = AddinUnloaded;
+			if (handler != null) {
+				try {
+					handler (null, new AddinEventArgs (id));
+				} catch {
+					// Ignore subscriber exceptions
+				}
+			}
+		}
+
+		internal void ReportAddinAssembliesLoad (string id)
+		{
+			var handler = AddinAssembliesLoaded;
 			if (handler != null) {
 				try {
 					handler (null, new AddinEventArgs (id));

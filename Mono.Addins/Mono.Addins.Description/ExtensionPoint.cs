@@ -46,7 +46,9 @@ namespace Mono.Addins.Description
 		string description;
 		ExtensionNodeSet nodeSet;
 		ConditionTypeDescriptionCollection conditions;
-		
+		string defaultInsertBefore;
+		string defaultInsertAfter;
+
 		// Information gathered from others addins:
 		
 		List<string> addins;  // Add-ins which extend this extension point
@@ -56,6 +58,8 @@ namespace Mono.Addins.Description
 		{
 			path = elem.GetAttribute ("path");
 			name = elem.GetAttribute ("name");
+			defaultInsertBefore = elem.GetAttribute ("defaultInsertBefore");
+			defaultInsertAfter = elem.GetAttribute ("defaultInsertAfter");
 			description = ReadXmlDescription ();
 		}
 		
@@ -76,6 +80,8 @@ namespace Mono.Addins.Description
 		{
 			path = ep.path;
 			name = ep.name;
+			defaultInsertBefore = ep.defaultInsertBefore;
+			defaultInsertAfter = ep.defaultInsertAfter;
 			description = ep.description;
 			NodeSet.CopyFrom (ep.NodeSet);
 			Conditions.Clear ();
@@ -158,7 +164,17 @@ namespace Mono.Addins.Description
 				Element.SetAttribute ("name", Name);
 			else
 				Element.RemoveAttribute ("name");
-				
+			
+			if (DefaultInsertBefore.Length > 0)
+				Element.SetAttribute ("defaultInsertBefore", DefaultInsertBefore);
+			else
+				Element.RemoveAttribute ("defaultInsertBefore");
+
+			if (DefaultInsertAfter.Length > 0)
+				Element.SetAttribute ("defaultInsertAfter", DefaultInsertAfter);
+			else
+				Element.RemoveAttribute ("defaultInsertAfter");
+
 			SaveXmlDescription (Description);
 			
 			if (nodeSet != null) {
@@ -293,7 +309,25 @@ namespace Mono.Addins.Description
 			NodeSet.NodeTypes.Add (ntype);
 			return ntype;
 		}
-		
+
+		/// <summary>
+		/// The id of the extension before which new extensions will be added, unless the extension defines its own InsertBefore value
+		/// </summary>
+		/// <value>The default insert before.</value>
+		public string DefaultInsertBefore {
+			get { return defaultInsertBefore ?? ""; }
+			set { defaultInsertBefore = value; }
+		}
+
+		/// <summary>
+		/// The id of the extension after which new extensions will be added, unless the extension defines its own InsertAfter value
+		/// </summary>
+		/// <value>The default insert before.</value>
+		public string DefaultInsertAfter {
+			get { return defaultInsertAfter ?? ""; }
+			set { defaultInsertAfter = value; }
+		}
+
 		internal override void Write (BinaryXmlWriter writer)
 		{
 			writer.WriteValue ("path", path);
@@ -303,6 +337,8 @@ namespace Mono.Addins.Description
 			writer.WriteValue ("addins", Addins);
 			writer.WriteValue ("NodeSet", NodeSet);
 			writer.WriteValue ("Conditions", Conditions);
+			writer.WriteValue ("defaultInsertBefore", defaultInsertBefore);
+			writer.WriteValue ("defaultInsertAfter", defaultInsertAfter);
 		}
 		
 		internal override void Read (BinaryXmlReader reader)
@@ -315,6 +351,8 @@ namespace Mono.Addins.Description
 			addins = (List<string>) reader.ReadValue ("addins", new List<string> ());
 			nodeSet = (ExtensionNodeSet) reader.ReadValue ("NodeSet");
 			conditions = (ConditionTypeDescriptionCollection) reader.ReadValue ("Conditions", new ConditionTypeDescriptionCollection (this));
+			defaultInsertBefore = reader.ReadStringValue ("defaultInsertBefore");
+			defaultInsertAfter = reader.ReadStringValue ("defaultInsertAfter");
 			if (nodeSet != null)
 				nodeSet.SetParent (this);
 		}

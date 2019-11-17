@@ -59,7 +59,7 @@ namespace Mono.Addins
 			// Code not shared with the other Initialize since I need to get the calling assembly
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			AddinEngine.Initialize (asm, null, null, null);
+			AddinEngine.Initialize (asm, null, null, null, null);
 		}
 		
 		/// <summary>
@@ -84,7 +84,7 @@ namespace Mono.Addins
 		{
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			AddinEngine.Initialize (asm, configDir, null, null);
+			AddinEngine.Initialize (asm, null, configDir, null, null);
 		}
 		
 		/// <summary>
@@ -113,7 +113,7 @@ namespace Mono.Addins
 		{
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			AddinEngine.Initialize (asm, configDir, addinsDir, null);
+			AddinEngine.Initialize (asm, null, configDir, addinsDir, null);
 		}
 		
 		/// <summary>
@@ -147,7 +147,7 @@ namespace Mono.Addins
 		{
 			Assembly asm = Assembly.GetEntryAssembly ();
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
-			AddinEngine.Initialize (asm, configDir, addinsDir, databaseDir);
+			AddinEngine.Initialize (asm, null, configDir, addinsDir, databaseDir);
 		}
 		
 		/// <summary>
@@ -294,7 +294,7 @@ namespace Mono.Addins
 		/// <remarks>
 		/// This method loads all assemblies that belong to an add-in in memory.
 		/// All add-ins on which the specified add-in depends will also be loaded.
-		/// Notice that in general add-ins don't need to be explicitely loaded using
+		/// Notice that in general add-ins don't need to be explicitly loaded using
 		/// this method, since the add-in engine will load them on demand.
 		/// </remarks>
 		public static void LoadAddin (IProgressStatus statusMonitor, string id)
@@ -815,6 +815,17 @@ namespace Mono.Addins
 		public static event AddinEventHandler AddinUnloaded {
 			add { AddinEngine.AddinUnloaded += value; }
 			remove { AddinEngine.AddinUnloaded -= value; }
+		}
+
+		/// <summary>
+		/// Add-in assembly loaded event.
+		/// </summary>
+		/// <remarks>
+		/// Fired when the add-in assemblies are loaded.
+		/// </remarks>
+		public static event AddinEventHandler AddinAssembliesLoaded {
+			add { AddinEngine.AddinAssembliesLoaded += value; }
+			remove { AddinEngine.AddinAssembliesLoaded -= value; }
 		}
 		
 		internal static bool CheckAssembliesLoaded (HashSet<string> files)

@@ -93,7 +93,15 @@ namespace Mono.Addins.Database
 		/// Path of the assembly.
 		/// </param>
 		object LoadAssembly (string file);
-		
+
+		/// <summary>
+		/// Unloads an assembly.
+		/// </summary>
+		/// <param name='assembly'>
+		/// Assembly to unload.
+		/// </param>
+		void UnloadAssembly (object assembly);
+
 		/// <summary>
 		/// Loads the assembly specified in an assembly reference
 		/// </summary>

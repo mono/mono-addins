@@ -47,6 +47,8 @@ namespace Mono.Addins
 		string objectTypeName;
 		Type customAttributeType;
 		string customAttributeTypeName;
+		string defaultInsertBefore;
+		string defaultInsertAfter;
 		
 		/// <summary>
 		/// Initializes a new instance
@@ -169,6 +171,24 @@ namespace Mono.Addins
 		internal string ExtensionAttributeTypeName {
 			get { return this.customAttributeTypeName; }
 			set { this.customAttributeTypeName = value; }
+		}
+
+		/// <summary>
+		/// The id of the extension before which new extensions will be added, unless the extension defines its own InsertBefore value
+		/// </summary>
+		/// <value>The default insert before.</value>
+		public string DefaultInsertBefore {
+			get { return defaultInsertBefore ?? ""; }
+			set { defaultInsertBefore = value; }
+		}
+
+		/// <summary>
+		/// The id of the extension after which new extensions will be added, unless the extension defines its own InsertAfter value
+		/// </summary>
+		/// <value>The default insert before.</value>
+		public string DefaultInsertAfter {
+			get { return defaultInsertAfter ?? ""; }
+			set { defaultInsertAfter = value; }
 		}
 	}
 }

@@ -12,7 +12,4 @@
     <DebugSymbols>True</DebugSymbols>
     <OutputPath>.</OutputPath>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="ChangeLog" />
-  </ItemGroup>
 </Project>

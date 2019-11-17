@@ -72,9 +72,9 @@ namespace Mono.Addins.GuiGtk3
 		public AddinTreeWidget (Gtk.TreeView treeView)
 		{
 			iconInstalled = Gdk.Pixbuf.LoadFromResource ("plugin-32.png");
-			updateOverlay = Gdk.Pixbuf.LoadFromResource ("software-update-available-overlay.png");
-			installedOverlay = Gdk.Pixbuf.LoadFromResource ("installed-overlay.png");
-			
+			updateOverlay = Gdk.Pixbuf.LoadFromResource ("update-available-overlay-16.png");
+			installedOverlay = Gdk.Pixbuf.LoadFromResource ("installed-overlay-16.png");
+
 			this.treeView = treeView;
 			ArrayList list = new ArrayList ();
 			AddStoreTypes (list);
@@ -101,7 +101,7 @@ namespace Mono.Addins.GuiGtk3
 		
 		internal void ShowEmptyMessage ()
 		{
-			treeStore.AppendValues (null, null, Catalog.GetString ("No add-ins found"), "", false, false, null, false);
+			treeStore.AppendValues (null, null, Catalog.GetString ("No extension packages found"), "", false, false, null, false);
 		}
 		
 		protected virtual void AddStoreTypes (ArrayList list)
@@ -119,7 +119,7 @@ namespace Mono.Addins.GuiGtk3
 		protected virtual void CreateColumns ()
 		{
 			TreeViewColumn col = new TreeViewColumn ();
-			col.Title = Catalog.GetString ("Add-in");
+			col.Title = Catalog.GetString ("Extension Package");
 			
 			CellRendererToggle crtog = new CellRendererToggle ();
 			crtog.Activatable = true;

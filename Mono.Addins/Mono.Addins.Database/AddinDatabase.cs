@@ -37,6 +37,7 @@ using System.Reflection;
 using Mono.Addins.Description;
 using System.Collections.Generic;
 using System.Linq;
+using Mono.Addins.Serialization;
 
 namespace Mono.Addins.Database
 {
@@ -45,7 +46,7 @@ namespace Mono.Addins.Database
 		public const string GlobalDomain = "global";
 		public const string UnknownDomain = "unknown";
 		
-		public const string VersionTag = "002";
+		public const string VersionTag = "003";
 
 		List<Addin> allSetupInfos;
 		List<Addin> addinSetupInfos;
@@ -53,7 +54,6 @@ namespace Mono.Addins.Database
 		internal static bool RunningSetupProcess;
 		bool fatalDatabseError;
 		Hashtable cachedAddinSetupInfos = new Hashtable ();
-		AddinScanResult currentScanResult;
 		AddinHostIndex hostIndex;
 		FileDatabase fileDatabase;
 		string addinDbDir;
@@ -351,26 +351,46 @@ namespace Mono.Addins.Database
 		
 			if (dbLockCheck)
 				InternalCheck (domain);
-			
+
+			string version, name;
+			Addin.GetIdParts (id, out name, out version);
+
 			using ((dbLockCheck ? fileDatabase.LockRead () : null))
 			{
-				string path = GetDescriptionPath (domain, id);
-				if (sinfo == null && fileDatabase.Exists (path)) {
-					sinfo = new Addin (this, domain, id);
-					cachedAddinSetupInfos [idd] = sinfo;
-					if (!enabledOnly || sinfo.Enabled)
-						return sinfo;
-					if (exactVersionMatch) {
-						// Cache lookups with negative result
-						cachedAddinSetupInfos [idd] = this;
-						return null;
+				if (sinfo == null && !string.IsNullOrEmpty (version)) {
+					// If the same add-in with same version exists in both the global domain and the private domain,
+					// take the instance in the global domain. This is an edge case, since in general add-ins will
+					// have different versions. Taking the one from global domain in case of colision makes
+					// it easier to "replace" an add-in bundled in an app for unit testing purposes.
+					// So, look for an exact match in the global domain first:
+
+					string foundDomain = null;
+
+					string path = GetDescriptionPath (GlobalDomain, id);
+					if (fileDatabase.Exists (path))
+						foundDomain = GlobalDomain;
+					else {
+						path = GetDescriptionPath (domain, id);
+						if (fileDatabase.Exists (path))
+							foundDomain = domain;
+					}
+					if (foundDomain != null) {
+						sinfo = new Addin (this, foundDomain, id);
+						cachedAddinSetupInfos [idd] = sinfo;
+						if (!enabledOnly || sinfo.Enabled)
+							return sinfo;
+						if (exactVersionMatch) {
+							// Cache lookups with negative result
+							cachedAddinSetupInfos [idd] = this;
+							return null;
+						}
 					}
 				}
-				
+
 				// Exact version not found. Look for a compatible version
 				if (!exactVersionMatch) {
 					sinfo = null;
-					string version, name, bestVersion = null;
+					string bestVersion = null;
 					Addin.GetIdParts (id, out name, out version);
 					
 					foreach (Addin ia in InternalGetInstalledAddins (domain, name, AddinSearchFlagsInternal.IncludeAll)) 
@@ -470,14 +490,14 @@ namespace Mono.Addins.Database
 				}
 			}
 
-			Configuration.SetEnabled (id, true, ainfo.AddinInfo.EnabledByDefault, false);
+			Configuration.SetEnabled (id, true, ainfo.AddinInfo.EnabledByDefault, true);
 			SaveConfiguration ();
 
 			if (addinEngine != null && addinEngine.IsInitialized)
 				addinEngine.ActivateAddin (id);
 		}
 		
-		public void DisableAddin (string domain, string id, bool exactVersionMatch = false)
+		public void DisableAddin (string domain, string id, bool exactVersionMatch = false, bool onlyForCurrentSession = false)
 		{
 			Addin ai = GetInstalledAddin (domain, id, true);
 			if (ai == null)
@@ -485,8 +505,8 @@ namespace Mono.Addins.Database
 
 			if (!IsAddinEnabled (domain, id, exactVersionMatch))
 				return;
-			
-			Configuration.SetEnabled (id, false, ai.AddinInfo.EnabledByDefault, exactVersionMatch);
+
+			Configuration.SetEnabled (id, false, ai.AddinInfo.EnabledByDefault, exactVersionMatch, onlyForCurrentSession);
 			SaveConfiguration ();
 			
 			// Disable all add-ins which depend on it
@@ -504,14 +524,14 @@ namespace Mono.Addins.Database
 						if (adepid != idName)
 							continue;
 						
-						// The add-in that has been disabled, might be a requeriment of this one, or maybe not
+						// The add-in that has been disabled, might be a requirement of this one, or maybe not
 						// if there is an older version available. Check it now.
 						
 						adepid = Addin.GetFullId (ainfo.AddinInfo.Namespace, adep.AddinId, adep.Version);
 						Addin adepinfo = GetInstalledAddin (domain, adepid, false, true);
 						
 						if (adepinfo == null) {
-							DisableAddin (domain, ainfo.Id);
+							DisableAddin (domain, ainfo.Id, onlyForCurrentSession: onlyForCurrentSession);
 							break;
 						}
 					}
@@ -519,7 +539,7 @@ namespace Mono.Addins.Database
 			}
 			catch {
 				// If something goes wrong, enable the add-in again
-				Configuration.SetEnabled (id, true, ai.AddinInfo.EnabledByDefault, false);
+				Configuration.SetEnabled (id, true, ai.AddinInfo.EnabledByDefault, false, onlyForCurrentSession);
 				SaveConfiguration ();
 				throw;
 			}
@@ -527,7 +547,46 @@ namespace Mono.Addins.Database
 			if (addinEngine != null && addinEngine.IsInitialized)
 				addinEngine.UnloadAddin (id);
 		}
-		
+
+		public void UpdateEnabledStatus ()
+		{
+			// Ensure that all enabled addins that have dependencies also have their dependencies enabled.
+			HashSet<Addin> updatedAddins = new HashSet<Addin> ();
+			var allAddins = GetInstalledAddins (registry.CurrentDomain, AddinSearchFlagsInternal.IncludeAddins | AddinSearchFlagsInternal.LatestVersionsOnly).ToList ();
+			foreach (Addin addin in allAddins)
+				UpdateEnabledStatus (registry.CurrentDomain, addin, allAddins, updatedAddins);
+		}
+
+		void UpdateEnabledStatus (string domain, Addin addin, List<Addin> allAddins, HashSet<Addin> updatedAddins)
+		{
+			if (!updatedAddins.Add (addin))
+				return;
+
+			if (!addin.Enabled)
+				return;
+
+			// Make sure all dependencies of this add-in have an up to date enabled status
+
+			foreach (Dependency dep in addin.AddinInfo.Dependencies) {
+				var adep = dep as AddinDependency;
+				if (adep == null)
+					continue;
+
+				string adepid = Addin.GetFullId (addin.AddinInfo.Namespace, adep.AddinId, null);
+				var dependency = allAddins.FirstOrDefault (a => Addin.GetFullId (a.Namespace, a.LocalId, null) == adepid);
+				if (dependency != null) {
+					UpdateEnabledStatus (domain, dependency, allAddins, updatedAddins);
+					if (!dependency.Enabled) {
+						// One of the dependencies is disabled, so this add-in also needs to be disabled.
+						// However, we disabled only for the current configuration, we don't want to change
+						// what the user configured.
+						DisableAddin (domain, addin.Id, onlyForCurrentSession: true);
+						return;
+					}
+				}
+			}
+		}
+
 		public void RegisterForUninstall (string domain, string id, IEnumerable<string> files)
 		{
 			DisableAddin (domain, id, true);
@@ -963,45 +1022,54 @@ namespace Mono.Addins.Database
 			ResetBasicCachedData ();
 			hostIndex = null;
 			cachedAddinSetupInfos.Clear ();
+			dependsOnCache.Clear ();
 			if (addinEngine != null)
 				addinEngine.ResetCachedData ();
 		}
-		
-		
+
+		Dictionary<string, HashSet<string>> dependsOnCache = new Dictionary<string, HashSet<string>> ();
 		public bool AddinDependsOn (string domain, string id1, string id2)
 		{
-			Hashtable visited = new Hashtable ();
-			return AddinDependsOn (visited, domain, id1, id2);
+			var depTree = GetOrCreateAddInDependencyTree (domain, id1);
+			return depTree.Contains (id2);
 		}
-		
-		bool AddinDependsOn (Hashtable visited, string domain, string id1, string id2)
-		{
-			if (visited.Contains (id1))
-				return false;
-			
-			visited.Add (id1, id1);
-			
-			Addin addin1 = GetInstalledAddin (domain, id1, false);
-			
-			// We can assumbe that if the add-in is not returned here, it may be a root addin.
-			if (addin1 == null)
-				return false;
 
-			id2 = Addin.GetIdName (id2);
+		HashSet<string> GetOrCreateAddInDependencyTree (string domain, string addin)
+		{
+			HashSet<string> cache;
+			if (dependsOnCache.TryGetValue (addin, out cache)) {
+				return cache;
+			}
+
+			dependsOnCache [addin] = cache = new HashSet<string> ();
+
+			Addin addin1 = GetInstalledAddin (domain, addin, false);
+
+			// We can assume that if the add-in is not returned here, it may be a root addin.
+			if (addin1 == null)
+				return cache;
+			
 			foreach (Dependency dep in addin1.AddinInfo.Dependencies) {
 				AddinDependency adep = dep as AddinDependency;
 				if (adep == null)
 					continue;
+				
 				string depid = Addin.GetFullId (addin1.AddinInfo.Namespace, adep.AddinId, null);
-				if (depid == id2)
-					return true;
-				else if (AddinDependsOn (visited, domain, depid, id2))
-					return true;
+				cache.Add (depid);
+
+				var recursiveDependencies = GetOrCreateAddInDependencyTree (domain, depid);
+				cache.UnionWith (recursiveDependencies);
 			}
-			return false;
+			return cache;
 		}
-		
-		public void Repair (IProgressStatus monitor, string domain)
+
+		public void GenerateScanDataFiles (IProgressStatus monitor, string folder, bool recursive)
+		{
+			ISetupHandler setup = GetSetupHandler ();
+			setup.GenerateScanDataFiles (monitor, registry, Path.GetFullPath (folder), recursive);
+		}
+
+		public void Repair (IProgressStatus monitor, string domain, ScanOptions context = null)
 		{
 			using (fileDatabase.LockWrite ()) {
 				try {
@@ -1018,10 +1086,10 @@ namespace Mono.Addins.Database
 			}
 			ResetBasicCachedData ();
 			
-			Update (monitor, domain);
+			Update (monitor, domain, context);
 		}
 		
-		public void Update (IProgressStatus monitor, string domain)
+		public void Update (IProgressStatus monitor, string domain, ScanOptions context = null)
 		{
 			if (monitor == null)
 				monitor = new ConsoleProgressStatus (false);
@@ -1056,7 +1124,7 @@ namespace Mono.Addins.Database
 					}
 				}
 				
-				RunScannerProcess (monitor);
+				RunScannerProcess (monitor, context);
 			
 				ResetCachedData ();
 				
@@ -1089,8 +1157,9 @@ namespace Mono.Addins.Database
 					}
 				}
 			}
+			UpdateEnabledStatus ();
 		}
-		
+
 		void RunPendingUninstalls (IProgressStatus monitor)
 		{
 			bool changesDone = false;
@@ -1137,29 +1206,33 @@ namespace Mono.Addins.Database
 				SaveConfiguration ();
 		}
 		
-		void RunScannerProcess (IProgressStatus monitor)
+		void RunScannerProcess (IProgressStatus monitor, ScanOptions context)
 		{
 			ISetupHandler setup = GetSetupHandler ();
-			
+
+
 			IProgressStatus scanMonitor = monitor;
-			ArrayList pparams = new ArrayList ();
-			
+			context = context ?? new ScanOptions ();
+
+			if (fs.GetType () != typeof (AddinFileSystemExtension))
+				context.FileSystemExtension = fs;
+
 			bool retry = false;
 			do {
 				try {
 					if (monitor.LogLevel > 1)
 						monitor.Log ("Looking for addins");
-					setup.Scan (scanMonitor, registry, null, (string[]) pparams.ToArray (typeof(string)));
+					setup.Scan (scanMonitor, registry, null, context);
 					retry = false;
 				}
 				catch (Exception ex) {
 					ProcessFailedException pex = ex as ProcessFailedException;
 					if (pex != null) {
 						// Get the last logged operation.
-						if (pex.LastLog.StartsWith ("scan:")) {
+						if (pex.LastLog.StartsWith ("scan:", StringComparison.Ordinal)) {
 							// It crashed while scanning a file. Add the file to the ignore list and try again.
 							string file = pex.LastLog.Substring (5);
-							pparams.Add (file);
+							context.FilesToIgnore.Add (file);
 							monitor.ReportWarning ("Could not scan file: " + file);
 							retry = true;
 							continue;
@@ -1234,64 +1307,46 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		internal void ScanFolders (IProgressStatus monitor, string currentDomain, string folderToScan, StringCollection filesToIgnore)
+		internal void ScanFolders (IProgressStatus monitor, string currentDomain, string folderToScan, ScanOptions context)
 		{
 			AddinScanResult res = new AddinScanResult ();
 			res.Domain = currentDomain;
-			res.AddPathsToIgnore (filesToIgnore);
+			res.ScanContext.AddPathsToIgnore (context.FilesToIgnore);
+			res.CleanGeneratedAddinScanDataFiles = context.CleanGeneratedAddinScanDataFiles;
 			ScanFolders (monitor, res);
+		}
+		
+		internal void GenerateScanDataFilesInProcess (IProgressStatus monitor, string folderToScan, bool recursive)
+		{
+			using (var visitor = new AddinScanDataFileGenerator (this, registry, folderToScan)) {
+				visitor.VisitFolder (monitor, folderToScan, null, recursive);
+			}
 		}
 		
 		void ScanFolders (IProgressStatus monitor, AddinScanResult scanResult)
 		{
-			IDisposable checkLock = null;
+			// All changes are done in a transaction, which won't be committed until
+			// all files have been updated.
 			
-			if (scanResult.CheckOnly)
-				checkLock = fileDatabase.LockRead ();
-			else {
-				// All changes are done in a transaction, which won't be committed until
-				// all files have been updated.
-				
-				if (!fileDatabase.BeginTransaction ()) {
-					// The database is already being updated. Can't do anything for now.
-					return;
-				}
+			if (!fileDatabase.BeginTransaction ()) {
+				// The database is already being updated. Can't do anything for now.
+				return;
 			}
-			
-			EventInfo einfo = typeof(AppDomain).GetEvent ("ReflectionOnlyAssemblyResolve");
-			ResolveEventHandler resolver = new ResolveEventHandler (OnResolveAddinAssembly);
 			
 			try
 			{
 				// Perform the add-in scan
 				
-				if (!scanResult.CheckOnly) {
-					AppDomain.CurrentDomain.AssemblyResolve += resolver;
-					if (einfo != null) einfo.AddEventHandler (AppDomain.CurrentDomain, resolver);
-				}
-				
 				InternalScanFolders (monitor, scanResult);
 				
-				if (!scanResult.CheckOnly)
-					fileDatabase.CommitTransaction ();
+				fileDatabase.CommitTransaction ();
 			}
 			catch {
-				if (!scanResult.CheckOnly)
-					fileDatabase.RollbackTransaction ();
+				fileDatabase.RollbackTransaction ();
 				throw;
 			}
-			finally {
-				currentScanResult = null;
-				
-				if (scanResult.CheckOnly)
-					checkLock.Dispose ();
-				else {
-					AppDomain.CurrentDomain.AssemblyResolve -= resolver;
-					if (einfo != null) einfo.RemoveEventHandler (AppDomain.CurrentDomain, resolver);
-				}
-			}
 		}
-		
+
 		void InternalScanFolders (IProgressStatus monitor, AddinScanResult scanResult)
 		{
 			try {
@@ -1322,10 +1377,10 @@ namespace Mono.Addins.Database
 				scanResult.RegenerateAllData = true;
 			}
 			
-			AddinScanner scanner = new AddinScanner (this, scanResult, monitor);
-			
+			var updater = new AddinRegistryUpdater (this, scanResult);
+
 			// Check if any of the previously scanned folders has been deleted
-			
+
 			foreach (string file in Directory.GetFiles (AddinFolderCachePath, "*.data")) {
 				AddinScanFolderInfo folderInfo;
 				bool res = ReadFolderInfo (monitor, file, out folderInfo);
@@ -1333,50 +1388,53 @@ namespace Mono.Addins.Database
 				if (!res || (validForDomain && !fs.DirectoryExists (folderInfo.Folder))) {
 					if (res) {
 						// Folder has been deleted. Remove the add-ins it had.
-						scanner.UpdateDeletedAddins (monitor, folderInfo, scanResult);
-					}
-					else {
+						updater.UpdateDeletedAddins (monitor, folderInfo);
+					} else {
 						// Folder info file corrupt. Regenerate all.
 						scanResult.ChangesFound = true;
 						scanResult.RegenerateRelationData = true;
 					}
-					
+
 					if (!scanResult.CheckOnly)
 						SafeDelete (monitor, file);
 					else if (scanResult.ChangesFound)
 						return;
 				}
 			}
-			
+
 			// Look for changes in the add-in folders
-			
+
 			if (registry.StartupDirectory != null)
-				scanner.ScanFolder (monitor, registry.StartupDirectory, null, scanResult);
-			
+				updater.VisitFolder (monitor, registry.StartupDirectory, null, false);
+
 			if (scanResult.CheckOnly && (scanResult.ChangesFound || monitor.IsCanceled))
 				return;
-			
+
 			if (scanResult.Domain == null)
-				scanner.ScanFolder (monitor, HostsPath, GlobalDomain, scanResult);
-			
+				updater.VisitFolder (monitor, HostsPath, GlobalDomain, false);
+
 			if (scanResult.CheckOnly && (scanResult.ChangesFound || monitor.IsCanceled))
 				return;
-			
+
 			foreach (string dir in registry.GlobalAddinDirectories) {
 				if (scanResult.CheckOnly && (scanResult.ChangesFound || monitor.IsCanceled))
 					return;
-				scanner.ScanFolderRec (monitor, dir, GlobalDomain, scanResult);
+				updater.VisitFolder (monitor, dir, GlobalDomain, true);
 			}
-			
+
 			if (scanResult.CheckOnly || !scanResult.ChangesFound)
 				return;
-			
-			// Scan the files which have been modified
-			
-			currentScanResult = scanResult;
 
-			foreach (FileToScan file in scanResult.FilesToScan)
-				scanner.ScanFile (monitor, file.File, file.AddinScanFolderInfo, scanResult);
+			// Scan the files which have been modified
+
+			// AssemblyIndex will contain all assemblies that were
+			// found while looking for add-ins. Use it to resolve assemblies
+			// while scanning those add-ins.
+
+			using (var scanner = new AddinScanner (this, scanResult.AssemblyIndex)) {
+				foreach (FileToScan file in scanResult.FilesToScan)
+					scanner.ScanFile (monitor, file, scanResult, scanResult.CleanGeneratedAddinScanDataFiles);
+			}
 
 			// Save folder info
 			
@@ -1442,17 +1500,10 @@ namespace Mono.Addins.Database
 				
 				AddinScanResult sr = new AddinScanResult ();
 				sr.Domain = domain;
-				AddinScanner scanner = new AddinScanner (this, sr, progressStatus);
-				
-				SingleFileAssemblyResolver res = new SingleFileAssemblyResolver (progressStatus, registry, scanner);
-				ResolveEventHandler resolver = new ResolveEventHandler (res.Resolve);
 
-				EventInfo einfo = typeof(AppDomain).GetEvent ("ReflectionOnlyAssemblyResolve");
-				
-				try {
-					AppDomain.CurrentDomain.AssemblyResolve += resolver;
-					if (einfo != null) einfo.AddEventHandler (AppDomain.CurrentDomain, resolver);
-				
+				var res = new AssemblyLocatorVisitor (this, registry, true);
+
+				using (var scanner = new AddinScanner (this, res)) {
 					AddinDescription desc = scanner.ScanSingleFile (progressStatus, file, sr);
 					if (desc != null) {
 						// Reset the xml doc so that it is not reused when saving. We want a brand new document
@@ -1460,35 +1511,25 @@ namespace Mono.Addins.Database
 						desc.Save (outFile);
 					}
 				}
-				finally {
-					AppDomain.CurrentDomain.AssemblyResolve -= resolver;
-					if (einfo != null) einfo.RemoveEventHandler (AppDomain.CurrentDomain, resolver);
-				}
 			}
 		}
 		
 		public string GetFolderDomain (IProgressStatus progressStatus, string path)
 		{
 			AddinScanFolderInfo folderInfo;
-			if (GetFolderInfoForPath (progressStatus, path, out folderInfo) && folderInfo != null && !folderInfo.SharedFolder)
+
+			if (GetFolderInfoForPath (progressStatus, path, out folderInfo) && folderInfo == null) {
+				if (path.Length > 0 && path [path.Length - 1] != Path.DirectorySeparatorChar)
+					// Try again by appending a directory separator at the end. Some directories are registered like this.
+					GetFolderInfoForPath (progressStatus, path + Path.DirectorySeparatorChar, out folderInfo);
+				else if (path.Length > 0 && path [path.Length - 1] == Path.DirectorySeparatorChar)
+					// Try again by removing the directory separator at the end. Some directories are registered like this.
+					GetFolderInfoForPath (progressStatus, path.TrimEnd (Path.DirectorySeparatorChar), out folderInfo);
+			}
+			if (folderInfo != null && !string.IsNullOrEmpty (folderInfo.Domain))
 				return folderInfo.Domain;
-			else if (path.Length > 0 && path [path.Length - 1] != Path.DirectorySeparatorChar)
-				// Try again by appending a directory separator at the end. Some directories are registered like this.
-				return GetFolderDomain (progressStatus, path + Path.DirectorySeparatorChar);
 			else
 				return UnknownDomain;
-		}
-		
-		Assembly OnResolveAddinAssembly (object s, ResolveEventArgs args)
-		{
-			string file = currentScanResult != null ? currentScanResult.GetAssemblyLocation (args.Name) : null;
-			if (file != null)
-				return Util.LoadAssemblyForReflection (file);
-			else {
-				if (!args.Name.StartsWith ("Mono.Addins.CecilReflector"))
-					Console.WriteLine ("Assembly not found: " + args.Name);
-				return null;
-			}
 		}
 		
 		public string GetFolderConfigFile (string path)
@@ -1520,7 +1561,7 @@ namespace Mono.Addins.Database
 			if (desc == null)
 				return;
 			
-			// If the add-in already existed, the dependencies of the old add-in need to be re-analized
+			// If the add-in already existed, the dependencies of the old add-in need to be re-analyzed
 			
 			Util.AddDependencies (desc, scanResult);
 			if (desc.IsRoot)
@@ -1747,7 +1788,7 @@ namespace Mono.Addins.Database
 			if (hostIndex != null)
 				hostIndex.Write (fileDatabase, HostIndexFile);
 		}
-		
+
 		internal string GetUniqueAddinId (string file, string oldId, string ns, string version)
 		{
 			string baseId = "__" + Path.GetFileNameWithoutExtension (file);
@@ -1806,7 +1847,7 @@ namespace Mono.Addins.Database
 						if (fileDatabase.Exists (ConfigFile))
 							config = DatabaseConfiguration.Read (ConfigFile);
 						else
-							config = new DatabaseConfiguration ();
+							config = DatabaseConfiguration.ReadAppConfig ();
 					}
 				}
 				return config;
@@ -1820,40 +1861,6 @@ namespace Mono.Addins.Database
 					config.Write (ConfigFile);
 				}
 			}
-		}
-	}
-	
-	class SingleFileAssemblyResolver
-	{
-		AddinScanResult scanResult;
-		AddinScanner scanner;
-		AddinRegistry registry;
-		IProgressStatus progressStatus;
-		
-		public SingleFileAssemblyResolver (IProgressStatus progressStatus, AddinRegistry registry, AddinScanner scanner)
-		{
-			this.scanner = scanner;
-			this.registry = registry;
-			this.progressStatus = progressStatus;
-		}
-		
-		public Assembly Resolve (object s, ResolveEventArgs args)
-		{
-			if (scanResult == null) {
-				scanResult = new AddinScanResult ();
-				scanResult.LocateAssembliesOnly = true;
-			
-				if (registry.StartupDirectory != null)
-					scanner.ScanFolder (progressStatus, registry.StartupDirectory, null, scanResult);
-				foreach (string dir in registry.GlobalAddinDirectories)
-					scanner.ScanFolderRec (progressStatus, dir, AddinDatabase.GlobalDomain, scanResult);
-			}
-		
-			string afile = scanResult.GetAssemblyLocation (args.Name);
-			if (afile != null)
-				return Util.LoadAssemblyForReflection (afile);
-			else
-				return null;
 		}
 	}
 	
@@ -1988,6 +1995,7 @@ namespace Mono.Addins.Database
 	}
 	
 	// Keep in sync with AddinSearchFlags
+	[Flags]
 	enum AddinSearchFlagsInternal
 	{
 		IncludeAddins = 1,

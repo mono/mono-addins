@@ -18,7 +18,7 @@ namespace UnitTests
 			}
 		}
 		
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public virtual void Setup ()
 		{
 			AddinManager.AddinLoadError += OnLoadError;
@@ -41,7 +41,7 @@ namespace UnitTests
 			firstRun = false;
 		}
 		
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public virtual void Teardown ()
 		{
 			AddinManager.AddinLoadError -= OnLoadError;

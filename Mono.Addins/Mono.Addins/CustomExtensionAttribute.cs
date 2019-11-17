@@ -29,7 +29,7 @@ using System;
 namespace Mono.Addins
 {
 	/// <summary>
-	/// Base class for custon extension attributes.
+	/// Base class for custom extension attributes.
 	/// </summary>
 	/// <remarks>
 	/// Custom extension attributes can be used to declare extensions with custom metadata.
@@ -97,7 +97,7 @@ namespace Mono.Addins
 		/// This property provides access to the resources and types of the add-in that created this extension node.
 		/// </remarks>
 		public RuntimeAddin Addin {
-			get { return ExtensionNode.Addin; }
+			get { return ExtensionNode?.Addin; }
 		}
 	}
 }

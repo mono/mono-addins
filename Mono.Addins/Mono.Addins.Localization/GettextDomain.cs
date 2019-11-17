@@ -39,13 +39,13 @@ namespace Mono.Addins.Localization
 {
 	class GettextDomain
 	{
-		[DllImport("intl")]
+		[DllImport("intl", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr bindtextdomain (IntPtr domainname, IntPtr dirname);
-		[DllImport("intl")]
+		[DllImport("intl", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr bind_textdomain_codeset (IntPtr domainname, IntPtr codeset);
-		[DllImport("intl")]
+		[DllImport("intl", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr dgettext (IntPtr domainname, IntPtr instring);
-		[DllImport("intl")]
+		[DllImport("intl", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr dngettext (IntPtr domainname, IntPtr instring, IntPtr plural, int n);
 		
 		IntPtr ipackage;

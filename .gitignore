@@ -9,12 +9,15 @@ obj
 *.dll
 Test/UnitTests/bin
 Test/UnitTests/obj
+Test/lib
+packages
 
 # Ide stuff
 *.pidb
 *.userprefs
 *.usertasks
 *.sln.cache
+/.vs
 
 # Generated stuff
 /mautil/mautil
