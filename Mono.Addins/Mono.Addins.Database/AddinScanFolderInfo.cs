@@ -204,7 +204,7 @@ namespace Mono.Addins.Database
 				files.Clear ();
 				return missing;
 			}
-			ArrayList toDelete = new ArrayList ();
+			var toDelete = new List<string> ();
 			foreach (AddinFileInfo info in files.Values) {
 				if (!fs.FileExists (info.File)) {
 					if (info.IsAddin)

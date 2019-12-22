@@ -56,8 +56,8 @@ namespace Mono.Addins
 		ExtensionTree tree;
 		bool fireEvents = false;
 		
-		ArrayList runTimeEnabledAddins;
-		ArrayList runTimeDisabledAddins;
+		List<string> runTimeEnabledAddins;
+		List<string> runTimeDisabledAddins;
 		
 		/// <summary>
 		/// Extension change event.
@@ -224,11 +224,11 @@ namespace Mono.Addins
 		
 		internal void RegisterNodeCondition (TreeNode node, BaseCondition cond)
 		{
-			ArrayList list = (ArrayList) conditionsToNodes [cond];
+			var list = (List<TreeNode>) conditionsToNodes [cond];
 			if (list == null) {
-				list = new ArrayList ();
+				list = new List<TreeNode> ();
 				conditionsToNodes [cond] = list;
-				ArrayList conditionTypeIds = new ArrayList ();
+				var conditionTypeIds = new List<string> ();
 				cond.GetConditionTypes (conditionTypeIds);
 				
 				foreach (string cid in conditionTypeIds) {
@@ -238,7 +238,7 @@ namespace Mono.Addins
 					
 					ConditionInfo info = CreateConditionInfo (cid);
 					if (info.BoundConditions == null)
-						info.BoundConditions = new ArrayList ();
+						info.BoundConditions = new List<BaseCondition> ();
 						
 					info.BoundConditions.Add (cond);
 				}
@@ -248,14 +248,14 @@ namespace Mono.Addins
 		
 		internal void UnregisterNodeCondition (TreeNode node, BaseCondition cond)
 		{
-			ArrayList list = (ArrayList) conditionsToNodes [cond];
+			var list = (List<TreeNode>) conditionsToNodes [cond];
 			if (list == null)
 				return;
 			
 			list.Remove (node);
 			if (list.Count == 0) {
 				conditionsToNodes.Remove (cond);
-				ArrayList conditionTypeIds = new ArrayList ();
+				var conditionTypeIds = new List<string> ();
 				cond.GetConditionTypes (conditionTypeIds);
 				foreach (string cid in conditionTypes.Keys) {
 					ConditionInfo info = conditionTypes [cid] as ConditionInfo;
@@ -772,7 +772,7 @@ namespace Mono.Addins
 				if (info != null && info.BoundConditions != null) {
 					Hashtable parentsToNotify = new Hashtable ();
 					foreach (BaseCondition c in info.BoundConditions) {
-						ArrayList nodeList = (ArrayList) conditionsToNodes [c];
+						var nodeList = (List<TreeNode>) conditionsToNodes [c];
 						if (nodeList != null) {
 							foreach (TreeNode node in nodeList)
 								parentsToNotify [node.Parent] = null;
@@ -855,7 +855,7 @@ namespace Mono.Addins
 				
 				// Look for loaded extension points
 				Hashtable eps = new Hashtable ();
-				ArrayList newExtensions = new ArrayList ();
+				var newExtensions = new List<string> ();
 				foreach (ModuleDescription mod in addin.Description.AllModules) {
 					foreach (Extension ext in mod.Extensions) {
 						if (!newExtensions.Contains (ext.Path))
@@ -867,7 +867,7 @@ namespace Mono.Addins
 				}
 				
 				// Add the new nodes
-				ArrayList loadedNodes = new ArrayList ();
+				var loadedNodes = new List<TreeNode> ();
 				foreach (ExtensionPoint ep in eps.Keys) {
 					ExtensionLoadData data = GetAddinExtensions (id, ep);
 					if (data != null) {
@@ -922,7 +922,7 @@ namespace Mono.Addins
 
 				// This method removes all extension nodes added by the add-in
 				// Get all nodes created by the addin
-				ArrayList list = new ArrayList ();
+				List<TreeNode> list = new List<TreeNode> ();
 				tree.FindAddinNodes (id, list);
 				
 				// Remove each node and notify the change
@@ -945,7 +945,7 @@ namespace Mono.Addins
 				// We get the runtime add-in because the add-in may already have been deleted from the registry
 				RuntimeAddin addin = AddinEngine.GetAddin (id);
 				if (addin != null) {
-					ArrayList paths = new ArrayList ();
+					var paths = new List<string> ();
 					// Using addin.Module.ParentAddinDescription here because addin.Addin.Description may not
 					// have a valid reference (the description is lazy loaded and may already have been removed from the registry)
 					foreach (ModuleDescription mod in addin.Module.ParentAddinDescription.AllModules) {
@@ -965,7 +965,7 @@ namespace Mono.Addins
 		void RegisterRuntimeDisabledAddin (string addinId)
 		{
 			if (runTimeDisabledAddins == null)
-				runTimeDisabledAddins = new ArrayList ();
+				runTimeDisabledAddins = new List<string> ();
 			if (!runTimeDisabledAddins.Contains (addinId))
 				runTimeDisabledAddins.Add (addinId);
 			
@@ -976,7 +976,7 @@ namespace Mono.Addins
 		void RegisterRuntimeEnabledAddin (string addinId)
 		{
 			if (runTimeEnabledAddins == null)
-				runTimeEnabledAddins = new ArrayList ();
+				runTimeEnabledAddins = new List<string> ();
 			if (!runTimeEnabledAddins.Contains (addinId))
 				runTimeEnabledAddins.Add (addinId);
 			
@@ -1053,7 +1053,7 @@ namespace Mono.Addins
 				
 				// Now load the extensions
 				
-				ArrayList loadedNodes = new ArrayList ();
+				var loadedNodes = new List<TreeNode> ();
 				foreach (ExtensionLoadData data in loadData) {
 					foreach (Extension ext in data.Extensions) {
 						TreeNode cnode = GetNode (ext.Path);
@@ -1115,17 +1115,17 @@ namespace Mono.Addins
 						data = new ExtensionLoadData ();
 						data.AddinId = addinId;
 						data.AddinName = addinName;
-						data.Extensions = new ArrayList ();
+						data.Extensions = new List<Extension> ();
 					}
 					data.Extensions.Add (extension);
 				}
 			}
 		}
 		
-		void LoadModuleExtensionNodes (Extension extension, string addinId, ExtensionNodeSet nset, ArrayList loadedNodes)
+		void LoadModuleExtensionNodes (Extension extension, string addinId, ExtensionNodeSet nset, List<TreeNode> loadedNodes)
 		{
 			// Now load the extensions
-			ArrayList addedNodes = new ArrayList ();
+			var addedNodes = new List<TreeNode> ();
 			tree.LoadExtension (addinId, extension, addedNodes);
 			
 			RuntimeAddin ad = AddinEngine.GetAddin (addinId);
@@ -1213,7 +1213,7 @@ namespace Mono.Addins
 	class ConditionInfo
 	{
 		public object CondType;
-		public ArrayList BoundConditions;
+		public List<BaseCondition> BoundConditions;
 	}
 
 	
@@ -1355,6 +1355,6 @@ namespace Mono.Addins
 	{
 		public string AddinId;
 		public string AddinName;
-		public ArrayList Extensions;
+		public List<Extension> Extensions;
 	}
 }

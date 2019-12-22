@@ -52,7 +52,7 @@ namespace Mono.Addins
 		}
 
 		
-		public void LoadExtension (string addin, Extension extension, ArrayList addedNodes)
+		public void LoadExtension (string addin, Extension extension, List<TreeNode> addedNodes)
 		{
 			TreeNode tnode = GetNode (extension.Path);
 			if (tnode == null) {
@@ -64,7 +64,7 @@ namespace Mono.Addins
 			LoadExtensionElement (tnode, addin, extension.ExtensionNodes, (ModuleDescription) extension.Parent, ref curPos, tnode.Condition, false, addedNodes);
 		}
 
-		void LoadExtensionElement (TreeNode tnode, string addin, ExtensionNodeDescriptionCollection extension, ModuleDescription module, ref int curPos, BaseCondition parentCondition, bool inComplextCondition, ArrayList addedNodes)
+		void LoadExtensionElement (TreeNode tnode, string addin, ExtensionNodeDescriptionCollection extension, ModuleDescription module, ref int curPos, BaseCondition parentCondition, bool inComplextCondition, List<TreeNode> addedNodes)
 		{
 			foreach (ExtensionNodeDescription elem in extension) {
 					
@@ -152,20 +152,20 @@ namespace Mono.Addins
 		BaseCondition ReadComplexCondition (ExtensionNodeDescription elem, BaseCondition parentCondition)
 		{
 			if (elem.NodeName == "Or" || elem.NodeName == "And" || elem.NodeName == "Not") {
-				ArrayList conds = new ArrayList ();
+				var conds = new List<BaseCondition> ();
 				foreach (ExtensionNodeDescription celem in elem.ChildNodes) {
 					conds.Add (ReadComplexCondition (celem, null));
 				}
 				if (elem.NodeName == "Or")
-					return new OrCondition ((BaseCondition[]) conds.ToArray (typeof(BaseCondition)), parentCondition);
+					return new OrCondition (conds.ToArray (), parentCondition);
 				else if (elem.NodeName == "And")
-					return new AndCondition ((BaseCondition[]) conds.ToArray (typeof(BaseCondition)), parentCondition);
+					return new AndCondition (conds.ToArray (), parentCondition);
 				else {
 					if (conds.Count != 1) {
 						addinEngine.ReportError ("Invalid complex condition element '" + elem.NodeName + "'. 'Not' condition can only have one parameter.", null, null, false);
 						return new NullCondition ();
 					}
-					return new NotCondition ((BaseCondition) conds [0], parentCondition);
+					return new NotCondition (conds [0], parentCondition);
 				}
 			}
 			if (elem.NodeName == "Condition") {

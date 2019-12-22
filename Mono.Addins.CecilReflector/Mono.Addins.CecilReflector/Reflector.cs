@@ -95,7 +95,7 @@ namespace Mono.Addins.CecilReflector
 			
 			if (att.ConstructorArguments.Count > 0) {
 				object[] cargs = new object [att.ConstructorArguments.Count];
-				ArrayList typeParameters = null;
+				List<int> typeParameters = null;
 
 				// Constructor parameters of type System.Type can't be set because types from the assembly
 				// can't be loaded. The parameter value will be set later using a type name property.
@@ -111,7 +111,7 @@ namespace Mono.Addins.CecilReflector
 
 					if (typeof(System.Type).IsAssignableFrom (atype)) {
 						if (typeParameters == null)
-							typeParameters = new ArrayList ();
+							typeParameters = new List<int> ();
 						cargs [n] = typeof(object);
 						typeParameters.Add (n);
 					}
@@ -128,7 +128,7 @@ namespace Mono.Addins.CecilReflector
 					ParameterInfo[] ciParams = ci.GetParameters ();
 					
 					for (int n=0; n<typeParameters.Count; n++) {
-						int ip = (int) typeParameters [n];
+						int ip = typeParameters [n];
 						string propName = ciParams[ip].Name;
 						propName = char.ToUpper (propName [0]) + propName.Substring (1) + "Name";
 						PropertyInfo pi = attype.GetProperty (propName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -493,14 +493,14 @@ namespace Mono.Addins.CecilReflector
 		{
 			AssemblyDefinition asm = GetAssemblyDefinition (type);
 
-			ArrayList list = new ArrayList ();
+			var list = new List<string> ();
 			Hashtable visited = new Hashtable ();
 			GetBaseTypeFullNameList (visited, list, asm, type, baseIsMonoAddinsType, includeInterfaces);
 			list.Remove (type.FullName);
 			return list;
 		}
 
-		void GetBaseTypeFullNameList (Hashtable visited, ArrayList list, AssemblyDefinition asm, TypeReference tr, bool baseIsMonoAddinsType, bool includeInterfaces)
+		void GetBaseTypeFullNameList (Hashtable visited, List<string> list, AssemblyDefinition asm, TypeReference tr, bool baseIsMonoAddinsType, bool includeInterfaces)
 		{
 			if (tr.FullName == "System.Object" || visited.Contains (tr.FullName))
 				return;

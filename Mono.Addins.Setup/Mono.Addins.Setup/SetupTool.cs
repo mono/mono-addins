@@ -36,6 +36,7 @@ using Mono.Addins.Setup;
 using System.IO;
 using Mono.Addins.Description;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Setup
 {
@@ -798,7 +799,7 @@ namespace Mono.Addins.Setup
 			if (ep.Description.Length > 0)
 				Console.WriteLine (ep.Description);
 			
-			ArrayList list = new ArrayList ();
+			var list = new List<ExtensionNodeType> ();
 			Hashtable visited = new Hashtable ();
 			
 			Console.WriteLine ();
@@ -834,7 +835,7 @@ namespace Mono.Addins.Setup
 				
 				if (nt.NodeTypes.Count > 0 || nt.NodeSets.Count > 0) {
 					Console.WriteLine (nsind + "Child nodes:");
-					ArrayList newList = new ArrayList ();
+					var newList = new List<ExtensionNodeType> ();
 					GetNodes (desc, nt, newList, new Hashtable ());
 					list.AddRange (newList);
 					foreach (ExtensionNodeType cnt in newList)
@@ -844,7 +845,7 @@ namespace Mono.Addins.Setup
 			Console.WriteLine ();
 		}
 		
-		void GetNodes (AddinDescription desc, ExtensionNodeSet nset, ArrayList list, Hashtable visited)
+		void GetNodes (AddinDescription desc, ExtensionNodeSet nset, List<ExtensionNodeType> list, Hashtable visited)
 		{
 			if (visited.Contains (nset))
 				return;

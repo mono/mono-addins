@@ -277,7 +277,7 @@ namespace Mono.Addins.Database
 			if (module == description.MainModule)
 				deps = module.Dependencies;
 			else {
-				ArrayList list = new ArrayList ();
+				var list = new List<Dependency> ();
 				list.AddRange (module.Dependencies);
 				list.AddRange (description.MainModule.Dependencies);
 				deps = list;

@@ -640,8 +640,8 @@ namespace Mono.Addins.Database
 				monitor.Log ("Generating add-in extension maps");
 			
 			Hashtable changedAddins = null;
-			ArrayList descriptionsToSave = new ArrayList ();
-			ArrayList files = new ArrayList ();
+			var descriptionsToSave = new List<AddinDescription> ();
+			var files = new List<string> ();
 			
 			bool partialGeneration = addinsToUpdate != null;
 			string[] domains = GetDomains ().Where (d => d == domain || d == GlobalDomain).ToArray ();
@@ -763,7 +763,7 @@ namespace Mono.Addins.Database
 				foreach (Extension ext in module.Extensions) {
 					Extension mainExt;
 					if (extensions.TryGetValue (ext.Path, out mainExt)) {
-						ArrayList list = new ArrayList ();
+						var list = new List<ExtensionNodeDescription> ();
 						EnsureInsertionsSorted (ext.ExtensionNodes);
 						list.AddRange (ext.ExtensionNodes);
 						int pos = -1;

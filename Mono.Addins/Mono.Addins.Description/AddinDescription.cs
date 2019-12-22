@@ -77,7 +77,7 @@ namespace Mono.Addins.Description
 		ConditionTypeDescriptionCollection conditionTypes;
 		ExtensionPointCollection extensionPoints;
 		ExtensionNodeDescription localizer;
-		object[] fileInfo;
+		AddinFileInfo[] fileInfo;
 		
 		AddinPropertyCollectionImpl properties;
 		Dictionary<string,string> variables;
@@ -637,8 +637,9 @@ namespace Mono.Addins.Description
 		
 		internal void StoreFileInfo ()
 		{
-			ArrayList list = new ArrayList ();
-			foreach (string f in AllFiles) {
+			var allFiles = AllFiles;
+			var list = new List<AddinFileInfo> (allFiles.Count);
+			foreach (string f in allFiles) {
 				string file = Path.Combine (this.BasePath, f);
 				AddinFileInfo fi = new AddinFileInfo ();
 				fi.FileName = f;
@@ -1392,7 +1393,7 @@ namespace Mono.Addins.Description
 			nodeSets = (ExtensionNodeSetCollection) reader.ReadValue ("NodeSets", new ExtensionNodeSetCollection (this));
 			extensionPoints = (ExtensionPointCollection) reader.ReadValue ("ExtensionPoints", new ExtensionPointCollection (this));
 			conditionTypes = (ConditionTypeDescriptionCollection) reader.ReadValue ("ConditionTypes", new ConditionTypeDescriptionCollection (this));
-			fileInfo = (object[]) reader.ReadValue ("FilesInfo", null);
+			fileInfo = (AddinFileInfo[]) reader.ReadValue ("FilesInfo", null);
 			localizer = (ExtensionNodeDescription) reader.ReadValue ("Localizer");
 			flags = (AddinFlags) reader.ReadInt32Value ("flags");
 			properties = (AddinPropertyCollectionImpl) reader.ReadValue ("Properties", new AddinPropertyCollectionImpl (this));

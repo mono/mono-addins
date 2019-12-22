@@ -483,7 +483,7 @@ namespace Mono.Addins.Database
 			
 			Hashtable internalNodeSets = new Hashtable ();
 			
-			ArrayList setsCopy = new ArrayList ();
+			var setsCopy = new List<ExtensionNodeSet> ();
 			setsCopy.AddRange (config.ExtensionNodeSets);
 			foreach (ExtensionNodeSet eset in setsCopy)
 				ScanNodeSet (reflector, config, eset, assemblies, internalNodeSets);
