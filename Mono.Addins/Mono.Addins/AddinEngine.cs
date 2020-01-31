@@ -404,7 +404,7 @@ namespace Mono.Addins
 		/// </remarks>
 		public void CheckInstalled (string message, params string[] addinIds)
 		{
-			ArrayList notInstalled = new ArrayList ();
+			List<string> notInstalled = new List<string> ();
 			foreach (string id in addinIds) {
 				Addin addin = Registry.GetAddin (id, false);
 				if (addin != null) {
@@ -425,7 +425,7 @@ namespace Mono.Addins
 				throw new InvalidOperationException ("Add-in installer not set");
 			
 			// Install the add-ins
-			ins.InstallAddins (Registry, message, (string[]) notInstalled.ToArray (typeof(string)));
+			ins.InstallAddins (Registry, message, notInstalled.ToArray ());
 		}
 		
 		// Enables or disables conflict checking while loading assemblies.
@@ -525,7 +525,7 @@ namespace Mono.Addins
 						return false;
 					}
 
-					ArrayList addins = new ArrayList ();
+					var addins = new List<Addin> ();
 					Stack depCheck = new Stack ();
 					ResolveLoadDependencies (addins, depCheck, id, false);
 					addins.Reverse ();
@@ -538,7 +538,7 @@ namespace Mono.Addins
 						if (statusMonitor != null)
 							statusMonitor.SetProgress ((double) n / (double)addins.Count);
 						
-						Addin iad = (Addin) addins [n];
+						Addin iad = addins [n];
 						if (IsAddinLoaded (iad.Id))
 							continue;
 
@@ -629,7 +629,7 @@ namespace Mono.Addins
 			}
 		}
 		
-		bool ResolveLoadDependencies (ArrayList addins, Stack depCheck, string id, bool optional)
+		bool ResolveLoadDependencies (List<Addin> addins, Stack depCheck, string id, bool optional)
 		{
 			if (IsAddinLoaded (id))
 				return true;

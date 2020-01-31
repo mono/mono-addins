@@ -124,7 +124,7 @@ namespace Mono.Addins
 				return resourceManagers;
 			
 			EnsureAssembliesLoaded ();
-			ArrayList managersList = new ArrayList ();
+			var managersList = new List<ResourceManager> ();
 
 			// Search for embedded resource files
 			foreach (Assembly asm in assemblies)
@@ -135,7 +135,7 @@ namespace Mono.Addins
 				}
 			}
 
-			return resourceManagers = (ResourceManager[]) managersList.ToArray (typeof(ResourceManager));
+			return resourceManagers = managersList.ToArray ();
 		}
 
 		/// <summary>
@@ -632,7 +632,7 @@ namespace Mono.Addins
 			if (depAddins != null)
 				return depAddins;
 			
-			ArrayList plugList = new ArrayList ();
+			var plugList = new List<RuntimeAddin> ();
 			string ns = ainfo.Description.Namespace;
 			
 			// Collect dependent ids
@@ -646,10 +646,10 @@ namespace Mono.Addins
 						addinEngine.ReportError ("Add-in dependency not loaded: " + pdep.FullAddinId, module.ParentAddinDescription.AddinId, null, false);
 				}
 			}
-			return depAddins = (RuntimeAddin[]) plugList.ToArray (typeof(RuntimeAddin));
+			return depAddins = plugList.ToArray ();
 		}
 		
-		void LoadModule (ModuleDescription module, ArrayList asmList)
+		void LoadModule (ModuleDescription module, List<Assembly> asmList)
 		{
 			// Load the assemblies
 			foreach (string s in module.Assemblies) {
@@ -711,14 +711,14 @@ namespace Mono.Addins
 			if (assemblies != null)
 				return;
 			
-			ArrayList asmList = new ArrayList ();
+			var asmList = new List<Assembly> ();
 			
 			// Load the assemblies of the module
 			CheckAddinDependencies (module, true);
 			LoadModule (module, asmList);
 			addinEngine.ReportAddinAssembliesLoad (id);
 			
-			assemblies = (Assembly[]) asmList.ToArray (typeof(Assembly));
+			assemblies = asmList.ToArray ();
 			addinEngine.RegisterAssemblies (this);
 		}
 	}

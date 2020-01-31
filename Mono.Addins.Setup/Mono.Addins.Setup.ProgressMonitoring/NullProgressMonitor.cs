@@ -31,20 +31,21 @@ using System;
 using System.Collections;
 using System.Threading;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Setup.ProgressMonitoring
 {
 	internal class NullProgressMonitor: MarshalByRefObject, IProgressMonitor
 	{
 		bool done, canceled;
-		ArrayList errors;
-		ArrayList warnings;
-		ArrayList messages;
+		List<ProgressError> errors;
+		List<string> warnings;
+		List<string> messages;
 		
 		public string[] Messages {
 			get {
 				if (messages != null)
-					return (string[]) messages.ToArray (typeof(string));
+					return messages.ToArray ();
 				else
 					return new string [0];
 			}
@@ -53,7 +54,7 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 		public string[] Warnings {
 			get {
 				if (warnings != null)
-					return (string[]) warnings.ToArray (typeof(string));
+					return warnings.ToArray ();
 				else
 					return new string [0];
 			}
@@ -62,7 +63,7 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 		public ProgressError[] Errors {
 			get {
 				if (errors != null)
-					return (ProgressError[]) errors.ToArray (typeof(ProgressError));
+					return errors.ToArray ();
 				else
 					return new ProgressError [0];
 			}
@@ -91,22 +92,22 @@ namespace Mono.Addins.Setup.ProgressMonitoring
 		public virtual void ReportSuccess (string message)
 		{
 			if (messages == null)
-				messages = new ArrayList ();
+				messages = new List<string> ();
 			messages.Add (message);
 		}
 		
 		public virtual void ReportWarning (string message)
 		{
 			if (warnings == null)
-				warnings = new ArrayList ();
+				warnings = new List<string> ();
 			messages.Add (message);
 		}
 		
 		public virtual void ReportError (string message, Exception ex)
 		{
 			if (errors == null)
-				errors = new ArrayList ();
-				
+				errors = new List<ProgressError> ();
+
 			if (message == null && ex != null)
 				message = ex.Message;
 			else if (message != null && ex != null) {

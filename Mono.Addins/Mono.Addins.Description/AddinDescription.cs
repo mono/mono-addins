@@ -637,8 +637,9 @@ namespace Mono.Addins.Description
 		
 		internal void StoreFileInfo ()
 		{
-			ArrayList list = new ArrayList ();
-			foreach (string f in AllFiles) {
+			var allFiles = AllFiles;
+			var list = new List<AddinFileInfo> (allFiles.Count);
+			foreach (string f in allFiles) {
 				string file = Path.Combine (this.BasePath, f);
 				AddinFileInfo fi = new AddinFileInfo ();
 				fi.FileName = f;

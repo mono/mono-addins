@@ -38,11 +38,11 @@ namespace Mono.Addins.Database
 {
 	internal class AddinScanResult: MarshalByRefObject
 	{
-		internal ArrayList AddinsToScan = new ArrayList ();
+		internal List<string> AddinsToScan = new List<string> ();
 		internal List<string> AddinsToUpdateRelations = new List<string> ();
 		internal List<string> AddinsToUpdate = new List<string> ();
-		internal ArrayList FilesToScan = new ArrayList ();
-		internal ArrayList ModifiedFolderInfos = new ArrayList ();
+		internal List<FileToScan> FilesToScan = new List<FileToScan> ();
+		internal List<AddinScanFolderInfo> ModifiedFolderInfos = new List<AddinScanFolderInfo> ();
 		internal AddinHostIndex HostIndex;
 		internal List<string> RemovedAddins = new List<string> ();
 

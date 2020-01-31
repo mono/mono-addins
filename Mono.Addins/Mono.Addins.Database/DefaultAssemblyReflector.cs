@@ -143,7 +143,7 @@ namespace Mono.Addins.Database
 
 		public IEnumerable GetBaseTypeFullNameList (object type)
 		{
-			ArrayList list = new ArrayList ();
+			var list = new List<string> ();
 			Type btype = ((Type)type).BaseType;
 			while (btype != typeof(object)) {
 				list.Add (btype.FullName);

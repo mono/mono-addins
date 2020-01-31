@@ -44,7 +44,7 @@ namespace Mono.Addins.Setup
 	/// </remarks>
 	public class RepositoryRegistry
 	{
-		ArrayList repoList;
+		List<RepositoryRecord> repoList;
 		SetupService service;
 		
 		internal RepositoryRegistry (SetupService service)
@@ -279,10 +279,10 @@ namespace Mono.Addins.Setup
 			return FindRepositoryRecord (url) != null;
 		}
 		
-		ArrayList RepositoryList {
+		List<RepositoryRecord> RepositoryList {
 			get {
 				if (repoList == null) {
-					ArrayList list = new ArrayList ();
+					var list = new List<RepositoryRecord> ();
 					foreach (RepositoryRecord rep in service.Configuration.Repositories) {
 						if (!rep.IsReference)
 							list.Add (rep);
@@ -301,7 +301,7 @@ namespace Mono.Addins.Setup
 		/// </returns>
 		public AddinRepository[] GetRepositories ()
 		{
-			return (AddinRepository[]) RepositoryList.ToArray (typeof(AddinRepository));
+			return RepositoryList.ToArray ();
 		}
 			                     
 		/// <summary>

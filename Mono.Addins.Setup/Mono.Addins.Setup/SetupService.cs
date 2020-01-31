@@ -711,7 +711,7 @@ namespace Mono.Addins.Setup
 		public void BuildRepository (IProgressStatus statusMonitor, string path)
 		{
 			string mainPath = Path.Combine (path, "main.mrep");
-			ArrayList allAddins = new ArrayList ();
+			var allAddins = new List<PackageRepositoryEntry> ();
 			
 			Repository rootrep = (Repository) AddinStore.ReadObject (mainPath, typeof(Repository));
 			if (rootrep == null)
@@ -724,7 +724,7 @@ namespace Mono.Addins.Setup
 			monitor.Log.WriteLine ("Updated main.mrep");
 		}
 		
-		void BuildRepository (IProgressMonitor monitor, Repository rootrep, string rootPath, string relFilePath, ArrayList allAddins)
+		void BuildRepository (IProgressMonitor monitor, Repository rootrep, string rootPath, string relFilePath, List<PackageRepositoryEntry> allAddins)
 		{
 			DateTime lastModified = DateTime.MinValue;
 			
@@ -772,7 +772,7 @@ namespace Mono.Addins.Setup
 				allAddins.Add (entry);
 			}
 			
-			ArrayList toRemove = new ArrayList ();
+			var toRemove = new List<PackageRepositoryEntry> ();
 			foreach (PackageRepositoryEntry entry in mainrep.Addins) {
 				if (!File.Exists (Path.Combine (mainPath, entry.Url))) {
 					toRemove.Add (entry);
@@ -854,7 +854,7 @@ namespace Mono.Addins.Setup
 			}
  		}
 		
-		void GenerateIndexPage (Repository rep, ArrayList addins, string basePath)
+		void GenerateIndexPage (Repository rep, List<PackageRepositoryEntry> addins, string basePath)
 		{
 			StreamWriter sw = new StreamWriter (Path.Combine (basePath, "index.html"));
 			sw.WriteLine ("<html><body>");

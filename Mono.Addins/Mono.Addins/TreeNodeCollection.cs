@@ -29,16 +29,18 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Mono.Addins
 {
 	class TreeNodeCollection: IEnumerable
 	{
-		ArrayList list;
+		List<TreeNode> list;
 		
 		internal static TreeNodeCollection Empty = new TreeNodeCollection (null);
 		
-		public TreeNodeCollection (ArrayList list)
+		public TreeNodeCollection (List<TreeNode> list)
 		{
 			this.list = list;
 		}
@@ -54,7 +56,7 @@ namespace Mono.Addins
 		public TreeNode this [int n] {
 			get { 
 				if (list != null)
-					return (TreeNode) list [n];
+					return list [n];
 				else
 					throw new System.IndexOutOfRangeException ();
 			}
@@ -76,7 +78,7 @@ namespace Mono.Addins
 		public TreeNodeCollection Clone ()
 		{
 			if (list != null)
-				return new TreeNodeCollection ((ArrayList) list.Clone ());
+				return new TreeNodeCollection (list.ToList ());
 			else
 				return Empty;
 		}

@@ -106,8 +106,8 @@ namespace Mono.Addins.Setup
 				return false;
 			}
 			
-			ArrayList prepared = new ArrayList ();
-			ArrayList uninstallPrepared = new ArrayList ();
+			var prepared = new List<Package> ();
+			var uninstallPrepared = new List<Package> ();
 			bool rollback = false;
 			
 			monitor.BeginTask ("Installing add-ins...", 100);
@@ -269,8 +269,8 @@ namespace Mono.Addins.Setup
 			
 			foreach (string id in ids) {
 				bool rollback = false;
-				ArrayList toUninstall = new ArrayList ();
-				ArrayList uninstallPrepared = new ArrayList ();
+				var toUninstall = new List<AddinPackage> ();
+				var uninstallPrepared = new List<Package> ();
 				
 				Addin ia = service.Registry.GetAddin (id);
 				if (ia == null)
@@ -354,12 +354,12 @@ namespace Mono.Addins.Setup
 		
 		public Addin[] GetDependentAddins (string id, bool recursive)
 		{
-			ArrayList list = new ArrayList ();
+			var list = new List<Addin> ();
 			FindDependentAddins (list, id, recursive);
-			return (Addin[]) list.ToArray (typeof (Addin));
+			return list.ToArray ();
 		}
 		
-		void FindDependentAddins (ArrayList list, string id, bool recursive)
+		void FindDependentAddins (List<Addin> list, string id, bool recursive)
 		{
 			foreach (Addin iaddin in service.Registry.GetAddins ()) {
 				if (list.Contains (iaddin))
@@ -510,7 +510,7 @@ namespace Mono.Addins.Setup
 				} 
 			}
 			
-			ArrayList addins = new ArrayList ();
+			var addins = new List<Addin> ();
 			addins.AddRange (service.Registry.GetAddins ());
 			addins.AddRange (service.Registry.GetAddinRoots ());
 			

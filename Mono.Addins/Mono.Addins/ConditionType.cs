@@ -31,6 +31,7 @@ using System;
 using System.Xml;
 using Mono.Addins.Description;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Mono.Addins
 {
@@ -95,7 +96,7 @@ namespace Mono.Addins
 			return parent == null || parent.Evaluate (ctx);
 		}
 		
-		internal virtual void GetConditionTypes (ArrayList listToFill)
+		internal virtual void GetConditionTypes (List<string> listToFill)
 		{
 		}
 	}
@@ -131,7 +132,7 @@ namespace Mono.Addins
 			return false;
 		}
 		
-		internal override void GetConditionTypes (ArrayList listToFill)
+		internal override void GetConditionTypes (List<string> listToFill)
 		{
 			foreach (BaseCondition cond in conditions)
 				cond.GetConditionTypes (listToFill);
@@ -157,7 +158,7 @@ namespace Mono.Addins
 			return true;
 		}
 		
-		internal override void GetConditionTypes (ArrayList listToFill)
+		internal override void GetConditionTypes (List<string> listToFill)
 		{
 			foreach (BaseCondition cond in conditions)
 				cond.GetConditionTypes (listToFill);
@@ -178,7 +179,7 @@ namespace Mono.Addins
 			return !baseCond.Evaluate (ctx);
 		}
 		
-		internal override void GetConditionTypes (System.Collections.ArrayList listToFill)
+		internal override void GetConditionTypes (List<string> listToFill)
 		{
 			baseCond.GetConditionTypes (listToFill);
 		}
@@ -228,7 +229,7 @@ namespace Mono.Addins
 			}
 		}
 		
-		internal override void GetConditionTypes (ArrayList listToFill)
+		internal override void GetConditionTypes (List<string> listToFill)
 		{
 			listToFill.Add (typeId);
 		}

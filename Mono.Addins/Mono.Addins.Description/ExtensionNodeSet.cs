@@ -32,6 +32,8 @@ using System.Collections;
 using System.Xml;
 using Mono.Addins.Serialization;
 using System.Collections.Specialized;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Mono.Addins.Description
 {
@@ -112,7 +114,7 @@ namespace Mono.Addins.Description
 						Element.AppendChild (e);
 					}
 				}
-				ArrayList list = new ArrayList ();
+				var list = new List<XmlElement> ();
 				foreach (XmlElement e in Element.SelectNodes ("ExtensionNodeSet")) {
 					if (!nodeSets.Contains (e.GetAttribute ("id")))
 						list.Add (e);
@@ -256,7 +258,7 @@ namespace Mono.Addins.Description
 		{
 			// Removes extension types and extension sets coming from other add-ins.
 			
-			ArrayList todelete = new ArrayList ();
+			var todelete = new List<ExtensionNodeType> ();
 			foreach (ExtensionNodeType nt in NodeTypes) {
 				if (nt.AddinId != thisAddinId && (addinsToUnmerge == null || addinsToUnmerge.Contains (nt.AddinId)))
 					todelete.Add (nt);
@@ -312,7 +314,7 @@ namespace Mono.Addins.Description
 	{
 		// A list of string[2]. Item 0 is the node set id, item 1 is the addin that defines it.
 		
-		ArrayList list = new ArrayList ();
+		List<string[]> list = new List<string[]> ();
 		
 		/// <summary>
 		/// Gets the node set identifier at the specified index.
@@ -321,7 +323,7 @@ namespace Mono.Addins.Description
 		/// An index.
 		/// </param>
 		public string this [int n] {
-			get { return ((string[])list [n])[0]; }
+			get { return list [n][0]; }
 		}
 		
 		/// <summary>
@@ -342,10 +344,7 @@ namespace Mono.Addins.Description
 		/// </returns>
 		public IEnumerator GetEnumerator ()
 		{
-			ArrayList ll = new ArrayList (list.Count);
-			foreach (string[] ns in list)
-				ll.Add (ns [0]);
-			return ll.GetEnumerator ();
+			return list.Select (x => x [0]).GetEnumerator ();
 		}
 		
 		/// <summary>
@@ -404,7 +403,7 @@ namespace Mono.Addins.Description
 		public int IndexOf (string nodeSetId)
 		{
 			for (int n=0; n<list.Count; n++)
-				if (((string[])list [n])[0] == nodeSetId)
+				if (list [n][0] == nodeSetId)
 					return n;
 			return -1;
 		}
@@ -415,7 +414,7 @@ namespace Mono.Addins.Description
 				ns [1] = id;
 		}
 		
-		internal ArrayList InternalList {
+		internal List<string[]> InternalList {
 			get { return list; }
 			set { list = value; }
 		}
@@ -430,7 +429,7 @@ namespace Mono.Addins.Description
 		
 		internal void UnmergeExternalData (string thisAddinId, Hashtable addinsToUnmerge)
 		{
-			ArrayList newList = new ArrayList ();
+			List<string[]> newList = new List<string[]> ();
 			foreach (string[] ns in list) {
 				if (ns[1] == thisAddinId || (addinsToUnmerge != null && !addinsToUnmerge.Contains (ns[1])))
 					newList.Add (ns);
