@@ -30,6 +30,7 @@ using Mono.Addins.Description;
 using System.Globalization;
 using Mono.Addins;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace UnitTests
 {
@@ -125,7 +126,9 @@ namespace UnitTests
 			System.Threading.Thread.CurrentThread.CurrentCulture = oldc;
 		}
 
-		[TestCase ("SimpleApp.SystemInfoExtension", "StringResource", "")]
+		[TestCase ("SimpleApp.SystemInfoExtension,0.1.0", "StringResource", "")]
+		[TestCase ("SimpleApp.CommandExtension,0.1.0", "CommandExtension.CustomLocalizerFactory", "CommandExtension, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")]
+		[TestCase ("MultiAssemblyAddin,0.1.0", "SecondAssembly.CustomLocalizerFactory", "SecondAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")]
 		public void LocalizerProperties (string addinId, string expectedType, string expectedAssembly)
 		{
 			Addin ad = AddinManager.Registry.GetAddin (addinId);
