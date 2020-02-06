@@ -316,32 +316,61 @@ namespace Mono.Addins
 		/// </remarks>
 		public Type GetType (string typeName, bool throwIfNotFound)
 		{
+			return GetType (typeName, string.Empty, throwIfNotFound);
+		}
+
+		internal Type GetType (string typeName, string assemblyName, bool throwIfNotFound)
+		{
 			EnsureAssembliesLoaded ();
-			
-			// Look in the addin assemblies
-			
-			Type at = Type.GetType (typeName, false);
+
+			// Look in the addin assemblies and in dependent add-ins.
+			// PERF: Unrolled from GetAllAssemblies and GetAllDependencies to avoid allocations.
+			Type at = (string.IsNullOrEmpty (assemblyName) ? Type.GetType (typeName, false) : null)
+				?? GetTypeRecursive (typeName, assemblyName);
 			if (at != null)
 				return at;
-			
-			foreach (Assembly asm in GetAllAssemblies ()) {
-				Type t = asm.GetType (typeName, false);
-				if (t != null)
-					return t;
-			}
-			
-			// Look in the dependent add-ins
-			foreach (RuntimeAddin addin in GetAllDependencies ()) {
-				Type t = addin.GetType (typeName, false);
-				if (t != null)
-					return t;
-			}
-			
+
 			if (throwIfNotFound)
 				throw new InvalidOperationException ("Type '" + typeName + "' not found in add-in '" + id + "'");
 			return null;
 		}
-		
+
+		Type GetTypeRecursive (string typeName, string assemblyName)
+		{
+			return FindTypeInAssemblyList (Assemblies, typeName, assemblyName)
+				?? FindTypeInAssemblyList (parentAddin?.Assemblies, typeName, assemblyName)
+				?? FindTypeInAddins (GetDepAddins (), typeName, assemblyName)
+				?? FindTypeInAddins (parentAddin?.GetDepAddins (), typeName, assemblyName);
+		}
+
+		static Type FindTypeInAssemblyList (Assembly[] assemblies, string typeName, string assemblyName)
+		{
+			if (assemblies != null) {
+				foreach (var assembly in assemblies) {
+					if (string.IsNullOrEmpty (assemblyName) || assembly.FullName == assemblyName) {
+						Type type = assembly.GetType (typeName, false);
+						if (type != null)
+							return type;
+					}
+				}
+			}
+
+			return null;
+		}
+
+		static Type FindTypeInAddins (RuntimeAddin[] addins, string typeName, string assemblyName)
+		{
+			if (addins != null) {
+				foreach (RuntimeAddin addin in addins) {
+					Type t = addin.GetTypeRecursive (typeName, assemblyName);
+					if (t != null)
+						return t;
+				}
+			}
+
+			return null;
+		}
+
 		IEnumerable<ResourceManager> GetAllResourceManagers ()
 		{
 			foreach (ResourceManager rm in GetResourceManagers ())
@@ -424,7 +453,12 @@ namespace Mono.Addins
 		/// </remarks>
 		public object CreateInstance (string typeName, bool throwIfNotFound)
 		{
-			Type type = GetType (typeName, throwIfNotFound);
+			return CreateInstance (typeName, string.Empty, throwIfNotFound);
+		}
+
+		internal object CreateInstance (string typeName, string assemblyName, bool throwIfNotFound)
+		{
+			Type type = GetType (typeName, assemblyName, throwIfNotFound);
 			if (type == null)
 				return null;
 			else
@@ -608,15 +642,20 @@ namespace Mono.Addins
 			
 			if (description.Localizer != null) {
 				string cls = description.Localizer.GetAttribute ("type");
-				
+				string assembly = description.Localizer.GetAttribute ("assembly");
+
+				var thisAssembly = GetType ().Assembly;
+
 				// First try getting one of the stock localizers. If none of found try getting the type.
 				object fob = null;
-				Type t = Type.GetType ("Mono.Addins.Localization." + cls + "Localizer, " + GetType().Assembly.FullName, false);
-				if (t != null)
-					fob = Activator.CreateInstance (t);
+				if (string.IsNullOrEmpty (assembly) || assembly == thisAssembly.FullName) {
+					Type t = thisAssembly.GetType ("Mono.Addins.Localization." + cls + "Localizer", false);
+					if (t != null)
+						fob = Activator.CreateInstance (t);
+				}
 				
 				if (fob == null)
-					fob = CreateInstance (cls, true);
+					fob = CreateInstance (cls, assembly, true);
 				
 				IAddinLocalizerFactory factory = fob as IAddinLocalizerFactory;
 				if (factory == null)

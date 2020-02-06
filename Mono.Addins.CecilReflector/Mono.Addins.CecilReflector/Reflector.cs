@@ -130,13 +130,9 @@ namespace Mono.Addins.CecilReflector
 					for (int n=0; n<typeParameters.Count; n++) {
 						int ip = typeParameters [n];
 						string propName = ciParams[ip].Name;
-						propName = char.ToUpper (propName [0]) + propName.Substring (1) + "Name";
-						PropertyInfo pi = attype.GetProperty (propName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+						propName = char.ToUpper (propName [0]) + propName.Substring (1);
 
-						if (pi == null)
-							throw new InvalidOperationException ("Property '" + propName + "' not found in type '" + attype + "'.");
-
-						pi.SetValue (ob, ((TypeReference) att.ConstructorArguments [ip].Value).FullName, null);
+						SetTypeNameAndAssemblyName (propName, attype, ob, (TypeReference)att.ConstructorArguments[ip].Value);
 					}
 				}
 			} else {
@@ -148,19 +144,30 @@ namespace Mono.Addins.CecilReflector
 				PropertyInfo prop = attype.GetProperty (pname);
 				if (prop != null) {
 					if (prop.PropertyType == typeof(System.Type)) {
-						// We can't load the type. We have to use the typeName property instead.
-						pname += "Name";
-						prop = attype.GetProperty (pname, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-						
-						if (prop == null)
-							throw new InvalidOperationException ("Property '" + pname + "' not found in type '" + attype + "'.");
-
-						prop.SetValue (ob, ((TypeReference) namedArgument.Argument.Value).FullName, null);
+						SetTypeNameAndAssemblyName (pname, attype, ob, (TypeReference)namedArgument.Argument.Value);
 					} else
 						prop.SetValue (ob, namedArgument.Argument.Value, null);
 				}
 			}
 			return ob;
+		}
+
+		static void SetTypeNameAndAssemblyName (string basePropName, Type attype, object ob, TypeReference typeReference)
+		{
+			// We can't load the type. We have to use the typeName and typeAssemblyName properties instead.
+			var typeNameProp = basePropName + "Name";
+			var prop = attype.GetProperty (typeNameProp, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+						
+			if (prop == null)
+				throw new InvalidOperationException ("Property '" + typeNameProp + "' not found in type '" + attype + "'.");
+
+			prop.SetValue (ob, typeReference.FullName, null);
+
+			prop = attype.GetProperty (basePropName + "AssemblyName", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			if (prop == null)
+				return;
+
+			prop.SetValue (ob, typeReference.Resolve ().Module.Assembly.FullName, null);
 		}
 		
 		public List<MA.CustomAttribute> GetRawCustomAttributes (object obj, Type type, bool inherit)
