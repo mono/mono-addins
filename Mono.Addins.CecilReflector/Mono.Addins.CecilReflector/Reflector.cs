@@ -148,14 +148,20 @@ namespace Mono.Addins.CecilReflector
 				PropertyInfo prop = attype.GetProperty (pname);
 				if (prop != null) {
 					if (prop.PropertyType == typeof(System.Type)) {
-						// We can't load the type. We have to use the typeName property instead.
-						pname += "Name";
-						prop = attype.GetProperty (pname, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+						// We can't load the type. We have to use the typeName and typeAssemblyName properties instead.
+						var typeValue = (TypeReference)namedArgument.Argument.Value;
+						var typeNameProp = pname + "Name";
+						prop = attype.GetProperty (typeNameProp, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 						
 						if (prop == null)
-							throw new InvalidOperationException ("Property '" + pname + "' not found in type '" + attype + "'.");
+							throw new InvalidOperationException ("Property '" + typeNameProp + "' not found in type '" + attype + "'.");
 
-						prop.SetValue (ob, ((TypeReference) namedArgument.Argument.Value).FullName, null);
+						prop.SetValue (ob, typeValue.FullName, null);
+
+						prop = attype.GetProperty (pname + "AssemblyName", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+						if (prop != null) {
+							prop.SetValue (ob, typeValue.Module.Assembly.FullName);
+						}
 					} else
 						prop.SetValue (ob, namedArgument.Argument.Value, null);
 				}

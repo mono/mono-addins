@@ -316,32 +316,41 @@ namespace Mono.Addins
 		/// </remarks>
 		public Type GetType (string typeName, bool throwIfNotFound)
 		{
+			return GetType (typeName, string.Empty, throwIfNotFound);
+		}
+
+		internal Type GetType (string typeName, string assemblyName, bool throwIfNotFound)
+		{
 			EnsureAssembliesLoaded ();
-			
+
 			// Look in the addin assemblies
-			
-			Type at = Type.GetType (typeName, false);
-			if (at != null)
-				return at;
-			
-			foreach (Assembly asm in GetAllAssemblies ()) {
-				Type t = asm.GetType (typeName, false);
-				if (t != null)
-					return t;
+			var thisAssembly = GetType ().Assembly;
+			if (string.IsNullOrEmpty (assemblyName) || assemblyName == thisAssembly.FullName) {
+				Type at = thisAssembly.GetType (typeName, false);
+				if (at != null)
+					return at;
 			}
-			
+
+			foreach (Assembly asm in GetAllAssemblies ()) {
+				if (string.IsNullOrEmpty (assemblyName) || assemblyName == asm.FullName) {
+					Type t = asm.GetType (typeName, false);
+					if (t != null)
+						return t;
+				}
+			}
+
 			// Look in the dependent add-ins
 			foreach (RuntimeAddin addin in GetAllDependencies ()) {
-				Type t = addin.GetType (typeName, false);
+				Type t = addin.GetType (typeName, assemblyName, false);
 				if (t != null)
 					return t;
 			}
-			
+
 			if (throwIfNotFound)
 				throw new InvalidOperationException ("Type '" + typeName + "' not found in add-in '" + id + "'");
 			return null;
 		}
-		
+
 		IEnumerable<ResourceManager> GetAllResourceManagers ()
 		{
 			foreach (ResourceManager rm in GetResourceManagers ())
@@ -424,7 +433,12 @@ namespace Mono.Addins
 		/// </remarks>
 		public object CreateInstance (string typeName, bool throwIfNotFound)
 		{
-			Type type = GetType (typeName, throwIfNotFound);
+			return CreateInstance (typeName, null, throwIfNotFound);
+		}
+
+		internal object CreateInstance (string typeName, string assemblyName, bool throwIfNotFound)
+		{
+			Type type = GetType (typeName, assemblyName, throwIfNotFound);
 			if (type == null)
 				return null;
 			else
@@ -608,15 +622,20 @@ namespace Mono.Addins
 			
 			if (description.Localizer != null) {
 				string cls = description.Localizer.GetAttribute ("type");
-				
+				string assembly = description.Localizer.GetAttribute ("assembly");
+
+				var thisAssembly = GetType ().Assembly;
+
 				// First try getting one of the stock localizers. If none of found try getting the type.
 				object fob = null;
-				Type t = Type.GetType ("Mono.Addins.Localization." + cls + "Localizer, " + GetType().Assembly.FullName, false);
-				if (t != null)
-					fob = Activator.CreateInstance (t);
+				if (string.IsNullOrEmpty (assembly) || assembly == thisAssembly.FullName) {
+					Type t = thisAssembly.GetType ("Mono.Addins.Localization." + cls + "Localizer", false);
+					if (t != null)
+						fob = Activator.CreateInstance (t);
+				}
 				
 				if (fob == null)
-					fob = CreateInstance (cls, true);
+					fob = CreateInstance (cls, assembly, true);
 				
 				IAddinLocalizerFactory factory = fob as IAddinLocalizerFactory;
 				if (factory == null)

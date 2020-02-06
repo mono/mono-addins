@@ -126,6 +126,7 @@ namespace UnitTests
 		}
 
 		[TestCase ("SimpleApp.SystemInfoExtension", "StringResource", "")]
+		[TestCase ("MultiAssemblyAddin", "MultiAssemblyAddin.CustomLocalizerFactory", "MultiAssemblyAddin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")]
 		public void LocalizerProperties (string addinId, string expectedType, string expectedAssembly)
 		{
 			Addin ad = AddinManager.Registry.GetAddin (addinId);
