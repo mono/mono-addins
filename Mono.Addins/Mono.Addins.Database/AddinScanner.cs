@@ -660,7 +660,7 @@ namespace Mono.Addins.Database
 			
 			AddinLocalizerGettextAttribute locat = (AddinLocalizerGettextAttribute) reflector.GetCustomAttribute (asm, typeof(AddinLocalizerGettextAttribute), false);
 			if (locat != null) {
-				ExtensionNodeDescription node = new ExtensionNodeDescription ();
+				ExtensionNodeDescription node = new ExtensionNodeDescription ("Localizer");
 				node.SetAttribute ("type", "Gettext");
 				if (!string.IsNullOrEmpty (locat.Catalog))
 					node.SetAttribute ("catalog", locat.Catalog);
@@ -671,7 +671,7 @@ namespace Mono.Addins.Database
 
 			var customLocat = (AddinLocalizerAttribute) reflector.GetCustomAttribute (asm, typeof(AddinLocalizerAttribute), false);
 			if (customLocat != null) {
-				var node = new ExtensionNodeDescription ();
+				var node = new ExtensionNodeDescription ("Localizer");
 				node.SetAttribute ("type", customLocat.TypeName);
 				config.Localizer = node;
 			}

@@ -196,15 +196,14 @@ namespace Mono.Addins.Description
 		
 		internal override void SaveXml (XmlElement parent)
 		{
-			if (Element == null) {
-				Element = parent.OwnerDocument.CreateElement (nodeName);
-				parent.AppendChild (Element);
-				if (attributes != null) {
-					for (int n=0; n<attributes.Length; n+=2)
-						Element.SetAttribute (attributes[n], attributes[n+1]);
-				}
-				ChildNodes.SaveXml (Element);
+			CreateElement (parent, nodeName);
+
+			if (attributes != null) {
+				for (int n = 0; n < attributes.Length; n += 2)
+					Element.SetAttribute (attributes [n], attributes [n + 1]);
 			}
+
+			ChildNodes.SaveXml (Element);
 		}
 		
 		/// <summary>
@@ -304,15 +303,14 @@ namespace Mono.Addins.Description
 		/// </value>
 		public NodeAttribute[] Attributes {
 			get {
-				if (Element != null)
-					SaveXmlAttributes ();
-				if (attributes == null)
+				string [] result = SaveXmlAttributes ();
+				if (result == null || result.Length == 0)
 					return new NodeAttribute [0];
-				NodeAttribute[] ats = new NodeAttribute [attributes.Length / 2];
+				NodeAttribute[] ats = new NodeAttribute [result.Length / 2];
 				for (int n=0; n<ats.Length; n++) {
 					NodeAttribute at = new NodeAttribute ();
-					at.name = attributes [n*2];
-					at.value = attributes [n*2 + 1];
+					at.name = result [n*2];
+					at.value = result [n*2 + 1];
 					ats [n] = at;
 				}
 				return ats;
@@ -344,23 +342,25 @@ namespace Mono.Addins.Description
 			get { return ChildNodes; }
 		}
 		
-		void SaveXmlAttributes ()
+		string[] SaveXmlAttributes ()
 		{
-			attributes = new string [Element.Attributes.Count * 2];
-			for (int n=0; n<attributes.Length; n+=2) {
-				XmlAttribute at = Element.Attributes [n/2];
-				attributes [n] = at.LocalName;
-				attributes [n+1] = at.Value;
+			if (Element != null) {
+				var result = new string [Element.Attributes.Count * 2];
+				for (int n = 0; n < result.Length; n += 2) {
+					XmlAttribute at = Element.Attributes [n / 2];
+					result [n] = at.LocalName;
+					result [n + 1] = at.Value;
+				}
+				return result;
 			}
+
+			return attributes;
 		}
 		
 		internal override void Write (BinaryXmlWriter writer)
 		{
-			if (Element != null)
-				SaveXmlAttributes ();
-			
 			writer.WriteValue ("nodeName", nodeName);
-			writer.WriteValue ("attributes", attributes);
+			writer.WriteValue ("attributes", SaveXmlAttributes ());
 			writer.WriteValue ("ChildNodes", ChildNodes);
 		}
 		
