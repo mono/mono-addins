@@ -124,7 +124,17 @@ namespace UnitTests
 			
 			System.Threading.Thread.CurrentThread.CurrentCulture = oldc;
 		}
-		
+
+		[TestCase ("SimpleApp.SystemInfoExtension", "StringResource", "")]
+		public void LocalizerProperties (string addinId, string expectedType, string expectedAssembly)
+		{
+			Addin ad = AddinManager.Registry.GetAddin (addinId);
+			ExtensionNodeDescription localizer = ad.Description.Localizer;
+
+			Assert.AreEqual (expectedType, localizer.GetAttribute ("type"));
+			Assert.AreEqual (expectedAssembly, localizer.GetAttribute ("assembly"));
+		}
+
 		AddinDescription DescFromResource (string res)
 		{
 			using (Stream s = GetType().Assembly.GetManifestResourceStream (res)) {
