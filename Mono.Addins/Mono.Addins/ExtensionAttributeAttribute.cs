@@ -39,6 +39,7 @@ namespace Mono.Addins
 	{
 		Type targetType;
 		string targetTypeName;
+		string targetTypeAssemblyName;
 		string name;
 		string val;
 		string path;
@@ -125,12 +126,17 @@ namespace Mono.Addins
 		/// </summary>
 		public Type Type {
 			get { return targetType; }
-			set { targetType = value; targetTypeName = targetType.FullName; }
+			set { targetType = value; targetTypeName = targetType.FullName; targetTypeAssemblyName = targetType.Assembly.FullName; }
 		}
 		
 		internal string TypeName {
 			get { return targetTypeName ?? string.Empty; }
 			set { targetTypeName = value; }
+		}
+
+		internal string TypeAssemblyName {
+			get { return targetTypeAssemblyName ?? string.Empty; }
+			set { targetTypeAssemblyName = value; }
 		}
 	}
 }

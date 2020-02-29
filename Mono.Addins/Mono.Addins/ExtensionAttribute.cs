@@ -47,6 +47,7 @@ namespace Mono.Addins
 		string insertBefore;
 		string insertAfter;
 		string typeName;
+		string typeAssemblyName;
 		Type type;
 
 		/// <summary>
@@ -155,12 +156,17 @@ namespace Mono.Addins
 		/// </remarks>
 		public Type Type {
 			get { return type; }
-			set { type = value; typeName = type.FullName; }
+			set { type = value; typeName = type.FullName; typeAssemblyName = type.Assembly.FullName; }
 		}
 		
 		internal string TypeName {
 			get { return typeName ?? string.Empty; }
 			set { typeName = value; }
+		}
+
+		internal string TypeAssemblyName {
+			get { return typeAssemblyName ?? string.Empty; }
+			set { typeAssemblyName = value; }
 		}
 	}
 }

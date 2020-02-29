@@ -41,10 +41,12 @@ namespace Mono.Addins
 		string nodeName;
 		Type nodeType;
 		string nodeTypeName;
+		string nodeTypeAssemblyName;
 		string desc;
 		string name;
 		Type customAttributeType;
 		string customAttributeTypeName;
+		string customAttributeTypeAssemblyName;
 		
 		/// <summary>
 		/// Initializes a new instance
@@ -101,12 +103,17 @@ namespace Mono.Addins
 		/// </summary>
 		public Type NodeType {
 			get { return nodeType != null ? nodeType : typeof(TypeExtensionNode); }
-			set { nodeType = value; nodeTypeName = value.FullName; }
+			set { nodeType = value; nodeTypeName = value.FullName; nodeTypeAssemblyName = value.Assembly.FullName; }
 		}
 
 		internal string NodeTypeName {
 			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).FullName; }
 			set { nodeTypeName = value; nodeType = null; }
+		}
+
+		internal string NodeTypeAssemblyName {
+			get { return nodeTypeAssemblyName != null ? nodeTypeAssemblyName : typeof (TypeExtensionNode).Assembly.FullName; }
+			set { nodeTypeAssemblyName = value; nodeType = null; }
 		}
 		
 		/// <summary>
@@ -114,12 +121,17 @@ namespace Mono.Addins
 		/// </summary>
 		public Type ExtensionAttributeType {
 			get { return this.customAttributeType; }
-			set { this.customAttributeType = value; customAttributeTypeName = value.FullName; }
+			set { this.customAttributeType = value; customAttributeTypeName = value.FullName; customAttributeTypeAssemblyName = value.Assembly.FullName; }
 		}
 
 		internal string ExtensionAttributeTypeName {
 			get { return this.customAttributeTypeName; }
 			set { this.customAttributeTypeName = value; }
+		}
+
+		internal string ExtensionAttributeTypeAssemblyName {
+			get { return this.customAttributeTypeAssemblyName; }
+			set { this.customAttributeTypeAssemblyName = value; }
 		}
 	}
 }

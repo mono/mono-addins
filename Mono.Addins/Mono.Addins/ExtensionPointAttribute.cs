@@ -39,14 +39,17 @@ namespace Mono.Addins
 	{
 		string path;
 		Type nodeType;
+		string nodeTypeName;
+		string nodeTypeAssemblyName;
 		string nodeName;
 		string desc;
 		string name;
 		Type objectType;
-		string nodeTypeName;
 		string objectTypeName;
+		string objectTypeAssemblyName;
 		Type customAttributeType;
 		string customAttributeTypeName;
+		string customAttributeTypeAssemblyName;
 		string defaultInsertBefore;
 		string defaultInsertAfter;
 		
@@ -123,25 +126,36 @@ namespace Mono.Addins
 		/// </summary>
 		public Type NodeType {
 			get { return nodeType != null ? nodeType : typeof(TypeExtensionNode); }
-			set { nodeType = value; nodeTypeName = value.FullName; }
+			set { nodeType = value; nodeTypeName = value.FullName; nodeTypeAssemblyName = value.Assembly.FullName; }
 		}
-		
+
+		internal string NodeTypeName {
+			get { return nodeTypeName != null ? nodeTypeName : typeof (TypeExtensionNode).FullName; }
+			set { nodeTypeName = value; }
+		}
+
+		internal string NodeTypeAssemblyName {
+			get { return nodeTypeAssemblyName != null ? nodeTypeAssemblyName : typeof (TypeExtensionNode).FullName; }
+			set { nodeTypeAssemblyName = value; }
+		}
+
 		/// <summary>
 		/// Expected extension object type (when nodes are of type TypeExtensionNode)
 		/// </summary>
 		public Type ObjectType {
 			get { return objectType; }
-			set { objectType = value; objectTypeName = value.FullName; }
+			set { objectType = value; objectTypeName = value.FullName; objectTypeAssemblyName = value.Assembly.FullName; }
 		}
 		
-		internal string NodeTypeName {
-			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).FullName; }
-			set { nodeTypeName = value; }
-		}
 		
 		internal string ObjectTypeName {
 			get { return objectTypeName; }
 			set { objectTypeName = value; }
+		}
+
+		internal string ObjectTypeAssemblyName {
+			get { return objectTypeAssemblyName; }
+			set { objectTypeAssemblyName = value; }
 		}
 		
 		/// <summary>
@@ -165,12 +179,17 @@ namespace Mono.Addins
 		/// </summary>
 		public Type ExtensionAttributeType {
 			get { return this.customAttributeType; }
-			set { this.customAttributeType = value; customAttributeTypeName = value.FullName; }
+			set { this.customAttributeType = value; customAttributeTypeName = value.FullName; customAttributeTypeAssemblyName = value.Assembly.FullName; }
 		}
 
 		internal string ExtensionAttributeTypeName {
 			get { return this.customAttributeTypeName; }
 			set { this.customAttributeTypeName = value; }
+		}
+
+		internal string ExtensionAttributeTypeAssemblyName {
+			get { return customAttributeTypeAssemblyName; }
+			set { customAttributeTypeAssemblyName = value; }
 		}
 
 		/// <summary>

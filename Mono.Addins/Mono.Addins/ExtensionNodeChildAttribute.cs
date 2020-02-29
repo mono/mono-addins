@@ -43,6 +43,7 @@ namespace Mono.Addins
 		string nodeName;
 		Type extensionNodeType;
 		string extensionNodeTypeName;
+		string extensionNodeTypeAssemblyName;
 		
 		/// <summary>
 		/// Initializes a new instance
@@ -94,12 +95,17 @@ namespace Mono.Addins
 		/// </summary>
 		public Type ExtensionNodeType {
 			get { return extensionNodeType; }
-			set { extensionNodeType = value; extensionNodeTypeName = value.FullName; }
+			set { extensionNodeType = value; extensionNodeTypeName = value.FullName; extensionNodeTypeAssemblyName = value.Assembly.FullName; }
 		}
 		
 		internal string ExtensionNodeTypeName {
 			get { return extensionNodeTypeName; }
 			set { extensionNodeTypeName = value; extensionNodeType = null; }
+		}
+
+		internal string ExtensionNodeTypeAssemblyName {
+			get { return extensionNodeTypeAssemblyName; }
+			set { extensionNodeTypeAssemblyName = value; extensionNodeType = null; }
 		}
 	}
 }

@@ -42,6 +42,7 @@ namespace Mono.Addins
 		bool localizable;
 		Type type;
 		string typeName;
+		string typeAssemblyName;
 		string description;
 		
 		/// <summary>
@@ -226,12 +227,17 @@ namespace Mono.Addins
 		/// </remarks>
 		public Type Type {
 			get { return type; }
-			set { type = value; typeName = type.FullName; }
+			set { type = value; typeName = type.FullName; typeAssemblyName = type.Assembly.FullName; }
 		}
 		
 		internal string TypeName {
 			get { return typeName; }
 			set { typeName = value; type = null; }
+		}
+
+		internal string TypeAssemblyNAme {
+			get { return typeAssemblyName; }
+			set { typeAssemblyName = value; type = null; }
 		}
 		
 		/// <summary>
