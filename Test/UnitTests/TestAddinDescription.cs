@@ -126,9 +126,13 @@ namespace UnitTests
 			System.Threading.Thread.CurrentThread.CurrentCulture = oldc;
 		}
 
+		// Built-in
 		[TestCase ("SimpleApp.SystemInfoExtension,0.1.0", "StringResource", "")]
+		// In own addin
 		[TestCase ("SimpleApp.CommandExtension,0.1.0", "CommandExtension.CustomLocalizerFactory", "CommandExtension, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")]
+		// In dependent addin
 		[TestCase ("SimpleApp.HelloWorldExtension,0.1.0", "CommandExtension.CustomLocalizerFactory", "CommandExtension, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")]
+		// In imported assembly
 		[TestCase ("MultiAssemblyAddin,0.1.0", "SecondAssembly.CustomLocalizerFactory", "SecondAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")]
 		public void LocalizerProperties (string addinId, string expectedType, string expectedAssembly)
 		{
