@@ -106,6 +106,7 @@ namespace UnitTests
 */
 
 		[TestCase ("SimpleApp.CommandExtension,0.1.0")]
+		[TestCase ("SimpleApp.HelloWorldExtension,0.1.0")]
 		[TestCase ("MultiAssemblyAddin,0.1.0")]
 		public void TestLocalizationType (string addinId)
 		{
