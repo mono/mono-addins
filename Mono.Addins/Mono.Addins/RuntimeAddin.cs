@@ -334,12 +334,12 @@ namespace Mono.Addins
 		{
 			// Look in the addin assemblies and in dependent add-ins.
 			// PERF: Unrolled from GetAllAssemblies and GetAllDependencies to avoid allocations.
-			EnsureAssembliesLoaded();
+			EnsureAssembliesLoaded ();
 
 			if (assemblies != null) {
 				foreach (var assembly in assemblies) {
-					if (string.IsNullOrEmpty(assemblyName) || assembly.FullName == assemblyName) {
-						Type type = assembly.GetType(typeName, false);
+					if (string.IsNullOrEmpty (assemblyName) || assembly.FullName == assemblyName) {
+						Type type = assembly.GetType (typeName, false);
 						if (type != null)
 							return type;
 					}
