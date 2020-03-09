@@ -321,54 +321,41 @@ namespace Mono.Addins
 
 		internal Type GetType (string typeName, string assemblyName, bool throwIfNotFound)
 		{
-			EnsureAssembliesLoaded ();
+			// Try looking in Mono.Addins without loading the addin assemblies.
+			var type = (string.IsNullOrEmpty (assemblyName) ? Type.GetType (typeName, false) : null)
+				?? GetType_Expensive (typeName, assemblyName);
 
+			if (throwIfNotFound && type == null)
+				throw new InvalidOperationException ("Type '" + typeName + "' not found in add-in '" + id + "'");
+			return type;
+		}
+
+		Type GetType_Expensive (string typeName, string assemblyName)
+		{
 			// Look in the addin assemblies and in dependent add-ins.
 			// PERF: Unrolled from GetAllAssemblies and GetAllDependencies to avoid allocations.
-			Type at = (string.IsNullOrEmpty (assemblyName) ? Type.GetType (typeName, false) : null)
-				?? GetTypeRecursive (typeName, assemblyName);
-			if (at != null)
-				return at;
+			EnsureAssembliesLoaded();
 
-			if (throwIfNotFound)
-				throw new InvalidOperationException ("Type '" + typeName + "' not found in add-in '" + id + "'");
-			return null;
-		}
-
-		Type GetTypeRecursive (string typeName, string assemblyName)
-		{
-			return FindTypeInAssemblyList (Assemblies, typeName, assemblyName)
-				?? FindTypeInAssemblyList (parentAddin?.Assemblies, typeName, assemblyName)
-				?? FindTypeInAddins (GetDepAddins (), typeName, assemblyName)
-				?? FindTypeInAddins (parentAddin?.GetDepAddins (), typeName, assemblyName);
-		}
-
-		static Type FindTypeInAssemblyList (Assembly[] assemblies, string typeName, string assemblyName)
-		{
 			if (assemblies != null) {
 				foreach (var assembly in assemblies) {
-					if (string.IsNullOrEmpty (assemblyName) || assembly.FullName == assemblyName) {
-						Type type = assembly.GetType (typeName, false);
+					if (string.IsNullOrEmpty(assemblyName) || assembly.FullName == assemblyName) {
+						Type type = assembly.GetType(typeName, false);
 						if (type != null)
 							return type;
 					}
 				}
 			}
 
-			return null;
-		}
-
-		static Type FindTypeInAddins (RuntimeAddin[] addins, string typeName, string assemblyName)
-		{
+			var addins = GetDepAddins ();
 			if (addins != null) {
 				foreach (RuntimeAddin addin in addins) {
-					Type t = addin.GetTypeRecursive (typeName, assemblyName);
+					Type t = addin.GetType_Expensive (typeName, assemblyName);
 					if (t != null)
 						return t;
 				}
 			}
 
-			return null;
+			return parentAddin?.GetType_Expensive (typeName, assemblyName);
 		}
 
 		IEnumerable<ResourceManager> GetAllResourceManagers ()
