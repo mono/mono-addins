@@ -76,12 +76,11 @@ namespace UnitTests
 			Assert.IsFalse (AddinManager.Registry.IsAddinEnabled ("SimpleApp.HelloWorldExtension"), "t1");
 			AddinManager.Registry.EnableAddin ("SimpleApp.HelloWorldExtension,0.1.0");
 			Assert.IsTrue (AddinManager.Registry.IsAddinEnabled ("SimpleApp.HelloWorldExtension"), "t1.1");
-			
+			// CommandExtenion is a dep of HelloWorldExtension
+			Assert.IsTrue(AddinManager.Registry.IsAddinEnabled("SimpleApp.CommandExtension"), "t2");
+
 			Assert.AreEqual (1, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 2");
 			
-			Assert.IsFalse (AddinManager.Registry.IsAddinEnabled ("SimpleApp.CommandExtension"), "t2");
-			AddinManager.Registry.EnableAddin ("SimpleApp.CommandExtension,0.1.0");
-			Assert.IsTrue (AddinManager.Registry.IsAddinEnabled ("SimpleApp.CommandExtension"), "t2.1");
 			
 			Assert.AreEqual (1, AddinManager.GetExtensionNodes ("/SimpleApp/Writers").Count, "count 3");
 			
