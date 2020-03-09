@@ -128,6 +128,7 @@ namespace UnitTests
 
 		[TestCase ("SimpleApp.SystemInfoExtension,0.1.0", "StringResource", "")]
 		[TestCase ("SimpleApp.CommandExtension,0.1.0", "CommandExtension.CustomLocalizerFactory", "CommandExtension, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")]
+		[TestCase ("SimpleApp.HelloWorldExtension,0.1.0", "CommandExtension.CustomLocalizerFactory", "CommandExtension, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")]
 		[TestCase ("MultiAssemblyAddin,0.1.0", "SecondAssembly.CustomLocalizerFactory", "SecondAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")]
 		public void LocalizerProperties (string addinId, string expectedType, string expectedAssembly)
 		{

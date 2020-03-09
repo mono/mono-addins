@@ -31,7 +31,7 @@ using Mono.Addins.Localization;
 
 namespace CommandExtension
 {
-	class CustomLocalizerFactory : IAddinLocalizerFactory
+	public class CustomLocalizerFactory : IAddinLocalizerFactory
 	{
 		sealed class Localizer : IAddinLocalizer
 		{

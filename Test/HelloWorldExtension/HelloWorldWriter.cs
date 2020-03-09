@@ -5,6 +5,8 @@ using Mono.Addins;
 
 [assembly: Addin ("HelloWorldExtension", "0.1.0", Namespace="SimpleApp")]
 [assembly: AddinDependency ("Core", "0.1.0")]
+[assembly: AddinDependency ("CommandExtension", "0.1.0")]
+[assembly: AddinLocalizer (typeof (CommandExtension.CustomLocalizerFactory))]
 
 namespace HelloWorldExtension
 {
