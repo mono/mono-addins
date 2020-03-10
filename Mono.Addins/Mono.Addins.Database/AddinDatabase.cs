@@ -1381,7 +1381,7 @@ namespace Mono.Addins.Database
 
 			// Check if any of the previously scanned folders has been deleted
 
-			foreach (string file in Directory.GetFiles (AddinFolderCachePath, "*.data")) {
+			foreach (string file in Directory.EnumerateFiles (AddinFolderCachePath, "*.data")) {
 				AddinScanFolderInfo folderInfo;
 				bool res = ReadFolderInfo (monitor, file, out folderInfo);
 				bool validForDomain = scanResult.Domain == null || folderInfo.Domain == GlobalDomain || folderInfo.Domain == scanResult.Domain;

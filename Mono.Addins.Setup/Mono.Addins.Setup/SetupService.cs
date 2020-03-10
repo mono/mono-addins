@@ -746,7 +746,7 @@ namespace Mono.Addins.Setup
 			bool modified = false;
 			
 			monitor.Log.WriteLine ("Checking directory: " + mainPath);
-			foreach (string file in Directory.GetFiles (mainPath, "*.mpack")) {
+			foreach (string file in Directory.EnumerateFiles (mainPath, "*.mpack")) {
 				
 				DateTime date = File.GetLastWriteTime (file);
 				string fname = Path.GetFileName (file);
@@ -801,7 +801,7 @@ namespace Mono.Addins.Setup
 				rootrep.AddEntry (repEntry);
 			}
 			
-			foreach (string dir in Directory.GetDirectories (mainPath)) {
+			foreach (string dir in Directory.EnumerateDirectories (mainPath)) {
 				if (Path.GetFileName (dir) == addinFilesDir)
 					continue;
 				string based = dir.Substring (rootPath.Length + 1);
@@ -818,7 +818,7 @@ namespace Mono.Addins.Setup
 						File.Delete (file);
 				}
 			}
-			if (Directory.Exists (targetDir) && Directory.GetFileSystemEntries (targetDir).Length == 0)
+			if (Directory.Exists (targetDir) && !Directory.EnumerateFileSystemEntries (targetDir).Any())
 				Directory.Delete (targetDir, true);
 		}
 		

@@ -760,7 +760,7 @@ namespace Mono.Addins
 			if (!Directory.Exists (database.HostsPath))
 				Directory.CreateDirectory (database.HostsPath);
 			
-			foreach (string s in Directory.GetFiles (database.HostsPath, baseName + "*.addins")) {
+			foreach (string s in Directory.EnumerateFiles (database.HostsPath, baseName + "*.addins")) {
 				try {
 					using (StreamReader sr = new StreamReader (s)) {
 						XmlTextReader tr = new XmlTextReader (sr);

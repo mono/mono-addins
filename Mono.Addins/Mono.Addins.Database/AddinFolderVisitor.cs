@@ -125,8 +125,6 @@ namespace Mono.Addins.Database
 		{
 			List<AddinsEntry> entries = new List<AddinsEntry>();
 			XmlTextReader r = null;
-			List<string []> directories = new List<string []> ();
-			List<string []> directoriesWithSubdirs = new List<string []> ();
 			string basePath = Path.GetDirectoryName (file);
 
 			try {
