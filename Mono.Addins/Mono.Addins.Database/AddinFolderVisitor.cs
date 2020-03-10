@@ -49,8 +49,11 @@ namespace Mono.Addins.Database
 
 		public void VisitFolder (IProgressStatus monitor, string path, string domain, bool recursive)
 		{
-			path = Path.GetFullPath (path);
+			VisitFolderInternal (monitor, Path.GetFullPath (path), domain, recursive);
+		}
 
+		void VisitFolderInternal (IProgressStatus monitor, string path, string domain, bool recursive)
+		{
 			// Avoid folders including each other
 			if (!visitedFolders.Add (path) || ScanContext.IgnorePath (path))
 				return;
@@ -98,16 +101,17 @@ namespace Mono.Addins.Database
 
 			foreach (var entry in addinsFileEntries) {
 				string dir = entry.Folder;
-				if (!Path.IsPathRooted (dir))
-					dir = Path.Combine (path, entry.Folder);
-				VisitFolder (monitor, dir, entry.Domain, entry.Recursive);
+				if (!Path.IsPathRooted(dir))
+					dir = Path.GetFullPath (Path.Combine (path, entry.Folder));
+				
+				VisitFolderInternal (monitor, dir, entry.Domain, entry.Recursive);
 			}
 
 			// Scan subfolders
 
 			if (recursive) {
 				foreach (string sd in FileSystem.GetDirectories (path))
-					VisitFolder (monitor, sd, domain, true);
+					VisitFolderInternal (monitor, sd, domain, true);
 			}
 		}
 
