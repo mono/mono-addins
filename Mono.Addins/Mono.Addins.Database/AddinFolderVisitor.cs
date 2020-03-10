@@ -111,8 +111,8 @@ namespace Mono.Addins.Database
 			// Scan subfolders
 
 			if (recursive) {
-				foreach (string sd in FileSystem.GetDirectories (path))
-					VisitFolderInternal (monitor, sd, domain, true);
+				foreach (string sd in FileSystem.GetDirectories (path, true))
+					VisitFolderInternal (monitor, sd, domain, false);
 			}
 		}
 

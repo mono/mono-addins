@@ -106,9 +106,10 @@ namespace Mono.Addins.Database
 		/// <param name='path'>
 		/// The directory
 		/// </param>
-		public virtual System.Collections.Generic.IEnumerable<string> GetDirectories (string path)
+		/// <param name='recursive'>Recursively get subdirectories</param>
+		public virtual System.Collections.Generic.IEnumerable<string> GetDirectories (string path, bool recursive)
 		{
-			return Directory.EnumerateDirectories (path);
+			return Directory.EnumerateDirectories (path, "*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 		}
 
 		/// <summary>
