@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 
 namespace Mono.Addins.Database
@@ -66,7 +67,7 @@ namespace Mono.Addins.Database
 			if (!FileSystem.DirectoryExists (path))
 				return;
 			
-			var files = FileSystem.GetFiles (path);
+			var files = FileSystem.GetFiles (path).ToArray();
 
 			// First of all scan .addins files, since they can contain exclude paths.
 			// Only extract the information, don't follow directory inclusions yet
