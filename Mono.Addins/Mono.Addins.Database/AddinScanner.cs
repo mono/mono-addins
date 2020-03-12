@@ -404,7 +404,7 @@ namespace Mono.Addins.Database
 				
 				string rasmFile = Path.GetFileName (filePath);
 				if (!config.MainModule.Assemblies.Contains (rasmFile))
-					config.MainModule.Assemblies.Add (rasmFile);
+					config.MainModule.Assemblies.Insert (0, rasmFile);
 				
 				bool res = ScanDescription (monitor, reflector, config, asm, scanContext);
 				if (!res)
