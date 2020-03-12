@@ -37,6 +37,7 @@ using Mono.Addins.Description;
 using Mono.Addins.Database;
 using Mono.Addins.Localization;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Mono.Addins
 {
@@ -62,6 +63,7 @@ namespace Mono.Addins
 		Dictionary<string,RuntimeAddin> loadedAddins = new Dictionary<string,RuntimeAddin> ();
 		Dictionary<string,ExtensionNodeSet> nodeSets = new Dictionary<string, ExtensionNodeSet> ();
 		Hashtable autoExtensionTypes = new Hashtable ();
+		Dictionary<string, RuntimeAddin> assemblyResolvePaths = new Dictionary<string, RuntimeAddin>();
 		Dictionary<Assembly,RuntimeAddin> loadedAssemblies = new Dictionary<Assembly,RuntimeAddin> ();
 		AddinLocalizer defaultLocalizer;
 		IProgressStatus defaultProgressStatus = new ConsoleProgressStatus (false);
@@ -262,9 +264,24 @@ namespace Mono.Addins
 		Assembly CurrentDomainAssemblyResolve(object sender, ResolveEventArgs args)
 		{
 			lock (LocalLock) {
-				// MS.NET is more strict than Mono when loading assemblies. Assemblies loaded in the "Load" context can't see assemblies loaded
-				// in the "LoadFrom" context, unless assemblies are explicitly resolved in the AssemblyResolve event.
-				return loadedAddins.Values.Where(a => a.AssembliesLoaded).SelectMany(a => a.Assemblies).FirstOrDefault(a => a.FullName.ToString () == args.Name);
+				string assemblyName = args.Name;
+
+				if (assemblyResolvePaths.TryGetValue(assemblyName, out var inAddin)) {
+					if (inAddin.TryGetAssembly(assemblyName, out var assembly))
+						return assembly;
+
+					int index = inAddin.Module.AssemblyNames.IndexOf(assemblyName);
+					if (index != -1)
+					{
+						var path = inAddin.Module.Assemblies[index];
+						assembly = Assembly.LoadFrom(path);
+						inAddin.RegisterAssemblyLoad(assemblyName, assembly);
+
+						return assembly;
+					}
+				}
+
+				return null;
 			}
 		}
 		
@@ -475,11 +492,15 @@ namespace Mono.Addins
 					var loadedAddinsCopy = new Dictionary<string,RuntimeAddin> (loadedAddins);
 					loadedAddinsCopy.Remove (Addin.GetIdName (id));
 					loadedAddins = loadedAddinsCopy;
-					if (addin.AssembliesLoaded) {
-						var loadedAssembliesCopy = new Dictionary<Assembly,RuntimeAddin> (loadedAssemblies);
-						foreach (Assembly asm in addin.Assemblies)
-							loadedAssembliesCopy.Remove (asm);
-						loadedAssemblies = loadedAssembliesCopy;
+
+					var loadedAssembliesCopy = new Dictionary<Assembly, RuntimeAddin>(loadedAssemblies);
+					foreach (Assembly asm in addin.GetLoadedAssemblies()) {
+						loadedAssembliesCopy.Remove (asm);
+					}
+					loadedAssemblies = loadedAssembliesCopy;
+					
+					foreach (var asm in addin.Module.AssemblyNames) {
+						assemblyResolvePaths.Remove (asm);
 					}
 				}
 				ReportAddinUnload (id);
@@ -572,6 +593,8 @@ namespace Mono.Addins
 		{
 			try {
 				RuntimeAddin p = new RuntimeAddin (this);
+
+				RegisterAssemblyResolvePaths (p, iad.Description.MainModule);
 				
 				// Read the config file and load the add-in assemblies
 				AddinDescription description = p.Load (iad);
@@ -607,12 +630,23 @@ namespace Mono.Addins
 				return false;
 			}
 		}
+
+		void RegisterAssemblyResolvePaths (RuntimeAddin addin, ModuleDescription description)
+		{
+			lock (LocalLock) {
+				foreach (var asm in description.AssemblyNames)
+				{
+					Debug.Assert(assemblyResolvePaths[asm] == addin);
+					assemblyResolvePaths[asm] = addin;
+				}
+			}
+		}
 		
 		internal void RegisterAssemblies (RuntimeAddin addin)
 		{
 			lock (LocalLock) {
 				var loadedAssembliesCopy = new Dictionary<Assembly,RuntimeAddin> (loadedAssemblies);
-				foreach (Assembly asm in addin.Assemblies)
+				foreach (Assembly asm in addin.GetLoadedAssemblies())
 					loadedAssembliesCopy [asm] = addin;
 				loadedAssemblies = loadedAssembliesCopy;
 			}
