@@ -527,6 +527,15 @@ namespace Mono.Addins.Database
 					}
 				}
 			}
+
+			// Fix up ModuleDescription so it adds assembly names.
+			foreach (ModuleDescription module in config.AllModules) { 
+				foreach (var s in module.Assemblies) { 
+					string asmFile = Path.Combine (config.BasePath, Util.NormalizePath (s));
+					object asm = reflector.LoadAssembly (asmFile);
+					module.AssemblyNames.Add (reflector.GetAssemblyFullName (asm));
+				}
+			}
 			
 			config.StoreFileInfo ();
 			return true;

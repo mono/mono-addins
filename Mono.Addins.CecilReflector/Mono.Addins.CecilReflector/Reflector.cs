@@ -599,6 +599,11 @@ namespace Mono.Addins.CecilReflector
 			return ((FieldDefinition)field).FieldType.FullName;
 		}
 
+		public string GetAssemblyFullName (object assembly)
+		{
+			return ((AssemblyDefinition)assembly).FullName;
+		}
+
 		public void Dispose ()
 		{
 			foreach (AssemblyDefinition asm in cachedAssemblies.Values)

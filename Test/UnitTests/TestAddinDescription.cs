@@ -31,6 +31,7 @@ using System.Globalization;
 using Mono.Addins;
 using System.Xml;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UnitTests
 {
@@ -141,6 +142,21 @@ namespace UnitTests
 
 			Assert.AreEqual (expectedType, localizer.GetAttribute ("type"));
 			Assert.AreEqual (expectedAssembly, localizer.GetAttribute ("assembly"));
+		}
+
+		[Test]
+		public void TestAssemblyNamesWritten ()
+		{
+			Addin ad = AddinManager.Registry.GetAddin ("MultiAssemblyAddin,0.1.0");
+
+			var assemblyNames = ad.Description.MainModule.AssemblyNames;
+			Assert.AreEqual (ad.Description.MainModule.Assemblies.Count, assemblyNames.Count);
+			Assert.AreEqual ("MultiAssemblyAddin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null", assemblyNames[0]);
+			Assert.AreEqual ("SecondAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null", assemblyNames[1]);
+
+			assemblyNames = ad.Description.OptionalModules[0].AssemblyNames;
+			Assert.AreEqual (1, assemblyNames.Count);
+			Assert.AreEqual ("OptionalModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null", assemblyNames[0]);
 		}
 
 		AddinDescription DescFromResource (string res)
