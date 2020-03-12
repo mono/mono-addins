@@ -34,6 +34,7 @@ using System.Xml.Serialization;
 using System.Collections.Specialized;
 using Mono.Addins.Serialization;
 using Mono.Addins.Database;
+using System.Diagnostics;
 
 namespace Mono.Addins.Description
 {
@@ -47,6 +48,7 @@ namespace Mono.Addins.Description
 	public class ModuleDescription: ObjectDescription
 	{
 		StringCollection assemblies;
+		StringCollection assemblyNames;
 		StringCollection dataFiles;
 		StringCollection ignorePaths;
 		DependencyCollection dependencies;
@@ -142,6 +144,15 @@ namespace Mono.Addins.Description
 						assemblies = new StringCollection ();
 				}
 				return assemblies;
+			}
+		}
+
+		internal StringCollection AssemblyNames {
+			get { 
+				if (assemblyNames == null) {
+					assemblyNames = new StringCollection ();
+				}
+				return assemblyNames;
 			}
 		}
 		
@@ -373,7 +384,10 @@ namespace Mono.Addins.Description
 			// Normalize assembly and data file paths when saving as binary. Binary files are not supposed to be portable,
 			// so it is safe to store platform-specific path separators.
 
+			Debug.Assert (Assemblies.Count == AssemblyNames.Count);
+
 			writer.WriteValue ("Assemblies", NormalizePaths (Assemblies));
+			writer.WriteValue ("AssemblyNames", AssemblyNames);
 			writer.WriteValue ("DataFiles", NormalizePaths (DataFiles));
 			writer.WriteValue ("Dependencies", Dependencies);
 			writer.WriteValue ("Extensions", Extensions);
@@ -385,10 +399,13 @@ namespace Mono.Addins.Description
 			// We can assume that paths read from a binary files are always normalized
 
 			assemblies = (StringCollection) reader.ReadValue ("Assemblies", new StringCollection ());
+			assemblyNames = (StringCollection) reader.ReadValue ("AssemblyNames", new StringCollection ());
 			dataFiles = (StringCollection) reader.ReadValue ("DataFiles", new StringCollection ());
 			dependencies = (DependencyCollection) reader.ReadValue ("Dependencies", new DependencyCollection (this));
 			extensions = (ExtensionCollection) reader.ReadValue ("Extensions", new ExtensionCollection (this));
 			ignorePaths = (StringCollection) reader.ReadValue ("IgnorePaths", new StringCollection ());
+
+			Debug.Assert (Assemblies.Count == AssemblyNames.Count);
 		}
 
 		StringCollection NormalizePaths (StringCollection collection)
