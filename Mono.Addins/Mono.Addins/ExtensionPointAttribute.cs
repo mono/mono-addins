@@ -39,13 +39,14 @@ namespace Mono.Addins
 	{
 		string path;
 		Type nodeType;
+		string nodeTypeName;
+		string nodeTypeAssemblyName;
 		string nodeName;
 		string desc;
 		string name;
 		Type objectType;
-		string nodeTypeName;
-		string nodeTypeAssemblyName;
 		string objectTypeName;
+		string objectTypeAssemblyName;
 		Type customAttributeType;
 		string customAttributeTypeName;
 		string customAttributeTypeAssemblyName;
@@ -127,7 +128,19 @@ namespace Mono.Addins
 			get { return nodeType != null ? nodeType : typeof(TypeExtensionNode); }
 			set { nodeType = value; nodeTypeName = value.FullName; }
 		}
-		
+
+		internal string NodeTypeName
+		{
+			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).FullName; }
+			set { nodeTypeName = value; }
+		}
+
+		internal string NodeTypeAssemblyName
+		{
+			get { return nodeTypeAssemblyName != null ? nodeTypeAssemblyName : typeof(TypeExtensionNode).Assembly.FullName; }
+			set { nodeTypeAssemblyName = value; }
+		}
+
 		/// <summary>
 		/// Expected extension object type (when nodes are of type TypeExtensionNode)
 		/// </summary>
@@ -135,21 +148,12 @@ namespace Mono.Addins
 			get { return objectType; }
 			set { objectType = value; objectTypeName = value.FullName; }
 		}
-		
-		internal string NodeTypeName {
-			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).FullName; }
-			set { nodeTypeName = value; }
-		}
-
-		internal string NodeTypeAssemblyName {
-			get { return nodeTypeAssemblyName != null ? nodeTypeAssemblyName : typeof(TypeExtensionNode).Assembly.FullName; }
-			set { nodeTypeAssemblyName = value; }
-		}
 
 		internal string ObjectTypeName {
 			get { return objectTypeName; }
 			set { objectTypeName = value; }
 		}
+
 		
 		/// <summary>
 		/// Element name to be used when defining an extension in an XML manifest. The default name is "Type".
