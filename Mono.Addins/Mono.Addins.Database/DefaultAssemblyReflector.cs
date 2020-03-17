@@ -121,6 +121,11 @@ namespace Mono.Addins.Database
 			return ((Type)type).Name;
 		}
 
+		public string GetTypeAssemblyName (object type)
+		{
+			return ((Type)type).Assembly.FullName;
+		}
+
 		public IEnumerable GetFields (object type)
 		{
 			return ((Type)type).GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);

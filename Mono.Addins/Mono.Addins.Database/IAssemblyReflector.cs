@@ -203,6 +203,8 @@ namespace Mono.Addins.Database
 		/// A type
 		/// </param>
 		string GetTypeName (object type);
+
+		string GetTypeAssemblyName(object type);
 		
 		/// <summary>
 		/// Gets the full name of a type (including namespace)

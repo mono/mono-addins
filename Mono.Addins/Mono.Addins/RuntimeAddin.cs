@@ -636,7 +636,7 @@ namespace Mono.Addins
 			// Load the assemblies
 			if (description.Localizer != null) {
 				string cls = description.Localizer.GetAttribute ("type");
-				string assembly = description.Localizer.GetAttribute ("assembly");
+				string assembly = description.Localizer.GetAttribute ("typeAssembly");
 
 				var thisAssembly = GetType ().Assembly;
 
@@ -684,7 +684,7 @@ namespace Mono.Addins
 
 		internal void RegisterAssemblyLoad(string assemblyName, Assembly assembly)
 		{
-			loadedAssemblies.Add(assemblyName, assembly);
+			loadedAssemblies.Add (assemblyName, assembly);
 		}
 		
 		void LoadModule (ModuleDescription module)

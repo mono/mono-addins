@@ -536,7 +536,20 @@ namespace Mono.Addins.Database
 					module.AssemblyNames.Add (reflector.GetAssemblyFullName (asm));
 				}
 			}
-			
+
+			// Fix up ConditionTypeDescription so it adds assembly names.
+			foreach (ConditionTypeDescription condition in config.ConditionTypes) {
+				if (!string.IsNullOrEmpty(condition.TypeAssemblyName))
+					continue;
+
+				foreach (var asm in assemblies) {
+					var type = reflector.GetType (asm, condition.TypeName);
+					if (type != null) {
+						condition.TypeAssemblyName = reflector.GetTypeAssemblyName (type);
+					}
+				}
+			}
+
 			config.StoreFileInfo ();
 			return true;
 		}
@@ -683,7 +696,7 @@ namespace Mono.Addins.Database
 				var node = new ExtensionNodeDescription ("Localizer");
 
 				node.SetAttribute ("type", customLocat.TypeName);
-				node.SetAttribute ("assembly", customLocat.TypeAssemblyName);
+				node.SetAttribute ("typeAssembly", customLocat.TypeAssemblyName);
 
 				config.Localizer = node;
 			}
@@ -764,6 +777,7 @@ namespace Mono.Addins.Database
 			foreach (object t in reflector.GetAssemblyTypes (asm)) {
 				
 				string typeFullName = reflector.GetTypeFullName (t);
+				string typeAssemblyName = reflector.GetTypeAssemblyName (t);
 
 				//condition attributes apply independently but identically to all extension attributes on this node
 				//depending on ordering is too messy due to inheritance etc
@@ -800,8 +814,10 @@ namespace Mono.Addins.Database
 						if (eatt.Id.Length > 0) {
 							elem.SetAttribute ("id", eatt.Id);
 							elem.SetAttribute ("type", typeFullName);
+							elem.SetAttribute ("typeAssembly", typeAssemblyName);
 						} else {
 							elem.SetAttribute ("id", typeFullName);
+							elem.SetAttribute ("typeAssembly", typeAssemblyName);
 						}
 						if (eatt.InsertAfter.Length > 0)
 							elem.SetAttribute ("insertafter", eatt.InsertAfter);
@@ -844,6 +860,7 @@ namespace Mono.Addins.Database
 							else {
 								ep = config.AddExtensionPoint (GetDefaultTypeExtensionPath (config, typeFullName));
 								nt.ObjectTypeName = typeFullName;
+								nt.ObjectTypeAssemblyName = typeAssemblyName;
 							}
 							nt.Id = epa.NodeName;
 							nt.TypeName = epa.NodeTypeName;
@@ -864,6 +881,7 @@ namespace Mono.Addins.Database
 							elem.SetAttribute ("type", typeFullName);
 							if (string.IsNullOrEmpty (elem.GetAttribute ("id")))
 								elem.SetAttribute ("id", typeFullName);
+							elem.SetAttribute ("typeAssembly", typeAssemblyName);
 						}
 					}
 				}

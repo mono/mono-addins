@@ -184,11 +184,12 @@ namespace UnitTests
 		[Test()]
 		public void TestCurrentAddin ()
 		{
-			Assert.AreEqual ("SimpleApp.Core,0.1.0", AddinManager.CurrentAddin.ToString ());
-			
 			InstanceExtensionNode node = (InstanceExtensionNode) AddinManager.GetExtensionNode ("/SimpleApp/Writers/HelloWorldExtension.HelloWorldWriter");
 			Assert.IsNotNull (node, "t1");
-			
+
+			// Assembly load happens only after the node was created.
+			Assert.AreEqual ("SimpleApp.Core,0.1.0", AddinManager.CurrentAddin.ToString ());
+
 			IWriter w = (IWriter) node.CreateInstance ();
 			Assert.AreEqual ("SimpleApp.HelloWorldExtension,0.1.0", w.Test ("currentAddin"));
 		}

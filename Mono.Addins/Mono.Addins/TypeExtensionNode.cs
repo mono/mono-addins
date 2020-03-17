@@ -82,7 +82,7 @@ namespace Mono.Addins
 			if (typeName.Length == 0)
 				typeName = elem.GetAttribute ("id");
 
-			typeAssemblyName = elem.GetAttribute ("assembly");
+			typeAssemblyName = elem.GetAttribute ("typeAssembly");
 		}
 		
 		/// <summary>

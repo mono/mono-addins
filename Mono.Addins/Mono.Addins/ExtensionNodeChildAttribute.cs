@@ -99,8 +99,8 @@ namespace Mono.Addins
 		}
 		
 		internal string ExtensionNodeTypeName {
-			get { return extensionNodeTypeAssemblyName; }
-			set { extensionNodeTypeAssemblyName = value; extensionNodeType = null; }
+			get { return extensionNodeTypeName; }
+			set { extensionNodeTypeName = value; extensionNodeType = null; }
 		}
 
 		internal string ExtensionNodeTypeAssemblyName { 

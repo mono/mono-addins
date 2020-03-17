@@ -474,6 +474,11 @@ namespace Mono.Addins.CecilReflector
 			return ((TypeDefinition)type).Name;
 		}
 
+		public string GetTypeAssemblyName (object type)
+		{
+			return ((TypeDefinition)type).Module.Assembly.FullName;
+		}
+
 		public string GetTypeFullName (object type)
 		{
 			return ((TypeDefinition)type).FullName;

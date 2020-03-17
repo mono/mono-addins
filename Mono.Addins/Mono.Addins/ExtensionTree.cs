@@ -235,7 +235,7 @@ namespace Mono.Addins
 				}
 			}
 			else {
-				ntype.Type = p.GetType (ntype.TypeName, false);
+				ntype.Type = p.GetType (ntype.TypeName, ntype.TypeAssemblyName, false);
 				if (ntype.Type == null) {
 					addinEngine.ReportError ("Extension node type '" + ntype.TypeName + "' not found.", ntype.AddinId, null, false);
 					return false;

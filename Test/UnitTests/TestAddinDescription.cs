@@ -141,7 +141,19 @@ namespace UnitTests
 			ExtensionNodeDescription localizer = ad.Description.Localizer;
 
 			Assert.AreEqual (expectedType, localizer.GetAttribute ("type"));
-			Assert.AreEqual (expectedAssembly, localizer.GetAttribute ("assembly"));
+			Assert.AreEqual (expectedAssembly, localizer.GetAttribute ("typeAssembly"));
+		}
+
+		[Test]
+		public void CheckConditionAssemblyNames()
+		{
+			Addin ad = AddinManager.Registry.GetAddin ("SimpleApp.SystemInfoExtension,0.1.0");
+			var conditions = ad.Description.ConditionTypes;
+
+			Assert.AreEqual (0, conditions.Count);
+			foreach (ConditionTypeDescription cond in conditions) { 
+				
+			}
 		}
 
 		[Test]
