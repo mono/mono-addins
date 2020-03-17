@@ -1924,8 +1924,10 @@ namespace Mono.Addins.Database
 		
 		public string FindCondition (AddinDescription desc, ModuleDescription mod, string conditionId)
 		{
-			if (desc.ConditionTypes.Any (c => c.Id == conditionId))
-				return desc.AddinId;
+			foreach (ConditionTypeDescription ctd in desc.ConditionTypes) {
+				if (ctd.Id == conditionId)
+					return desc.AddinId;
+			}
 
 			foreach (Dependency dep in mod.Dependencies) {
 				AddinDependency adep = dep as AddinDependency;
