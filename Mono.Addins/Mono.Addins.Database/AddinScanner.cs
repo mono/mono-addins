@@ -748,8 +748,9 @@ namespace Mono.Addins.Database
 					ep.Name = ext.Name;
 					ep.DefaultInsertBefore = ext.DefaultInsertBefore;
 					ep.DefaultInsertAfter = ext.DefaultInsertAfter;
-					ExtensionNodeType nt = ep.AddExtensionNode (ext.NodeName, ext.NodeTypeName);
+					ExtensionNodeType nt = ep.AddExtensionNode (ext.NodeName, ext.NodeTypeName, ext.NodeTypeAssemblyName);
 					nt.ExtensionAttributeTypeName = ext.ExtensionAttributeTypeName;
+					nt.ExtensionAttributeTypeAssemblyName = ext.ExtensionAttributeTypeAssemblyName;
 				}
 			}
 			
@@ -846,7 +847,9 @@ namespace Mono.Addins.Database
 							}
 							nt.Id = epa.NodeName;
 							nt.TypeName = epa.NodeTypeName;
+							nt.TypeAssemblyName = epa.NodeTypeAssemblyName;
 							nt.ExtensionAttributeTypeName = epa.ExtensionAttributeTypeName;
+							nt.ExtensionAttributeTypeAssemblyName = epa.ExtensionAttributeTypeAssemblyName;
 							ep.NodeSet.NodeTypes.Add (nt);
 							ep.Description = epa.Description;
 							ep.Name = epa.Name;
@@ -967,6 +970,8 @@ namespace Mono.Addins.Database
 					nt.Description = nodeAtt.Description;
 				if (nt.ExtensionAttributeTypeName.Length == 0 && nodeAtt.ExtensionAttributeTypeName.Length > 0)
 					nt.ExtensionAttributeTypeName = nodeAtt.ExtensionAttributeTypeName;
+				if (nt.ExtensionAttributeTypeAssemblyName.Length == 0 && nodeAtt.ExtensionAttributeTypeAssemblyName.Length > 0)
+					nt.ExtensionAttributeTypeAssemblyName = nodeAtt.ExtensionAttributeTypeAssemblyName;
 			} else {
 				// Use the node type name as default name
 				if (nt.Id.Length == 0)
@@ -1020,6 +1025,7 @@ namespace Mono.Addins.Database
 						ExtensionNodeType internalType = new ExtensionNodeType ();
 						internalType.Id = at.NodeName;
 						internalType.TypeName = at.ExtensionNodeTypeName;
+						internalType.TypeAssemblyName = at.ExtensionNodeTypeAssemblyName;
 						internalSet.NodeTypes.Add (internalType);
 					}
 					config.ExtensionNodeSets.Add (internalSet);

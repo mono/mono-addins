@@ -657,7 +657,7 @@ namespace Mono.Addins
 			CreateExtensionPoint (ep);
 			foreach (ExtensionNodeType nt in ep.NodeSet.NodeTypes) {
 				if (nt.ObjectTypeName.Length > 0) {
-					Type ntype = addin.GetType (nt.ObjectTypeName, true);
+					Type ntype = addin.GetType (nt.ObjectTypeName, nt.ObjectTypeAssemblyName, true);
 					RegisterAutoTypeExtensionPoint (ntype, ep.Path);
 				}
 			}

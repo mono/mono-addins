@@ -43,6 +43,7 @@ namespace Mono.Addins
 		string nodeName;
 		Type extensionNodeType;
 		string extensionNodeTypeName;
+		string extensionNodeTypeAssemblyName;
 		
 		/// <summary>
 		/// Initializes a new instance
@@ -98,8 +99,13 @@ namespace Mono.Addins
 		}
 		
 		internal string ExtensionNodeTypeName {
-			get { return extensionNodeTypeName; }
-			set { extensionNodeTypeName = value; extensionNodeType = null; }
+			get { return extensionNodeTypeAssemblyName; }
+			set { extensionNodeTypeAssemblyName = value; extensionNodeType = null; }
+		}
+
+		internal string ExtensionNodeTypeAssemblyName { 
+			get { return extensionNodeTypeAssemblyName; }
+			set { extensionNodeTypeAssemblyName = value; extensionNodeType = null; }
 		}
 	}
 }

@@ -43,6 +43,7 @@ namespace Mono.Addins
 		string nodeName;
 		string description;
 		string customAttributeTypeName;
+		string customAttributeTypeAssemblyName;
 		Type customAttributeType;
 		
 		/// <summary>
@@ -105,6 +106,11 @@ namespace Mono.Addins
 		internal string ExtensionAttributeTypeName {
 			get { return customAttributeTypeName ?? string.Empty; }
 			set { customAttributeTypeName = value; }
+		}
+
+		internal string ExtensionAttributeTypeAssemblyName { 
+			get { return customAttributeTypeAssemblyName ?? string.Empty; }
+			set { customAttributeTypeAssemblyName = value; }
 		}
 	}
 }

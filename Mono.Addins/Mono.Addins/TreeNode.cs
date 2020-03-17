@@ -295,7 +295,7 @@ namespace Mono.Addins
 				foreach (ExtensionNodeType nt in extensionPoint.NodeSet.NodeTypes) {
 					if (nt.ObjectTypeName.Length > 0 && (nodeName.Length == 0 || nodeName == nt.Id)) {
 						RuntimeAddin addin = addinEngine.GetAddin (extensionPoint.RootAddin);
-						Type ot = addin.GetType (nt.ObjectTypeName);
+						Type ot = addin.GetType (nt.ObjectTypeName, nt.ObjectTypeAssemblyName, true);
 						if (ot != null) {
 							if (ot.IsAssignableFrom (type)) {
 								path = extensionPoint.Path;

@@ -220,7 +220,7 @@ namespace Mono.Addins
 			if (ntype.TypeName == null || ntype.TypeName.Length == 0 || ntype.TypeName == typeof(TypeExtensionNode).FullName) {
 				// If it has a custom attribute, use the generic version of TypeExtensionNode
 				if (ntype.ExtensionAttributeTypeName.Length > 0) {
-					Type attType = p.GetType (ntype.ExtensionAttributeTypeName, false);
+					Type attType = p.GetType (ntype.ExtensionAttributeTypeName, ntype.ExtensionAttributeTypeAssemblyName, false);
 					if (attType == null) {
 						addinEngine.ReportError ("Custom attribute type '" + ntype.ExtensionAttributeTypeName + "' not found.", ntype.AddinId, null, false);
 						return false;

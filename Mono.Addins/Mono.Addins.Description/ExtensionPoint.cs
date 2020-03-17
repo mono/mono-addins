@@ -303,9 +303,15 @@ namespace Mono.Addins.Description
 		/// </remarks>
 		public ExtensionNodeType AddExtensionNode (string name, string typeName)
 		{
+			return AddExtensionNode (name, typeName, string.Empty);
+		}
+
+		internal ExtensionNodeType AddExtensionNode (string name, string typeName, string assemblyName)
+		{
 			ExtensionNodeType ntype = new ExtensionNodeType ();
 			ntype.Id = name;
 			ntype.TypeName = typeName;
+			ntype.TypeAssemblyName = assemblyName;
 			NodeSet.NodeTypes.Add (ntype);
 			return ntype;
 		}

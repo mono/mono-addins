@@ -329,7 +329,8 @@ namespace Mono.Addins
 		internal Type GetType (string typeName, string assemblyName, bool throwIfNotFound)
 		{
 			// Try looking in Mono.Addins without loading the addin assemblies.
-			var type = (string.IsNullOrEmpty (assemblyName) ? Type.GetType (typeName, false) : null)
+			string typeQualifiedName = string.IsNullOrEmpty (assemblyName) ? typeName : typeName + "," + assemblyName;
+			var type = (string.IsNullOrEmpty (assemblyName) ? Type.GetType (typeQualifiedName, false) : null)
 				?? GetType_Expensive (typeName, assemblyName);
 
 			if (throwIfNotFound && type == null)

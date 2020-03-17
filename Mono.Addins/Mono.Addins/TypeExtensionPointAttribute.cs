@@ -41,10 +41,12 @@ namespace Mono.Addins
 		string nodeName;
 		Type nodeType;
 		string nodeTypeName;
+		string nodeTypeAssemblyName;
 		string desc;
 		string name;
 		Type customAttributeType;
 		string customAttributeTypeName;
+		string customAttributeTypeAssemblyName;
 		
 		/// <summary>
 		/// Initializes a new instance
@@ -108,6 +110,12 @@ namespace Mono.Addins
 			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).FullName; }
 			set { nodeTypeName = value; nodeType = null; }
 		}
+
+		internal string NodeTypeAssemblyName
+		{
+			get { return nodeTypeAssemblyName ?? typeof(TypeExtensionNode).FullName; }
+			set { nodeTypeAssemblyName = value; nodeType = null; }
+		}
 		
 		/// <summary>
 		/// Type of the custom attribute to be used to specify metadata for the extension point
@@ -120,6 +128,11 @@ namespace Mono.Addins
 		internal string ExtensionAttributeTypeName {
 			get { return this.customAttributeTypeName; }
 			set { this.customAttributeTypeName = value; }
+		}
+
+		internal string ExtensionAttributeTypeAssemblyName {
+			get { return this.customAttributeTypeAssemblyName; }
+			set { this.customAttributeTypeAssemblyName = value; }
 		}
 	}
 }

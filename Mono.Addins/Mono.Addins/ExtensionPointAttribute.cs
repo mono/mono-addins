@@ -44,9 +44,11 @@ namespace Mono.Addins
 		string name;
 		Type objectType;
 		string nodeTypeName;
+		string nodeTypeAssemblyName;
 		string objectTypeName;
 		Type customAttributeType;
 		string customAttributeTypeName;
+		string customAttributeTypeAssemblyName;
 		string defaultInsertBefore;
 		string defaultInsertAfter;
 		
@@ -138,7 +140,12 @@ namespace Mono.Addins
 			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).FullName; }
 			set { nodeTypeName = value; }
 		}
-		
+
+		internal string NodeTypeAssemblyName {
+			get { return nodeTypeAssemblyName != null ? nodeTypeAssemblyName : typeof(TypeExtensionNode).Assembly.FullName; }
+			set { nodeTypeAssemblyName = value; }
+		}
+
 		internal string ObjectTypeName {
 			get { return objectTypeName; }
 			set { objectTypeName = value; }
@@ -171,6 +178,11 @@ namespace Mono.Addins
 		internal string ExtensionAttributeTypeName {
 			get { return this.customAttributeTypeName; }
 			set { this.customAttributeTypeName = value; }
+		}
+
+		internal string ExtensionAttributeTypeAssemblyName { 
+			get { return this.customAttributeTypeAssemblyName; }
+			set { this.customAttributeTypeAssemblyName = value; }
 		}
 
 		/// <summary>
