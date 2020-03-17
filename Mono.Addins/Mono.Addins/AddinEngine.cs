@@ -610,7 +610,7 @@ namespace Mono.Addins
 					RegisterNodeSets (iad.Id, description.ExtensionNodeSets);
 
 					foreach (ConditionTypeDescription cond in description.ConditionTypes) {
-						Type ctype = p.GetType (cond.TypeName, true);
+						Type ctype = p.GetType (cond.TypeName, cond.TypeAssemblyName, true);
 						RegisterCondition (cond.Id, ctype);
 					}
 				}
