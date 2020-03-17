@@ -748,9 +748,10 @@ namespace Mono.Addins
 		
 		internal void EnsureAssembliesLoaded ()
 		{
-			if (loadedAssemblies.Count == module.Assemblies.Count)
+			if (fullyLoadedAssemblies)
 				return;
-			
+			fullyLoadedAssemblies = true;
+
 			// Load the assemblies of the module
 			CheckAddinDependencies (module, true);
 			LoadModule (module);
