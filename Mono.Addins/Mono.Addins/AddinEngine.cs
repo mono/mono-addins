@@ -64,7 +64,6 @@ namespace Mono.Addins
 		Dictionary<string,ExtensionNodeSet> nodeSets = new Dictionary<string, ExtensionNodeSet> ();
 		Hashtable autoExtensionTypes = new Hashtable ();
 		Dictionary<string, RuntimeAddin> assemblyResolvePaths = new Dictionary<string, RuntimeAddin>();
-		Dictionary<Assembly,RuntimeAddin> loadedAssemblies = new Dictionary<Assembly,RuntimeAddin> ();
 		AddinLocalizer defaultLocalizer;
 		IProgressStatus defaultProgressStatus = new ConsoleProgressStatus (false);
 		
@@ -274,7 +273,6 @@ namespace Mono.Addins
 					if (index != -1) {
 						var path = inAddin.GetFilePath (inAddin.Module.Assemblies[index]);
 						assembly = Assembly.LoadFrom (path);
-						loadedAssemblies[assembly] = inAddin;
 						inAddin.RegisterAssemblyLoad (assemblyName, assembly);
 
 						return assembly;
@@ -295,7 +293,6 @@ namespace Mono.Addins
 				AppDomain.CurrentDomain.AssemblyLoad -= new AssemblyLoadEventHandler (OnAssemblyLoaded);
 				AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainAssemblyResolve;
 				loadedAddins = new Dictionary<string, RuntimeAddin>();
-				loadedAssemblies = new Dictionary<Assembly, RuntimeAddin> ();
 				registry.Dispose ();
 				registry = null;
 				startupDirectory = null;
@@ -397,10 +394,8 @@ namespace Mono.Addins
 		internal RuntimeAddin GetAddinForAssembly (Assembly asm)
 		{
 			ValidateAddinRoots ();
-			RuntimeAddin ad;
-			lock (LocalLock) {
-				loadedAssemblies.TryGetValue (asm, out ad);
-			}
+
+			assemblyResolvePaths.TryGetValue(asm.FullName, out var ad);
 			return ad;
 		}
 		
@@ -494,12 +489,6 @@ namespace Mono.Addins
 					var loadedAddinsCopy = new Dictionary<string,RuntimeAddin> (loadedAddins);
 					loadedAddinsCopy.Remove (Addin.GetIdName (id));
 					loadedAddins = loadedAddinsCopy;
-
-					var loadedAssembliesCopy = new Dictionary<Assembly, RuntimeAddin>(loadedAssemblies);
-					foreach (Assembly asm in addin.GetLoadedAssemblies()) {
-						loadedAssembliesCopy.Remove (asm);
-					}
-					loadedAssemblies = loadedAssembliesCopy;
 					
 					foreach (var asm in addin.Module.AssemblyNames) {
 						assemblyResolvePaths.Remove (asm);
@@ -640,16 +629,6 @@ namespace Mono.Addins
 					Debug.Assert(assemblyResolvePaths[asm] == addin);
 					assemblyResolvePaths[asm] = addin;
 				}
-			}
-		}
-		
-		internal void RegisterAssemblies (RuntimeAddin addin)
-		{
-			lock (LocalLock) {
-				var loadedAssembliesCopy = new Dictionary<Assembly,RuntimeAddin> (loadedAssemblies);
-				foreach (Assembly asm in addin.GetLoadedAssemblies ())
-					loadedAssembliesCopy [asm] = addin;
-				loadedAssemblies = loadedAssembliesCopy;
 			}
 		}
 		

@@ -754,8 +754,6 @@ namespace Mono.Addins
 			CheckAddinDependencies (module, true);
 			LoadModule (module);
 			addinEngine.ReportAddinAssembliesLoad (id);
-			
-			addinEngine.RegisterAssemblies (this);
 		}
 	}
 }
