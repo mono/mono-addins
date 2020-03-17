@@ -330,8 +330,7 @@ namespace Mono.Addins
 		{
 			// Try looking in Mono.Addins without loading the addin assemblies.
 			string typeQualifiedName = string.IsNullOrEmpty (assemblyName) ? typeName : typeName + "," + assemblyName;
-			var type = (string.IsNullOrEmpty (assemblyName) ? Type.GetType (typeQualifiedName, false) : null)
-				?? GetType_Expensive (typeName, assemblyName);
+			var type = Type.GetType (typeQualifiedName, false) ?? GetType_Expensive (typeName, assemblyName);
 
 			if (throwIfNotFound && type == null)
 				throw new InvalidOperationException ("Type '" + typeName + "' not found in add-in '" + id + "'");
@@ -692,15 +691,14 @@ namespace Mono.Addins
 		{
 			// Load the assemblies
 			for (int i = 0; i < module.Assemblies.Count; ++i) {
-				var s = module.Assemblies[i];
-				if (loadedAssemblies.TryGetValue(s, out var asm))
+				if (loadedAssemblies.TryGetValue(module.AssemblyNames[i], out var asm))
 					return;
 
 				// Backwards compat: Load all the addins on demand if an assembly name
 				// is not supplied for the type.
 
 				// don't load the assembly if it's already loaded
-				string asmPath = Path.Combine (baseDirectory, s);
+				string asmPath = GetFilePath (module.Assemblies[i]);
 				foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies ()) {
 					// Sorry, you can't load addins from
 					// dynamic assemblies as get_Location

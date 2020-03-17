@@ -45,11 +45,8 @@ namespace UnitTests
 			Assert.IsNotNull (ob, "t8");
 			ob = tn.CreateInstance (typeof(IWriter)) as IWriter;
 			Assert.IsNotNull (ob, "t9");
-			
-			try {
-				ob = tn.CreateInstance (typeof(string)) as IWriter;
-			} catch (InvalidOperationException) {
-			}
+
+			Assert.Throws<InvalidOperationException>(() => tn.CreateInstance(typeof(string)));
 		}
 		
 		[Test()]
