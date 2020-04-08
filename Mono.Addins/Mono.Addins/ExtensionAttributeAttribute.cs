@@ -125,7 +125,7 @@ namespace Mono.Addins
 		/// </summary>
 		public Type Type {
 			get { return targetType; }
-			set { targetType = value; targetTypeName = targetType.FullName; }
+			set { targetType = value; targetTypeName = targetType.AssemblyQualifiedName; }
 		}
 		
 		internal string TypeName {

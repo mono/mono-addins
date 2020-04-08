@@ -91,7 +91,7 @@ namespace Mono.Addins.Database
 		{
 			CustomAttribute at = new CustomAttribute ();
 			Type type = ob.GetType ();
-			at.TypeName = type.FullName;
+			at.TypeName = type.AssemblyQualifiedName;
 			
 			foreach (PropertyInfo prop in type.GetProperties (BindingFlags.Public | BindingFlags.Instance)) {
 				object val = prop.GetValue (ob, null);
@@ -121,6 +121,11 @@ namespace Mono.Addins.Database
 			return ((Type)type).Name;
 		}
 
+		public string GetTypeAssemblyName (object type)
+		{
+			return ((Type)type).Assembly.FullName;
+		}
+
 		public IEnumerable GetFields (object type)
 		{
 			return ((Type)type).GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -133,7 +138,7 @@ namespace Mono.Addins.Database
 
 		public string GetFieldTypeFullName (object field)
 		{
-			return ((FieldInfo)field).FieldType.FullName;
+			return ((FieldInfo)field).FieldType.AssemblyQualifiedName;
 		}
 		
 		public IEnumerable GetAssemblyTypes (object asm)
@@ -183,11 +188,6 @@ namespace Mono.Addins.Database
 		public string GetTypeAssemblyQualifiedName (object type)
 		{
 			return ((Type)type).AssemblyQualifiedName;
-		}
-
-		public string GetAssemblyFullName (object assembly)
-		{
-			return ((Assembly)assembly).FullName;
 		}
 	}
 }

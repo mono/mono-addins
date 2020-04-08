@@ -101,11 +101,11 @@ namespace Mono.Addins
 		/// </summary>
 		public Type NodeType {
 			get { return nodeType != null ? nodeType : typeof(TypeExtensionNode); }
-			set { nodeType = value; nodeTypeName = value.FullName; }
+			set { nodeType = value; nodeTypeName = value.AssemblyQualifiedName; }
 		}
 
 		internal string NodeTypeName {
-			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).FullName; }
+			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).AssemblyQualifiedName; }
 			set { nodeTypeName = value; nodeType = null; }
 		}
 		
@@ -114,7 +114,7 @@ namespace Mono.Addins
 		/// </summary>
 		public Type ExtensionAttributeType {
 			get { return this.customAttributeType; }
-			set { this.customAttributeType = value; customAttributeTypeName = value.FullName; }
+			set { this.customAttributeType = value; customAttributeTypeName = value.AssemblyQualifiedName; }
 		}
 
 		internal string ExtensionAttributeTypeName {

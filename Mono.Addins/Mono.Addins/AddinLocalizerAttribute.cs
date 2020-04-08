@@ -36,7 +36,6 @@ namespace Mono.Addins
 	{
 		Type type;
 		string typeName;
-		string typeAssemblyName;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Addins.AddinLocalizerAttribute"/> class.
@@ -62,17 +61,12 @@ namespace Mono.Addins
 		/// </summary>
 		public Type Type {
 			get { return type; }
-			set { type = value; typeName = value.FullName; typeAssemblyName = value.Assembly.FullName; }
+			set { type = value; typeName = value.AssemblyQualifiedName; }
 		}
 
 		internal string TypeName {
 			get { return typeName; }
 			set { typeName = value; type = null; }
-		}
-
-		internal string TypeAssemblyName {
-			get { return typeAssemblyName; }
-			set { typeAssemblyName = value; type = null; }
 		}
 	}
 }

@@ -323,15 +323,20 @@ namespace Mono.Addins
 		/// </remarks>
 		public Type GetType (string typeName, bool throwIfNotFound)
 		{
-			return GetType (typeName, string.Empty, throwIfNotFound);
-		}
-
-		internal Type GetType (string typeName, string assemblyName, bool throwIfNotFound)
-		{
 			// Try looking in Mono.Addins without loading the addin assemblies.
-			var type = (string.IsNullOrEmpty (assemblyName) ? Type.GetType (typeName, false) : null)
-				?? GetType_Expensive (typeName, assemblyName);
+			var type = Type.GetType (typeName, false);
+			if (type == null) {
+				// decode the name if it's qualified
+				var index = typeName.IndexOf(',');
+				string assemblyName = "";
 
+				if (index != -1) {
+					assemblyName = index == -1 ? "" : typeName.Substring (index + 2, typeName.Length - index - 2);
+					typeName = typeName.Substring (0, index);
+                }
+				type = GetType_Expensive (typeName, assemblyName);
+			}
+			
 			if (throwIfNotFound && type == null)
 				throw new InvalidOperationException ("Type '" + typeName + "' not found in add-in '" + id + "'");
 			return type;
@@ -446,16 +451,11 @@ namespace Mono.Addins
 		/// </remarks>
 		public object CreateInstance (string typeName, bool throwIfNotFound)
 		{
-			return CreateInstance (typeName, string.Empty, throwIfNotFound);
-		}
-
-		internal object CreateInstance (string typeName, string assemblyName, bool throwIfNotFound)
-		{
-			Type type = GetType (typeName, assemblyName, throwIfNotFound);
+			Type type = GetType(typeName, throwIfNotFound);
 			if (type == null)
 				return null;
 			else
-				return Activator.CreateInstance (type, true);
+				return Activator.CreateInstance(type, true);
 		}
 		
 		/// <summary>
@@ -636,20 +636,18 @@ namespace Mono.Addins
 			// Load the assemblies
 			if (description.Localizer != null) {
 				string cls = description.Localizer.GetAttribute ("type");
-				string assembly = description.Localizer.GetAttribute ("assembly");
-
-				var thisAssembly = GetType ().Assembly;
 
 				// First try getting one of the stock localizers. If none of found try getting the type.
+				// They are not encoded as an assembly qualified name
 				object fob = null;
-				if (string.IsNullOrEmpty (assembly) || assembly == thisAssembly.FullName) {
-					Type t = thisAssembly.GetType ("Mono.Addins.Localization." + cls + "Localizer", false);
+				if (cls.IndexOf (',') == -1) {
+					Type t = GetType().Assembly.GetType ("Mono.Addins.Localization." + cls + "Localizer", false);
 					if (t != null)
 						fob = Activator.CreateInstance (t);
 				}
 				
 				if (fob == null)
-					fob = CreateInstance (cls, assembly, true);
+					fob = CreateInstance (cls, true);
 				
 				IAddinLocalizerFactory factory = fob as IAddinLocalizerFactory;
 				if (factory == null)
@@ -684,22 +682,21 @@ namespace Mono.Addins
 
 		internal void RegisterAssemblyLoad(string assemblyName, Assembly assembly)
 		{
-			loadedAssemblies.Add(assemblyName, assembly);
+			loadedAssemblies.Add (assemblyName, assembly);
 		}
 		
 		void LoadModule (ModuleDescription module)
 		{
 			// Load the assemblies
 			for (int i = 0; i < module.Assemblies.Count; ++i) {
-				var s = module.Assemblies[i];
-				if (loadedAssemblies.TryGetValue(s, out var asm))
-					return;
+				if (loadedAssemblies.TryGetValue(module.AssemblyNames[i], out var asm))
+					continue;
 
 				// Backwards compat: Load all the addins on demand if an assembly name
 				// is not supplied for the type.
 
 				// don't load the assembly if it's already loaded
-				string asmPath = Path.Combine (baseDirectory, s);
+				string asmPath = GetFilePath (module.Assemblies[i]);
 				foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies ()) {
 					// Sorry, you can't load addins from
 					// dynamic assemblies as get_Location
@@ -747,15 +744,14 @@ namespace Mono.Addins
 		
 		internal void EnsureAssembliesLoaded ()
 		{
-			if (loadedAssemblies.Count == module.Assemblies.Count)
+			if (fullyLoadedAssemblies)
 				return;
-			
+			fullyLoadedAssemblies = true;
+
 			// Load the assemblies of the module
 			CheckAddinDependencies (module, true);
 			LoadModule (module);
 			addinEngine.ReportAddinAssembliesLoad (id);
-			
-			addinEngine.RegisterAssemblies (this);
 		}
 	}
 }
