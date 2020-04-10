@@ -326,7 +326,7 @@ namespace Mono.Addins
 			return GetType (typeName, string.Empty, throwIfNotFound);
 		}
 
-		internal Type GetType (string typeName, string assemblyName, bool throwIfNotFound)
+		public Type GetType (string typeName, string assemblyName, bool throwIfNotFound)
 		{
 			// Try looking in Mono.Addins without loading the addin assemblies.
 			string typeQualifiedName = string.IsNullOrEmpty (assemblyName) ? typeName : typeName + "," + assemblyName;
@@ -449,7 +449,7 @@ namespace Mono.Addins
 			return CreateInstance (typeName, string.Empty, throwIfNotFound);
 		}
 
-		internal object CreateInstance (string typeName, string assemblyName, bool throwIfNotFound)
+		public object CreateInstance (string typeName, string assemblyName, bool throwIfNotFound)
 		{
 			Type type = GetType (typeName, assemblyName, throwIfNotFound);
 			if (type == null)
