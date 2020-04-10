@@ -692,7 +692,7 @@ namespace Mono.Addins
 			// Load the assemblies
 			for (int i = 0; i < module.Assemblies.Count; ++i) {
 				if (loadedAssemblies.TryGetValue(module.AssemblyNames[i], out var asm))
-					return;
+					continue;
 
 				// Backwards compat: Load all the addins on demand if an assembly name
 				// is not supplied for the type.
