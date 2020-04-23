@@ -215,8 +215,10 @@ namespace Mono.Addins
 			}
 			
 			ConditionType type = ctx.GetCondition (typeId);
+
 			if (type == null) {
-				addinEngine.ReportError ("Condition '" + typeId + "' not found in current extension context.", null, null, false);
+				var parts = string.Join(", ", Array.ConvertAll(node.Attributes, attr => attr.Name + "=" + attr.Value));
+				addinEngine.ReportError ("Condition '" + typeId + "' not found in current extension context. [" + parts + "]", node.ParentAddinDescription.AddinId, null, false);
 				return false;
 			}
 			
@@ -224,7 +226,7 @@ namespace Mono.Addins
 				return type.Evaluate (node);
 			}
 			catch (Exception ex) {
-				addinEngine.ReportError ("Error while evaluating condition '" + typeId + "'", null, ex, false);
+				addinEngine.ReportError ("Error while evaluating condition '" + typeId + "'", node.ParentAddinDescription.AddinId, ex, false);
 				return false;
 			}
 		}
