@@ -161,13 +161,8 @@ namespace Mono.Addins.CecilReflector
 			if (prop == null)
 				throw new InvalidOperationException ("Property '" + typeNameProp + "' not found in type '" + attype + "'.");
 
-			prop.SetValue (ob, typeReference.FullName, null);
-
-			prop = attype.GetProperty (basePropName + "AssemblyName", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-			if (prop == null)
-				return;
-
-			prop.SetValue (ob, typeReference.Resolve ().Module.Assembly.FullName, null);
+			var assemblyName = typeReference.Resolve().Module.Assembly.FullName;
+			prop.SetValue (ob, typeReference.FullName + ", " + assemblyName, null);
 		}
 		
 		public List<MA.CustomAttribute> GetRawCustomAttributes (object obj, Type type, bool inherit)
@@ -474,11 +469,6 @@ namespace Mono.Addins.CecilReflector
 			return ((TypeDefinition)type).Name;
 		}
 
-		public string GetTypeAssemblyName (object type)
-		{
-			return ((TypeDefinition)type).Module.Assembly.FullName;
-		}
-
 		public string GetTypeFullName (object type)
 		{
 			return ((TypeDefinition)type).FullName;
@@ -601,7 +591,7 @@ namespace Mono.Addins.CecilReflector
 
 		public string GetFieldTypeFullName (object field)
 		{
-			return ((FieldDefinition)field).FieldType.FullName;
+			return GetTypeAssemblyQualifiedName(((FieldDefinition)field).FieldType.Resolve());
 		}
 
 		public void Dispose ()

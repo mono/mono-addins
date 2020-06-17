@@ -59,7 +59,6 @@ namespace Mono.Addins
 	public class TypeExtensionNode: InstanceExtensionNode
 	{
 		string typeName;
-		string typeAssemblyName;
 		Type type;
 		
 		/// <summary>
@@ -81,8 +80,6 @@ namespace Mono.Addins
 				typeName = elem.GetAttribute ("class");
 			if (typeName.Length == 0)
 				typeName = elem.GetAttribute ("id");
-
-			typeAssemblyName = elem.GetAttribute ("typeAssembly");
 		}
 		
 		/// <summary>
@@ -104,7 +101,7 @@ namespace Mono.Addins
 				if (type == null) {
 					if (typeName.Length == 0)
 						throw new InvalidOperationException ("Type name not specified.");
-					type = Addin.GetType (typeName, typeAssemblyName, true);
+					type = Addin.GetType (typeName, true);
 				}
 				return type;
 			}

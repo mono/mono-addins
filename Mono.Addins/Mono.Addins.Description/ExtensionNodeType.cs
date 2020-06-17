@@ -43,14 +43,11 @@ namespace Mono.Addins.Description
 	public sealed class ExtensionNodeType: ExtensionNodeSet
 	{
 		string typeName;
-		string typeAssemblyName;
 		string objectTypeName;
-		string objectTypeAssemblyName;
 		string description;
 		string addinId;
 		NodeTypeAttributeCollection attributes;
 		string customAttributeTypeName;
-		string customAttributeTypeAssemblyName;
 		
 		// Cached clr type
 		[NonSerialized]
@@ -104,11 +101,6 @@ namespace Mono.Addins.Description
 			set { typeName = value; }
 		}
 
-		internal string TypeAssemblyName { 
-			get { return typeAssemblyName ?? string.Empty; }
-			set { typeAssemblyName = value; }
-		}
-		
 		/// <summary>
 		/// Element name to be used when defining an extension in an XML manifest. The default name is "Type".
 		/// </summary>
@@ -127,11 +119,6 @@ namespace Mono.Addins.Description
 			get { return objectTypeName != null ? objectTypeName : string.Empty; }
 			set { objectTypeName = value; }
 		}
-
-		internal string ObjectTypeAssemblyName {
-			get { return objectTypeAssemblyName ?? string.Empty; }
-			set { objectTypeAssemblyName = value; }
-		}
 		
 		/// <summary>
 		/// Name of the custom attribute that can be used to declare nodes of this type
@@ -139,11 +126,6 @@ namespace Mono.Addins.Description
 		public string ExtensionAttributeTypeName {
 			get { return customAttributeTypeName ?? string.Empty; }
 			set { customAttributeTypeName = value; }
-		}
-
-		internal string ExtensionAttributeTypeAssemblyName { 
-			get { return customAttributeTypeAssemblyName ?? string.Empty; }
-			set { customAttributeTypeAssemblyName = value; }
 		}
 		
 		/// <summary>
@@ -181,21 +163,12 @@ namespace Mono.Addins.Description
 			XmlAttribute at = element.Attributes ["type"];
 			if (at != null)
 				typeName = at.Value;
-			at = element.Attributes ["typeAssembly"];
-			if (at != null)
-				typeAssemblyName = at.Value;
 			at = element.Attributes ["objectType"];
 			if (at != null)
 				objectTypeName = at.Value;
-			at = element.Attributes ["objectTypeAssembly"];
-			if (at != null)
-				objectTypeAssemblyName = at.Value;
 			at = element.Attributes ["customAttributeType"];
 			if (at != null)
 				customAttributeTypeName = at.Value;
-			at = element.Attributes ["customAttributeTypeAssembly"];
-			if (at != null)
-				customAttributeTypeAssemblyName = at.Value;
 
 			XmlElement de = element ["Description"];
 			if (de != null)
@@ -216,9 +189,7 @@ namespace Mono.Addins.Description
 		{
 			base.CopyFrom (ntype);
 			this.typeName = ntype.TypeName;
-			this.typeAssemblyName = ntype.TypeAssemblyName;
 			this.objectTypeName = ntype.ObjectTypeName;
-			this.objectTypeAssemblyName = ntype.ObjectTypeAssemblyName;
 			this.description = ntype.Description;
 			this.addinId = ntype.AddinId;
 			Attributes.Clear ();
@@ -258,31 +229,16 @@ namespace Mono.Addins.Description
 				Element.SetAttribute ("type", TypeName);
 			else
 				Element.RemoveAttribute ("type");
-
-			if (TypeAssemblyName.Length > 0)
-				Element.SetAttribute ("typeAssembly", TypeAssemblyName);
-			else
-				Element.RemoveAttribute ("typeAssembly");
 			
 			if (ObjectTypeName.Length > 0)
 				Element.SetAttribute ("objectType", ObjectTypeName);
 			else
 				Element.RemoveAttribute ("objectType");
-
-			if (ObjectTypeAssemblyName.Length > 0)
-				Element.SetAttribute ("objectTypeAssembly", ObjectTypeAssemblyName);
-			else
-				Element.RemoveAttribute ("objectTypeAssembly");
 			
 			if (ExtensionAttributeTypeName.Length > 0)
 				Element.SetAttribute ("customAttributeType", ExtensionAttributeTypeName);
 			else
 				Element.RemoveAttribute ("customAttributeType");
-
-			if (ExtensionAttributeTypeAssemblyName.Length > 0)
-				Element.SetAttribute ("customAttributeTypeAssembly", ExtensionAttributeTypeAssemblyName);
-			else
-				Element.RemoveAttribute ("customAttributeTypeAssembly");
 
 			SaveXmlDescription (Description);
 		}
@@ -295,30 +251,24 @@ namespace Mono.Addins.Description
 			if (TypeName.Length == 0)
 				typeName = "Mono.Addins.TypeExtensionNode";
 			writer.WriteValue ("typeName", typeName);
-			writer.WriteValue ("typeAssemblyName", typeAssemblyName);
 			writer.WriteValue ("objectTypeName", objectTypeName);
-			writer.WriteValue ("objectTypeAssemblyName", objectTypeAssemblyName);
 			writer.WriteValue ("description", description);
 			writer.WriteValue ("addinId", addinId);
 			writer.WriteValue ("Attributes", attributes);
 			writer.WriteValue ("customAttributeType", customAttributeTypeName);
-			writer.WriteValue ("customAttributeTypeAssemblyName", customAttributeTypeAssemblyName);
 		}
 		
 		internal override void Read (BinaryXmlReader reader)
 		{
 			base.Read (reader);
 			typeName = reader.ReadStringValue ("typeName");
-			typeAssemblyName = reader.ReadStringValue ("typeAssemblyName");
 			objectTypeName = reader.ReadStringValue ("objectTypeName");
-			objectTypeAssemblyName = reader.ReadStringValue ("objectTypeAssemblyName");
 			if (!reader.IgnoreDescriptionData)
 				description = reader.ReadStringValue ("description");
 			addinId = reader.ReadStringValue ("addinId");
 			if (!reader.IgnoreDescriptionData)
 				attributes = (NodeTypeAttributeCollection) reader.ReadValue ("Attributes", new NodeTypeAttributeCollection (this));
 			customAttributeTypeName = reader.ReadStringValue ("customAttributeType");
-			customAttributeTypeAssemblyName = reader.ReadStringValue ("customAttributeTypeAssemblyName");
 		}
 	}
 }

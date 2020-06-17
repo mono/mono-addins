@@ -537,19 +537,6 @@ namespace Mono.Addins.Database
 				}
 			}
 
-			// Fix up ConditionTypeDescription so it adds assembly names.
-			foreach (ConditionTypeDescription condition in config.ConditionTypes) {
-				if (!string.IsNullOrEmpty(condition.TypeAssemblyName))
-					continue;
-
-				foreach (var asm in assemblies) {
-					var type = reflector.GetType (asm, condition.TypeName);
-					if (type != null) {
-						condition.TypeAssemblyName = reflector.GetTypeAssemblyName (type);
-					}
-				}
-			}
-
 			config.StoreFileInfo ();
 			return true;
 		}
@@ -696,7 +683,6 @@ namespace Mono.Addins.Database
 				var node = new ExtensionNodeDescription ("Localizer");
 
 				node.SetAttribute ("type", customLocat.TypeName);
-				node.SetAttribute ("typeAssembly", customLocat.TypeAssemblyName);
 
 				config.Localizer = node;
 			}
@@ -761,9 +747,8 @@ namespace Mono.Addins.Database
 					ep.Name = ext.Name;
 					ep.DefaultInsertBefore = ext.DefaultInsertBefore;
 					ep.DefaultInsertAfter = ext.DefaultInsertAfter;
-					ExtensionNodeType nt = ep.AddExtensionNode (ext.NodeName, ext.NodeTypeName, ext.NodeTypeAssemblyName);
+					ExtensionNodeType nt = ep.AddExtensionNode (ext.NodeName, ext.NodeTypeName);
 					nt.ExtensionAttributeTypeName = ext.ExtensionAttributeTypeName;
-					nt.ExtensionAttributeTypeAssemblyName = ext.ExtensionAttributeTypeAssemblyName;
 				}
 			}
 			
@@ -775,9 +760,9 @@ namespace Mono.Addins.Database
 			// Get extensions or extension points applied to types
 			
 			foreach (object t in reflector.GetAssemblyTypes (asm)) {
-				
+
 				string typeFullName = reflector.GetTypeFullName (t);
-				string typeAssemblyName = reflector.GetTypeAssemblyName (t);
+				string typeQualifiedName = reflector.GetTypeAssemblyQualifiedName (t);
 
 				//condition attributes apply independently but identically to all extension attributes on this node
 				//depending on ordering is too messy due to inheritance etc
@@ -801,7 +786,7 @@ namespace Mono.Addins.Database
 							if (path == "$") {
 								// The type does not implement any interface and has no superclass.
 								// Will be reported later as an error.
-								path = "$" + typeFullName;
+								path = "$" + typeQualifiedName;
 							}
 						} else {
 							path = eatt.Path;
@@ -813,11 +798,9 @@ namespace Mono.Addins.Database
 						
 						if (eatt.Id.Length > 0) {
 							elem.SetAttribute ("id", eatt.Id);
-							elem.SetAttribute ("type", typeFullName);
-							elem.SetAttribute ("typeAssembly", typeAssemblyName);
+							elem.SetAttribute ("type", typeQualifiedName);
 						} else {
-							elem.SetAttribute ("id", typeFullName);
-							elem.SetAttribute ("typeAssembly", typeAssemblyName);
+							elem.SetAttribute ("id", typeQualifiedName);
 						}
 						if (eatt.InsertAfter.Length > 0)
 							elem.SetAttribute ("insertafter", eatt.InsertAfter);
@@ -835,11 +818,11 @@ namespace Mono.Addins.Database
 							nodes.TryGetValue ("$" + eat.TypeName, out node);
 						else {
 							if (nodes.Count > 1)
-								throw new Exception ("Missing type or extension path value in ExtensionAttribute for type '" + typeFullName + "'.");
+								throw new Exception ("Missing type or extension path value in ExtensionAttribute for type '" + typeQualifiedName + "'.");
 							node = uniqueNode;
 						}
 						if (node == null)
-							throw new Exception ("Invalid type or path value in ExtensionAttribute for type '" + typeFullName + "'.");
+							throw new Exception ("Invalid type or path value in ExtensionAttribute for type '" + typeQualifiedName + "'.");
 							
 						node.SetAttribute (eat.Name ?? string.Empty, eat.Value ?? string.Empty);
 					}
@@ -859,14 +842,11 @@ namespace Mono.Addins.Database
 							}
 							else {
 								ep = config.AddExtensionPoint (GetDefaultTypeExtensionPath (config, typeFullName));
-								nt.ObjectTypeName = typeFullName;
-								nt.ObjectTypeAssemblyName = typeAssemblyName;
+								nt.ObjectTypeName = typeQualifiedName;
 							}
 							nt.Id = epa.NodeName;
 							nt.TypeName = epa.NodeTypeName;
-							nt.TypeAssemblyName = epa.NodeTypeAssemblyName;
 							nt.ExtensionAttributeTypeName = epa.ExtensionAttributeTypeName;
-							nt.ExtensionAttributeTypeAssemblyName = epa.ExtensionAttributeTypeAssemblyName;
 							ep.NodeSet.NodeTypes.Add (nt);
 							ep.Description = epa.Description;
 							ep.Name = epa.Name;
@@ -878,10 +858,9 @@ namespace Mono.Addins.Database
 						// Look for custom extension attribtues
 						foreach (CustomAttribute att in reflector.GetRawCustomAttributes (t, typeof(CustomExtensionAttribute), false)) {
 							ExtensionNodeDescription elem = AddCustomAttributeExtension (module, att, "Type", conditionAtts.Value);
-							elem.SetAttribute ("type", typeFullName);
+							elem.SetAttribute ("type", typeQualifiedName);
 							if (string.IsNullOrEmpty (elem.GetAttribute ("id")))
-								elem.SetAttribute ("id", typeFullName);
-							elem.SetAttribute ("typeAssembly", typeAssemblyName);
+								elem.SetAttribute ("id", typeQualifiedName);
 						}
 					}
 				}
@@ -988,8 +967,6 @@ namespace Mono.Addins.Database
 					nt.Description = nodeAtt.Description;
 				if (nt.ExtensionAttributeTypeName.Length == 0 && nodeAtt.ExtensionAttributeTypeName.Length > 0)
 					nt.ExtensionAttributeTypeName = nodeAtt.ExtensionAttributeTypeName;
-				if (nt.ExtensionAttributeTypeAssemblyName.Length == 0 && nodeAtt.ExtensionAttributeTypeAssemblyName.Length > 0)
-					nt.ExtensionAttributeTypeAssemblyName = nodeAtt.ExtensionAttributeTypeAssemblyName;
 			} else {
 				// Use the node type name as default name
 				if (nt.Id.Length == 0)
@@ -1043,7 +1020,6 @@ namespace Mono.Addins.Database
 						ExtensionNodeType internalType = new ExtensionNodeType ();
 						internalType.Id = at.NodeName;
 						internalType.TypeName = at.ExtensionNodeTypeName;
-						internalType.TypeAssemblyName = at.ExtensionNodeTypeAssemblyName;
 						internalSet.NodeTypes.Add (internalType);
 					}
 					config.ExtensionNodeSets.Add (internalSet);

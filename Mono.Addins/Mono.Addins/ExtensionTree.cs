@@ -217,15 +217,15 @@ namespace Mono.Addins
 			}
 			
 			// If no type name is provided, use TypeExtensionNode by default
-			if (ntype.TypeName == null || ntype.TypeName.Length == 0 || ntype.TypeName == typeof(TypeExtensionNode).FullName) {
+			if (ntype.TypeName == null || ntype.TypeName.Length == 0 || ntype.TypeName == typeof(TypeExtensionNode).AssemblyQualifiedName) {
 				// If it has a custom attribute, use the generic version of TypeExtensionNode
 				if (ntype.ExtensionAttributeTypeName.Length > 0) {
-					Type attType = p.GetType (ntype.ExtensionAttributeTypeName, ntype.ExtensionAttributeTypeAssemblyName, false);
+					Type attType = p.GetType (ntype.ExtensionAttributeTypeName, false);
 					if (attType == null) {
 						addinEngine.ReportError ("Custom attribute type '" + ntype.ExtensionAttributeTypeName + "' not found.", ntype.AddinId, null, false);
 						return false;
 					}
-					if (ntype.ObjectTypeName.Length > 0 || ntype.TypeName == typeof(TypeExtensionNode).FullName)
+					if (ntype.ObjectTypeName.Length > 0 || ntype.TypeName == typeof(TypeExtensionNode).AssemblyQualifiedName)
 						ntype.Type = typeof(TypeExtensionNode<>).MakeGenericType (attType);
 					else
 						ntype.Type = typeof(ExtensionNode<>).MakeGenericType (attType);
@@ -235,7 +235,7 @@ namespace Mono.Addins
 				}
 			}
 			else {
-				ntype.Type = p.GetType (ntype.TypeName, ntype.TypeAssemblyName, false);
+				ntype.Type = p.GetType (ntype.TypeName, false);
 				if (ntype.Type == null) {
 					addinEngine.ReportError ("Extension node type '" + ntype.TypeName + "' not found.", ntype.AddinId, null, false);
 					return false;
@@ -255,8 +255,8 @@ namespace Mono.Addins
 			if (boundAttributeType != null) {
 				if (ntype.ExtensionAttributeTypeName.Length == 0)
 					throw new InvalidOperationException ("Extension node not bound to a custom attribute.");
-				if (ntype.ExtensionAttributeTypeName != boundAttributeType.MemberType.FullName)
-					throw new InvalidOperationException ("Incorrect custom attribute type declaration in " + ntype.Type + ". Expected '" + ntype.ExtensionAttributeTypeName + "' found '" + boundAttributeType.MemberType.FullName + "'");
+				if (ntype.ExtensionAttributeTypeName != boundAttributeType.MemberType.AssemblyQualifiedName)
+					throw new InvalidOperationException ("Incorrect custom attribute type declaration in " + ntype.Type + ". Expected '" + ntype.ExtensionAttributeTypeName + "' found '" + boundAttributeType.MemberType.AssemblyQualifiedName + "'");
 				
 				fields = GetMembersMap (boundAttributeType.MemberType, out boundAttributeType);
 				if (fields.Count > 0)

@@ -601,7 +601,7 @@ namespace Mono.Addins
 					RegisterNodeSets (iad.Id, description.ExtensionNodeSets);
 
 					foreach (ConditionTypeDescription cond in description.ConditionTypes) {
-						Type ctype = p.GetType (cond.TypeName, cond.TypeAssemblyName, true);
+						Type ctype = p.GetType (cond.TypeName, true);
 						RegisterCondition (cond.Id, ctype);
 					}
 				}
@@ -637,7 +637,7 @@ namespace Mono.Addins
 			CreateExtensionPoint (ep);
 			foreach (ExtensionNodeType nt in ep.NodeSet.NodeTypes) {
 				if (nt.ObjectTypeName.Length > 0) {
-					Type ntype = addin.GetType (nt.ObjectTypeName, nt.ObjectTypeAssemblyName, true);
+					Type ntype = addin.GetType (nt.ObjectTypeName, true);
 					RegisterAutoTypeExtensionPoint (ntype, ep.Path);
 				}
 			}

@@ -41,7 +41,6 @@ namespace Mono.Addins.Description
 	{
 		string id;
 		string typeName;
-		string typeAssemblyName;
 		string addinId;
 		string description;
 		
@@ -56,7 +55,6 @@ namespace Mono.Addins.Description
 		{
 			id = elem.GetAttribute ("id");
 			typeName = elem.GetAttribute ("type");
-			typeAssemblyName = elem.GetAttribute ("typeAssembly");
 			description = ReadXmlDescription ();
 		}
 		
@@ -70,7 +68,6 @@ namespace Mono.Addins.Description
 		{
 			id = cond.id;
 			typeName = cond.typeName;
-			typeAssemblyName = cond.typeAssemblyName;
 			addinId = cond.AddinId;
 			description = cond.description;
 		}
@@ -102,11 +99,6 @@ namespace Mono.Addins.Description
 			get { return typeName != null ? typeName : string.Empty; }
 			set { typeName = value; }
 		}
-
-		internal string TypeAssemblyName {
-			get { return typeAssemblyName ?? string.Empty; }
-			set { typeAssemblyName = value; }
-		}
 		
 		/// <summary>
 		/// Gets or sets the description of the condition.
@@ -129,7 +121,6 @@ namespace Mono.Addins.Description
 			CreateElement (parent, "ConditionType");
 			Element.SetAttribute ("id", id);
 			Element.SetAttribute ("type", typeName);
-			Element.SetAttribute ("typeAssembly", typeAssemblyName);
 			SaveXmlDescription (description);
 		}
 		
@@ -137,7 +128,6 @@ namespace Mono.Addins.Description
 		{
 			writer.WriteValue ("Id", Id);
 			writer.WriteValue ("TypeName", TypeName);
-			writer.WriteValue ("TypeAssemblyName", TypeAssemblyName);
 			writer.WriteValue ("Description", Description);
 			writer.WriteValue ("AddinId", AddinId);
 		}
@@ -146,7 +136,6 @@ namespace Mono.Addins.Description
 		{
 			Id = reader.ReadStringValue ("Id");
 			TypeName = reader.ReadStringValue ("TypeName");
-			TypeAssemblyName = reader.ReadStringValue ("TypeAssemblyName");
 			if (!reader.IgnoreDescriptionData)
 				Description = reader.ReadStringValue ("Description");
 			AddinId = reader.ReadStringValue ("AddinId");

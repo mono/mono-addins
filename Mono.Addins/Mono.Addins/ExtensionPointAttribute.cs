@@ -40,16 +40,13 @@ namespace Mono.Addins
 		string path;
 		Type nodeType;
 		string nodeTypeName;
-		string nodeTypeAssemblyName;
 		string nodeName;
 		string desc;
 		string name;
 		Type objectType;
 		string objectTypeName;
-		string objectTypeAssemblyName;
 		Type customAttributeType;
 		string customAttributeTypeName;
-		string customAttributeTypeAssemblyName;
 		string defaultInsertBefore;
 		string defaultInsertAfter;
 		
@@ -126,19 +123,13 @@ namespace Mono.Addins
 		/// </summary>
 		public Type NodeType {
 			get { return nodeType != null ? nodeType : typeof(TypeExtensionNode); }
-			set { nodeType = value; nodeTypeName = value.FullName; }
+			set { nodeType = value; nodeTypeName = value.AssemblyQualifiedName; }
 		}
 
 		internal string NodeTypeName
 		{
-			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).FullName; }
+			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).AssemblyQualifiedName; }
 			set { nodeTypeName = value; }
-		}
-
-		internal string NodeTypeAssemblyName
-		{
-			get { return nodeTypeAssemblyName != null ? nodeTypeAssemblyName : typeof(TypeExtensionNode).Assembly.FullName; }
-			set { nodeTypeAssemblyName = value; }
 		}
 
 		/// <summary>
@@ -146,14 +137,8 @@ namespace Mono.Addins
 		/// </summary>
 		public Type ObjectType {
 			get { return objectType; }
-			set { objectType = value; objectTypeName = value.FullName; }
+			set { objectType = value; objectTypeName = value.AssemblyQualifiedName; }
 		}
-
-		internal string ObjectTypeName {
-			get { return objectTypeName; }
-			set { objectTypeName = value; }
-		}
-
 		
 		/// <summary>
 		/// Element name to be used when defining an extension in an XML manifest. The default name is "Type".
@@ -176,17 +161,12 @@ namespace Mono.Addins
 		/// </summary>
 		public Type ExtensionAttributeType {
 			get { return this.customAttributeType; }
-			set { this.customAttributeType = value; customAttributeTypeName = value.FullName; }
+			set { this.customAttributeType = value; customAttributeTypeName = value.AssemblyQualifiedName; }
 		}
 
 		internal string ExtensionAttributeTypeName {
 			get { return this.customAttributeTypeName; }
 			set { this.customAttributeTypeName = value; }
-		}
-
-		internal string ExtensionAttributeTypeAssemblyName { 
-			get { return this.customAttributeTypeAssemblyName; }
-			set { this.customAttributeTypeAssemblyName = value; }
 		}
 
 		/// <summary>

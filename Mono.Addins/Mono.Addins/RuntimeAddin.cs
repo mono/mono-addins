@@ -323,15 +323,20 @@ namespace Mono.Addins
 		/// </remarks>
 		public Type GetType (string typeName, bool throwIfNotFound)
 		{
-			return GetType (typeName, string.Empty, throwIfNotFound);
-		}
-
-		public Type GetType (string typeName, string assemblyName, bool throwIfNotFound)
-		{
 			// Try looking in Mono.Addins without loading the addin assemblies.
-			string typeQualifiedName = string.IsNullOrEmpty (assemblyName) ? typeName : typeName + "," + assemblyName;
-			var type = Type.GetType (typeQualifiedName, false) ?? GetType_Expensive (typeName, assemblyName);
+			var type = Type.GetType (typeName, false);
+			if (type == null) {
+				// decode the name if it's qualified
+				var index = typeName.IndexOf(',');
+				string assemblyName = "";
 
+				if (index != -1) {
+					assemblyName = index == -1 ? "" : typeName.Substring (index + 2, typeName.Length - index - 2);
+					typeName = typeName.Substring (0, index);
+                }
+				type = GetType_Expensive (typeName, assemblyName);
+			}
+			
 			if (throwIfNotFound && type == null)
 				throw new InvalidOperationException ("Type '" + typeName + "' not found in add-in '" + id + "'");
 			return type;
@@ -446,16 +451,11 @@ namespace Mono.Addins
 		/// </remarks>
 		public object CreateInstance (string typeName, bool throwIfNotFound)
 		{
-			return CreateInstance (typeName, string.Empty, throwIfNotFound);
-		}
-
-		public object CreateInstance (string typeName, string assemblyName, bool throwIfNotFound)
-		{
-			Type type = GetType (typeName, assemblyName, throwIfNotFound);
+			Type type = GetType(typeName, throwIfNotFound);
 			if (type == null)
 				return null;
 			else
-				return Activator.CreateInstance (type, true);
+				return Activator.CreateInstance(type, true);
 		}
 		
 		/// <summary>
@@ -636,20 +636,18 @@ namespace Mono.Addins
 			// Load the assemblies
 			if (description.Localizer != null) {
 				string cls = description.Localizer.GetAttribute ("type");
-				string assembly = description.Localizer.GetAttribute ("typeAssembly");
-
-				var thisAssembly = GetType ().Assembly;
 
 				// First try getting one of the stock localizers. If none of found try getting the type.
+				// They are not encoded as an assembly qualified name
 				object fob = null;
-				if (string.IsNullOrEmpty (assembly) || assembly == thisAssembly.FullName) {
-					Type t = thisAssembly.GetType ("Mono.Addins.Localization." + cls + "Localizer", false);
+				if (cls.IndexOf (',') == -1) {
+					Type t = GetType().Assembly.GetType ("Mono.Addins.Localization." + cls + "Localizer", false);
 					if (t != null)
 						fob = Activator.CreateInstance (t);
 				}
 				
 				if (fob == null)
-					fob = CreateInstance (cls, assembly, true);
+					fob = CreateInstance (cls, true);
 				
 				IAddinLocalizerFactory factory = fob as IAddinLocalizerFactory;
 				if (factory == null)
