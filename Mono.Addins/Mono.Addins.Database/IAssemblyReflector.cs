@@ -285,13 +285,6 @@ namespace Mono.Addins.Database
 		/// A field.
 		/// </param>
 		string GetFieldTypeFullName (object field);
-
-		/// <summary>
-		/// Gets the full name of an assembly
-		/// </summary>
-		/// <param name="assembly">An assembly</param>
-		/// <returns>The assembly full name</returns>
-		string GetAssemblyFullName (object assembly);
 	}
 	
 	/// <summary>

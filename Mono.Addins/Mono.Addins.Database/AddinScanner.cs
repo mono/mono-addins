@@ -532,8 +532,8 @@ namespace Mono.Addins.Database
 			foreach (ModuleDescription module in config.AllModules) { 
 				foreach (var s in module.Assemblies) { 
 					string asmFile = Path.Combine (config.BasePath, Util.NormalizePath (s));
-					object asm = reflector.LoadAssembly (asmFile);
-					module.AssemblyNames.Add (reflector.GetAssemblyFullName (asm));
+					var asm = AssemblyName.GetAssemblyName (asmFile);
+					module.AssemblyNames.Add (asm.FullName);
 				}
 			}
 

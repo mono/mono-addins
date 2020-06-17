@@ -189,10 +189,5 @@ namespace Mono.Addins.Database
 		{
 			return ((Type)type).AssemblyQualifiedName;
 		}
-
-		public string GetAssemblyFullName (object assembly)
-		{
-			return ((Assembly)assembly).FullName;
-		}
 	}
 }
