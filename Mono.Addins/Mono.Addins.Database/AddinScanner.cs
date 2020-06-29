@@ -779,14 +779,14 @@ namespace Mono.Addins.Database
 						string nodeName = eatt.NodeName;
 						
 						if (eatt.TypeName.Length > 0) {
-							path = "$" + eatt.TypeName;
+							path = "$" + eatt.TypeFullName;
 						}
 						else if (eatt.Path.Length == 0) {
 							path = GetBaseTypeNameList (reflector, t);
 							if (path == "$") {
 								// The type does not implement any interface and has no superclass.
 								// Will be reported later as an error.
-								path = "$" + typeQualifiedName;
+								path = "$" + typeFullName;
 							}
 						} else {
 							path = eatt.Path;

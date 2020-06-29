@@ -163,6 +163,11 @@ namespace Mono.Addins.CecilReflector
 
 			var assemblyName = typeReference.Resolve().Module.Assembly.FullName;
 			prop.SetValue (ob, typeReference.FullName + ", " + assemblyName, null);
+
+			prop = attype.GetProperty(basePropName + "FullName", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+			if (prop != null)
+				prop.SetValue(ob, typeReference.FullName, null);
 		}
 		
 		public List<MA.CustomAttribute> GetRawCustomAttributes (object obj, Type type, bool inherit)
