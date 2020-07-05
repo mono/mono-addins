@@ -151,6 +151,9 @@ namespace Mono.Addins.Setup
 						if (!Directory.Exists (dir))
 							Directory.CreateDirectory (dir);
 
+						if (!entry.IsFile)
+							continue;
+
 						byte [] buffer = new byte [8192];
 						int n = 0;
 						Stream inStream = zip.GetInputStream (entry);

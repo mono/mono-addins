@@ -536,6 +536,7 @@ namespace Mono.Addins.Gui
 				
 				Gtk.FileFilter f = new Gtk.FileFilter ();
 				f.AddPattern ("*.mpack");
+				f.AddPattern("*.vsix");
 				f.Name = Catalog.GetString ("Extension packages");
 				dlg.AddFilter (f);
 				
