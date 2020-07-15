@@ -1,0 +1,51 @@
+pool:
+  name: Azure Pipelines
+  demands:
+  - msbuild
+  - visualstudio
+  - vstest
+
+variables:
+- name: BuildPlatform
+  value: Any CPU
+- name: BuildConfiguration
+  value: DebugNoGui
+
+steps:
+- task: VSBuild@1
+  displayName: 'Build solution Mono.Addins.sln'
+  inputs:
+    solution: Mono.Addins.sln
+    msbuildArgs: '/restore /p:PackOnBuild=true'
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'Test Assemblies Test\UnitTests\bin\Debug\UnitTests.dll'
+  inputs:
+    testAssemblyVer2: 'Test\UnitTests\bin\Debug\UnitTests.dll'
+    runInParallel: false
+    codeCoverageEnabled: true
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results Test\UnitTests\bin\Debug\*.xml'
+  inputs:
+    testResultsFormat: NUnit
+    testResultsFiles: 'Test\UnitTests\bin\Debug\*.xml'
+
+- task: CopyFiles@1
+  displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+  inputs:
+    SourceFolder: '$(build.sourcesdirectory)\bin'
+    Contents: '*.nupkg'
+    TargetFolder: '$(build.artifactstagingdirectory)'
+  condition: succeededOrFailed()
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+  condition: succeededOrFailed()
+
