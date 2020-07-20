@@ -395,6 +395,24 @@ namespace Mono.Addins.Setup
 		{
 			service.Repositories.UpdateAllRepositories (new ConsoleProgressStatus (verbose));
 		}
+
+		void EnableAddins (string[] args)
+		{
+			var addins = args.Where(a => a != "-y");
+			foreach (string addinId in addins)
+			{
+				registry.EnableAddin (addinId);
+			}
+		}
+
+		void DisableAddins(string[] args)
+		{
+			var addins = args.Where(a => a != "-y");
+			foreach (string addinId in addins)
+			{
+				registry.DisableAddin(addinId);
+			}
+		}
 		
 		void AddRepository (string[] args)
 		{
@@ -1057,6 +1075,18 @@ namespace Mono.Addins.Setup
 			cmd.Description = "Lists available add-in updates.";
 			cmd.AppendDesc ("Prints a list of available add-in updates in the registered repositories.");
 			commands.Add (cmd);
+
+			cmd = new SetupCommand(cat, "enable", "e", new SetupCommandHandler (EnableAddins));
+			cmd.Description = "Enables addins.";
+			cmd.Usage = "<id> ...";
+			cmd.AppendDesc("Enables an add-in which has been disabled");
+			commands.Add(cmd);
+
+			cmd = new SetupCommand(cat, "disable", "d", new SetupCommandHandler(DisableAddins));
+			cmd.Description = "Disables addins.";
+			cmd.Usage = "<id> ...";
+			cmd.AppendDesc("Disables an add-in which has been enabled");
+			commands.Add(cmd);
 			
 			cat = "Repository Commands";
 
