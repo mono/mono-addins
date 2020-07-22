@@ -328,10 +328,7 @@ namespace Mono.Addins.Setup
 			foreach (Addin addin in list) {
 				if (!showAll && IsHidden (addin))
 					continue;
-				Console.Write (" - " + addin.Name + " " + addin.Version);
-				if (showAll)
-					Console.Write (" (" + addin.AddinFile + ")");
-				Console.WriteLine ();
+				Console.WriteLine("[{0}] {1} {2} {3}", addin.Enabled ? "Enabled" : "Disabled", addin.Id, addin.Name, showAll ? $"({addin.AddinFile})": string.Empty);
 			}
 		}
 		
@@ -1264,4 +1261,3 @@ namespace Mono.Addins.Setup
 	/// </summary>
 	public delegate void SetupCommandHandler (string[] args);
 }
-
