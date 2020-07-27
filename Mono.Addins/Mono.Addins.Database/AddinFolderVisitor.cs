@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 
 namespace Mono.Addins.Database
@@ -49,8 +50,11 @@ namespace Mono.Addins.Database
 
 		public void VisitFolder (IProgressStatus monitor, string path, string domain, bool recursive)
 		{
-			path = Path.GetFullPath (path);
+			VisitFolderInternal (monitor, Path.GetFullPath (path), domain, recursive);
+		}
 
+		void VisitFolderInternal (IProgressStatus monitor, string path, string domain, bool recursive)
+		{
 			// Avoid folders including each other
 			if (!visitedFolders.Add (path) || ScanContext.IgnorePath (path))
 				return;
@@ -63,7 +67,7 @@ namespace Mono.Addins.Database
 			if (!FileSystem.DirectoryExists (path))
 				return;
 			
-			var files = FileSystem.GetFiles (path);
+			var files = FileSystem.GetFiles (path).ToArray();
 
 			// First of all scan .addins files, since they can contain exclude paths.
 			// Only extract the information, don't follow directory inclusions yet
@@ -98,16 +102,17 @@ namespace Mono.Addins.Database
 
 			foreach (var entry in addinsFileEntries) {
 				string dir = entry.Folder;
-				if (!Path.IsPathRooted (dir))
-					dir = Path.Combine (path, entry.Folder);
-				VisitFolder (monitor, dir, entry.Domain, entry.Recursive);
+				if (!Path.IsPathRooted(dir))
+					dir = Path.GetFullPath (Path.Combine (path, entry.Folder));
+				
+				VisitFolderInternal (monitor, dir, entry.Domain, entry.Recursive);
 			}
 
 			// Scan subfolders
 
 			if (recursive) {
 				foreach (string sd in FileSystem.GetDirectories (path))
-					VisitFolder (monitor, sd, domain, true);
+					VisitFolderInternal (monitor, sd, domain, true);
 			}
 		}
 
@@ -125,8 +130,6 @@ namespace Mono.Addins.Database
 		{
 			List<AddinsEntry> entries = new List<AddinsEntry>();
 			XmlTextReader r = null;
-			List<string []> directories = new List<string []> ();
-			List<string []> directoriesWithSubdirs = new List<string []> ();
 			string basePath = Path.GetDirectoryName (file);
 
 			try {
