@@ -165,8 +165,8 @@ namespace Mono.Addins
 		}
 
 		internal string TypeFullName {
-			get { return typeName ?? string.Empty; }
-			set { typeName = value; }
+			get { return typeFullName ?? string.Empty; }
+			set { typeFullName = value; }
 		}
 	}
 }
