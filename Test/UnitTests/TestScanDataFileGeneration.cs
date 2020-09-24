@@ -262,5 +262,7 @@ namespace UnitTests
 			FileList.AddFile (path);
 			return base.OpenFile (path);
 		}
-	}
+
+		public override bool RequiresIsolation => false;
+    }
 }

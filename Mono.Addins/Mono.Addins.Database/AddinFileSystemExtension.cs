@@ -174,6 +174,11 @@ namespace Mono.Addins.Database
 			Type t;
 			string asmFile = Path.Combine (Path.GetDirectoryName (GetType().Assembly.Location), "Mono.Addins.CecilReflector.dll");
 			if (File.Exists (asmFile)) {
+				// Make sure to load the Mono.Cecil next to the cecil reflector
+				var cecil = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "Mono.Cecil.dll");
+				if (File.Exists (cecil))
+					Assembly.LoadFile (cecil);
+
 				Assembly asm = Assembly.LoadFrom (asmFile);
 				t = asm.GetType ("Mono.Addins.CecilReflector.Reflector");
 			}
