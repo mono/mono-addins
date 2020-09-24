@@ -126,20 +126,24 @@ namespace Mono.Addins.Database
 			
 			foreach (ExtensionNodeType nt in ep.NodeSet.NodeTypes) {
 				if (nt.ObjectTypeName.Length > 0) {
-					List<ExtensionPoint> list;
-					if (!objectTypeExtensions.TryGetValue (nt.ObjectTypeName, out list)) {
-						list = new List<ExtensionPoint> ();
-						objectTypeExtensions [nt.ObjectTypeName] = list;
+					if (Util.TryParseTypeName (nt.ObjectTypeName, out var typeName, out var _)) {
+						List<ExtensionPoint> list;
+						if (!objectTypeExtensions.TryGetValue (typeName, out list)) {
+							list = new List<ExtensionPoint> ();
+							objectTypeExtensions [typeName] = list;
+						}
+						list.Add (ep);
 					}
-					list.Add (ep);
 				}
 				if (nt.ExtensionAttributeTypeName.Length > 0) {
 					List<ExtensionNodeType> list;
-					if (!customAttributeTypeExtensions.TryGetValue (nt.ExtensionAttributeTypeName, out list)) {
-						list = new List<ExtensionNodeType> ();
-						customAttributeTypeExtensions [nt.ExtensionAttributeTypeName] = list;
+					if (Util.TryParseTypeName (nt.ExtensionAttributeTypeName, out var tname, out _)) {
+						if (!customAttributeTypeExtensions.TryGetValue (tname, out list)) {
+							list = new List<ExtensionNodeType> ();
+							customAttributeTypeExtensions [tname] = list;
+						}
+						list.Add (nt);
 					}
-					list.Add (nt);
 				}
 			}
 		}
@@ -150,13 +154,15 @@ namespace Mono.Addins.Database
 				string[] objectTypes = extension.Path.Substring (1).Split (',');
 				bool found = false;
 				foreach (string s in objectTypes) {
-					List<ExtensionPoint> list;
-					if (objectTypeExtensions.TryGetValue (s, out list)) {
-						found = true;
-						foreach (ExtensionPoint ep in list) {
-							if (IsAddinCompatible (ep.ParentAddinDescription, description, module)) {
-								extension.Path = ep.Path;
-								RegisterExtension (description, module, ep.Path);
+					if (Util.TryParseTypeName (s, out var typeName, out var _)) {
+						List<ExtensionPoint> list;
+						if (objectTypeExtensions.TryGetValue (typeName, out list)) {
+							found = true;
+							foreach (ExtensionPoint ep in list) {
+								if (IsAddinCompatible (ep.ParentAddinDescription, description, module)) {
+									extension.Path = ep.Path;
+									RegisterExtension (description, module, ep.Path);
+								}
 							}
 						}
 					}

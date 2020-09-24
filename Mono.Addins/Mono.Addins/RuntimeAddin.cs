@@ -40,6 +40,7 @@ using System.Globalization;
 using Mono.Addins.Description;
 using Mono.Addins.Localization;
 using System.Linq;
+using Mono.Addins.Database;
 
 namespace Mono.Addins
 {
@@ -327,14 +328,8 @@ namespace Mono.Addins
 			var type = Type.GetType (typeName, false);
 			if (type == null) {
 				// decode the name if it's qualified
-				var index = typeName.IndexOf(',');
-				string assemblyName = "";
-
-				if (index != -1) {
-					assemblyName = index == -1 ? "" : typeName.Substring (index + 2, typeName.Length - index - 2);
-					typeName = typeName.Substring (0, index);
-                }
-				type = GetType_Expensive (typeName, assemblyName);
+				if (Util.TryParseTypeName (typeName, out var t, out var assemblyName))
+					type = GetType_Expensive (t, assemblyName ?? "");
 			}
 			
 			if (throwIfNotFound && type == null)

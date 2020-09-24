@@ -815,7 +815,8 @@ namespace Mono.Addins.Database
 							elem.SetAttribute ("id", eatt.Id);
 							elem.SetAttribute ("type", typeQualifiedName);
 						} else {
-							elem.SetAttribute ("id", typeQualifiedName);
+							elem.SetAttribute ("id", typeFullName);
+							elem.SetAttribute ("type", typeQualifiedName);
 						}
 						if (eatt.InsertAfter.Length > 0)
 							elem.SetAttribute ("insertafter", eatt.InsertAfter);
@@ -1071,8 +1072,20 @@ namespace Mono.Addins.Database
 			return sb.ToString ();
 		}
 		
-		object FindAddinType (IAssemblyReflector reflector, string typeName, ArrayList assemblies)
+		object FindAddinType (IAssemblyReflector reflector, string type, ArrayList assemblies)
 		{
+			if (!Util.TryParseTypeName (type, out var typeName, out var assemblyName))
+				return null;
+
+			if (!string.IsNullOrEmpty (assemblyName) && assemblyName != "Mono.Addins") {
+				// Look in the specified assembly
+				foreach (var a in assemblies) {
+					if (reflector.GetAssemblyName (a) == assemblyName)
+						return reflector.GetType (a, typeName);
+				}
+				return null;
+			}
+
 			// Look in the current assembly
 			object etype = reflector.GetType (coreAssemblies [reflector], typeName);
 			if (etype != null)

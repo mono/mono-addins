@@ -358,6 +358,12 @@ namespace Mono.Addins.CecilReflector
 			adef.Dispose ();
 		}
 
+		public string GetAssemblyName (object assembly)
+		{
+			var adef = (AssemblyDefinition)assembly;
+			return adef.Name.Name;
+		}
+
 		bool FoundToNotReferenceMonoAddins (AssemblyNameReference aref)
 		{
 			// Quick check to find out if an assembly references Mono.Addins, based only on cached information.

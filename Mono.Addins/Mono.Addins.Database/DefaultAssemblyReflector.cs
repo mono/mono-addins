@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace Mono.Addins.Database
 {
-	class DefaultAssemblyReflector: IAssemblyReflector
+	class DefaultAssemblyReflector : IAssemblyReflector
 	{
 		public void Initialize (IAssemblyLocator locator)
 		{
@@ -47,7 +47,12 @@ namespace Mono.Addins.Database
 		{
 		}
 
-		public string[] GetResourceNames (object asm)
+		public string GetAssemblyName (object asm)
+		{
+			return ((Assembly)asm).GetName().Name;
+		}
+
+		public string [] GetResourceNames (object asm)
 		{
 			return ((Assembly)asm).GetManifestResourceNames ();
 		}

@@ -69,6 +69,33 @@ namespace Mono.Addins.Database
 				return monoVersion;
 			}
 		}
+
+		public static bool TryParseTypeName (string assemblyQualifiedName, out string typeName, out string assemblyName)
+		{
+			int bracketCount = 0;
+			for (int n = 0; n < assemblyQualifiedName.Length; n++) {
+				var c = assemblyQualifiedName [n];
+				if (c == ',') {
+					if (bracketCount == 0) {
+						typeName = assemblyQualifiedName.Substring (0, n).Trim ();
+						try {
+							assemblyName = new AssemblyName (assemblyQualifiedName.Substring (n + 1)).Name;
+							return typeName.Length > 0;
+						} catch {
+							typeName = null;
+							assemblyName = null;
+							return false;
+						}
+					}
+				} else if (c == '[' || c == '<' || c == '(')
+					bracketCount++;
+				else if (c == ']' || c == '>' || c == ')')
+					bracketCount--;
+			}
+			typeName = assemblyQualifiedName;
+			assemblyName = null;
+			return true;
+		}
 			
 		public static void CheckWrittableFloder (string path)
 		{
