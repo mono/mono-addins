@@ -30,8 +30,11 @@ namespace UnitTests
 					Directory.Delete (TempDir, true);
 				Directory.CreateDirectory (TempDir);
 			}
-			
-			AddinManager.Initialize (TempDir);
+
+			// Provide the current assembly as startup assembly, otherwise it will pick the
+			// unit test runner as startup assembly
+
+			AddinManager.AddinEngine.Initialize (GetType().Assembly, null, TempDir, null, null);
 			
 			if (firstRun)
 				AddinManager.Registry.Update (new ConsoleProgressStatus (true));
