@@ -8,6 +8,13 @@ variables:
   value: DebugNoGui
 
 steps:
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: 'Mono.Addins.sln'
+    feedsToUse: 'select'
+
 - task: MSBuild@1
   displayName: 'Build solution Mono.Addins.sln'
   inputs:
