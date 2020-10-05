@@ -1,5 +1,5 @@
 pool:
-  name: Hosted Mac Internal
+  name: Hosted Mac Internal Mojave
 
 variables:
 - name: BuildPlatform
