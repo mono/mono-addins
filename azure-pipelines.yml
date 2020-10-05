@@ -8,11 +8,10 @@ variables:
   value: DebugNoGui
 
 steps:
-- task: VSBuild@1
+- task: MSBuild@1
   displayName: 'Build solution Mono.Addins.sln'
   inputs:
     solution: Mono.Addins.sln
-    msbuildArgs: '/restore /p:PackOnBuild=true'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
 
