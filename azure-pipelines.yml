@@ -9,6 +9,13 @@ variables:
 
 steps:
 
+- task: Bash@3
+  displayName: Provision
+  inputs:
+    targetType: 'inline'
+    script: '$(Build.SourcesDirectory)/bot-provisioning/provisionator-bootstrap.sh $(Build.SourcesDirectory)/bot-provisioning/dependencies.csx'
+    workingDirectory: '$(Build.SourcesDirectory)'
+
 - task: NuGetCommand@2
   inputs:
     command: 'restore'
