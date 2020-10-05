@@ -968,7 +968,7 @@ namespace Mono.Addins.Database
 		void ScanNodeType (IAssemblyReflector reflector, AddinDescription config, ExtensionNodeType nt, ArrayList assemblies, Hashtable internalNodeSets)
 		{
 			if (nt.TypeName.Length == 0)
-				nt.TypeName = "Mono.Addins.TypeExtensionNode";
+				nt.TypeName = typeof (TypeExtensionNode).AssemblyQualifiedName;
 			
 			object ntype = FindAddinType (reflector, nt.TypeName, assemblies);
 			if (ntype == null)

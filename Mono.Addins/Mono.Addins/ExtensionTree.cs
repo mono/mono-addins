@@ -33,6 +33,7 @@ using System.Reflection;
 using System.Xml;
 using Mono.Addins.Description;
 using System.Collections.Generic;
+using Mono.Addins.Database;
 
 namespace Mono.Addins
 {
@@ -255,9 +256,10 @@ namespace Mono.Addins
 			if (boundAttributeType != null) {
 				if (ntype.ExtensionAttributeTypeName.Length == 0)
 					throw new InvalidOperationException ("Extension node not bound to a custom attribute.");
-				if (ntype.ExtensionAttributeTypeName != boundAttributeType.MemberType.AssemblyQualifiedName)
+
+				if (!Util.TryParseTypeName (ntype.ExtensionAttributeTypeName, out var type, out _) || type != boundAttributeType.MemberType.FullName)
 					throw new InvalidOperationException ("Incorrect custom attribute type declaration in " + ntype.Type + ". Expected '" + ntype.ExtensionAttributeTypeName + "' found '" + boundAttributeType.MemberType.AssemblyQualifiedName + "'");
-				
+
 				fields = GetMembersMap (boundAttributeType.MemberType, out boundAttributeType);
 				if (fields.Count > 0)
 					ntype.CustomAttributeFields = fields;
