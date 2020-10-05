@@ -26,8 +26,11 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <PackageReference Include="NUnit" Version="3.9.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+    <PackageReference Include="NUnit.ConsoleRunner" GeneratePathProperty="true">
+      <Version>3.11.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Addins\Mono.Addins.csproj">
@@ -107,4 +110,7 @@
       <LogicalName>TestManifest2-bis.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+    <Target Name="Test">
+        <Exec Command="$(PkgNUnit_ConsoleRunner)\tools\nunit3-console.exe $(ProjectDir)\bin\Debug\UnitTests.dll" />
+    </Target>
 </Project>

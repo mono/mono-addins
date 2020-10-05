@@ -1,9 +1,5 @@
 pool:
-  name: Azure Pipelines
-  demands:
-  - msbuild
-  - visualstudio
-  - vstest
+  name: Hosted Mac Internal Mojave
 
 variables:
 - name: BuildPlatform
@@ -12,33 +8,45 @@ variables:
   value: DebugNoGui
 
 steps:
-- task: VSBuild@1
+
+- task: Bash@3
+  displayName: Provision
+  inputs:
+    targetType: 'inline'
+    script: '$(Build.SourcesDirectory)/bot-provisioning/provisionator-bootstrap.sh $(Build.SourcesDirectory)/bot-provisioning/dependencies.csx'
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: 'Mono.Addins.sln'
+    feedsToUse: 'select'
+
+- task: MSBuild@1
   displayName: 'Build solution Mono.Addins.sln'
   inputs:
     solution: Mono.Addins.sln
-    msbuildArgs: '/restore /p:PackOnBuild=true'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
 
-- task: VSTest@2
+- task: MSBuild@1
   displayName: 'Test Assemblies Test\UnitTests\bin\Debug\UnitTests.dll'
   inputs:
-    testAssemblyVer2: 'Test\UnitTests\bin\Debug\UnitTests.dll'
-    runInParallel: false
-    codeCoverageEnabled: true
+    solution: 'Test/UnitTests/UnitTests.csproj'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
+    msbuildArguments: '/t:Test'
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results Test\UnitTests\bin\Debug\*.xml'
   inputs:
     testResultsFormat: NUnit
-    testResultsFiles: 'Test\UnitTests\bin\Debug\*.xml'
+    testResultsFiles: 'Test/UnitTests/bin/Debug/*.xml'
 
 - task: CopyFiles@1
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
   inputs:
-    SourceFolder: '$(build.sourcesdirectory)\bin'
+    SourceFolder: '$(build.sourcesdirectory)/bin'
     Contents: '*.nupkg'
     TargetFolder: '$(build.artifactstagingdirectory)'
   condition: succeededOrFailed()
