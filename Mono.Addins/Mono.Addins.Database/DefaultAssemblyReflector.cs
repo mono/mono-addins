@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace Mono.Addins.Database
 {
-	class DefaultAssemblyReflector: IAssemblyReflector
+	class DefaultAssemblyReflector : IAssemblyReflector
 	{
 		public void Initialize (IAssemblyLocator locator)
 		{
@@ -47,7 +47,12 @@ namespace Mono.Addins.Database
 		{
 		}
 
-		public string[] GetResourceNames (object asm)
+		public string GetAssemblyName (object asm)
+		{
+			return ((Assembly)asm).GetName().Name;
+		}
+
+		public string [] GetResourceNames (object asm)
 		{
 			return ((Assembly)asm).GetManifestResourceNames ();
 		}
@@ -91,7 +96,7 @@ namespace Mono.Addins.Database
 		{
 			CustomAttribute at = new CustomAttribute ();
 			Type type = ob.GetType ();
-			at.TypeName = type.FullName;
+			at.TypeName = type.AssemblyQualifiedName;
 			
 			foreach (PropertyInfo prop in type.GetProperties (BindingFlags.Public | BindingFlags.Instance)) {
 				object val = prop.GetValue (ob, null);
@@ -121,6 +126,11 @@ namespace Mono.Addins.Database
 			return ((Type)type).Name;
 		}
 
+		public string GetTypeAssemblyName (object type)
+		{
+			return ((Type)type).Assembly.FullName;
+		}
+
 		public IEnumerable GetFields (object type)
 		{
 			return ((Type)type).GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -133,7 +143,7 @@ namespace Mono.Addins.Database
 
 		public string GetFieldTypeFullName (object field)
 		{
-			return ((FieldInfo)field).FieldType.FullName;
+			return ((FieldInfo)field).FieldType.AssemblyQualifiedName;
 		}
 		
 		public IEnumerable GetAssemblyTypes (object asm)

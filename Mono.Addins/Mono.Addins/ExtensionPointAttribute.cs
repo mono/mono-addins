@@ -39,11 +39,11 @@ namespace Mono.Addins
 	{
 		string path;
 		Type nodeType;
+		string nodeTypeName;
 		string nodeName;
 		string desc;
 		string name;
 		Type objectType;
-		string nodeTypeName;
 		string objectTypeName;
 		Type customAttributeType;
 		string customAttributeTypeName;
@@ -123,25 +123,21 @@ namespace Mono.Addins
 		/// </summary>
 		public Type NodeType {
 			get { return nodeType != null ? nodeType : typeof(TypeExtensionNode); }
-			set { nodeType = value; nodeTypeName = value.FullName; }
+			set { nodeType = value; nodeTypeName = value.AssemblyQualifiedName; }
 		}
-		
+
+		internal string NodeTypeName
+		{
+			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).AssemblyQualifiedName; }
+			set { nodeTypeName = value; }
+		}
+
 		/// <summary>
 		/// Expected extension object type (when nodes are of type TypeExtensionNode)
 		/// </summary>
 		public Type ObjectType {
 			get { return objectType; }
-			set { objectType = value; objectTypeName = value.FullName; }
-		}
-		
-		internal string NodeTypeName {
-			get { return nodeTypeName != null ? nodeTypeName : typeof(TypeExtensionNode).FullName; }
-			set { nodeTypeName = value; }
-		}
-		
-		internal string ObjectTypeName {
-			get { return objectTypeName; }
-			set { objectTypeName = value; }
+			set { objectType = value; objectTypeName = value.AssemblyQualifiedName; }
 		}
 		
 		/// <summary>
@@ -165,7 +161,7 @@ namespace Mono.Addins
 		/// </summary>
 		public Type ExtensionAttributeType {
 			get { return this.customAttributeType; }
-			set { this.customAttributeType = value; customAttributeTypeName = value.FullName; }
+			set { this.customAttributeType = value; customAttributeTypeName = value.AssemblyQualifiedName; }
 		}
 
 		internal string ExtensionAttributeTypeName {

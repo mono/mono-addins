@@ -104,5 +104,16 @@ namespace UnitTests
 			Assert.AreEqual ("Arxiu d'exemple", node.ToString ());
 		}
 */
+
+		[TestCase ("SimpleApp.CommandExtension,0.1.0")]
+		[TestCase ("SimpleApp.HelloWorldExtension,0.1.0")]
+		[TestCase ("MultiAssemblyAddin,0.1.0")]
+		public void TestLocalizationType (string addinId)
+		{
+			AddinManager.AddinEngine.LoadAddin (null, addinId);
+			var addin = AddinManager.AddinEngine.GetAddin (addinId);
+
+			Assert.AreEqual ("loc: message", addin.Localizer.GetString ("message"));
+		}
 	}
 }

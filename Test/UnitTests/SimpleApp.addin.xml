@@ -69,6 +69,10 @@
 	<ExtensionPoint path = "/SimpleApp/DefaultInsertBefore" defaultInsertBefore="Mid">
 		<ExtensionNode name="Node" />
 	</ExtensionPoint>
+    
+    <ExtensionPoint path="/SimpleApp/DataExtensionWithAttribute2">
+        <ExtensionNode name="Test" customAttributeType="UnitTests.SimpleExtensionAttribute" />
+    </ExtensionPoint>
 	
 	<!-- Extensions -->
 	
@@ -94,5 +98,10 @@
 		<Node id="Mid" type="test" />
 		<Node id="Last" type="test" />
 	</Extension>
+
+    <Extension path="/SimpleApp/DataExtensionWithAttribute2">
+        <Test name="test3" value="true"/>
+        <Test name="test4" value="false"/>
+    </Extension>
 	
 </Addin>

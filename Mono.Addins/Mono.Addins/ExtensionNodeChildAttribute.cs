@@ -94,7 +94,7 @@ namespace Mono.Addins
 		/// </summary>
 		public Type ExtensionNodeType {
 			get { return extensionNodeType; }
-			set { extensionNodeType = value; extensionNodeTypeName = value.FullName; }
+			set { extensionNodeType = value; extensionNodeTypeName = value.AssemblyQualifiedName; }
 		}
 		
 		internal string ExtensionNodeTypeName {

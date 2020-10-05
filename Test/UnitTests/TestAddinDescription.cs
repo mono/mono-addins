@@ -30,6 +30,8 @@ using Mono.Addins.Description;
 using System.Globalization;
 using Mono.Addins;
 using System.Xml;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace UnitTests
 {
@@ -125,14 +127,47 @@ namespace UnitTests
 			System.Threading.Thread.CurrentThread.CurrentCulture = oldc;
 		}
 
-		[TestCase ("SimpleApp.SystemInfoExtension", "StringResource", "")]
-		public void LocalizerProperties (string addinId, string expectedType, string expectedAssembly)
+		// Built-in
+		[TestCase ("SimpleApp.SystemInfoExtension,0.1.0", "StringResource")]
+		// In own addin
+		[TestCase ("SimpleApp.CommandExtension,0.1.0", "CommandExtension.CustomLocalizerFactory, CommandExtension, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")]
+		// In dependent addin
+		[TestCase ("SimpleApp.HelloWorldExtension,0.1.0", "CommandExtension.CustomLocalizerFactory, CommandExtension, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")]
+		// In imported assembly
+		[TestCase ("MultiAssemblyAddin,0.1.0", "SecondAssembly.CustomLocalizerFactory, SecondAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")]
+		public void LocalizerProperties (string addinId, string expectedType)
 		{
 			Addin ad = AddinManager.Registry.GetAddin (addinId);
 			ExtensionNodeDescription localizer = ad.Description.Localizer;
 
 			Assert.AreEqual (expectedType, localizer.GetAttribute ("type"));
-			Assert.AreEqual (expectedAssembly, localizer.GetAttribute ("assembly"));
+		}
+
+		[Test]
+		public void CheckConditionAssemblyNames()
+		{
+			Addin ad = AddinManager.Registry.GetAddin ("SimpleApp.SystemInfoExtension,0.1.0");
+			var conditions = ad.Description.ConditionTypes;
+
+			Assert.AreEqual (0, conditions.Count);
+			foreach (ConditionTypeDescription cond in conditions) { 
+				
+			}
+		}
+
+		[Test]
+		public void TestAssemblyNamesWritten ()
+		{
+			Addin ad = AddinManager.Registry.GetAddin ("MultiAssemblyAddin,0.1.0");
+
+			var assemblyNames = ad.Description.MainModule.AssemblyNames;
+			Assert.AreEqual (ad.Description.MainModule.Assemblies.Count, assemblyNames.Count);
+			Assert.AreEqual ("MultiAssemblyAddin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null", assemblyNames[0]);
+			Assert.AreEqual ("SecondAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null", assemblyNames[1]);
+
+			assemblyNames = ad.Description.OptionalModules[0].AssemblyNames;
+			Assert.AreEqual (1, assemblyNames.Count);
+			Assert.AreEqual ("OptionalModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null", assemblyNames[0]);
 		}
 
 		AddinDescription DescFromResource (string res)

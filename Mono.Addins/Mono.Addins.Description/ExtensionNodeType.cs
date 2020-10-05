@@ -100,7 +100,7 @@ namespace Mono.Addins.Description
 			get { return typeName != null ? typeName : string.Empty; }
 			set { typeName = value; }
 		}
-		
+
 		/// <summary>
 		/// Element name to be used when defining an extension in an XML manifest. The default name is "Type".
 		/// </summary>
@@ -169,6 +169,7 @@ namespace Mono.Addins.Description
 			at = element.Attributes ["customAttributeType"];
 			if (at != null)
 				customAttributeTypeName = at.Value;
+
 			XmlElement de = element ["Description"];
 			if (de != null)
 				description = de.InnerText;
@@ -248,7 +249,7 @@ namespace Mono.Addins.Description
 			if (Id.Length == 0)
 				Id = "Type";
 			if (TypeName.Length == 0)
-				typeName = "Mono.Addins.TypeExtensionNode";
+				typeName = typeof (TypeExtensionNode).AssemblyQualifiedName;
 			writer.WriteValue ("typeName", typeName);
 			writer.WriteValue ("objectTypeName", objectTypeName);
 			writer.WriteValue ("description", description);

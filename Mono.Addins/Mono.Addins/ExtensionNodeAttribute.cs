@@ -99,7 +99,7 @@ namespace Mono.Addins
 		/// </summary>
 		public Type ExtensionAttributeType {
 			get { return customAttributeType; }
-			set { customAttributeType = value; customAttributeTypeName = value.FullName; }
+			set { customAttributeType = value; customAttributeTypeName = value.AssemblyQualifiedName; }
 		}
 		
 		internal string ExtensionAttributeTypeName {

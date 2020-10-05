@@ -39,6 +39,8 @@ using System.Globalization;
 
 using Mono.Addins.Description;
 using Mono.Addins.Localization;
+using System.Linq;
+using Mono.Addins.Database;
 
 namespace Mono.Addins
 {
@@ -52,8 +54,10 @@ namespace Mono.Addins
 		string privatePath;
 		Addin ainfo;
 		RuntimeAddin parentAddin;
+
+		Dictionary<string, Assembly> loadedAssemblies = new Dictionary<string, Assembly>();
+		bool fullyLoadedAssemblies;
 		
-		Assembly[] assemblies;
 		RuntimeAddin[] depAddins;
 		ResourceManager[] resourceManagers;
 		AddinLocalizer localizer;
@@ -80,13 +84,6 @@ namespace Mono.Addins
 		
 		internal ModuleDescription Module {
 			get { return module; }
-		}
-		
-		internal Assembly[] Assemblies {
-			get {
-				EnsureAssembliesLoaded ();
-				return assemblies;
-			}
 		}
 		
 		/// <summary>
@@ -118,6 +115,16 @@ namespace Mono.Addins
 			return ainfo.ToString ();
 		}
 
+		internal bool TryGetAssembly (string assemblyName, out Assembly assembly)
+		{
+			return loadedAssemblies.TryGetValue (assemblyName, out assembly);
+		}
+
+		internal IEnumerable<Assembly> GetLoadedAssemblies()
+		{
+			return loadedAssemblies.Values;
+		}
+
 		ResourceManager[] GetResourceManagers ()
 		{
 			if (resourceManagers != null)
@@ -127,8 +134,9 @@ namespace Mono.Addins
 			var managersList = new List<ResourceManager> ();
 
 			// Search for embedded resource files
-			foreach (Assembly asm in assemblies)
+			foreach (var kvp in loadedAssemblies)
 			{
+				var asm = kvp.Value;
 				foreach (string res in asm.GetManifestResourceNames ()) {
 					if (res.EndsWith (".resources"))
 						managersList.Add (new ResourceManager (res.Substring (0, res.Length - ".resources".Length), asm));
@@ -316,32 +324,46 @@ namespace Mono.Addins
 		/// </remarks>
 		public Type GetType (string typeName, bool throwIfNotFound)
 		{
-			EnsureAssembliesLoaded ();
-			
-			// Look in the addin assemblies
-			
-			Type at = Type.GetType (typeName, false);
-			if (at != null)
-				return at;
-			
-			foreach (Assembly asm in GetAllAssemblies ()) {
-				Type t = asm.GetType (typeName, false);
-				if (t != null)
-					return t;
+			// Try looking in Mono.Addins without loading the addin assemblies.
+			var type = Type.GetType (typeName, false);
+			if (type == null) {
+				// decode the name if it's qualified
+				if (Util.TryParseTypeName (typeName, out var t, out var assemblyName))
+					type = GetType_Expensive (t, assemblyName ?? "");
 			}
 			
-			// Look in the dependent add-ins
-			foreach (RuntimeAddin addin in GetAllDependencies ()) {
-				Type t = addin.GetType (typeName, false);
-				if (t != null)
-					return t;
-			}
-			
-			if (throwIfNotFound)
+			if (throwIfNotFound && type == null)
 				throw new InvalidOperationException ("Type '" + typeName + "' not found in add-in '" + id + "'");
-			return null;
+			return type;
 		}
-		
+
+		Type GetType_Expensive (string typeName, string assemblyName)
+		{
+			// Look in the addin assemblies and in dependent add-ins.
+			// PERF: Unrolled from GetAllAssemblies and GetAllDependencies to avoid allocations.
+			EnsureAssembliesLoaded ();
+
+			foreach (var kvp in loadedAssemblies) {
+				var assembly = kvp.Value;
+				if (string.IsNullOrEmpty (assemblyName) || assembly.FullName == assemblyName) {
+					Type type = assembly.GetType (typeName, false);
+					if (type != null)
+						return type;
+				}
+			}
+
+			var addins = GetDepAddins ();
+			if (addins != null) {
+				foreach (RuntimeAddin addin in addins) {
+					Type t = addin.GetType_Expensive (typeName, assemblyName);
+					if (t != null)
+						return t;
+				}
+			}
+
+			return parentAddin?.GetType_Expensive (typeName, assemblyName);
+		}
+
 		IEnumerable<ResourceManager> GetAllResourceManagers ()
 		{
 			foreach (ResourceManager rm in GetResourceManagers ())
@@ -355,13 +377,13 @@ namespace Mono.Addins
 		
 		IEnumerable<Assembly> GetAllAssemblies ()
 		{
-			foreach (Assembly asm in Assemblies)
+			foreach (Assembly asm in loadedAssemblies.Values)
 				yield return asm;
 			
 			// Look in the parent addin assemblies
 			
 			if (parentAddin != null) {
-				foreach (Assembly asm in parentAddin.Assemblies)
+				foreach (Assembly asm in parentAddin.loadedAssemblies.Values)
 					yield return asm;
 			}
 		}
@@ -424,11 +446,11 @@ namespace Mono.Addins
 		/// </remarks>
 		public object CreateInstance (string typeName, bool throwIfNotFound)
 		{
-			Type type = GetType (typeName, throwIfNotFound);
+			Type type = GetType(typeName, throwIfNotFound);
 			if (type == null)
 				return null;
 			else
-				return Activator.CreateInstance (type, true);
+				return Activator.CreateInstance(type, true);
 		}
 		
 		/// <summary>
@@ -605,15 +627,19 @@ namespace Mono.Addins
 			baseDirectory = description.BasePath;
 			module = description.MainModule;
 			module.RuntimeAddin = this;
-			
+
+			// Load the assemblies
 			if (description.Localizer != null) {
 				string cls = description.Localizer.GetAttribute ("type");
-				
+
 				// First try getting one of the stock localizers. If none of found try getting the type.
+				// They are not encoded as an assembly qualified name
 				object fob = null;
-				Type t = Type.GetType ("Mono.Addins.Localization." + cls + "Localizer, " + GetType().Assembly.FullName, false);
-				if (t != null)
-					fob = Activator.CreateInstance (t);
+				if (cls.IndexOf (',') == -1) {
+					Type t = GetType().Assembly.GetType ("Mono.Addins.Localization." + cls + "Localizer", false);
+					if (t != null)
+						fob = Activator.CreateInstance (t);
+				}
 				
 				if (fob == null)
 					fob = CreateInstance (cls, true);
@@ -648,15 +674,24 @@ namespace Mono.Addins
 			}
 			return depAddins = plugList.ToArray ();
 		}
+
+		internal void RegisterAssemblyLoad(string assemblyName, Assembly assembly)
+		{
+			loadedAssemblies.Add (assemblyName, assembly);
+		}
 		
-		void LoadModule (ModuleDescription module, List<Assembly> asmList)
+		void LoadModule (ModuleDescription module)
 		{
 			// Load the assemblies
-			foreach (string s in module.Assemblies) {
-				Assembly asm = null;
+			for (int i = 0; i < module.Assemblies.Count; ++i) {
+				if (loadedAssemblies.TryGetValue(module.AssemblyNames[i], out var asm))
+					continue;
+
+				// Backwards compat: Load all the addins on demand if an assembly name
+				// is not supplied for the type.
 
 				// don't load the assembly if it's already loaded
-				string asmPath = Path.Combine (baseDirectory, s);
+				string asmPath = GetFilePath (module.Assemblies[i]);
 				foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies ()) {
 					// Sorry, you can't load addins from
 					// dynamic assemblies as get_Location
@@ -679,7 +714,7 @@ namespace Mono.Addins
 					asm = Assembly.LoadFrom (asmPath);
 				}
 
-				asmList.Add (asm);
+				RegisterAssemblyLoad(module.AssemblyNames[i], asm);
 			}
 		}
 		
@@ -702,24 +737,16 @@ namespace Mono.Addins
 			return true;
 		}
 		
-		internal bool AssembliesLoaded {
-			get { return assemblies != null; }
-		}
-		
 		internal void EnsureAssembliesLoaded ()
 		{
-			if (assemblies != null)
+			if (fullyLoadedAssemblies)
 				return;
-			
-			var asmList = new List<Assembly> ();
-			
+			fullyLoadedAssemblies = true;
+
 			// Load the assemblies of the module
 			CheckAddinDependencies (module, true);
-			LoadModule (module, asmList);
+			LoadModule (module);
 			addinEngine.ReportAddinAssembliesLoad (id);
-			
-			assemblies = asmList.ToArray ();
-			addinEngine.RegisterAssemblies (this);
 		}
 	}
 }

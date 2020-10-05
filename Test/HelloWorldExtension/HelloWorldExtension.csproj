@@ -25,6 +25,11 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommandExtension\CommandExtension.csproj">
+      <Project>{f109148d-849e-4044-8700-5e8ea0ab2476}</Project>
+      <Name>CommandExtension</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\UnitTests\UnitTests.csproj">
       <Project>{1CD51E61-1985-4D22-9BFA-D14C8FC61B46}</Project>
       <Name>UnitTests</Name>

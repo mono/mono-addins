@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 namespace Mono.Addins.Database
 {
@@ -148,7 +149,18 @@ namespace Mono.Addins.Database
 		/// An assembly
 		/// </param>
 		IEnumerable GetAssemblyTypes (object asm);
-		
+
+		/// <summary>
+		/// Gets the name of the assembly
+		/// </summary>
+		/// <returns>
+		/// The assembly name
+		/// </returns>
+		/// <param name='asm'>
+		/// An assembly
+		/// </param>
+		string GetAssemblyName (object asm);
+
 		/// <summary>
 		/// Gets all assembly references of an assembly
 		/// </summary>

@@ -47,6 +47,10 @@
       <Name>UnitTests</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="SecondAssembly\SecondAssembly.csproj">
+      <Project>{EB38A832-1BA5-4073-910C-7ACC5F1D1AD4}</Project>
+      <Name>SecondAssembly</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
