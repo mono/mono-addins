@@ -1,9 +1,5 @@
 pool:
-  name: Azure Pipelines
-  demands:
-  - msbuild
-  - visualstudio
-  - vstest
+  name: Hosted Mac Internal
 
 variables:
 - name: BuildPlatform
