@@ -38,10 +38,11 @@ steps:
     msbuildArguments: '/t:Test'
 
 - task: PublishTestResults@2
-  displayName: 'Publish Test Results Test\UnitTests\bin\Debug\*.xml'
+  displayName: 'Publish Test Results Test\UnitTests\TestResult.xml'
   inputs:
-    testResultsFormat: NUnit
-    testResultsFiles: 'Test/UnitTests/bin/Debug/*.xml'
+    testResultsFormat: 'NUnit'
+    testResultsFiles: 'Test/UnitTests/TestResult.xml'
+    failTaskOnFailedTests: true
 
 - task: CopyFiles@1
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
