@@ -40,8 +40,9 @@ steps:
 - task: PublishTestResults@2
   displayName: 'Publish Test Results Test\UnitTests\TestResult.xml'
   inputs:
-    testResultsFormat: NUnit
+    testResultsFormat: 'NUnit'
     testResultsFiles: 'Test/UnitTests/TestResult.xml'
+    failTaskOnFailedTests: true
 
 - task: CopyFiles@1
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
