@@ -22,14 +22,13 @@ steps:
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
 
-- task: VSTest@2
+- task: MSBuild@1
   displayName: 'Test Assemblies Test\UnitTests\bin\Debug\UnitTests.dll'
   inputs:
-    testAssemblyVer2: 'Test\UnitTests\bin\Debug\UnitTests.dll'
-    runInParallel: false
-    codeCoverageEnabled: true
+    solution: 'Test\UnitTests\UnitTests.csproj'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
+    msbuildArguments: '/t:Test'
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results Test\UnitTests\bin\Debug\*.xml'
