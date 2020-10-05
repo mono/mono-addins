@@ -147,11 +147,36 @@ namespace Mono.Addins.Database
 		public void RegisterExtension (AddinDescription description, ModuleDescription module, Extension extension)
 		{
 			if (extension.Path.StartsWith ("$")) {
-				string[] objectTypes = extension.Path.Substring (1).Split (',');
+				string path = extension.Path.Substring (1);
 				bool found = false;
-				foreach (string s in objectTypes) {
+				int searchIdx = 0;
+				do {
+					// Get the next type name, the delimiter is the comma
+					string typeName;
+
+					// REMARKS: For generic types, there could be commas inside the
+					// type parameter definition, we want to skip this.
+					// Generic types has [[ after generic name and ends with ]].
+					int genericStartIdx = path.IndexOf ("[[", searchIdx);
+					int separatorIdx = path.IndexOf (",", searchIdx);
+					if (genericStartIdx != -1 && genericStartIdx < separatorIdx) {
+						// This is a generic type so skip the types between [ ]
+						typeName = path.Substring (searchIdx, genericStartIdx - searchIdx);
+						searchIdx += path.IndexOf ("]]", searchIdx) + 3;
+					} else {
+						// Regular type
+						if (separatorIdx == -1)
+							separatorIdx = path.Length;
+						typeName = path.Substring (searchIdx, separatorIdx - searchIdx);
+						searchIdx += typeName.Length + 1;
+					}
+
+					// We have reached the end
+					if (searchIdx >= path.Length)
+						searchIdx = -1;
+
 					List<ExtensionPoint> list;
-					if (objectTypeExtensions.TryGetValue (s, out list)) {
+					if (objectTypeExtensions.TryGetValue (typeName, out list)) {
 						found = true;
 						foreach (ExtensionPoint ep in list) {
 							if (IsAddinCompatible (ep.ParentAddinDescription, description, module)) {
@@ -160,7 +185,8 @@ namespace Mono.Addins.Database
 							}
 						}
 					}
-				}
+				} while (searchIdx != -1);
+
 				if (!found)
 					monitor.ReportWarning ("The add-in '" + description.AddinId + "' is trying to register the class '" + extension.Path.Substring (1) + "', but there isn't any add-in defining a suitable extension point");
 			}
