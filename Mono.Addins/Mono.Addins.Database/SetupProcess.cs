@@ -160,19 +160,10 @@ namespace Mono.Addins.Database
 		
 		static string CreateHostExe ()
 		{
-			string file;
-			string id;
-			string fullFile;
-			do {
-				id = Guid.NewGuid ().ToString ().Replace ('-','_');
-				file = id + ".exe";
-				fullFile = Path.Combine (Path.GetTempPath (), file);
-			} while (File.Exists (fullFile));
-
 			AssemblyName aname = new AssemblyName ();
-			aname.Name = id;
-			AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly (aname, AssemblyBuilderAccess.Save, Path.GetTempPath ());
-			ModuleBuilder mb = ab.DefineDynamicModule (aname.Name, file);
+			aname.Name = Guid.NewGuid ().ToString ().Replace ('-','_');
+			AssemblyBuilder ab = AssemblyBuilder.DefineDynamicAssembly (aname, AssemblyBuilderAccess.Run);
+			ModuleBuilder mb = ab.DefineDynamicModule (aname.Name);
 			TypeBuilder tb = mb.DefineType ("App", TypeAttributes.Public|TypeAttributes.Class);
 			
 			MethodBuilder fb = tb.DefineMethod("Main",
@@ -187,10 +178,8 @@ namespace Mono.Addins.Database
 			ilg.EmitCall (OpCodes.Call, mi, null);
 			ilg.Emit (OpCodes.Ret);
 			
-			tb.CreateType();
-			ab.SetEntryPoint (fb, PEFileKinds.WindowApplication);
-			ab.Save (file);
-			return fullFile;
+			tb.CreateTypeInfo();
+			return tb.FullName;
 		}
 	}
 	

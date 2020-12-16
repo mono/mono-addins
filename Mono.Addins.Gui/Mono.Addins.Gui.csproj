@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\TargetFrameworks.props" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <ProjectGuid>{FEC19BDA-4904-4005-8C09-68E82E8BEF6A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Addins.Gui</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>Mono.Addins.Gui</RootNamespace>
-    <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -39,15 +35,11 @@
     <NoWarn>1574;1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f, processorArchitecture=MSIL"/>
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f, processorArchitecture=MSIL"/>
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f, processorArchitecture=MSIL"/>
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f, processorArchitecture=MSIL"/>
-    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f, processorArchitecture=MSIL"/>
     <Reference Include="System" />
     <Reference Include="Mono.Posix" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Core" />
+    <PackageReference Include="GtkSharp" Version="3.22.25.128" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj">
@@ -60,35 +52,6 @@
       <Name>Mono.Addins.Setup</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Mono.Addins.Gui\AddinManagerDialog.cs" />
-    <Compile Include="Mono.Addins.Gui\AddinTreeWidget.cs" />
-    <Compile Include="Mono.Addins.Gui\ManageSitesDialog.cs" />
-    <Compile Include="Mono.Addins.Gui\NewSiteDialog.cs" />
-    <Compile Include="Mono.Addins.Gui\Services.cs" />
-    <Compile Include="Mono.Addins.Gui\ErrorDialog.cs" />
-    <Compile Include="Mono.Addins.Gui\AddinManagerWindow.cs" />
-    <Compile Include="Mono.Addins.Gui\AddinInstaller.cs" />
-    <Compile Include="Mono.Addins.Gui\AddinInstallerDialog.cs" />
-    <Compile Include="Mono.Addins.Gui\ProgressDialog.cs" />
-    <Compile Include="Mono.Addins.Gui\InstallDialog.cs" />
-    <Compile Include="Mono.Addins.Gui\AddinInfoView.cs" />
-    <Compile Include="Mono.Addins.Gui\HeaderBox.cs" />
-    <Compile Include="Mono.Addins.Gui\HslColor.cs" />
-    <Compile Include="Mono.Addins.Gui\SearchEntry.cs" />
-    <Compile Include="Mono.Addins.Gui\HoverImageButton.cs" />
-    <Compile Include="Mono.Addins.Gui\InstallMonitor.cs" />
-    <Compile Include="Gui\generated.cs" />
-    <Compile Include="Gui\Mono.Addins.Gui.AddinInfoView.cs" />
-    <Compile Include="Gui\Mono.Addins.Gui.AddinInstallerDialog.cs" />
-    <Compile Include="Gui\Mono.Addins.Gui.AddinManagerDialog.cs" />
-    <Compile Include="Gui\Mono.Addins.Gui.ErrorDialog.cs" />
-    <Compile Include="Gui\Mono.Addins.Gui.InstallDialog.cs" />
-    <Compile Include="Gui\Mono.Addins.Gui.ManageSitesDialog.cs" />
-    <Compile Include="Gui\Mono.Addins.Gui.NewSiteDialog.cs" />
-    <Compile Include="Gui\Mono.Addins.Gui.ProgressDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\package-x-generic.png">
@@ -381,7 +344,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Gui\" />
+    <Compile Remove="AssemblyInfo.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

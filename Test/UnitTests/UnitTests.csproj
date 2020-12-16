@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\TargetFrameworks.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,8 +10,6 @@
     <AssemblyName>UnitTests</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>UnitTests</RootNamespace>
-    <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\mono-addins.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -28,9 +26,6 @@
     <Reference Include="System.Core" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
-    <PackageReference Include="NUnit.ConsoleRunner" GeneratePathProperty="true">
-      <Version>3.11.1</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Addins\Mono.Addins.csproj">
@@ -45,36 +40,6 @@
       <Project>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</Project>
       <Name>Mono.Addins.Setup</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="TestExtensions.cs" />
-    <Compile Include="TestBase.cs" />
-    <Compile Include="TestEvents.cs" />
-    <Compile Include="TestFileDatabase.cs" />
-    <Compile Include="TestLoadUnload.cs" />
-    <Compile Include="TestConditions.cs" />
-    <Compile Include="TestSetup.cs" />
-    <Compile Include="TestLocalization.cs" />
-    <Compile Include="AddinInformationTests.cs" />
-    <Compile Include="ExtensionModel\ComplexNode.cs" />
-    <Compile Include="ExtensionModel\GlobalInfoCondition.cs" />
-    <Compile Include="ExtensionModel\ISampleExtender.cs" />
-    <Compile Include="ExtensionModel\IWriter.cs" />
-    <Compile Include="ExtensionModel\IWriterWithMetadata.cs" />
-    <Compile Include="ExtensionModel\NodeWithAttribute.cs" />
-    <Compile Include="ExtensionModel\ParameterInfoCondition.cs" />
-    <Compile Include="ExtensionModel\SimpleExtensionAttribute.cs" />
-    <Compile Include="ExtensionModel\AttrExtensionWithManyNodes.cs" />
-    <Compile Include="ExtensionModel\MultiAssemblyTestExtensionPoint.cs" />
-    <Compile Include="TestLoadXmlAddinDescription.cs" />
-    <Compile Include="TestVerifyAddinDescription.cs" />
-    <Compile Include="TestAddinDescription.cs" />
-    <Compile Include="ExtensionModel\Properties.cs" />
-    <Compile Include="Util.cs" />
-    <Compile Include="TestSetupService.cs" />
-    <Compile Include="ExtensionModel\GlobalInfoConditionAttribute.cs" />
-    <Compile Include="TestScan.cs" />
-    <Compile Include="TestScanDataFileGeneration.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SimpleApp.addin.xml">
@@ -98,7 +63,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <EmbeddedResource Include="TestManifest2.xml">
       <LogicalName>TestManifest2.xml</LogicalName>
@@ -110,7 +74,8 @@
       <LogicalName>TestManifest2-bis.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-    <Target Name="Test">
-        <Exec Command="$(PkgNUnit_ConsoleRunner)\tools\nunit3-console.exe $(ProjectDir)\bin\Debug\UnitTests.dll" />
-    </Target>
+  <ItemGroup>
+    <Compile Remove="TestFileDatabase.cs" />
+    <Compile Remove="TestLocalization.cs" />
+  </ItemGroup>
 </Project>

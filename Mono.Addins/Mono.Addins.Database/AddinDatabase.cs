@@ -1826,9 +1826,9 @@ namespace Mono.Addins.Database
 //			if (Util.IsMono)
 //				return new SetupProcess ();
 //			else
-			if (fs.RequiresIsolation)
-				return new SetupDomain ();
-			else
+			//if (fs.RequiresIsolation)
+			//	return new SetupDomain ();
+			//else
 				return new SetupLocal ();
 		}
 		

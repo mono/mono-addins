@@ -223,7 +223,7 @@ namespace Mono.Addins
 			Initialize (null, startupDirectory, configDir, addinsDir, databaseDir);
 		}
 		
-		internal void Initialize (Assembly startupAsm, string customStartupDirectory, string configDir, string addinsDir, string databaseDir)
+		public void Initialize (Assembly startupAsm, string customStartupDirectory, string configDir, string addinsDir, string databaseDir)
 		{
 			lock (LocalLock) {
 				if (initialized)
