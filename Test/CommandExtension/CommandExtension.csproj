@@ -36,8 +36,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="CommandExtension.addin.xml">
+    <Content Include="CommandExtension.addin.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
 </Project>
