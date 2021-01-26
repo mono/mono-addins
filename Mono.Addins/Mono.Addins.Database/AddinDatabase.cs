@@ -1823,12 +1823,9 @@ namespace Mono.Addins.Database
 		
 		ISetupHandler GetSetupHandler ()
 		{
-//			if (Util.IsMono)
-//				return new SetupProcess ();
-//			else
-			//if (fs.RequiresIsolation)
-			//	return new SetupDomain ();
-			//else
+			if (fs.RequiresIsolation)
+				return new SetupProcess ();
+			else
 				return new SetupLocal ();
 		}
 		
