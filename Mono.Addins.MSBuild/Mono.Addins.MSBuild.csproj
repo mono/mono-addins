@@ -8,6 +8,7 @@
     <AssemblyName>Mono.Addins.MSBuild</AssemblyName>
     <RootNamespace>Mono.Addins.MSBuild</RootNamespace>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -40,6 +41,5 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="ResolveAddinReferences.cs" />
-    <Compile Remove="AssemblyInfo.cs" />
   </ItemGroup>
 </Project>

@@ -135,7 +135,7 @@ namespace Mono.Addins.Description
 		/// <summary>
 		/// Gets the list of external assemblies used by this module.
 		/// </summary>
-		public StringCollection Assemblies {
+		internal StringCollection Assemblies {
 			get {
 				if (assemblies == null) {
 					if (Element != null)

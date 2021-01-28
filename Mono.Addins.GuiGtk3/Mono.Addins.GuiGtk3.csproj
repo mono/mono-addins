@@ -363,7 +363,4 @@
       <Name>Mono.Addins</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="AssemblyInfo.cs" />
-  </ItemGroup>
 </Project>

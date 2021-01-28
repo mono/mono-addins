@@ -32,7 +32,7 @@ using System.IO;
 
 namespace Mono.Addins.MSBuild
 {
-	public class Util
+	internal class Util
 	{
 		public static bool IsWindows {
 			get { return Path.DirectorySeparatorChar == '\\'; }

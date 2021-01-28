@@ -343,7 +343,4 @@
       <LogicalName>web-search-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="AssemblyInfo.cs" />
-  </ItemGroup>
 </Project>
