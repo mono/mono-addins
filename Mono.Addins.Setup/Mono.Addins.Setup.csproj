@@ -13,6 +13,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -45,7 +46,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
     <PackageReference Include="SharpZipLib" Version="1.1.0" />
-    <ProjectReference Include="..\Mono.Addins.MSBuild\Mono.Addins.MSBuild.csproj" />
     <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>

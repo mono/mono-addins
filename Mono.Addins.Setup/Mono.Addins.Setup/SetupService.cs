@@ -37,7 +37,6 @@ using System.Xml;
 using ICSharpCode.SharpZipLib.Zip;
 using Mono.Addins.Database;
 using Mono.Addins.Description;
-using Mono.Addins.MSBuild;
 using Mono.Addins.Setup.ProgressMonitoring;
 using Mono.PkgConfig;
 

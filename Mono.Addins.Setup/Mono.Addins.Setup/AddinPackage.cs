@@ -42,7 +42,6 @@ using Mono.Addins.Description;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins.Database;
-using Mono.Addins.MSBuild;
 
 namespace Mono.Addins.Setup
 {
