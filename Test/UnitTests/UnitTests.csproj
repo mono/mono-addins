@@ -45,6 +45,10 @@
       <Project>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</Project>
       <Name>Mono.Addins.Setup</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Mono.Addins.SetupProcess\Mono.Addins.SetupProcess.csproj">
+      <Project>{303D2716-94AA-4067-8111-F478D26DFAFE}</Project>
+      <Name>Mono.Addins.SetupProcess</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestExtensions.cs" />
