@@ -62,7 +62,7 @@ namespace Mono.Addins.SetupProcess
 					}
 				case "get-desc":
 					var outFile = Console.In.ReadLine ();
-					reg.ParseAddin (monitor, args [2], args [3]);
+					reg.ParseAddin (monitor, args [2], outFile);
 					break;
 				}
 			} catch (Exception ex) {
