@@ -69,8 +69,13 @@ namespace Mono.Addins.Database
 
 			Process process = new Process ();
 
-			string thisAsm = typeof (SetupProcess).Assembly.Location;
-			string asm = Path.GetDirectoryName (thisAsm) + "Mono.Addins.SetupProcess.dll";
+			string thisAsmDir = Path.GetDirectoryName (typeof (SetupProcess).Assembly.Location);
+			string asm;
+			if (Util.IsMono)
+				asm = Path.Combine (thisAsmDir, "Mono.Addins.SetupProcess.exe");
+			else
+				asm = Path.Combine (thisAsmDir, "Mono.Addins.SetupProcess.dll");
+
 			try {
 				if (!Util.IsMono)
 					process.StartInfo = new ProcessStartInfo (asm, sb.ToString ());
