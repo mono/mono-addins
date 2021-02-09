@@ -48,7 +48,10 @@
     <Compile Remove="CustomConditionAttribute.cs" />
     <Compile Remove="Mono.Addins.Database\SetupDomain.cs" />
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-        <_Parameter1>Mono.Addins.Setup</_Parameter1>
+      <_Parameter1>Mono.Addins.Setup</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Mono.Addins.SetupProcess</_Parameter1>
     </AssemblyAttribute>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>UnitTests</_Parameter1>
