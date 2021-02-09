@@ -31,13 +31,6 @@
     <WarningLevel>4</WarningLevel>
     <ExternalConsole>true</ExternalConsole>
   </PropertyGroup>
-<!--  <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SetupProcessTool.cs" />
-  </ItemGroup>-->
   <ItemGroup>
     <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj" />
   </ItemGroup>

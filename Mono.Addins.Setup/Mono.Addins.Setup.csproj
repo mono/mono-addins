@@ -41,10 +41,6 @@
     <PackOnBuild>True</PackOnBuild>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Net.Http" />
     <PackageReference Include="SharpZipLib" Version="1.1.0" />
     <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>

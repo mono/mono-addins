@@ -30,9 +30,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.8.0" />
     <ProjectReference Include="..\Mono.Addins.Setup\Mono.Addins.Setup.csproj" />
     <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj">
