@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\TargetFrameworks.props" />
   <Import Project="..\Version.props" />
   <PropertyGroup>
     <ProjectGuid>{42D1CE65-A14B-4218-B787-58AD7AA68513}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Addins.CecilReflector</AssemblyName>
     <RootNamespace>Mono.Addins.CecilReflector</RootNamespace>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Mono.Addins.CecilReflector</PackageId>
     <Description>Mono.Addins is a framework for creating extensible applications, and for creating add-ins which extend applications. Mono.Addins.Setup provides an API for managing add-ins, creating add-in packages and publishing add-ins in on-line repositories.</Description>
     <ProductVersion>8.0.30703</ProductVersion>
