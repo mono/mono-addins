@@ -69,20 +69,8 @@ namespace Mono.Addins.Database
 
 			Process process = new Process ();
 
-			string thisAsmDir = Path.GetDirectoryName (typeof (SetupProcess).Assembly.Location);
-			string asm;
-			if (Util.IsMono)
-				asm = Path.Combine (thisAsmDir, "Mono.Addins.SetupProcess.exe");
-			else
-				asm = Path.Combine (thisAsmDir, "Mono.Addins.SetupProcess.dll");
-
 			try {
-				if (!Util.IsMono)
-					process.StartInfo = new ProcessStartInfo (asm, sb.ToString ());
-				else {
-					asm = asm.Replace(" ", @"\ ");
-					process.StartInfo = new ProcessStartInfo ("mono", "--debug " + asm + " " + sb.ToString ());
-				}
+				process.StartInfo = CreateProcessStartInfo (sb.ToString ());
 				process.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
 				process.StartInfo.UseShellExecute = false;
 				process.StartInfo.CreateNoWindow = true;
@@ -113,6 +101,32 @@ namespace Mono.Addins.Database
 				Console.WriteLine (ex);
 				throw;
 			}
+		}
+
+		static ProcessStartInfo CreateProcessStartInfo (string arguments)
+		{
+			string thisAsmDir = Path.GetDirectoryName (typeof (SetupProcess).Assembly.Location);
+			string asm = Path.Combine (thisAsmDir, "Mono.Addins.SetupProcess.exe");
+
+			if (File.Exists (asm)) {
+				if (Util.IsMono) {
+					asm = asm.Replace (" ", @"\ ");
+					return new ProcessStartInfo ("mono", "--debug " + asm + " " + arguments);
+				}
+				return new ProcessStartInfo (asm, arguments);
+			}
+
+			asm = Path.Combine(thisAsmDir, "Mono.Addins.SetupProcess");
+			if (File.Exists (asm))
+				return new ProcessStartInfo (asm, arguments);
+
+			asm = Path.Combine (thisAsmDir, "Mono.Addins.SetupProcess.dll");
+			if (File.Exists (asm)) {
+				asm = asm.Replace (" ", @"\ ");
+				return new ProcessStartInfo ("dotnet", asm + " " + arguments);
+			}
+
+			throw new InvalidOperationException ("Mono.Addins.SetupProcess not found");
 		}
 	}
 	
