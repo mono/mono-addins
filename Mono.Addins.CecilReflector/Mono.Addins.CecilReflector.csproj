@@ -11,6 +11,7 @@
     <Description>Mono.Addins is a framework for creating extensible applications, and for creating add-ins which extend applications. Mono.Addins.Setup provides an API for managing add-ins, creating add-in packages and publishing add-ins in on-line repositories.</Description>
     <ProductVersion>8.0.30703</ProductVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -38,9 +39,6 @@
   <ItemGroup>
     <PackageReference Include="Mono.Cecil" Version="0.10.1" />
     <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
-    <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj">
-      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
-      <Name>Mono.Addins</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj" />
   </ItemGroup>
 </Project>

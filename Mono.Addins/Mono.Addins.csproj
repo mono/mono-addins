@@ -11,6 +11,7 @@
     <PackageId>Mono.Addins</PackageId>
     <Description>Mono.Addins is a framework for creating extensible applications, and for creating add-ins which extend applications.</Description>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
