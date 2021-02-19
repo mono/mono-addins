@@ -10,6 +10,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Mono.Addins.GuiGtk3</RootNamespace>
     <AssemblyName>Mono.Addins.GuiGtk3</AssemblyName>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

@@ -7,6 +7,8 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Addins.MSBuild</AssemblyName>
     <RootNamespace>Mono.Addins.MSBuild</RootNamespace>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

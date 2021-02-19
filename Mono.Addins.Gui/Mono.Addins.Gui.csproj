@@ -8,6 +8,8 @@
     <AssemblyName>Mono.Addins.Gui</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>Mono.Addins.Gui</RootNamespace>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
