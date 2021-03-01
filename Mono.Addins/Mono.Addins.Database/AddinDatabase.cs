@@ -1823,9 +1823,9 @@ namespace Mono.Addins.Database
 		
 		ISetupHandler GetSetupHandler ()
 		{
-			if (fs.RequiresIsolation)
-				return new SetupProcess ();
-			else
+			//if (fs.RequiresIsolation)
+			//	return new SetupProcess ();
+			//else
 				return new SetupLocal ();
 		}
 		
