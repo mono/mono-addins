@@ -262,24 +262,35 @@ namespace Mono.Addins
 
 		Assembly CurrentDomainAssemblyResolve(object sender, ResolveEventArgs args)
 		{
-			lock (LocalLock) {
-				string assemblyName = args.Name;
+			try
+			{
+				lock (LocalLock)
+				{
+					string assemblyName = args.Name;
 
-				if (assemblyResolvePaths.TryGetValue (assemblyName, out var inAddin)) {
-					if (inAddin.TryGetAssembly (assemblyName, out var assembly))
-						return assembly;
+					if (assemblyResolvePaths.TryGetValue(assemblyName, out var inAddin))
+					{
+						if (inAddin.TryGetAssembly(assemblyName, out var assembly))
+							return assembly;
 
-					int index = inAddin.Module.AssemblyNames.IndexOf (assemblyName);
-					if (index != -1) {
-						var path = inAddin.GetFilePath (inAddin.Module.Assemblies[index]);
-						assembly = Assembly.LoadFrom (path);
-						inAddin.RegisterAssemblyLoad (assemblyName, assembly);
+						int index = inAddin.Module.AssemblyNames.IndexOf(assemblyName);
+						if (index != -1)
+						{
+							var path = inAddin.GetFilePath(inAddin.Module.Assemblies[index]);
+							assembly = Assembly.LoadFrom(path);
+							inAddin.RegisterAssemblyLoad(assemblyName, assembly);
 
-						return assembly;
+							return assembly;
+						}
 					}
-				}
 
-				return null;
+					return null;
+				}
+			}
+			catch (Exception ex)
+			{
+                Console.WriteLine(ex);
+				throw;
 			}
 		}
 		
