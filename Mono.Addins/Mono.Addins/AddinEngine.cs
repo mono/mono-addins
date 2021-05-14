@@ -782,10 +782,21 @@ namespace Mono.Addins
 
 		void OnAssemblyLoaded (object s, AssemblyLoadEventArgs a)
 		{
-			if (a != null) {
-				lock (pendingRootChecks) {
-					pendingRootChecks.Add (a.LoadedAssembly);
+			try
+			{
+				if (a != null)
+				{
+					lock (pendingRootChecks)
+					{
+						pendingRootChecks.Add(a.LoadedAssembly);
+					}
 				}
+			}
+			catch (Exception ex)
+			{
+                Console.WriteLine("ASM: " + a?.LoadedAssembly);
+                Console.WriteLine(ex);
+				throw;
 			}
 		}
 
