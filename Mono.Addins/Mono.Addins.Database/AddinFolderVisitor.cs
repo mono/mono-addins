@@ -75,7 +75,7 @@ namespace Mono.Addins.Database
 			List<AddinsEntry> addinsFileEntries = new List<AddinsEntry>();
 
 			foreach (string file in files) {
-				if (Path.GetExtension (file).EndsWith (".addins", StringComparison.Ordinal))
+				if (file.EndsWith (".addins", StringComparison.Ordinal))
 					addinsFileEntries.AddRange (ParseAddinsFile (monitor, file, domain));
 			}
 
@@ -84,17 +84,15 @@ namespace Mono.Addins.Database
 			// included in .addin files won't be scanned twice).
 
 			foreach (string file in files) {
-				if (!ScanContext.IgnorePath (file) && (file.EndsWith (".addin.xml", StringComparison.Ordinal) || file.EndsWith (".addin", StringComparison.Ordinal)))
+				if ((file.EndsWith(".addin.xml", StringComparison.Ordinal) || file.EndsWith(".addin", StringComparison.Ordinal)) && !ScanContext.IgnorePath (file))
 					OnVisitAddinManifestFile (monitor, file);
 			}
 
 			// Now scan assemblies. They can also add files to the ignore list.
 
 			foreach (string file in files) {
-				if (!ScanContext.IgnorePath (file)) {
-					string ext = Path.GetExtension(file).ToLower();
-					if (ext == ".dll" || ext == ".exe")
-						OnVisitAssemblyFile(monitor, file);
+				if ((file.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) || file.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) && !ScanContext.IgnorePath(file)) {
+					OnVisitAssemblyFile(monitor, file);
 				}
 			}
 
