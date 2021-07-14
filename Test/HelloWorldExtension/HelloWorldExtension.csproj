@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">  <Import Project="..\..\TargetFrameworks.props" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\TargetFrameworks.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,7 +10,6 @@
     <AssemblyName>HelloWorldExtension</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>HelloWorldExtension</RootNamespace>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyVersion>0.0.0.0</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

@@ -15,8 +15,6 @@
     <SchemaVersion>2.0</SchemaVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -49,5 +47,13 @@
       <Private>False</Private>
     </ProjectReference>
     <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
+    <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="System.Net.Http" />
+    <None Remove="System.Collections.NonGeneric" />
+    <None Remove="System.Collections.Specialized" />
   </ItemGroup>
 </Project>

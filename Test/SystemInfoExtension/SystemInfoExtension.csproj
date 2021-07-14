@@ -10,7 +10,6 @@
     <AssemblyName>SystemInfoExtension</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>SystemInfoExtension</RootNamespace>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyVersion>0.0.0.0</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

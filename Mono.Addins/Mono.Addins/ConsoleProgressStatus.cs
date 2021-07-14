@@ -34,7 +34,11 @@ namespace Mono.Addins
 	/// <summary>
 	/// An IProgressStatus class which writes output to the console.
 	/// </summary>
+#if NETFRAMEWORK
 	public class ConsoleProgressStatus: MarshalByRefObject, IProgressStatus
+#else
+	public class ConsoleProgressStatus : IProgressStatus
+#endif
 	{
 		bool canceled;
 		int logLevel;

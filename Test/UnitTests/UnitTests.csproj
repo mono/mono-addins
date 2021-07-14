@@ -12,7 +12,6 @@
     <RootNamespace>UnitTests</RootNamespace>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\mono-addins.snk</AssemblyOriginatorKeyFile>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -34,11 +33,6 @@
     <ProjectReference Include="..\..\Mono.Addins\Mono.Addins.csproj" />
     <ProjectReference Include="..\..\Mono.Addins.CecilReflector\Mono.Addins.CecilReflector.csproj" />
     <ProjectReference Include="..\..\Mono.Addins.Setup\Mono.Addins.Setup.csproj" />
-    <ProjectReference Include="..\..\Mono.Addins.SetupProcess\Mono.Addins.SetupProcess.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <!-- Workaround for build error - https://github.com/dotnet/msbuild/issues/2661 -->
-      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="SimpleApp.addin.xml">
