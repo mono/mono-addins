@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\TargetFrameworks.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -12,7 +12,6 @@
     <AssemblyName>Mono.Addins.GuiGtk3</AssemblyName>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -38,9 +37,35 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="gtk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System.Core" />
+    <Reference Include="cairo-sharp, Version=1.10.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="Mono.Posix" />
-    <PackageReference Include="GtkSharp" Version="3.22.25.128" />
+    <Reference Include="gio-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Mono.Addins.Gui\AddinInfoView.cs" />
+    <Compile Include="Mono.Addins.Gui\AddinInstaller.cs" />
+    <Compile Include="Mono.Addins.Gui\AddinInstallerDialog.cs" />
+    <Compile Include="Mono.Addins.Gui\AddinManagerDialog.cs" />
+    <Compile Include="Mono.Addins.Gui\AddinManagerWindow.cs" />
+    <Compile Include="Mono.Addins.Gui\AddinTreeWidget.cs" />
+    <Compile Include="Mono.Addins.Gui\ErrorDialog.cs" />
+    <Compile Include="Mono.Addins.Gui\HeaderBox.cs" />
+    <Compile Include="Mono.Addins.Gui\HoverImageButton.cs" />
+    <Compile Include="Mono.Addins.Gui\HslColor.cs" />
+    <Compile Include="Mono.Addins.Gui\InstallDialog.cs" />
+    <Compile Include="Mono.Addins.Gui\InstallMonitor.cs" />
+    <Compile Include="Mono.Addins.Gui\ManageSitesDialog.cs" />
+    <Compile Include="Mono.Addins.Gui\NewSiteDialog.cs" />
+    <Compile Include="Mono.Addins.Gui\ProgressDialog.cs" />
+    <Compile Include="Mono.Addins.Gui\SearchEntry.cs" />
+    <Compile Include="Mono.Addins.Gui\Services.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\download-16.png">
@@ -356,6 +381,7 @@
       <LogicalName>Mono.Addins.GuiGtk3.interfaces.ErrorDialog.ui</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Mono.Addins.Setup\Mono.Addins.Setup.csproj">
       <Project>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</Project>
