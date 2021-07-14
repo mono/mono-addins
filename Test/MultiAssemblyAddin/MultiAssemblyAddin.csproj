@@ -43,18 +43,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Addins\Mono.Addins.csproj">
-      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
-      <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\UnitTests\UnitTests.csproj">
-      <Project>{1CD51E61-1985-4D22-9BFA-D14C8FC61B46}</Project>
-      <Name>UnitTests</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="SecondAssembly\SecondAssembly.csproj">
-      <Project>{EB38A832-1BA5-4073-910C-7ACC5F1D1AD4}</Project>
-      <Name>SecondAssembly</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

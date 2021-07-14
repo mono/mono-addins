@@ -29,6 +29,7 @@ using System.Collections.Specialized;
 
 namespace Mono.Addins.Database
 {
+#if NET461
 	class SetupDomain: ISetupHandler
 	{
 		AppDomain domain;
@@ -216,4 +217,6 @@ namespace Mono.Addins.Database
 			}
 		}
 	}
+
+#endif
 }
