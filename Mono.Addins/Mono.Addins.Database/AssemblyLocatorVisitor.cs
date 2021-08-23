@@ -98,7 +98,7 @@ namespace Mono.Addins.Database
 			string name = fullName.Substring (0, i);
 			if (name == "Mono.Addins")
 				return typeof (AssemblyIndex).Assembly.Location;
-			
+
 			if (!assemblyLocations.TryGetValue (name, out var list))
 				return null;
 
@@ -118,12 +118,13 @@ namespace Mono.Addins.Database
 					// In this case, just ignore it.
 				}
 			}
-			
+
 			// If we got here, we removed all the list's items.
 			assemblyLocations.Remove (name);
 
 			if (lastAsm != null) {
 				// If an exact version is not found, just take any of them
+				assemblyLocationsByFullName[fullName] = lastAsm;
 				return lastAsm;
 			}
 			return null;

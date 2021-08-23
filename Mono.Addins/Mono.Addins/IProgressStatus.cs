@@ -106,4 +106,9 @@ namespace Mono.Addins
 		/// </summary>
 		void Cancel ();
 	}
+
+	public interface IOperationProgressStatus
+	{
+		void LogOperationStatus(string status);
+	}
 }
