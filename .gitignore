@@ -36,3 +36,6 @@ Makefile.in
 /configure
 /install-sh
 /missing
+
+#Jetbrains stuff
+.idea/
