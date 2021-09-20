@@ -220,14 +220,21 @@ namespace Mono.Addins.Database
 					foreach (var dir in Directory.GetDirectories (asmDir, "v*_" + versionDirName)) {
 						var dirName = Path.GetFileName (dir);
 						i = dirName.IndexOf ('_');
-						Version av;
-						if (Version.TryParse (dirName.Substring (1, i - 1), out av)) {
+
+						try
+						{
+							Version av = new Version(dirName.Substring(1, i - 1));
 							if (av == currentVersion)
 								return dir;
-							else if (av < currentVersion && av > bestVersion) {
+							
+							if (av < currentVersion && av > bestVersion) {
 								bestDir = dir;
 								bestVersion = av;
 							}
+						}
+						catch
+						{
+							
 						}
 					}
 					if (bestDir != null)

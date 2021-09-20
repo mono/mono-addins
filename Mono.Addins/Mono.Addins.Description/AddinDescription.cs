@@ -1272,10 +1272,16 @@ namespace Mono.Addins.Description
 			// Ensure that there are no duplicated properties
 			
 			if (properties != null) {
-				HashSet<string> props = new HashSet<string> ();
-				foreach (var prop in properties) {
-					if (!props.Add (prop.Name + " " + prop.Locale))
+				List<string> props = new List<string> ();
+				foreach (var prop in properties)
+				{
+					var stringToCheck = prop.Name + " " + prop.Locale;
+					if (props.Contains(stringToCheck))
+					{
 						errors.Add (string.Format ("Property {0} specified more than once", prop.Name + (prop.Locale != null ? " (" + prop.Locale + ")" : "")));
+						props.Add(stringToCheck);
+					}
+						
 				}
 			}
 			

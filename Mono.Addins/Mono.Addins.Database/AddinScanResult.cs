@@ -124,13 +124,14 @@ namespace Mono.Addins.Database
 
 	class ScanContext
 	{
-		HashSet<string> filesToIgnore;
+		List<string> filesToIgnore;
 
 		public void AddPathToIgnore (string path)
 		{
 			if (filesToIgnore == null)
-				filesToIgnore = new HashSet<string> ();
+				filesToIgnore = new List<string> ();
 			filesToIgnore.Add (path);
+			filesToIgnore = filesToIgnore.Distinct().ToList();
 		}
 
 		public bool IgnorePath (string file)

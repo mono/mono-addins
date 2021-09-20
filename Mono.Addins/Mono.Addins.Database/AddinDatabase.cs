@@ -551,15 +551,15 @@ namespace Mono.Addins.Database
 		public void UpdateEnabledStatus ()
 		{
 			// Ensure that all enabled addins that have dependencies also have their dependencies enabled.
-			HashSet<Addin> updatedAddins = new HashSet<Addin> ();
+			List<Addin> updatedAddins = new List<Addin> ();
 			var allAddins = GetInstalledAddins (registry.CurrentDomain, AddinSearchFlagsInternal.IncludeAddins | AddinSearchFlagsInternal.LatestVersionsOnly).ToList ();
 			foreach (Addin addin in allAddins)
 				UpdateEnabledStatus (registry.CurrentDomain, addin, allAddins, updatedAddins);
 		}
 
-		void UpdateEnabledStatus (string domain, Addin addin, List<Addin> allAddins, HashSet<Addin> updatedAddins)
+		void UpdateEnabledStatus (string domain, Addin addin, List<Addin> allAddins, List<Addin> updatedAddins)
 		{
-			if (!updatedAddins.Add (addin))
+			if (updatedAddins.Contains (addin))
 				return;
 
 			if (!addin.Enabled)
@@ -1027,21 +1027,21 @@ namespace Mono.Addins.Database
 				addinEngine.ResetCachedData ();
 		}
 
-		Dictionary<string, HashSet<string>> dependsOnCache = new Dictionary<string, HashSet<string>> ();
+		Dictionary<string, List<string>> dependsOnCache = new Dictionary<string, List<string>> ();
 		public bool AddinDependsOn (string domain, string id1, string id2)
 		{
 			var depTree = GetOrCreateAddInDependencyTree (domain, id1);
 			return depTree.Contains (id2);
 		}
 
-		HashSet<string> GetOrCreateAddInDependencyTree (string domain, string addin)
+		List<string> GetOrCreateAddInDependencyTree (string domain, string addin)
 		{
-			HashSet<string> cache;
+			List<string> cache;
 			if (dependsOnCache.TryGetValue (addin, out cache)) {
 				return cache;
-			}
+			} 
 
-			dependsOnCache [addin] = cache = new HashSet<string> ();
+			dependsOnCache [addin] = cache = new List<string> ();
 
 			Addin addin1 = GetInstalledAddin (domain, addin, false);
 
@@ -1058,7 +1058,7 @@ namespace Mono.Addins.Database
 				cache.Add (depid);
 
 				var recursiveDependencies = GetOrCreateAddInDependencyTree (domain, depid);
-				cache.UnionWith (recursiveDependencies);
+				return cache.Union(recursiveDependencies).Distinct().ToList();
 			}
 			return cache;
 		}
@@ -1165,8 +1165,7 @@ namespace Mono.Addins.Database
 			bool changesDone = false;
 			
 			foreach (var adn in Configuration.GetPendingUninstalls ()) {
-				HashSet<string> files = new HashSet<string> (adn.Files);
-				if (AddinManager.CheckAssembliesLoaded (files))
+				if (AddinManager.CheckAssembliesLoaded (adn.Files))
 					continue;
 				
 				if (monitor.LogLevel > 1)
@@ -1381,7 +1380,7 @@ namespace Mono.Addins.Database
 
 			// Check if any of the previously scanned folders has been deleted
 
-			foreach (string file in Directory.EnumerateFiles (AddinFolderCachePath, "*.data")) {
+			foreach (string file in Directory.GetFiles (AddinFolderCachePath, "*.data")) {
 				AddinScanFolderInfo folderInfo;
 				bool res = ReadFolderInfo (monitor, file, out folderInfo);
 				bool validForDomain = scanResult.Domain == null || folderInfo.Domain == GlobalDomain || folderInfo.Domain == scanResult.Domain;
@@ -1946,7 +1945,7 @@ namespace Mono.Addins.Database
 
 		public List<AddinDescription> GetSortedAddins ()
 		{
-			var inserted = new HashSet<string> ();
+			var inserted = new List<string> ();
 			var lists = new Dictionary<string,List<AddinDescription>> ();
 			
 			foreach (List<AddinDescription> dlist in addins.Values) {
@@ -1970,10 +1969,10 @@ namespace Mono.Addins.Database
 			return sortedAddins;
 		}
 
-		void InsertSortedAddin (HashSet<string> inserted, Dictionary<string,List<AddinDescription>> lists, AddinDescription desc)
+		void InsertSortedAddin (List<string> inserted, Dictionary<string,List<AddinDescription>> lists, AddinDescription desc)
 		{
 			string sid = desc.AddinId + " " + desc.Domain;
-			if (!inserted.Add (sid))
+			if (inserted.Contains (sid))
 				return;
 
 			foreach (ModuleDescription mod in desc.AllModules) {

@@ -35,7 +35,7 @@ namespace Mono.Addins.Database
 	class AddinFolderVisitor
 	{
 		AddinDatabase database;
-		HashSet<string> visitedFolders = new HashSet<string> ();
+		List<string> visitedFolders = new List<string> ();
 
 		public ScanContext ScanContext { get; set; } = new ScanContext();
 
@@ -56,7 +56,7 @@ namespace Mono.Addins.Database
 		void VisitFolderInternal (IProgressStatus monitor, string path, string domain, bool recursive)
 		{
 			// Avoid folders including each other
-			if (!visitedFolders.Add (path) || ScanContext.IgnorePath (path))
+			if (visitedFolders.Contains (path) || ScanContext.IgnorePath (path))
 				return;
 
 			OnVisitFolder (monitor, path, domain, recursive);

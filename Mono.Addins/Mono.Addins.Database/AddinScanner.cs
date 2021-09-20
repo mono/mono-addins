@@ -512,14 +512,14 @@ namespace Mono.Addins.Database
 			if (!config.IsRoot) {
 				foreach (ModuleDescription mod in config.OptionalModules) {
 					try {
-						var asmList = new List<Tuple<string,object>> ();
+						var asmList = new List<object[]> ();
 						for (int n=0; n<mod.Assemblies.Count; n++) {
 							string s = mod.Assemblies [n];
 							if (mod.IgnorePaths.Contains (s))
 								continue;
 							string asmFile = Path.Combine (config.BasePath, Util.NormalizePath (s));
 							object asm = reflector.LoadAssembly (asmFile);
-							asmList.Add (new Tuple<string,object> (asmFile,asm));
+							asmList.Add(new[] {asmFile, asm});
 							scanContext.AddPathToIgnore (Path.GetFullPath (asmFile));
 							ScanAssemblyImports (reflector, mod, asm);
 						}
@@ -535,7 +535,7 @@ namespace Mono.Addins.Database
 						}
 						
 						foreach (var asm in asmList)
-							ScanSubmodule (monitor, mod, reflector, config, asm.Item1, asm.Item2);
+							ScanSubmodule (monitor, mod, reflector, config, (string)asm[0], asm[1]);
 
 					} catch (Exception ex) {
 						ReportReflectionException (monitor, ex, config);
@@ -781,7 +781,7 @@ namespace Mono.Addins.Database
 
 				//condition attributes apply independently but identically to all extension attributes on this node
 				//depending on ordering is too messy due to inheritance etc
-				var conditionAtts = new Lazy<List<CustomAttribute>> (() => reflector.GetRawCustomAttributes (t, typeof (CustomConditionAttribute), false));
+				var conditionAtts =  reflector.GetRawCustomAttributes (t, typeof (CustomConditionAttribute), false);
 
 				// Look for extensions
 
@@ -807,7 +807,7 @@ namespace Mono.Addins.Database
 							path = eatt.Path;
 						}
 
-						ExtensionNodeDescription elem = AddConditionedExtensionNode (module, path, nodeName, conditionAtts.Value);
+						ExtensionNodeDescription elem = AddConditionedExtensionNode (module, path, nodeName, conditionAtts);
 						nodes [path] = elem;
 						uniqueNode = elem;
 						
@@ -873,7 +873,7 @@ namespace Mono.Addins.Database
 					else {
 						// Look for custom extension attribtues
 						foreach (CustomAttribute att in reflector.GetRawCustomAttributes (t, typeof(CustomExtensionAttribute), false)) {
-							ExtensionNodeDescription elem = AddCustomAttributeExtension (module, att, "Type", conditionAtts.Value);
+							ExtensionNodeDescription elem = AddCustomAttributeExtension (module, att, "Type", conditionAtts);
 							elem.SetAttribute ("type", typeQualifiedName);
 							if (string.IsNullOrEmpty (elem.GetAttribute ("id")))
 								elem.SetAttribute ("id", typeQualifiedName);

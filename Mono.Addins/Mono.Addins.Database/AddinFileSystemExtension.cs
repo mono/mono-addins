@@ -94,7 +94,7 @@ namespace Mono.Addins.Database
 		/// </param>
 		public virtual System.Collections.Generic.IEnumerable<string> GetFiles (string path)
 		{
-			return Directory.EnumerateFiles (path);
+			return Directory.GetFiles (path);
 		}
 		
 		/// <summary>
@@ -108,7 +108,7 @@ namespace Mono.Addins.Database
 		/// </param>
 		public virtual System.Collections.Generic.IEnumerable<string> GetDirectories (string path)
 		{
-			return Directory.EnumerateDirectories (path);
+			return Directory.GetDirectories (path);
 		}
 
 		/// <summary>
