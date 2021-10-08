@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\TargetFrameworks.props" />
+  <Import Project="..\Version.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <ProjectGuid>{EA2F08DC-8289-4A89-A405-1A70D8B4C569}</ProjectGuid>
+    <TargetFrameworks Condition="!$(Net6)">$(DotNetFrameworkTarget)</TargetFrameworks>
+    <TargetFrameworks Condition="$(Net6)">net6.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <AssemblyName>mautil</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>mautil</RootNamespace>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -42,15 +47,4 @@
       <Name>Mono.Addins.Setup</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Main.cs" />
-    <Compile Include="AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net462" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
