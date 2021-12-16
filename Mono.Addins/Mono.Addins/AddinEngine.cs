@@ -626,8 +626,8 @@ namespace Mono.Addins
 		{
 			lock (LocalLock) {
 				foreach (var asm in description.AssemblyNames) {
-					Debug.Assert(assemblyResolvePaths[asm] == addin);
-					assemblyResolvePaths[asm] = addin;
+					//Debug.Assert(assemblyResolvePaths[asm] == addin); This does not look right. Not called in old project since DEBUG symbol is not defined.
+					assemblyResolvePaths [asm] = addin;
 				}
 			}
 		}

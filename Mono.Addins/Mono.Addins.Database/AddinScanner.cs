@@ -157,10 +157,11 @@ namespace Mono.Addins.Database
 				if (monitor.LogLevel > 1)
 					monitor.Log ("Scanning file: " + file);
 			}
-			
+
 			// Log the file to be scanned, so in case of a process crash the main process
 			// will know what crashed
-			monitor.Log ("plog:scan:" + file);
+			var opMonitor = monitor as IOperationProgressStatus;
+			opMonitor?.LogOperationStatus("scan:" + file);
 
 			try {
 				if (!loadedFromScanDataFile) {
@@ -288,8 +289,8 @@ namespace Mono.Addins.Database
 						ainfo.AddPathToIgnore (Path.GetFullPath (path));
 					}
 				}
-				
-				monitor.Log ("plog:endscan");
+
+				opMonitor?.LogOperationStatus("endscan");
 			}
 		}
 		
@@ -299,8 +300,10 @@ namespace Mono.Addins.Database
 			
 			if (monitor.LogLevel > 1)
 				monitor.Log ("Scanning file: " + file);
-				
-			monitor.Log ("plog:scan:" + file);
+
+			var opMonitor = monitor as IOperationProgressStatus;
+
+			opMonitor?.LogOperationStatus ("scan:" + file);
 			
 			try {
 				string ext = Path.GetExtension (file).ToLower ();
@@ -326,7 +329,7 @@ namespace Mono.Addins.Database
 			catch (Exception ex) {
 				monitor.ReportError ("Unexpected error while scanning file: " + file, ex);
 			} finally {
-				monitor.Log ("plog:endscan");
+				opMonitor?.LogOperationStatus ("endscan");
 			}
 			return config;
 		}

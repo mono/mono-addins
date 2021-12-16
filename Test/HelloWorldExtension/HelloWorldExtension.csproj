@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\TargetFrameworks.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,6 +10,7 @@
     <AssemblyName>HelloWorldExtension</AssemblyName>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>HelloWorldExtension</RootNamespace>
+    <AssemblyVersion>0.0.0.0</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -26,26 +27,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommandExtension\CommandExtension.csproj">
-      <Project>{f109148d-849e-4044-8700-5e8ea0ab2476}</Project>
-      <Name>CommandExtension</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\UnitTests\UnitTests.csproj">
-      <Project>{1CD51E61-1985-4D22-9BFA-D14C8FC61B46}</Project>
-      <Name>UnitTests</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Mono.Addins\Mono.Addins.csproj">
-      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
-      <Name>Mono.Addins</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="HelloWorldWriter.cs" />
-    <Compile Include="HelloSampleExtender.cs" />
-    <Compile Include="AttributeExtensions.cs" />
-    <Compile Include="HelloWriterWithMetadata.cs" />
-    <Compile Include="HelloWriterWithCondition.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

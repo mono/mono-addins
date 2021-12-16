@@ -1823,12 +1823,13 @@ namespace Mono.Addins.Database
 		
 		ISetupHandler GetSetupHandler ()
 		{
-//			if (Util.IsMono)
-//				return new SetupProcess ();
-//			else
+			// .NET Core doesn't support domains, so it will always use SetupLocal, but it will
+			// avoid loading assemblies by forcing the use of the cecil reflector
+#if NET461
 			if (fs.RequiresIsolation)
 				return new SetupDomain ();
 			else
+#endif
 				return new SetupLocal ();
 		}
 		

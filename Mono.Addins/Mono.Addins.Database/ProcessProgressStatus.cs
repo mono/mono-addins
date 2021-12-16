@@ -33,7 +33,7 @@ using System.IO;
 
 namespace Mono.Addins.Database
 {
-	internal class ProcessProgressStatus: MarshalByRefObject, IProgressStatus
+	internal class ProcessProgressStatus: MarshalByRefObject, IProgressStatus, IOperationProgressStatus
 	{
 		bool canceled;
 		int logLevel;
@@ -55,14 +55,16 @@ namespace Mono.Addins.Database
 		
 		public void Log (string msg)
 		{
-			if (msg.StartsWith ("plog:"))
-				// This is an special type of log that will be provided to the
-				// main process in case of a crash in the setup process
-				Console.WriteLine ("process-ps-plog:" + Encode (msg.Substring (5)));
-			else
-				Console.WriteLine ("process-ps-log:" + Encode (msg));
+			Console.WriteLine ("process-ps-log:" + Encode (msg));
 		}
-		
+
+		public void LogOperationStatus(string msg)
+		{
+			// This is an special type of log that will be provided to the
+			// main process in case of a crash in the setup process
+			Console.WriteLine("process-ps-plog:" + Encode(msg));
+		}
+
 		public void ReportWarning (string message)
 		{
 			Console.WriteLine ("process-ps-warning:" + Encode (message));

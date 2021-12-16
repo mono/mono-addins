@@ -189,9 +189,14 @@ namespace Mono.Addins.Database
 				t = Type.GetType (refName, false);
 			}
 			if (t != null)
-				reflector = (IAssemblyReflector) Activator.CreateInstance (t);
-			else
+				reflector = (IAssemblyReflector)Activator.CreateInstance (t);
+			else {
+#if NETFRAMEWORK
 				reflector = new DefaultAssemblyReflector ();
+#else
+				throw new InvalidOperationException ("CecilReflector assembly not found (Required when running in .NET Core)");
+#endif
+			}
 			
 			reflector.Initialize (locator);
 			return reflector;

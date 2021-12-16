@@ -147,7 +147,7 @@ namespace Mono.Addins.Description
 			}
 		}
 
-		internal StringCollection AssemblyNames {
+		public StringCollection AssemblyNames {
 			get { 
 				if (assemblyNames == null) {
 					assemblyNames = new StringCollection ();
