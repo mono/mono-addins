@@ -13,6 +13,7 @@
     <PackageId>Mono.Addins</PackageId>
     <Description>Mono.Addins is a framework for creating extensible applications, and for creating add-ins which extend applications.</Description>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <DocumentationFile>..\bin\$(TargetFramework)\Mono.Addins.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -24,7 +25,6 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <ConsolePause>False</ConsolePause>
     <NoWarn>1574;1591</NoWarn>
-    <DocumentationFile>..\bin\Mono.Addins.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,11 +36,8 @@
     <ConsolePause>False</ConsolePause>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1574;1591</NoWarn>
-    <DocumentationFile>..\bin\Mono.Addins.xml</DocumentationFile>
-    <PackOnBuild>True</PackOnBuild>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>

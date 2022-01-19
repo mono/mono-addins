@@ -2,16 +2,13 @@
 <Project>
   <PropertyGroup>
     <InMonoDevelopTree>False</InMonoDevelopTree>
-    <Net6>False</Net6>
     <InMonoDevelopTree Condition="Exists('$(MSBuildThisFileDirectory)..\..\msbuild\MonoDevelop.AfterCommon.props')">True</InMonoDevelopTree>
-    <Net6 Condition="Exists('$(MSBuildThisFileDirectory)..\..\msbuild\Net6.props')">True</Net6>
 
-    <DotNetFrameworkTarget>net461</DotNetFrameworkTarget>
+    <DotNetFrameworkTarget>net472</DotNetFrameworkTarget>
     <DotNetCoreTarget>netstandard2.0</DotNetCoreTarget>
 
-    <TargetFrameworks Condition="!$(Net6)">$(DotNetFrameworkTarget)</TargetFrameworks>
-    <TargetFrameworks Condition="$(Net6)">$(DotNetCoreTarget)</TargetFrameworks>
+    <TargetFrameworks>$(DotNetCoreTarget);$(DotNetFrameworkTarget)</TargetFrameworks>
 
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 </Project>

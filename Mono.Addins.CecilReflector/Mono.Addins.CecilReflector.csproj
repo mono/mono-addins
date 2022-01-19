@@ -35,11 +35,9 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <ConsolePause>False</ConsolePause>
     <DebugSymbols>true</DebugSymbols>
-    <PackOnBuild>True</PackOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Mono.Cecil" Version="0.10.1" />
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
     <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj" />
   </ItemGroup>
 </Project>

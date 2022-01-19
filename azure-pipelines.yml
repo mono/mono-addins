@@ -2,8 +2,6 @@ pool:
   name: Hosted Mac Internal Mojave
 
 variables:
-- name: BuildPlatform
-  value: Any CPU
 - name: BuildConfiguration
   value: DebugNoGui
 
@@ -16,33 +14,32 @@ steps:
     script: '$(Build.SourcesDirectory)/bot-provisioning/provisionator-bootstrap.sh $(Build.SourcesDirectory)/bot-provisioning/dependencies.csx'
     workingDirectory: '$(Build.SourcesDirectory)'
 
-- task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: 'Mono.Addins.sln'
-    feedsToUse: 'select'
-
-- task: MSBuild@1
+- task: DotNetCoreCLI@2
   displayName: 'Build solution Mono.Addins.sln'
   inputs:
-    solution: Mono.Addins.sln
-    platform: '$(BuildPlatform)'
-    configuration: '$(BuildConfiguration)'
+    command: build
+    arguments: '/p:Configuration=$(BuildConfiguration)'
 
-- task: MSBuild@1
-  displayName: 'Test Assemblies Test\UnitTests\bin\Debug\UnitTests.dll'
+- task: DotNetCoreCLI@2
+  displayName: 'Generating packages'
   inputs:
-    solution: 'Test/UnitTests/UnitTests.csproj'
-    platform: '$(BuildPlatform)'
-    configuration: '$(BuildConfiguration)'
-    msbuildArguments: '/t:Test'
+    command: pack
+    arguments: '/p:Configuration=$(BuildConfiguration)'
 
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results Test\UnitTests\TestResult.xml'
-  inputs:
-    testResultsFormat: 'NUnit'
-    testResultsFiles: 'Test/UnitTests/TestResult.xml'
-    failTaskOnFailedTests: true
+#- task: MSBuild@1
+#  displayName: 'Test Assemblies Test\UnitTests\bin\Debug\UnitTests.dll'
+#  inputs:
+#    solution: 'Test/UnitTests/UnitTests.csproj'
+#    platform: '$(BuildPlatform)'
+#    configuration: '$(BuildConfiguration)'
+#    msbuildArguments: '/t:Test'
+#
+#- task: PublishTestResults@2
+#  displayName: 'Publish Test Results Test\UnitTests\TestResult.xml'
+#  inputs:
+#    testResultsFormat: 'NUnit'
+#    testResultsFiles: 'Test/UnitTests/TestResult.xml'
+#    failTaskOnFailedTests: true
 
 - task: CopyFiles@1
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'

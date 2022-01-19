@@ -11,6 +11,7 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <IsPackable>False</IsPackable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

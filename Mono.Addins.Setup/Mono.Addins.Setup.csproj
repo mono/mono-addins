@@ -15,6 +15,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <DocumentationFile>..\bin\$(TargetFramework)\Mono.Addins.Setup.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -26,7 +27,6 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <ConsolePause>False</ConsolePause>
     <NoWarn>1574;1591</NoWarn>
-    <DocumentationFile>..\bin\Mono.Addins.Setup.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -38,15 +38,12 @@
     <ConsolePause>False</ConsolePause>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1574;1591</NoWarn>
-    <DocumentationFile>..\bin\Mono.Addins.Setup.xml</DocumentationFile>
-    <PackOnBuild>True</PackOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="SharpZipLib" Version="1.1.0" />
     <ProjectReference Include="..\Mono.Addins\Mono.Addins.csproj">
       <Private>False</Private>
     </ProjectReference>
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
