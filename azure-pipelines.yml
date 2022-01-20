@@ -23,7 +23,8 @@ steps:
 - task: DotNetCoreCLI@2
   displayName: 'Generating packages'
   inputs:
-    command: pack
+    command: custom
+    custom: pack
     projects: |
       $(Build.SourcesDirectory)/Mono.Addins/Mono.Addins.csproj
       $(Build.SourcesDirectory)/Mono.Addins.Setup/Mono.Addins.Setup.csproj
