@@ -25,6 +25,7 @@ steps:
   inputs:
     command: pack
     arguments: '/p:Configuration=$(BuildConfiguration)'
+    projects: Mono.Addins.sln
 
 #- task: MSBuild@1
 #  displayName: 'Test Assemblies Test\UnitTests\bin\Debug\UnitTests.dll'
