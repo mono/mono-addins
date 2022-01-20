@@ -1,5 +1,5 @@
 pool:
-  name: Azure Pipelines
+  vmImage: 'macos-latest'
 
 variables:
 - name: BuildConfiguration
