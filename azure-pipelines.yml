@@ -25,10 +25,7 @@ steps:
   inputs:
     command: custom
     custom: pack
-    projects: |
-      $(Build.SourcesDirectory)/Mono.Addins/Mono.Addins.csproj
-      $(Build.SourcesDirectory)/Mono.Addins.Setup/Mono.Addins.Setup.csproj
-      $(Build.SourcesDirectory)/Mono.Addins.CecilReflector.csproj
+    projects: Mono.Addins.sln
     arguments: '/p:Configuration=$(BuildConfiguration)'
     nobuild: true
     workingDirectory: $(Build.SourcesDirectory)
