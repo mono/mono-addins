@@ -24,7 +24,10 @@ steps:
   displayName: 'Generating packages'
   inputs:
     command: pack
-    projects: '$(Build.SourcesDirectory)/Mono.Addins.sln'
+    projects: |
+      Mono.Addins/Mono.Addins.csproj
+      Mono.Addins.Setup/Mono.Addins.Setup.csproj
+      Mono.Addins.CecilReflector
     arguments: '/p:Configuration=$(BuildConfiguration)'
     nobuild: true
 
