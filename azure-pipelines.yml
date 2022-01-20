@@ -25,11 +25,12 @@ steps:
   inputs:
     command: pack
     projects: |
-      Mono.Addins/Mono.Addins.csproj
-      Mono.Addins.Setup/Mono.Addins.Setup.csproj
-      Mono.Addins.CecilReflector
+      $(Build.SourcesDirectory)/Mono.Addins/Mono.Addins.csproj
+      $(Build.SourcesDirectory)/Mono.Addins.Setup/Mono.Addins.Setup.csproj
+      $(Build.SourcesDirectory)/Mono.Addins.CecilReflector.csproj
     arguments: '/p:Configuration=$(BuildConfiguration)'
     nobuild: true
+    workingDirectory: $(Build.SourcesDirectory)
 
 #- task: MSBuild@1
 #  displayName: 'Test Assemblies Test\UnitTests\bin\Debug\UnitTests.dll'
