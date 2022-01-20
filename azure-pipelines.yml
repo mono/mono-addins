@@ -1,18 +1,18 @@
 pool:
-  name: Hosted Mac Internal
+  vmImage: 'macOS-10.15'
 
 variables:
 - name: BuildConfiguration
-  value: DebugNoGui
+  value: Debug
 
 steps:
 
-- task: Bash@3
-  displayName: Provision
-  inputs:
-    targetType: 'inline'
-    script: '$(Build.SourcesDirectory)/bot-provisioning/provisionator-bootstrap.sh $(Build.SourcesDirectory)/bot-provisioning/dependencies.csx'
-    workingDirectory: '$(Build.SourcesDirectory)'
+#- task: Bash@3
+#  displayName: Provision
+#  inputs:
+#    targetType: 'inline'
+#    script: '$(Build.SourcesDirectory)/bot-provisioning/provisionator-bootstrap.sh $(Build.SourcesDirectory)/bot-provisioning/dependencies.csx'
+#    workingDirectory: '$(Build.SourcesDirectory)'
 
 - task: DotNetCoreCLI@2
   displayName: 'Build solution Mono.Addins.sln'
@@ -23,8 +23,12 @@ steps:
 - task: DotNetCoreCLI@2
   displayName: 'Generating packages'
   inputs:
-    command: pack
+    command: custom
+    custom: pack
+    projects: Mono.Addins.sln
     arguments: '/p:Configuration=$(BuildConfiguration)'
+    nobuild: true
+    workingDirectory: $(Build.SourcesDirectory)
 
 #- task: MSBuild@1
 #  displayName: 'Test Assemblies Test\UnitTests\bin\Debug\UnitTests.dll'

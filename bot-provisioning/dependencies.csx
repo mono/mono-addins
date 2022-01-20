@@ -5,4 +5,4 @@ using static Xamarin.Provisioning.ProvisioningScript;
 using System;
 using System.Linq;
 
-DotNetSdk("global.json")
+DotNetSdk("../global.json")
