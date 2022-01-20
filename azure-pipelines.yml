@@ -1,5 +1,5 @@
 pool:
-  vmImage: 'macos-latest'
+  vmImage: 'macOS-10.15'
 
 variables:
 - name: BuildConfiguration
