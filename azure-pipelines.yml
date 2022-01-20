@@ -1,5 +1,5 @@
 pool:
-  name: Hosted Mac Internal
+  name: Azure Pipelines
 
 variables:
 - name: BuildConfiguration
