@@ -24,7 +24,7 @@ steps:
   displayName: 'Generating packages'
   inputs:
     command: pack
-    projects: 'Mono.Addins.sln'
+    projects: '$(Build.SourcesDirectory)/Mono.Addins.sln'
     arguments: '/p:Configuration=$(BuildConfiguration)'
     nobuild: true
 
