@@ -24,8 +24,9 @@ steps:
   displayName: 'Generating packages'
   inputs:
     command: pack
+    projects: 'Mono.Addins.sln'
     arguments: '/p:Configuration=$(BuildConfiguration)'
-    projects: Mono.Addins.sln
+    nobuild: true
 
 #- task: MSBuild@1
 #  displayName: 'Test Assemblies Test\UnitTests\bin\Debug\UnitTests.dll'
