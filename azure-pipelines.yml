@@ -61,7 +61,7 @@ steps:
   inputs:
     command: 'custom'
     custom: '$(MBSIGN_APPFOLDER)/ddsignfiles.dll'
-    arguments: '/file:$(build.sourcesdirectory)/bin/Mono.Addins.1.3.9.nupkg /certs:401405'
+    arguments: '/file:$(build.sourcesdirectory)/bin/*.nupkg /certs:401405'
 
 - task: CopyFiles@1
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
