@@ -4,6 +4,8 @@ pool:
 variables:
 - name: BuildConfiguration
   value: Debug
+- name: TeamName
+  value: Mono.Addins
 
 steps:
 
