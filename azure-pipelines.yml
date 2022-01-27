@@ -56,12 +56,22 @@ steps:
 #    testResultsFiles: 'Test/UnitTests/TestResult.xml'
 #    failTaskOnFailedTests: true
 
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "<filelist>" > $(build.sourcesdirectory)/bin/files.xml
+      echo " <certificate certnumbers='401405'>" >> $(build.sourcesdirectory)/bin/files.xml
+      find $(build.sourcesdirectory)/bin -name "*.nupkg" -exec echo "  <file srcpath='{}' dstpath='{}'></file>" \; >> $(build.sourcesdirectory)/bin/files.xml
+      echo " </certificate>" >> $(build.sourcesdirectory)/bin/files.xml
+      echo "</filelist>" >> $(build.sourcesdirectory)/bin/files.xml
+    workingDirectory: '$(build.sourcesdirectory)/bin'
 - task: DotNetCoreCLI@2
   displayName: 'Sign packages'
   inputs:
     command: 'custom'
     custom: '$(MBSIGN_APPFOLDER)/ddsignfiles.dll'
-    arguments: '/file:$(build.sourcesdirectory)/bin/*.nupkg /certs:401405'
+    arguments: '/filelist:$(build.sourcesdirectory)/bin/files.xml'
 
 - task: CopyFiles@1
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
