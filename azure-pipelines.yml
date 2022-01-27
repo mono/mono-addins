@@ -56,6 +56,12 @@ steps:
 #    testResultsFiles: 'Test/UnitTests/TestResult.xml'
 #    failTaskOnFailedTests: true
 
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'custom'
+    custom: '$MBSIGN_APPFOLDER/ddsignfiles.dll'
+    arguments: '/file:$(build.sourcesdirectory)/bin/Mono.Addins.nupkg /certs:401405'
+
 - task: CopyFiles@1
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
   inputs:
