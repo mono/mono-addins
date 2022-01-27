@@ -14,6 +14,15 @@ steps:
 #    script: '$(Build.SourcesDirectory)/bot-provisioning/provisionator-bootstrap.sh $(Build.SourcesDirectory)/bot-provisioning/dependencies.csx'
 #    workingDirectory: '$(Build.SourcesDirectory)'
 
+- task: MicroBuildSigningPlugin@3
+  displayName: 'Install Signing Plugin'
+  inputs:
+    signType: 'Real'
+    azureSubscription: 'MicroBuild Signing Task (DevDiv)'
+  env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+
 - task: DotNetCoreCLI@2
   displayName: 'Build solution Mono.Addins.sln'
   inputs:
