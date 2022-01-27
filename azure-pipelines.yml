@@ -57,9 +57,10 @@ steps:
 #    failTaskOnFailedTests: true
 
 - task: DotNetCoreCLI@2
+  displayName: 'Sign packages'
   inputs:
     command: 'custom'
-    custom: '$MBSIGN_APPFOLDER/ddsignfiles.dll'
+    custom: '$(MBSIGN_APPFOLDER)/ddsignfiles.dll'
     arguments: '/file:$(build.sourcesdirectory)/bin/Mono.Addins.nupkg /certs:401405'
 
 - task: CopyFiles@1
