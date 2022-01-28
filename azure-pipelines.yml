@@ -4,6 +4,8 @@ pool:
 variables:
 - name: BuildConfiguration
   value: Debug
+- name: TeamName
+  value: Mono.Addins
 
 steps:
 
@@ -14,6 +16,15 @@ steps:
 #    script: '$(Build.SourcesDirectory)/bot-provisioning/provisionator-bootstrap.sh $(Build.SourcesDirectory)/bot-provisioning/dependencies.csx'
 #    workingDirectory: '$(Build.SourcesDirectory)'
 
+- task: MicroBuildSigningPlugin@3
+  displayName: 'Install Signing Plugin'
+  inputs:
+    signType: 'Real'
+    azureSubscription: 'MicroBuild Signing Task (DevDiv)'
+  env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+
 - task: DotNetCoreCLI@2
   displayName: 'Build solution Mono.Addins.sln'
   inputs:
@@ -21,7 +32,7 @@ steps:
     arguments: '/p:Configuration=$(BuildConfiguration)'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Generating packages'
+  displayName: 'Generate packages'
   inputs:
     command: custom
     custom: pack
@@ -44,6 +55,25 @@ steps:
 #    testResultsFormat: 'NUnit'
 #    testResultsFiles: 'Test/UnitTests/TestResult.xml'
 #    failTaskOnFailedTests: true
+
+- task: Bash@3
+  displayName: 'Generate package file list'
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "<filelist>" > $(build.sourcesdirectory)/bin/files.xml
+      echo " <certificate certnumbers='401405'>" >> $(build.sourcesdirectory)/bin/files.xml
+      find $(build.sourcesdirectory)/bin -name "*.nupkg" -exec echo "  <file srcpath='{}' dstpath='{}'></file>" \; >> $(build.sourcesdirectory)/bin/files.xml
+      echo " </certificate>" >> $(build.sourcesdirectory)/bin/files.xml
+      echo "</filelist>" >> $(build.sourcesdirectory)/bin/files.xml
+    workingDirectory: '$(build.sourcesdirectory)/bin'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Sign packages'
+  inputs:
+    command: 'custom'
+    custom: '$(MBSIGN_APPFOLDER)/ddsignfiles.dll'
+    arguments: '/filelist:$(build.sourcesdirectory)/bin/files.xml'
 
 - task: CopyFiles@1
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
