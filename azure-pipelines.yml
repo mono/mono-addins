@@ -32,7 +32,7 @@ steps:
     arguments: '/p:Configuration=$(BuildConfiguration)'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Generating packages'
+  displayName: 'Generate packages'
   inputs:
     command: custom
     custom: pack
@@ -57,6 +57,7 @@ steps:
 #    failTaskOnFailedTests: true
 
 - task: Bash@3
+  displayName: 'Generate package file list'
   inputs:
     targetType: 'inline'
     script: |
@@ -66,6 +67,7 @@ steps:
       echo " </certificate>" >> $(build.sourcesdirectory)/bin/files.xml
       echo "</filelist>" >> $(build.sourcesdirectory)/bin/files.xml
     workingDirectory: '$(build.sourcesdirectory)/bin'
+
 - task: DotNetCoreCLI@2
   displayName: 'Sign packages'
   inputs:
