@@ -15,7 +15,9 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <IsPackable>False</IsPackable>
+    <PackageId>Mono.Addins.UtilTool</PackageId>
+    <PackAsTool Condition="'$(TargetFramework)' != '$(DotNetFrameworkTarget)'">True</PackAsTool>
+    <ToolCommandName>mautil</ToolCommandName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
