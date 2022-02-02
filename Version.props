@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <PackageVersion>1.3.9</PackageVersion>
+    <PackageVersion>1.3.10</PackageVersion>
     <Authors>Microsoft</Authors>
     <Owners>microsoft, xamarin</Owners>
     <PackageLicenseUrl>https://github.com/mono/mono-addins/blob/main/COPYING</PackageLicenseUrl>
