@@ -179,14 +179,29 @@ namespace Mono.Addins.Database
 				if (File.Exists (cecil))
 					Assembly.LoadFile (cecil);
 
-				Assembly asm = Assembly.LoadFrom (asmFile);
+#if NETFRAMEWORK
+				var asm = Assembly.LoadFrom(asmFile);
+#else
+				// The assembly needs to be loaded in the Assembly.Load() context, so use Assembly.Load()
+				// after getting the AssemblyName (which, on .NET Core, also contains the full
+				// path information so Assembly.Load() will work).
+				var asm = Assembly.Load(AssemblyName.GetAssemblyName(asmFile));
+#endif
 				t = asm.GetType ("Mono.Addins.CecilReflector.Reflector");
 			}
 			else {
 				string refName = GetType().Assembly.FullName;
 				int i = refName.IndexOf (',');
 				refName = "Mono.Addins.CecilReflector.Reflector, Mono.Addins.CecilReflector" + refName.Substring (i);
-				t = Type.GetType (refName, false);
+				try
+				{
+					t = Type.GetType(refName, false);
+				}
+				catch (FileLoadException)
+				{
+					// .NET Core may throw an exception if the assembly is not found
+					t = null;
+				}
 			}
 			if (t != null)
 				reflector = (IAssemblyReflector)Activator.CreateInstance (t);
