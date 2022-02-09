@@ -27,6 +27,7 @@ namespace Mono.Addins.Description
 	public enum PackageFormat
 	{
 		Mpack,
-		Vsix
+		Vsix,
+		NuGet
 	}
 }

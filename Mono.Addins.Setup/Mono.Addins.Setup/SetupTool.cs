@@ -499,6 +499,9 @@ namespace Mono.Addins.Setup
 			case "vsix":
 				format = PackageFormat.Vsix;
 				break;
+			case "nupkg":
+				format = PackageFormat.NuGet;
+				break;
 			default:
 				throw new ArgumentException ($"Unsupported package format \"{formatString}\", supported formats are mpack and vsix.");
 			}
@@ -1177,8 +1180,8 @@ namespace Mono.Addins.Setup
 	
 			cmd = new SetupCommand (cat, "pack", "p", new SetupCommandHandler (BuildPackage));
 			cmd.Description = "Creates a package from an add-in configuration file.";
-			cmd.Usage = "<file-path> [-d:output-directory] [-format:(mpack|vsix)] [-debugSymbols:(true|false)]";
-			cmd.AppendDesc ("Creates an add-in package (.mpack or .vsix file) which includes all files ");
+			cmd.Usage = "<file-path> [-d:output-directory] [-format:(mpack|vsix|nupkg)] [-debugSymbols:(true|false)]";
+			cmd.AppendDesc ("Creates an add-in package (.mpack, .vsix or .nupkg file) which includes all files ");
 			cmd.AppendDesc ("needed to deploy an add-in. The command parameter is the path to");
 			cmd.AppendDesc ("the add-in's configuration file. If 'debugSymbols' is set to true");
 			cmd.AppendDesc ("then pdb or mdb debug symbols will automatically be included in the");
