@@ -44,5 +44,11 @@
     </ProjectReference>
     <ProjectReference Include="..\Mono.Addins.Setup\Mono.Addins.Setup.csproj">
     </ProjectReference>
+    <ProjectReference Include="..\Mono.Addins.CecilReflector\Mono.Addins.CecilReflector.csproj">
+        <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Mono.Cecil" Version="0.10.1" IncludeAssets="runtime" />
   </ItemGroup>
 </Project>
