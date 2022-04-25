@@ -1,4 +1,4 @@
-//
+﻿//
 // ExtensionContext.cs
 //
 // Author:
@@ -181,7 +181,20 @@ namespace Mono.Addins
 				ot.Changed -= new EventHandler (OnConditionChanged);
 			info.CondType = type;
 		}
-		
+
+		internal void RegisterCondition (string id, RuntimeAddin addin, string typeName)
+		{
+			// Allows delayed creation of condition types
+			ConditionInfo info = CreateConditionInfo (id);
+			ConditionType ot = info.CondType as ConditionType;
+			if (ot != null)
+				ot.Changed -= new EventHandler (OnConditionChanged);
+			info.CondType = new ConditionTypeData {
+				TypeName = typeName,
+				Addin = addin
+			};
+		}
+
 		ConditionInfo CreateConditionInfo (string id)
 		{
 			ConditionInfo info = conditionTypes [id] as ConditionInfo;
@@ -198,22 +211,28 @@ namespace Mono.Addins
 		
 		internal ConditionType GetCondition (string id)
 		{
-			ConditionType ct;
 			ConditionInfo info = (ConditionInfo) conditionTypes [id];
 			
 			if (info != null) {
-				if (info.CondType is Type) {
-					// The condition was registered as a type, create an instance now
-					ct = (ConditionType) Activator.CreateInstance ((Type)info.CondType);
-					ct.Id = id;
-					ct.Changed += new EventHandler (OnConditionChanged);
-					info.CondType = ct;
+				if (info.CondType is ConditionType condition) {
+					return condition;
 				}
-				else
-					ct = info.CondType as ConditionType;
+				else {
+					// The condition was registered as a type, create an instance now
+					Type type;
+					if (info.CondType is ConditionTypeData data) {
+						type = data.Addin.GetType (data.TypeName, true);
+					} else
+						type = info.CondType as Type;
 
-				if (ct != null)
-					return ct;
+					if (type != null) {
+						var ct = (ConditionType)Activator.CreateInstance (type);
+						ct.Id = id;
+						ct.Changed += new EventHandler (OnConditionChanged);
+						info.CondType = ct;
+						return ct;
+					}
+				}
 			}
 			
 			if (parentContext != null)
@@ -233,9 +252,6 @@ namespace Mono.Addins
 				
 				foreach (string cid in conditionTypeIds) {
 				
-					// Make sure the condition is properly created
-					GetCondition (cid);
-					
 					ConditionInfo info = CreateConditionInfo (cid);
 					if (info.BoundConditions == null)
 						info.BoundConditions = new List<BaseCondition> ();
@@ -1356,5 +1372,11 @@ namespace Mono.Addins
 		public string AddinId;
 		public string AddinName;
 		public List<Extension> Extensions;
+	}
+
+	class ConditionTypeData
+	{
+		public string TypeName { get; set; }
+		public RuntimeAddin Addin { get; set; }
 	}
 }

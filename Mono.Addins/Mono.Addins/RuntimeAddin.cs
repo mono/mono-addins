@@ -1,4 +1,4 @@
-//
+﻿//
 // RuntimeAddin.cs
 //
 // Author:
@@ -63,6 +63,7 @@ namespace Mono.Addins
 		AddinLocalizer localizer;
 		ModuleDescription module;
 		AddinEngine addinEngine;
+		ExtensionNodeDescription localizerDescription;
 		
 		internal RuntimeAddin (AddinEngine addinEngine)
 		{
@@ -78,7 +79,6 @@ namespace Mono.Addins
 			baseDirectory = parentAddin.baseDirectory;
 			privatePath = parentAddin.privatePath;
 			ainfo = parentAddin.ainfo;
-			localizer = parentAddin.localizer;
 			module.RuntimeAddin = this;
 		}
 		
@@ -598,10 +598,11 @@ namespace Mono.Addins
 		/// </summary>
 		public AddinLocalizer Localizer {
 			get {
-				if (localizer != null)
-					return localizer;
+				// If this is an optional module, the localizer is defined in the parent
+				if (parentAddin != null)
+					return parentAddin.Localizer;
 				else
-					return addinEngine.DefaultLocalizer;
+					return LoadLocalizer () ?? addinEngine.DefaultLocalizer;
 			}
 		}
 		
@@ -627,33 +628,37 @@ namespace Mono.Addins
 			baseDirectory = description.BasePath;
 			module = description.MainModule;
 			module.RuntimeAddin = this;
+			localizerDescription = description.Localizer;
+			return description;
+		}
 
-			// Load the assemblies
-			if (description.Localizer != null) {
-				string cls = description.Localizer.GetAttribute ("type");
+		AddinLocalizer LoadLocalizer ()
+		{
+			if (localizerDescription != null) {
+				string cls = localizerDescription.GetAttribute ("type");
 
 				// First try getting one of the stock localizers. If none of found try getting the type.
 				// They are not encoded as an assembly qualified name
 				object fob = null;
 				if (cls.IndexOf (',') == -1) {
-					Type t = GetType().Assembly.GetType ("Mono.Addins.Localization." + cls + "Localizer", false);
+					Type t = GetType ().Assembly.GetType ("Mono.Addins.Localization." + cls + "Localizer", false);
 					if (t != null)
 						fob = Activator.CreateInstance (t);
 				}
-				
+
 				if (fob == null)
 					fob = CreateInstance (cls, true);
-				
+
 				IAddinLocalizerFactory factory = fob as IAddinLocalizerFactory;
 				if (factory == null)
 					throw new InvalidOperationException ("Localizer factory type '" + cls + "' must implement IAddinLocalizerFactory");
-				localizer = new AddinLocalizer (factory.CreateLocalizer (this, description.Localizer));
+				localizer = new AddinLocalizer (factory.CreateLocalizer (this, localizerDescription));
+				localizerDescription = null;
 			}
-			
-			return description;
+			return localizer;
 		}
-		
-		RuntimeAddin[] GetDepAddins ()
+
+		RuntimeAddin [] GetDepAddins ()
 		{
 			if (depAddins != null)
 				return depAddins;
