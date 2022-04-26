@@ -1,4 +1,4 @@
-//
+﻿//
 // AddinService.cs
 //
 // Author:
@@ -62,7 +62,7 @@ namespace Mono.Addins
 		bool checkAssemblyLoadConflicts;
 		Dictionary<string,RuntimeAddin> loadedAddins = new Dictionary<string,RuntimeAddin> ();
 		Dictionary<string,ExtensionNodeSet> nodeSets = new Dictionary<string, ExtensionNodeSet> ();
-		Hashtable autoExtensionTypes = new Hashtable ();
+		Dictionary<string,string> autoExtensionTypes = new Dictionary<string, string> ();
 		Dictionary<string, RuntimeAddin> assemblyResolvePaths = new Dictionary<string, RuntimeAddin>();
 		AddinLocalizer defaultLocalizer;
 		IProgressStatus defaultProgressStatus = new ConsoleProgressStatus (false);
@@ -583,16 +583,16 @@ namespace Mono.Addins
 		bool InsertAddin (IProgressStatus statusMonitor, Addin iad)
 		{
 			try {
-				RuntimeAddin p = new RuntimeAddin (this);
+				RuntimeAddin runtimeAddin = new RuntimeAddin (this);
 
-				RegisterAssemblyResolvePaths (p, iad.Description.MainModule);
+				RegisterAssemblyResolvePaths (runtimeAddin, iad.Description.MainModule);
 				
 				// Read the config file and load the add-in assemblies
-				AddinDescription description = p.Load (iad);
+				AddinDescription description = runtimeAddin.Load (iad);
 				
 				// Register the add-in
 				var loadedAddinsCopy = new Dictionary<string,RuntimeAddin> (loadedAddins);
-				loadedAddinsCopy [Addin.GetIdName (p.Id)] = p;
+				loadedAddinsCopy [Addin.GetIdName (runtimeAddin.Id)] = runtimeAddin;
 				loadedAddins = loadedAddinsCopy;
 				
 				if (!AddinDatabase.RunningSetupProcess) {
@@ -600,18 +600,16 @@ namespace Mono.Addins
 					
 					RegisterNodeSets (iad.Id, description.ExtensionNodeSets);
 
-					foreach (ConditionTypeDescription cond in description.ConditionTypes) {
-						Type ctype = p.GetType (cond.TypeName, true);
-						RegisterCondition (cond.Id, ctype);
-					}
+					foreach (ConditionTypeDescription cond in description.ConditionTypes)
+						RegisterCondition (cond.Id, runtimeAddin, cond.TypeName);
 				}
 					
 				foreach (ExtensionPoint ep in description.ExtensionPoints)
-					InsertExtensionPoint (p, ep);
+					InsertExtensionPoint (runtimeAddin, ep);
 				
 				// Fire loaded event
-				NotifyAddinLoaded (p);
-				ReportAddinLoad (p.Id);
+				NotifyAddinLoaded (runtimeAddin);
+				ReportAddinLoad (runtimeAddin.Id);
 				return true;
 			}
 			catch (Exception ex) {
@@ -637,8 +635,7 @@ namespace Mono.Addins
 			CreateExtensionPoint (ep);
 			foreach (ExtensionNodeType nt in ep.NodeSet.NodeTypes) {
 				if (nt.ObjectTypeName.Length > 0) {
-					Type ntype = addin.GetType (nt.ObjectTypeName, true);
-					RegisterAutoTypeExtensionPoint (ntype, ep.Path);
+					RegisterAutoTypeExtensionPoint (nt.ObjectTypeName, ep.Path);
 				}
 			}
 		}
@@ -754,19 +751,24 @@ namespace Mono.Addins
 			return null;
 		}
 		
-		internal void RegisterAutoTypeExtensionPoint (Type type, string path)
+		internal void RegisterAutoTypeExtensionPoint (string typeName, string path)
 		{
-			autoExtensionTypes [type] = path;
+			if (Util.TryParseTypeName (typeName, out var t, out var _))
+				typeName = t;
+			autoExtensionTypes [typeName] = path;
 		}
 
-		internal void UnregisterAutoTypeExtensionPoint (Type type, string path)
+		internal void UnregisterAutoTypeExtensionPoint (string typeName, string path)
 		{
-			autoExtensionTypes.Remove (type);
+			if (Util.TryParseTypeName (typeName, out var t, out var _))
+				typeName = t;
+			autoExtensionTypes.Remove (typeName);
 		}
 		
 		internal string GetAutoTypeExtensionPoint (Type type)
 		{
-			return autoExtensionTypes [type] as string;
+			autoExtensionTypes.TryGetValue (type.FullName, out var path);
+			return path;
 		}
 
 		void OnAssemblyLoaded (object s, AssemblyLoadEventArgs a)
