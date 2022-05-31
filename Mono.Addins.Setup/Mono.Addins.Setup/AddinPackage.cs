@@ -88,7 +88,7 @@ namespace Mono.Addins.Setup
 			return pack;
 		}
 		
-		static AddinInfo ReadAddinInfo (string file)
+		internal static AddinInfo ReadAddinInfo (string file)
 		{
 			ZipFile zfile = new ZipFile (file);
 			try {
