@@ -307,6 +307,11 @@ namespace Mono.Addins.Setup
 			return AddinInfo.ReadFromDescription (addin.Description);
 		}
 
+		public static AddinHeader ReadAddinHeader (string mpack)
+		{
+			return AddinPackage.ReadAddinInfo(mpack);
+		}
+
 		Dictionary<string, AddinRepositoryProvider> providersList = new Dictionary<string, AddinRepositoryProvider> ();
 
 		public AddinRepositoryProvider GetAddinRepositoryProvider (string providerId)
