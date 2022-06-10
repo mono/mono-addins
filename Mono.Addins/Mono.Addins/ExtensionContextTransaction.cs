@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Mono.Addins
 {
@@ -43,6 +44,7 @@ namespace Mono.Addins
 		public ExtensionContextTransaction (ExtensionContext context)
 		{
 			Context = context;
+			Monitor.Enter (Context.LocalLock);
 		}
 
 		public ExtensionContext Context { get; }
@@ -51,13 +53,19 @@ namespace Mono.Addins
 
 		public void Dispose ()
         {
-			if (nodeConditions != null) {
-				Context.BulkRegisterNodeConditions (this, nodeConditions);
+			try {
+				if (nodeConditions != null) {
+					Context.BulkRegisterNodeConditions (this, nodeConditions);
+				}
+
+				if (nodeConditionUnregistrations != null) {
+					Context.BulkUnregisterNodeConditions (this, nodeConditionUnregistrations);
+				}
+			} finally {
+				Monitor.Exit (Context.LocalLock);
 			}
 
-			if (nodeConditionUnregistrations != null) {
-				Context.BulkUnregisterNodeConditions (this, nodeConditionUnregistrations);
-			}
+			// Do notifications outside the lock
 
 			if (loadedNodes != null) {
 				foreach (var node in loadedNodes)

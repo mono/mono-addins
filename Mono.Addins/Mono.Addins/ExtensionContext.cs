@@ -149,7 +149,7 @@ namespace Mono.Addins
 		{
 			using var transaction = BeginTransaction ();
 			type.Id = id;
-			CreateConditionInfo (transaction, id, type);
+			GetOrCreateConditionInfo (transaction, id, type);
 		}
 		
 		/// <summary>
@@ -170,25 +170,25 @@ namespace Mono.Addins
 			using var transaction = BeginTransaction ();
 
 			// Allows delayed creation of condition types
-			CreateConditionInfo (transaction, id, type);
+			GetOrCreateConditionInfo (transaction, id, type);
 		}
 
 		void RegisterCondition (ExtensionContextTransaction transaction, string id, Type type)
 		{
 			// Allows delayed creation of condition types
-			CreateConditionInfo (transaction, id, type);
+			GetOrCreateConditionInfo (transaction, id, type);
 		}
 
 		internal void RegisterCondition (ExtensionContextTransaction transaction, string id, RuntimeAddin addin, string typeName)
 		{
 			// Allows delayed creation of condition types
-			CreateConditionInfo (transaction, id, new ConditionTypeData {
+			GetOrCreateConditionInfo (transaction, id, new ConditionTypeData {
 				TypeName = typeName,
 				Addin = addin
 			});
 		}
 
-		ConditionInfo CreateConditionInfo (ExtensionContextTransaction transaction, string id, object conditionTypeObject)
+		ConditionInfo GetOrCreateConditionInfo (ExtensionContextTransaction transaction, string id, object conditionTypeObject)
 		{
 			if (!conditionTypes.TryGetValue (id, out var info)) {
 				info = new ConditionInfo ();
@@ -245,51 +245,82 @@ namespace Mono.Addins
 			else
 				return null;
 		}
-		
+
+		/// <summary>
+		/// Registers a set of node conditions
+		/// </summary>
 		internal void BulkRegisterNodeConditions (ExtensionContextTransaction transaction, IEnumerable<(TreeNode Node, BaseCondition Condition)> nodeConditions)
 		{
-			var dictBuilder = ImmutableDictionary.CreateBuilder<BaseCondition, ImmutableArray<TreeNode>> ();
+			// We are going to do many changes, to create a builder for the dictionary
+			var dictBuilder = conditionsToNodes.ToBuilder ();
+
+			// Group nodes by the conditions, so that all nodes for a conditions can be processed together
 
 			foreach (var group in nodeConditions.GroupBy (c => c.Condition)) {
-				var cond = group.Key;
-				ImmutableArray<TreeNode>.Builder listBuilder;
-				if (!conditionsToNodes.TryGetValue (group.Key, out var list)) {
-					listBuilder = ImmutableArray.CreateBuilder<TreeNode> ();
+				var condition = group.Key;
 
+				if (!dictBuilder.TryGetValue (condition, out var list)) {
+
+					// Condition not yet registered, register it now
+
+					// Get a list of conditions on which this one depends
 					var conditionTypeIds = new List<string> ();
-					cond.GetConditionTypes (conditionTypeIds);
+					condition.GetConditionTypes (conditionTypeIds);
 
 					foreach (string cid in conditionTypeIds) {
 
-						ConditionInfo info = CreateConditionInfo (transaction, cid, null);
+						// For each condition on which 'condition' depends, register the dependency
+						// so that it if the condition changes, the dependencies are notified
+						ConditionInfo info = GetOrCreateConditionInfo (transaction, cid, null);
 						if (info.BoundConditions == null)
 							info.BoundConditions = new List<BaseCondition> ();
 
-						info.BoundConditions.Add (cond);
+						info.BoundConditions.Add (condition);
 					}
-				} else
-					listBuilder = list.ToBuilder();
+					list = ImmutableArray<TreeNode>.Empty;
+				}
 
-				listBuilder.AddRange (group.Select (item => item.Node));
-				dictBuilder [cond] = listBuilder.ToImmutable ();
+				dictBuilder [condition] = list.AddRange (group.Select (item => item.Node));
 			}
 			conditionsToNodes = dictBuilder.ToImmutable ();
 		}
 
+		/// <summary>
+		/// Unregisters a set of node conditions
+		/// </summary>
 		internal void BulkUnregisterNodeConditions (ExtensionContextTransaction transaction, IEnumerable<(TreeNode Node, BaseCondition Condition)> nodeConditions)
 		{
 			ImmutableDictionary<BaseCondition, ImmutableArray<TreeNode>>.Builder dictBuilder = null;
 
 			foreach (var group in nodeConditions.GroupBy (c => c.Condition)) {
-				var cond = group.Key;
-				if (!conditionsToNodes.TryGetValue (cond, out var list))
+				var condition = group.Key;
+				if (!conditionsToNodes.TryGetValue (condition, out var list))
+					continue;
+
+				var newList = list.RemoveRange (group.Select (item => item.Node));
+
+				// If there are no changes, continue, no need to create the dictionary builder
+				if (newList == list)
 					continue;
 
 				if (dictBuilder == null)
 					dictBuilder = conditionsToNodes.ToBuilder ();
 
-				list = list.RemoveRange (group.Select (item => item.Node));
-				dictBuilder [cond] = list;
+				if (newList.Length == 0) {
+
+					// The condition is not used anymore. Remove it from the dictionary
+                    // and unregister it from any condition it was bound to
+
+					dictBuilder.Remove (condition);
+					var conditionTypeIds = new List<string> ();
+					condition.GetConditionTypes (conditionTypeIds);
+					foreach (string cid in conditionTypeIds) {
+						var info = conditionTypes [cid];
+						if (info != null && info.BoundConditions != null)
+							info.BoundConditions.Remove (condition);
+					}
+				} else
+					dictBuilder [condition] = newList;
 			}
 			if (dictBuilder != null)
 				conditionsToNodes = dictBuilder.ToImmutable ();
