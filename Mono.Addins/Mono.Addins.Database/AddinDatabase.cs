@@ -493,8 +493,10 @@ namespace Mono.Addins.Database
 			Configuration.SetEnabled (id, true, ainfo.AddinInfo.EnabledByDefault, true);
 			SaveConfiguration ();
 
-			if (addinEngine != null && addinEngine.IsInitialized)
-				addinEngine.ActivateAddin (id);
+			if (addinEngine != null && addinEngine.IsInitialized) {
+				using var transaction = addinEngine.BeginTransaction ();
+				addinEngine.ActivateAddin (transaction, id);
+			}
 		}
 		
 		public void DisableAddin (string domain, string id, bool exactVersionMatch = false, bool onlyForCurrentSession = false)
@@ -544,8 +546,10 @@ namespace Mono.Addins.Database
 				throw;
 			}
 
-			if (addinEngine != null && addinEngine.IsInitialized)
-				addinEngine.UnloadAddin (id);
+			if (addinEngine != null && addinEngine.IsInitialized) {
+				using var transaction = addinEngine.BeginTransaction ();
+				addinEngine.UnloadAddin (transaction, id);
+			}
 		}
 
 		public void UpdateEnabledStatus ()
@@ -1140,20 +1144,22 @@ namespace Mono.Addins.Database
 				foreach (Addin ainfo in GetInstalledAddins (domain, AddinSearchFlagsInternal.IncludeAddins)) {
 					newInstalled [ainfo.Id] = ainfo.Id;
 				}
-				
-				foreach (string aid in installed.Keys) {
-					// Always try to unload, event if the add-in was not currently loaded.
-					// Required since the add-ins has to be marked as 'disabled', to avoid
-					// extensions from this add-in to be loaded
-					if (!newInstalled.Contains (aid))
-						addinEngine.UnloadAddin (aid);
-				}
-				
-				foreach (string aid in newInstalled.Keys) {
-					if (!installed.Contains (aid)) {
-						Addin addin = addinEngine.Registry.GetAddin (aid);
-						if (addin != null)
-							addinEngine.ActivateAddin (aid);
+
+				using (var transaction = addinEngine.BeginTransaction ()) {
+					foreach (string aid in installed.Keys) {
+						// Always try to unload, event if the add-in was not currently loaded.
+						// Required since the add-ins has to be marked as 'disabled', to avoid
+						// extensions from this add-in to be loaded
+						if (!newInstalled.Contains (aid))
+							addinEngine.UnloadAddin (transaction, aid);
+					}
+
+					foreach (string aid in newInstalled.Keys) {
+						if (!installed.Contains (aid)) {
+							Addin addin = addinEngine.Registry.GetAddin (aid);
+							if (addin != null)
+								addinEngine.ActivateAddin (transaction, aid);
+						}
 					}
 				}
 			}

@@ -33,6 +33,8 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Reflection;
 using Mono.Addins.Description;
+using System.Threading;
+using System.Linq;
 
 namespace Mono.Addins
 {
@@ -59,7 +61,8 @@ namespace Mono.Addins
 		ModuleDescription module;
 		AddinEngine addinEngine;
 		event ExtensionNodeEventHandler extensionNodeChanged;
-		
+		object localLock = new object ();
+
 		/// <summary>
 		/// Identifier of the node.
 		/// </summary>
@@ -192,41 +195,14 @@ namespace Mono.Addins
 		/// </summary>
 		public ExtensionNodeList ChildNodes {
 			get {
-				if (childrenLoaded)
-					return childNodes;
-				
-				try {
-					if (treeNode.Children.Count == 0) {
-						childNodes = ExtensionNodeList.Empty;
-						return childNodes;
+				if (!childrenLoaded) {
+					lock (localLock) {
+						if (!childrenLoaded) {
+							childNodes = CreateChildrenList ();
+							childrenLoaded = true;
+						}
 					}
-				}
-				catch (Exception ex) {
-					addinEngine.ReportError (null, null, ex, false);
-					childNodes = ExtensionNodeList.Empty;
-					return childNodes;
-				} finally {
-					childrenLoaded = true;
-				}
-
-				List<ExtensionNode> list = new List<ExtensionNode> ();
-				foreach (TreeNode cn in treeNode.Children) {
-					
-					// For each node check if it is visible for the current context.
-					// If something fails while evaluating the condition, just ignore the node.
-					
-					try {
-						if (cn.ExtensionNode != null && cn.IsEnabled)
-							list.Add (cn.ExtensionNode);
-					} catch (Exception ex) {
-						addinEngine.ReportError (null, null, ex, false);
-					}
-				}
-				if (list.Count > 0)
-					childNodes = new ExtensionNodeList (list);
-				else
-					childNodes = ExtensionNodeList.Empty;
-			
+				}			
 				return childNodes;
 			}
 		}
@@ -349,10 +325,12 @@ namespace Mono.Addins
 		
 		Array GetChildObjectsInternal (Type arrayElementType, bool reuseCachedInstance)
 		{
-			ArrayList list = new ArrayList (ChildNodes.Count);
+			var children = ChildNodes;
+
+			ArrayList list = new ArrayList (children.Count);
 			
-			for (int n=0; n<ChildNodes.Count; n++) {
-				InstanceExtensionNode node = ChildNodes [n] as InstanceExtensionNode;
+			for (int n=0; n<children.Count; n++) {
+				var node = children [n] as InstanceExtensionNode;
 				if (node == null) {
 					addinEngine.ReportError ("Error while getting object for node in path '" + Path + "'. Extension node is not a subclass of InstanceExtensionNode.", null, null, false);
 					continue;
@@ -471,32 +449,85 @@ namespace Mono.Addins
 
 			return addinEngine.DefaultLocalizer;
 		}
-		
+
+		ExtensionNodeList CreateChildrenList ()
+		{
+			var nodeChildren = treeNode.Children;
+
+			try {
+				if (nodeChildren.Length == 0) {
+					return ExtensionNodeList.Empty;
+				}
+			} catch (Exception ex) {
+				addinEngine.ReportError (null, null, ex, false);
+				return ExtensionNodeList.Empty;
+			}
+
+			List<ExtensionNode> list = new List<ExtensionNode> (nodeChildren.Length);
+			foreach (TreeNode cn in nodeChildren) {
+
+				// For each node check if it is visible for the current context.
+				// If something fails while evaluating the condition, just ignore the node.
+
+				try {
+					if (cn.IsEnabled && cn.ExtensionNode != null)
+						list.Add (cn.ExtensionNode);
+				} catch (Exception ex) {
+					addinEngine.ReportError (null, null, ex, false);
+				}
+			}
+
+			if (list.Count > 0)
+				return new ExtensionNodeList (list);
+			else
+				return ExtensionNodeList.Empty;
+		}
+
 		internal bool NotifyChildChanged ()
 		{
+			// If children are not loaded, there isn't anything to update
 			if (!childrenLoaded)
 				return false;
 
-			ExtensionNodeList oldList = childNodes;
-			childrenLoaded = false;
-			
-			bool changed = false;
-			
-			foreach (ExtensionNode nod in oldList) {
-				if (ChildNodes [nod.Id] == null) {
-					changed = true;
-					OnChildNodeRemoved (nod);
+			List<(ExtensionNode Node, bool Added)> changes = null;
+
+			lock (localLock) {
+				var oldList = childNodes;
+				var newList = CreateChildrenList ();
+				childNodes = newList;
+
+				// Compare old list and new list to find out which nodes have
+				// been added or removed, since the changes need to be notified.
+
+				foreach (ExtensionNode nod in oldList) {
+					if (newList [nod.Id] == null) {
+						if (changes == null)
+							changes = new ();
+						changes.Add ((nod, false));
+					}
+				}
+				foreach (ExtensionNode nod in newList) {
+					if (oldList [nod.Id] == null) {
+						if (changes == null)
+							changes = new ();
+						changes.Add ((nod, true));
+					}
 				}
 			}
-			foreach (ExtensionNode nod in ChildNodes) {
-				if (oldList [nod.Id] == null) {
-					changed = true;
-					OnChildNodeAdded (nod);
+
+			// Notify the changes outside the lock
+
+			if (changes != null) {
+				foreach (var change in changes) {
+					if (change.Added)
+						OnChildNodeAdded (change.Node);
+					else
+						OnChildNodeRemoved (change.Node);
 				}
-			}
-			if (changed)
 				OnChildrenChanged ();
-			return changed;
+				return true;
+			} else
+				return false;
 		}
 		
 		/// <summary>
@@ -530,8 +561,7 @@ namespace Mono.Addins
 		/// </param>
 		protected virtual void OnChildNodeAdded (ExtensionNode node)
 		{
-			if (extensionNodeChanged != null)
-				extensionNodeChanged (this, new ExtensionNodeEventArgs (ExtensionChange.Add, node));
+			extensionNodeChanged?.Invoke (this, new ExtensionNodeEventArgs (ExtensionChange.Add, node));
 		}
 		
 		/// <summary>
@@ -542,8 +572,7 @@ namespace Mono.Addins
 		/// </param>
 		protected virtual void OnChildNodeRemoved (ExtensionNode node)
 		{
-			if (extensionNodeChanged != null)
-				extensionNodeChanged (this, new ExtensionNodeEventArgs (ExtensionChange.Remove, node));
+			extensionNodeChanged?.Invoke (this, new ExtensionNodeEventArgs (ExtensionChange.Remove, node));
 		}
 	}
 	

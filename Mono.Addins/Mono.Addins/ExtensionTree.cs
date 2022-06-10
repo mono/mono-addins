@@ -53,19 +53,18 @@ namespace Mono.Addins
 		}
 
 		
-		public void LoadExtension (string addin, Extension extension, List<TreeNode> addedNodes)
+		public void LoadExtension (ExtensionContextTransaction transaction, TreeNodeBuilder tnode, string addin, Extension extension, List<TreeNode> addedNodes)
 		{
-			TreeNode tnode = GetNode (extension.Path);
 			if (tnode == null) {
 				addinEngine.ReportError ("Can't load extensions for path '" + extension.Path + "'. Extension point not defined.", addin, null, false);
 				return;
 			}
 			
 			int curPos = -1;
-			LoadExtensionElement (tnode, addin, extension.ExtensionNodes, (ModuleDescription) extension.Parent, ref curPos, tnode.Condition, false, addedNodes);
+			LoadExtensionElement (transaction, tnode, addin, extension.ExtensionNodes, (ModuleDescription) extension.Parent, ref curPos, tnode.Condition, false, addedNodes);
 		}
 
-		void LoadExtensionElement (TreeNode tnode, string addin, ExtensionNodeDescriptionCollection extension, ModuleDescription module, ref int curPos, BaseCondition parentCondition, bool inComplextCondition, List<TreeNode> addedNodes)
+		void LoadExtensionElement (ExtensionContextTransaction transaction, TreeNodeBuilder tnode, string addin, ExtensionNodeDescriptionCollection extension, ModuleDescription module, ref int curPos, BaseCondition parentCondition, bool inComplextCondition, List<TreeNode> addedNodes)
 		{
 			foreach (ExtensionNodeDescription elem in extension) {
 					
@@ -76,26 +75,23 @@ namespace Mono.Addins
 				}
 
 				if (elem.NodeName == "ComplexCondition") {
-					LoadExtensionElement (tnode, addin, elem.ChildNodes, module, ref curPos, parentCondition, true, addedNodes);
+					LoadExtensionElement (transaction, tnode, addin, elem.ChildNodes, module, ref curPos, parentCondition, true, addedNodes);
 					continue;
 				}
 					
 				if (elem.NodeName == "Condition") {
 					Condition cond = new Condition (AddinEngine, elem, parentCondition);
-					LoadExtensionElement (tnode, addin, elem.ChildNodes, module, ref curPos, cond, false, addedNodes);
+					LoadExtensionElement (transaction, tnode, addin, elem.ChildNodes, module, ref curPos, cond, false, addedNodes);
 					continue;
 				}
 
-				var pnode = tnode;
-				ExtensionPoint extensionPoint = null;
-				while (pnode != null && (extensionPoint = pnode.ExtensionPoint) == null)
-					pnode = pnode.Parent;
+				ExtensionPoint extensionPoint = tnode.GetExtensionPoint ();
 					
 				string after = elem.GetAttribute ("insertafter");
 				if (after.Length == 0 && extensionPoint != null && curPos == -1)
 					after = extensionPoint.DefaultInsertAfter;
 				if (after.Length > 0) {
-					int i = tnode.Children.IndexOfNode (after);
+					int i = tnode.IndexOfChild (after);
 					if (i != -1)
 						curPos = i+1;
 				}
@@ -103,7 +99,7 @@ namespace Mono.Addins
 				if (before.Length == 0 && extensionPoint != null && curPos == -1)
 					before = extensionPoint.DefaultInsertBefore;
 				if (before.Length > 0) {
-					int i = tnode.Children.IndexOfNode (before);
+					int i = tnode.IndexOfChild (before);
 					if (i != -1)
 						curPos = i;
 				}
@@ -124,7 +120,7 @@ namespace Mono.Addins
 				if (id.Length == 0)
 					id = AutoIdPrefix + (++internalId);
 
-				TreeNode cnode = new TreeNode (addinEngine, id);
+				TreeNodeBuilder cnode = new TreeNodeBuilder (addinEngine, id);
 				
 				ExtensionNode enode = ReadNode (cnode, addin, ntype, elem, module);
 				if (enode == null)
@@ -132,22 +128,16 @@ namespace Mono.Addins
 
 				cnode.Condition = parentCondition;
 				cnode.ExtensionNodeSet = ntype;
-				tnode.InsertChildNode (curPos, cnode);
-				addedNodes.Add (cnode);
+				tnode.InsertChild (curPos, cnode);
 				
-				if (cnode.Condition != null)
-					Context.RegisterNodeCondition (cnode, cnode.Condition);
-
 				// Load children
 				if (elem.ChildNodes.Count > 0) {
 					int cp = 0;
-					LoadExtensionElement (cnode, addin, elem.ChildNodes, module, ref cp, parentCondition, false, addedNodes);
+					LoadExtensionElement (transaction, cnode, addin, elem.ChildNodes, module, ref cp, parentCondition, false, addedNodes);
 				}
 				
 				curPos++;
 			}
-			if (Context.FireEvents)
-				tnode.NotifyChildrenChanged ();
 		}
 		
 		BaseCondition ReadComplexCondition (ExtensionNodeDescription elem, BaseCondition parentCondition)
@@ -176,7 +166,7 @@ namespace Mono.Addins
 			return new NullCondition ();
 		}
 		
-		public ExtensionNode ReadNode (TreeNode tnode, string addin, ExtensionNodeType ntype, ExtensionNodeDescription elem, ModuleDescription module)
+		public ExtensionNode ReadNode (TreeNodeBuilder tnode, string addin, ExtensionNodeType ntype, ExtensionNodeDescription elem, ModuleDescription module)
 		{
 			try {
 				if (ntype.Type == null) {

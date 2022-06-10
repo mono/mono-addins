@@ -15,10 +15,12 @@
     <NoWarn>1574;1591</NoWarn>
     <ConsolePause>False</ConsolePause>
     <OutputPath>..\bin</OutputPath>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="CustomConditionAttribute.cs" />

@@ -473,14 +473,14 @@ namespace Mono.Addins
 			return a;
 		}
 		
-		internal void ActivateAddin (string id)
+		internal void ActivateAddin (ExtensionContextTransaction transaction, string id)
 		{
-			ActivateAddinExtensions (id);
+			ActivateAddinExtensions (transaction, id);
 		}
-		
-		internal void UnloadAddin (string id)
+
+		internal void UnloadAddin (ExtensionContextTransaction transaction, string id)
 		{
-			RemoveAddinExtensions (id);
+			RemoveAddinExtensions (transaction, id);
 			
 			RuntimeAddin addin = GetAddin (id);
 			if (addin != null) {
@@ -544,21 +544,31 @@ namespace Mono.Addins
 					
 					if (statusMonitor != null)
 						statusMonitor.SetMessage ("Loading Addins");
-					
-					for (int n=0; n<addins.Count; n++) {
-						
-						if (statusMonitor != null)
-							statusMonitor.SetProgress ((double) n / (double)addins.Count);
-						
-						Addin iad = addins [n];
-						if (IsAddinLoaded (iad.Id))
-							continue;
 
-						if (statusMonitor != null)
-							statusMonitor.SetMessage (string.Format(GettextCatalog.GetString("Loading {0} add-in"), iad.Id));
-						
-						if (!InsertAddin (statusMonitor, iad))
-							return false;
+					if (addins.Count > 0) {
+						ExtensionContextTransaction transaction = null;
+						try {
+							for (int n = 0; n < addins.Count; n++) {
+
+								if (statusMonitor != null)
+									statusMonitor.SetProgress ((double)n / (double)addins.Count);
+
+								Addin iad = addins [n];
+								if (IsAddinLoaded (iad.Id))
+									continue;
+
+								if (statusMonitor != null)
+									statusMonitor.SetMessage (string.Format (GettextCatalog.GetString ("Loading {0} add-in"), iad.Id));
+
+								if (transaction == null)
+									transaction = BeginTransaction ();
+
+								if (!InsertAddin (transaction, statusMonitor, iad))
+									return false;
+							}
+						} finally {
+							transaction?.Dispose ();
+						}
 					}
 					return true;
 				}
@@ -580,7 +590,7 @@ namespace Mono.Addins
 			base.ResetCachedData ();
 		}
 			
-		bool InsertAddin (IProgressStatus statusMonitor, Addin iad)
+		bool InsertAddin (ExtensionContextTransaction transaction, IProgressStatus statusMonitor, Addin iad)
 		{
 			try {
 				RuntimeAddin runtimeAddin = new RuntimeAddin (this);
@@ -601,7 +611,7 @@ namespace Mono.Addins
 					RegisterNodeSets (iad.Id, description.ExtensionNodeSets);
 
 					foreach (ConditionTypeDescription cond in description.ConditionTypes)
-						RegisterCondition (cond.Id, runtimeAddin, cond.TypeName);
+						RegisterCondition (transaction, cond.Id, runtimeAddin, cond.TypeName);
 				}
 					
 				foreach (ExtensionPoint ep in description.ExtensionPoints)
