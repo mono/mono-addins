@@ -723,9 +723,9 @@ namespace Mono.Addins
 			}
 		}
 		
-		internal void UnloadExtensions ()
+		internal void UnloadExtensions (ExtensionContextTransaction transaction)
 		{
-			addinEngine.UnregisterAddinNodeSets (id);
+			addinEngine.UnregisterAddinNodeSets (transaction, id);
 		}
 		
 		bool CheckAddinDependencies (ModuleDescription module, bool forceLoadAssemblies)

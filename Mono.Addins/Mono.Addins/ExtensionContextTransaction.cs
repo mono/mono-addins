@@ -40,6 +40,12 @@ namespace Mono.Addins
 		HashSet<string> extensionsChanged;
 		List<(TreeNode Node, BaseCondition Condition)> nodeConditions;
 		List<(TreeNode Node, BaseCondition Condition)> nodeConditionUnregistrations;
+		List<KeyValuePair<string, string>> registeredAutoExtensionPoints;
+		List<string> unregisteredAutoExtensionPoints;
+		List<KeyValuePair<string, RuntimeAddin>> registeredAssemblyResolvePaths;
+		List<string> unregisteredAssemblyResolvePaths;
+		List<RuntimeAddin> addinLoadEvents;
+		List<string> addinUnloadEvents;
 
 		public ExtensionContextTransaction (ExtensionContext context)
 		{
@@ -81,6 +87,32 @@ namespace Mono.Addins
 				foreach (var path in extensionsChanged)
 					Context.NotifyExtensionsChanged(new ExtensionEventArgs(path));
 			}
+			if (registeredAutoExtensionPoints != null) {
+				var engine = (AddinEngine)Context;
+				engine.BulkRegisterAutoTypeExtensionPoint (registeredAutoExtensionPoints);
+			}
+			if (unregisteredAutoExtensionPoints != null) {
+				var engine = (AddinEngine)Context;
+				engine.BulkUnregisterAutoTypeExtensionPoint (unregisteredAutoExtensionPoints);
+			}
+			if (registeredAssemblyResolvePaths != null) {
+				var engine = (AddinEngine)Context;
+				engine.BulkRegisterAssemblyResolvePaths (registeredAssemblyResolvePaths);
+			}
+			if (unregisteredAssemblyResolvePaths != null) {
+				var engine = (AddinEngine)Context;
+				engine.BulkUnregisterAssemblyResolvePaths (unregisteredAssemblyResolvePaths);
+			}
+			if (addinLoadEvents != null) {
+				var engine = (AddinEngine)Context;
+				foreach(var addin in addinLoadEvents)
+					engine.ReportAddinLoad (addin);
+			}
+			if (addinUnloadEvents != null) {
+				var engine = (AddinEngine)Context;
+				foreach (var id in addinUnloadEvents)
+					engine.ReportAddinUnload (id);
+			}
 		}
 
 		public void ReportLoadedNode (TreeNode node)
@@ -120,6 +152,48 @@ namespace Mono.Addins
 			if (nodeConditionUnregistrations == null)
 				nodeConditionUnregistrations = new List<(TreeNode Node, BaseCondition Condition)> ();
 			nodeConditionUnregistrations.Add ((node, cond));
+		}
+
+		public void RegisterAutoTypeExtensionPoint (string typeName, string path)
+		{
+			if (registeredAutoExtensionPoints == null)
+				registeredAutoExtensionPoints = new List<KeyValuePair<string, string>> ();
+			registeredAutoExtensionPoints.Add (new KeyValuePair<string, string> (typeName, path));
+		}
+
+		public void UnregisterAutoTypeExtensionPoint (string typeName)
+		{
+			if (unregisteredAutoExtensionPoints == null)
+				unregisteredAutoExtensionPoints = new List<string> ();
+			unregisteredAutoExtensionPoints.Add (typeName);
+		}
+
+		public void RegisterAssemblyResolvePaths (string assembly, RuntimeAddin addin)
+		{
+			if (registeredAssemblyResolvePaths == null)
+				registeredAssemblyResolvePaths = new List<KeyValuePair<string, RuntimeAddin>> ();
+			registeredAssemblyResolvePaths.Add (new KeyValuePair<string, RuntimeAddin> (assembly, addin));
+		}
+
+		public void UnregisterAssemblyResolvePaths (string assembly)
+		{
+			if (unregisteredAssemblyResolvePaths == null)
+				unregisteredAssemblyResolvePaths = new List<string> ();
+			unregisteredAssemblyResolvePaths.Add (assembly);
+		}
+
+		public void ReportAddinLoad (RuntimeAddin addin)
+		{
+			if (addinLoadEvents == null)
+				addinLoadEvents = new List<string> ();
+			addinLoadEvents.Add (addin);
+		}
+
+		public void ReportAddinUnload (string id)
+		{
+			if (addinUnloadEvents == null)
+				addinUnloadEvents = new List<string> ();
+			addinUnloadEvents.Add (id);
 		}
 	}
 }

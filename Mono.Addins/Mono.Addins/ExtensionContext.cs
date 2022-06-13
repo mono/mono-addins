@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading;
 using Mono.Addins.Description;
 
 namespace Mono.Addins
@@ -53,12 +54,12 @@ namespace Mono.Addins
 
 		ImmutableDictionary<string, ConditionInfo> conditionTypes = ImmutableDictionary<string, ConditionInfo>.Empty;
 		ImmutableDictionary<BaseCondition, ImmutableArray<TreeNode>> conditionsToNodes = ImmutableDictionary<BaseCondition, ImmutableArray<TreeNode>>.Empty;
-		List<WeakReference> childContexts;
+		ImmutableArray<WeakReference> childContexts = ImmutableArray<WeakReference>.Empty;
 		ExtensionContext parentContext;
 		ExtensionTree tree;
-		
-		List<string> runTimeEnabledAddins;
-		List<string> runTimeDisabledAddins;
+
+		ImmutableArray<string> runTimeEnabledAddins = ImmutableArray<string>.Empty;
+		ImmutableArray<string> runTimeDisabledAddins = ImmutableArray<string>.Empty;
 		
 		/// <summary>
 		/// Extension change event.
@@ -89,11 +90,11 @@ namespace Mono.Addins
 		{
 			conditionTypes = conditionTypes.Clear ();
 			conditionsToNodes.Clear ();
-			childContexts = null;
+			childContexts = ImmutableArray<WeakReference>.Empty;
 			parentContext = null;
 			tree = null;
-			runTimeEnabledAddins = null;
-			runTimeDisabledAddins = null;
+			runTimeEnabledAddins = ImmutableArray<string>.Empty;
+			runTimeDisabledAddins = ImmutableArray<string>.Empty;
 		}
 		
 		internal AddinEngine AddinEngine {
@@ -102,8 +103,28 @@ namespace Mono.Addins
 
 		void CleanDisposedChildContexts ()
 		{
-			if (childContexts != null)
-				childContexts.RemoveAll (w => w.Target == null);
+			var list = childContexts;
+			List<WeakReference> toRemove = null;
+
+			for (int n = 0; n < list.Length; n++) {
+				if (list [n].Target == null) {
+					// Create the list only if there is something to remove
+					if (toRemove == null)
+						toRemove = new List<WeakReference> ();
+					toRemove.Add (list [n]);
+				}
+			}
+			if (toRemove != null) {
+				// Removing the stale contexts is not urgent, so if the lock can't be acquired now
+				// it is ok to just skip the clean up and try later
+				if (Monitor.TryEnter(LocalLock)) {
+					try {
+						childContexts = childContexts.RemoveRange (toRemove);
+					} finally {
+						Monitor.Exit (LocalLock);
+					}
+				}
+			}
 		}
 		
 		internal virtual void ResetCachedData ()
@@ -117,16 +138,14 @@ namespace Mono.Addins
 		
 		internal ExtensionContext CreateChildContext ()
 		{
-			lock (conditionTypes) {
-				if (childContexts == null)
-					childContexts = new List<WeakReference> ();
-				else
-					CleanDisposedChildContexts ();
-				ExtensionContext ctx = new ExtensionContext ();
-				ctx.Initialize (AddinEngine);
-				ctx.parentContext = this;
-				WeakReference wref = new WeakReference (ctx);
-				childContexts.Add (wref);
+			ExtensionContext ctx = new ExtensionContext ();
+			ctx.Initialize (AddinEngine);
+			ctx.parentContext = this;
+			WeakReference wref = new WeakReference (ctx);
+
+			lock (LocalLock) {
+				CleanDisposedChildContexts ();
+				childContexts = childContexts.Add (wref);
 				return ctx;
 			}
 		}
@@ -853,16 +872,14 @@ namespace Mono.Addins
 				ctx.NotifyConditionChanged (cond);
 		}
 
-		ExtensionContext[] GetActiveChildContexes ()
+		IEnumerable<ExtensionContext> GetActiveChildContexes ()
 		{
 			// Collect a list of child contexts that are still referenced
-			lock (LocalLock) {
-				if (childContexts != null) {
-					CleanDisposedChildContexts ();
-					return childContexts.Select (wref => wref.Target as ExtensionContext).Where (t => t != null).ToArray ();
-				} else
-					return Array.Empty<ExtensionContext> ();
-			}
+			if (childContexts.Length > 0) {
+				CleanDisposedChildContexts ();
+				return childContexts.Select (t => (ExtensionContext)t.Target).Where (t => t != null);
+			} else
+				return Array.Empty<ExtensionContext> ();
 		}
 
 
@@ -901,7 +918,7 @@ namespace Mono.Addins
 			}
 			// Take note that this add-in has been enabled at run-time
 			// Needed because loaded add-in descriptions may not include this add-in. 
-			RegisterRuntimeEnabledAddin (id);
+			RegisterRuntimeEnabledAddin (transaction, id);
 				
 			// Look for loaded extension points
 			Hashtable eps = new Hashtable ();
@@ -943,7 +960,7 @@ namespace Mono.Addins
 		{
 			// Registers this add-in as disabled, so from now on extension from this
 			// add-in will be ignored
-			RegisterRuntimeDisabledAddin (id);
+			RegisterRuntimeDisabledAddin (transaction, id);
 
 			// This method removes all extension nodes added by the add-in
 			// Get all nodes created by the addin
@@ -978,50 +995,47 @@ namespace Mono.Addins
 			}
 		}
 		
-		void RegisterRuntimeDisabledAddin (string addinId)
+		void RegisterRuntimeDisabledAddin (ExtensionContextTransaction transaction, string addinId)
 		{
-			if (runTimeDisabledAddins == null)
-				runTimeDisabledAddins = new List<string> ();
 			if (!runTimeDisabledAddins.Contains (addinId))
-				runTimeDisabledAddins.Add (addinId);
+				runTimeDisabledAddins = runTimeDisabledAddins.Add (addinId);
 			
-			if (runTimeEnabledAddins != null)
-				runTimeEnabledAddins.Remove (addinId);
+			runTimeEnabledAddins = runTimeEnabledAddins.Remove (addinId);
 		}
 		
-		void RegisterRuntimeEnabledAddin (string addinId)
+		void RegisterRuntimeEnabledAddin (ExtensionContextTransaction transaction, string addinId)
 		{
-			if (runTimeEnabledAddins == null)
-				runTimeEnabledAddins = new List<string> ();
 			if (!runTimeEnabledAddins.Contains (addinId))
-				runTimeEnabledAddins.Add (addinId);
-			
-			if (runTimeDisabledAddins != null)
-				runTimeDisabledAddins.Remove (addinId);
+				runTimeEnabledAddins = runTimeEnabledAddins.Add (addinId);
+
+			runTimeDisabledAddins = runTimeDisabledAddins.Remove (addinId);
 		}
 		
 		internal List<string> GetAddinsForPath (List<string> col)
 		{
 			List<string> newlist = null;
-			
+
 			// Always consider add-ins which have been enabled at runtime since
 			// they may contain extension for this path.
 			// Ignore addins disabled at run-time.
-			
-			if (runTimeEnabledAddins != null && runTimeEnabledAddins.Count > 0) {
+
+			var enabledAddins = runTimeEnabledAddins;
+
+			if (enabledAddins != null && enabledAddins.Length > 0) {
 				newlist = new List<string> ();
 				newlist.AddRange (col);
-				foreach (string s in runTimeEnabledAddins)
+				foreach (string s in enabledAddins)
 					if (!newlist.Contains (s))
 						newlist.Add (s);
 			}
-			
-			if (runTimeDisabledAddins != null && runTimeDisabledAddins.Count > 0) {
+
+			var disabledAddins = runTimeDisabledAddins;
+			if (disabledAddins != null && disabledAddins.Length > 0) {
 				if (newlist == null) {
 					newlist = new List<string> ();
 					newlist.AddRange (col);
 				}
-				foreach (string s in runTimeDisabledAddins)
+				foreach (string s in disabledAddins)
 					newlist.Remove (s);
 			}
 			
