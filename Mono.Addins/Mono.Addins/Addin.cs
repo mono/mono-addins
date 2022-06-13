@@ -136,14 +136,16 @@ namespace Mono.Addins
 		
 		internal AddinInfo AddinInfo {
 			get {
-				if (addin == null) {
+				var addinInfo = addin;
+
+				if (addinInfo == null) {
 					try {
-						addin = AddinInfo.ReadFromDescription (Description);
+						addinInfo = addin = AddinInfo.ReadFromDescription (Description);
 					} catch (Exception ex) {
 						throw new InvalidOperationException ("Could not read add-in file: " + database.GetDescriptionPath (domain, id), ex);
 					}
 				}
-				return addin;
+				return addinInfo;
 			}
 		}
 		
@@ -235,17 +237,16 @@ namespace Mono.Addins
 		/// </summary>
 		public AddinDescription Description {
 			get {
-				if (desc != null) {
-					AddinDescription d = desc.Target as AddinDescription;
-					if (d != null)
-						return d;
+				var addinDescription = (AddinDescription) desc?.Target;
+				if (addinDescription != null) {
+					return addinDescription;
 				}
 
 				var configFile = database.GetDescriptionPath (domain, id);
-				AddinDescription m;
-				database.ReadAddinDescription (new ConsoleProgressStatus (true), configFile, out m);
 				
-				if (m == null) {
+				database.ReadAddinDescription (new ConsoleProgressStatus (true), configFile, out addinDescription);
+				
+				if (addinDescription == null) {
 					try {
 						if (File.Exists (configFile)) {
 							// The file is corrupted. Remove it.
@@ -257,14 +258,14 @@ namespace Mono.Addins
 					throw new InvalidOperationException ("Could not read add-in description");
 				}
 				if (addin == null) {
-					addin = AddinInfo.ReadFromDescription (m);
-					sourceFile = m.AddinFile;
+					addin = AddinInfo.ReadFromDescription (addinDescription);
+					sourceFile = addinDescription.AddinFile;
 				}
-				SetIsUserAddin (m);
+				SetIsUserAddin (addinDescription);
 				if (!isUserAddin.Value)
-					m.Flags |= AddinFlags.CantUninstall;
-				desc = new WeakReference (m);
-				return m;
+					addinDescription.Flags |= AddinFlags.CantUninstall;
+				desc = new WeakReference (addinDescription);
+				return addinDescription;
 			}
 		}
 

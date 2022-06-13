@@ -42,12 +42,12 @@ namespace Mono.Addins
 		ImmutableArray<TreeNode> children;
 		ExtensionNode extensionNode;
 		bool childrenLoaded;
-		string id;
+		readonly string id;
 		TreeNode parent;
 		ExtensionNodeSet nodeTypes;
 		ExtensionPoint extensionPoint;
 		BaseCondition condition;
-		protected AddinEngine addinEngine;
+		protected readonly AddinEngine addinEngine;
 
 		public TreeNode (AddinEngine addinEngine, string id)
 		{

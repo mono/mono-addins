@@ -185,7 +185,7 @@ namespace Mono.Addins
 		public void ReportAddinLoad (RuntimeAddin addin)
 		{
 			if (addinLoadEvents == null)
-				addinLoadEvents = new List<string> ();
+				addinLoadEvents = new List<RuntimeAddin> ();
 			addinLoadEvents.Add (addin);
 		}
 

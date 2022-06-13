@@ -67,13 +67,13 @@ namespace Mono.Addins
 	/// </remarks>
 	public class AddinRegistry: IDisposable
 	{
-		AddinDatabase database;
-		StringCollection addinDirs;
-		string basePath;
+		readonly AddinDatabase database;
+		readonly string [] addinDirs;
+		readonly string basePath;
+		readonly string startupDirectory;
+		readonly string addinsDir;
+		readonly string databaseDir;
 		string currentDomain;
-		string startupDirectory;
-		string addinsDir;
-		string databaseDir;
 		
 		/// <summary>
 		/// Initializes a new instance.
@@ -92,7 +92,7 @@ namespace Mono.Addins
 		/// of the Environment.SpecialFolder enumeration can be used (always between square
 		/// brackets)
 		/// </remarks>
-		public AddinRegistry (string registryPath): this (null, registryPath, null, null, null)
+		public AddinRegistry (string registryPath): this (null, registryPath, null, null, null, null)
 		{
 		}
 		
@@ -116,7 +116,7 @@ namespace Mono.Addins
 		/// of the Environment.SpecialFolder enumeration can be used (always between square
 		/// brackets)
 		/// </remarks>
-		public AddinRegistry (string registryPath, string startupDirectory): this (null, registryPath, startupDirectory, null, null)
+		public AddinRegistry (string registryPath, string startupDirectory): this (null, registryPath, startupDirectory, null, null, null)
 		{
 		}
 		
@@ -145,7 +145,7 @@ namespace Mono.Addins
 		/// of the Environment.SpecialFolder enumeration can be used (always between square
 		/// brackets)
 		/// </remarks>
-		public AddinRegistry (string registryPath, string startupDirectory, string addinsDir): this (null, registryPath, startupDirectory, addinsDir, null)
+		public AddinRegistry (string registryPath, string startupDirectory, string addinsDir): this (null, registryPath, startupDirectory, addinsDir, null, null)
 		{
 		}
 		
@@ -179,11 +179,11 @@ namespace Mono.Addins
 		/// of the Environment.SpecialFolder enumeration can be used (always between square
 		/// brackets)
 		/// </remarks>
-		public AddinRegistry (string registryPath, string startupDirectory, string addinsDir, string databaseDir): this (null, registryPath, startupDirectory, addinsDir, databaseDir)
+		public AddinRegistry (string registryPath, string startupDirectory, string addinsDir, string databaseDir): this (null, registryPath, startupDirectory, addinsDir, databaseDir, null)
 		{
 		}
 		
-		internal AddinRegistry (AddinEngine engine, string registryPath, string startupDirectory, string addinsDir, string databaseDir)
+		internal AddinRegistry (AddinEngine engine, string registryPath, string startupDirectory, string addinsDir, string databaseDir, string additionalGlobalAddinDirectory)
 		{
 			basePath = Path.GetFullPath (Util.NormalizePath (registryPath));
 			
@@ -208,8 +208,10 @@ namespace Mono.Addins
 
 			// Look for add-ins in the hosts directory and in the default
 			// addins directory
-			addinDirs = new StringCollection ();
-			addinDirs.Add (DefaultAddinsFolder);
+			if (additionalGlobalAddinDirectory != null)
+				addinDirs = new [] { DefaultAddinsFolder, additionalGlobalAddinDirectory };
+			else
+				addinDirs = new [] { DefaultAddinsFolder };
 			
 			// Initialize the database after all paths have been set
 			database = new AddinDatabase (engine, this);
@@ -239,15 +241,15 @@ namespace Mono.Addins
 		
 		internal static AddinRegistry GetGlobalRegistry (AddinEngine engine, string startupDirectory)
 		{
-			AddinRegistry reg = new AddinRegistry (engine, GlobalRegistryPath, startupDirectory, null, null);
 			string baseDir;
 			if (Util.IsWindows)
 				baseDir = Environment.GetFolderPath (Environment.SpecialFolder.CommonProgramFiles); 
 			else
 				baseDir = "/etc";
-			
-			reg.GlobalAddinDirectories.Add (Path.Combine (baseDir, "mono.addins"));
-			return reg;
+
+			var globalDir = Path.Combine (baseDir, "mono.addins");
+
+			return new AddinRegistry (engine, GlobalRegistryPath, startupDirectory, null, null, globalDir);
 		}
 		
 		internal bool UnknownDomain {
@@ -743,8 +745,13 @@ namespace Mono.Addins
 			get { return databaseDir; }
 		}
 	
-		internal StringCollection GlobalAddinDirectories {
+		internal IEnumerable<string> GlobalAddinDirectories {
 			get { return addinDirs; }
+		}
+
+		internal void RegisterGlobalAddinDirectory (string dir)
+		{
+
 		}
 
 		internal string StartupDirectory {

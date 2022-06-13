@@ -41,7 +41,7 @@ namespace Mono.Addins
 	{
 		int internalId;
 		internal const string AutoIdPrefix = "__nid_";
-		ExtensionContext context;
+		readonly ExtensionContext context;
 		
 		public ExtensionTree (AddinEngine addinEngine, ExtensionContext context): base (addinEngine, "")
 		{

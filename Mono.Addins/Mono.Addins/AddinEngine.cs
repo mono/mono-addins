@@ -247,7 +247,7 @@ namespace Mono.Addins
 				if (string.IsNullOrEmpty (configDir))
 					registry = AddinRegistry.GetGlobalRegistry (this, startupDirectory);
 				else
-					registry = new AddinRegistry (this, configDir, startupDirectory, addinsDir, databaseDir);
+					registry = new AddinRegistry (this, configDir, startupDirectory, addinsDir, databaseDir, null);
 
 				if ((asmFile != null && registry.CreateHostAddinsFile (asmFile)) || registry.UnknownDomain)
 					registry.Update (new ConsoleProgressStatus (false));
@@ -590,20 +590,18 @@ namespace Mono.Addins
 		bool InsertAddin (ExtensionContextTransaction transaction, IProgressStatus statusMonitor, Addin iad)
 		{
 			try {
-				RuntimeAddin runtimeAddin = new RuntimeAddin (this);
+				RuntimeAddin runtimeAddin = new RuntimeAddin (this, iad);
+				AddinDescription description = iad.Description;
 
 				RegisterAssemblyResolvePaths (transaction, runtimeAddin, iad.Description.MainModule);
-				
-				// Read the config file and load the add-in assemblies
-				AddinDescription description = runtimeAddin.Load (iad);
-				
+
 				// Register the add-in
 				loadedAddins = loadedAddins.SetItem(Addin.GetIdName (runtimeAddin.Id), runtimeAddin);
 				
 				if (!AddinDatabase.RunningSetupProcess) {
 					// Load the extension points and other addin data
 					
-					RegisterNodeSets (iad.Id, description.ExtensionNodeSets);
+					RegisterNodeSets (transaction, iad.Id, description.ExtensionNodeSets);
 
 					foreach (ConditionTypeDescription cond in description.ConditionTypes)
 						RegisterCondition (transaction, cond.Id, runtimeAddin, cond.TypeName);
