@@ -28,40 +28,42 @@
 
 
 using System;
-using System.Threading;
 using System.Collections;
-using System.Collections.Specialized;
-using System.IO;
-using System.Xml;
-using System.Reflection;
-using Mono.Addins.Description;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
-using Mono.Addins.Serialization;
+using Mono.Addins.Description;
 
 namespace Mono.Addins.Database
 {
-	class AddinDatabase
+    class AddinDatabase
 	{
 		public const string GlobalDomain = "global";
 		public const string UnknownDomain = "unknown";
 		
 		public const string VersionTag = "004";
 
-		List<Addin> allSetupInfos;
-		List<Addin> addinSetupInfos;
-		List<Addin> rootSetupInfos;
+		readonly AddinEngine addinEngine;
+		readonly AddinRegistry registry;
+		readonly string addinDbDir;
+		readonly FileDatabase fileDatabase;
+		readonly object localLock = new object ();
+
+		bool allSetupInfosLoaded;
+		ImmutableArray<Addin> allSetupInfos;
+		ImmutableArray<Addin> addinSetupInfos;
+		ImmutableArray<Addin> rootSetupInfos;
+
+		Dictionary<string, Addin> cachedAddinSetupInfos = new Dictionary<string, Addin> ();
+		ImmutableAddinHostIndex hostIndex;
+
 		internal static bool RunningSetupProcess;
+
 		bool fatalDatabseError;
-		Hashtable cachedAddinSetupInfos = new Hashtable ();
-		AddinHostIndex hostIndex;
-		FileDatabase fileDatabase;
-		string addinDbDir;
 		DatabaseConfiguration config = null;
-		AddinRegistry registry;
 		int lastDomainId;
-		AddinEngine addinEngine;
-		AddinFileSystemExtension fs = new AddinFileSystemExtension ();
+		AddinFileSystemExtension fileSystemExtension = new AddinFileSystemExtension ();
 		List<object> extensions = new List<object> ();
 		
 		public AddinDatabase (AddinEngine addinEngine, AddinRegistry registry)
@@ -71,13 +73,18 @@ namespace Mono.Addins.Database
 			addinDbDir = Path.Combine (registry.AddinCachePath, "addin-db-" + VersionTag);
 			fileDatabase = new FileDatabase (AddinDbDir);
 		}
+
+		public AddinDatabaseTransaction BeginTransaction ()
+		{
+			return new AddinDatabaseTransaction ();
+		}
 		
 		string AddinDbDir {
 			get { return addinDbDir; }
 		}
 		
 		public AddinFileSystemExtension FileSystem {
-			get { return fs; }
+			get { return fileSystemExtension; }
 		}
 		
 		public string AddinCachePath {
@@ -116,36 +123,34 @@ namespace Mono.Addins.Database
 			}
 		}
 		
-		public void Clear ()
-		{
-			if (Directory.Exists (AddinCachePath))
-				Directory.Delete (AddinCachePath, true);
-			if (Directory.Exists (AddinFolderCachePath))
-				Directory.Delete (AddinFolderCachePath, true);
-		}
-		
 		public void CopyExtensions (AddinDatabase other)
 		{
-			foreach (object o in other.extensions)
-				RegisterExtension (o);
+			lock (extensions) {
+				foreach (object o in other.extensions)
+					RegisterExtension (o);
+			}
 		}
 		
 		public void RegisterExtension (object extension)
 		{
-			extensions.Add (extension);
-			if (extension is AddinFileSystemExtension)
-				fs = (AddinFileSystemExtension) extension;
-			else
-				throw new NotSupportedException ();
+			lock (extensions) {
+				extensions.Add (extension);
+				if (extension is AddinFileSystemExtension)
+					fileSystemExtension = (AddinFileSystemExtension)extension;
+				else
+					throw new NotSupportedException ();
+			}
 		}
 		
 		public void UnregisterExtension (object extension)
 		{
-			extensions.Remove (extension);
-			if ((extension as AddinFileSystemExtension) == fs)
-				fs = new AddinFileSystemExtension ();
-			else
-				throw new InvalidOperationException ();
+			lock (extensions) {
+				extensions.Remove (extension);
+				if ((extension as AddinFileSystemExtension) == fileSystemExtension)
+					fileSystemExtension = new AddinFileSystemExtension ();
+				else
+					throw new InvalidOperationException ();
+			}
 		}
 		
 		public ExtensionNodeSet FindNodeSet (string domain, string addinId, string id)
@@ -231,44 +236,39 @@ namespace Mono.Addins.Database
 			if ((type & AddinSearchFlagsInternal.LatestVersionsOnly) != 0)
 				throw new InvalidOperationException ("LatestVersionsOnly flag not supported here");
 			
-			if (allSetupInfos == null) {
-				Dictionary<string,Addin> adict = new Dictionary<string, Addin> ();
+			if (!allSetupInfosLoaded) {
+				lock (localLock) {
+					if (!allSetupInfosLoaded) {
+						Dictionary<string, Addin> adict = new Dictionary<string, Addin> ();
 
-				// Global add-ins are valid for any private domain
-				if (domain != AddinDatabase.GlobalDomain)
-					FindInstalledAddins (adict, AddinDatabase.GlobalDomain, idFilter);
+						// Global add-ins are valid for any private domain
+						if (domain != AddinDatabase.GlobalDomain)
+							FindInstalledAddins (adict, AddinDatabase.GlobalDomain, idFilter);
 
-				FindInstalledAddins (adict, domain, idFilter);
-				List<Addin> alist = new List<Addin> (adict.Values);
-				UpdateLastVersionFlags (alist);
-				if (idFilter != null)
-					return alist;
-				allSetupInfos = alist;
+						FindInstalledAddins (adict, domain, idFilter);
+						List<Addin> alist = new List<Addin> (adict.Values);
+						UpdateLastVersionFlags (alist);
+						if (idFilter != null)
+							return alist;
+						allSetupInfos = alist.ToImmutableArray ();
+						addinSetupInfos = alist.Where (addin => !addin.Description.IsRoot).ToImmutableArray ();
+						rootSetupInfos = alist.Where (addin => addin.Description.IsRoot).ToImmutableArray ();
+						allSetupInfosLoaded = true;
+					}
+				}
 			}
 			if ((type & AddinSearchFlagsInternal.IncludeAll) == AddinSearchFlagsInternal.IncludeAll)
 				return FilterById (allSetupInfos, idFilter);
 			
 			if ((type & AddinSearchFlagsInternal.IncludeAddins) == AddinSearchFlagsInternal.IncludeAddins) {
-				if (addinSetupInfos == null) {
-					addinSetupInfos = new List<Addin> ();
-					foreach (Addin adn in allSetupInfos)
-						if (!adn.Description.IsRoot)
-							addinSetupInfos.Add (adn);
-				}
 				return FilterById (addinSetupInfos, idFilter);
 			}
 			else {
-				if (rootSetupInfos == null) {
-					rootSetupInfos = new List<Addin> ();
-					foreach (Addin adn in allSetupInfos)
-						if (adn.Description.IsRoot)
-							rootSetupInfos.Add (adn);
-				}
 				return FilterById (rootSetupInfos, idFilter);
 			}
 		}
 		
-		IEnumerable<Addin> FilterById (List<Addin> addins, string id)
+		IEnumerable<Addin> FilterById (IEnumerable<Addin> addins, string id)
 		{
 			if (id == null)
 				return addins;
@@ -330,23 +330,26 @@ namespace Mono.Addins.Database
 			else
 				return null;
 		}
-		
+
 		Addin GetInstalledDomainAddin (string domain, string id, bool exactVersionMatch, bool enabledOnly, bool dbLockCheck)
 		{
-			Addin sinfo = null;
 			string idd = id + " " + domain;
-			object ob = cachedAddinSetupInfos [idd];
-			if (ob != null) {
-				sinfo = ob as Addin;
+			Addin sinfo;
+			bool found;
+			lock (cachedAddinSetupInfos) {
+				found = cachedAddinSetupInfos.TryGetValue (idd, out sinfo);
+			}
+
+			if (found) {
 				if (sinfo != null) {
 					if (!enabledOnly || sinfo.Enabled)
 						return sinfo;
 					if (exactVersionMatch)
 						return null;
-				}
-				else if (enabledOnly)
+				} else if (enabledOnly) {
 					// Ignore the 'not installed' flag when disabled add-ins are allowed
 					return null;
+				}
 			}
 		
 			if (dbLockCheck)
@@ -376,13 +379,15 @@ namespace Mono.Addins.Database
 					}
 					if (foundDomain != null) {
 						sinfo = new Addin (this, foundDomain, id);
-						cachedAddinSetupInfos [idd] = sinfo;
-						if (!enabledOnly || sinfo.Enabled)
-							return sinfo;
-						if (exactVersionMatch) {
-							// Cache lookups with negative result
-							cachedAddinSetupInfos [idd] = this;
-							return null;
+						lock (cachedAddinSetupInfos) {
+							cachedAddinSetupInfos [idd] = sinfo;
+							if (!enabledOnly || sinfo.Enabled)
+								return sinfo;
+							if (exactVersionMatch) {
+								// Cache lookups with negative result
+								cachedAddinSetupInfos [idd] = null;
+								return null;
+							}
 						}
 					}
 				}
@@ -404,15 +409,20 @@ namespace Mono.Addins.Database
 						}
 					}
 					if (sinfo != null) {
-						cachedAddinSetupInfos [idd] = sinfo;
+						lock (cachedAddinSetupInfos) {
+							cachedAddinSetupInfos [idd] = sinfo;
+						}
 						return sinfo;
 					}
 				}
-				
+
 				// Cache lookups with negative result
 				// Ignore the 'not installed' flag when disabled add-ins are allowed
-				if (enabledOnly)
-					cachedAddinSetupInfos [idd] = this;
+				if (enabledOnly) {
+					lock (cachedAddinSetupInfos) {
+						cachedAddinSetupInfos [idd] = null;
+					}
+				}
 				return null;
 			}
 		}
@@ -426,20 +436,22 @@ namespace Mono.Addins.Database
 		{
 			InternalCheck (domain);
 			Addin ainfo = null;
-			
-			object ob = cachedAddinSetupInfos [assemblyLocation];
-			if (ob != null)
-				return ob as Addin; // Don't use a cast here is ob may not be an Addin.
 
-			AddinHostIndex index = GetAddinHostIndex ();
+			lock (cachedAddinSetupInfos) {
+				if (cachedAddinSetupInfos.TryGetValue (assemblyLocation, out var ob))
+					return ob; // this can be null, if the add-in is disabled
+			}
+
+			var index = GetAddinHostIndex ();
 			string addin, addinFile, rdomain;
 			if (index.GetAddinForAssembly (assemblyLocation, out addin, out addinFile, out rdomain)) {
 				string sid = addin + " " + rdomain;
-				ainfo = cachedAddinSetupInfos [sid] as Addin;
-				if (ainfo == null)
-					ainfo = new Addin (this, rdomain, addin);
-				cachedAddinSetupInfos [assemblyLocation] = ainfo;
-				cachedAddinSetupInfos [addin + " " + rdomain] = ainfo;
+				lock (cachedAddinSetupInfos) {
+					if (!cachedAddinSetupInfos.TryGetValue(sid, out ainfo))
+						ainfo = new Addin (this, rdomain, addin);
+					cachedAddinSetupInfos [assemblyLocation] = ainfo;
+					cachedAddinSetupInfos [sid] = ainfo;
+				}
 			}
 			
 			return ainfo;
@@ -469,8 +481,14 @@ namespace Mono.Addins.Database
 		{
 			EnableAddin (domain, id, true);
 		}
-		
-		internal void EnableAddin (string domain, string id, bool exactVersionMatch)
+
+		public void EnableAddin (string domain, string id, bool exactVersionMatch)
+		{
+			using var transaction = BeginTransaction ();
+			EnableAddin (transaction, domain, id, exactVersionMatch);
+		}
+
+		void EnableAddin (AddinDatabaseTransaction dbTransaction, string domain, string id, bool exactVersionMatch)
 		{
 			Addin ainfo = GetInstalledAddin (domain, id, exactVersionMatch, false);
 			if (ainfo == null)
@@ -486,20 +504,26 @@ namespace Mono.Addins.Database
 				if (dep is AddinDependency) {
 					AddinDependency adep = dep as AddinDependency;
 					string adepid = Addin.GetFullId (ainfo.AddinInfo.Namespace, adep.AddinId, adep.Version);
-					EnableAddin (domain, adepid, false);
+					EnableAddin (dbTransaction, domain, adepid, false);
 				}
 			}
 
-			Configuration.SetEnabled (id, true, ainfo.AddinInfo.EnabledByDefault, true);
-			SaveConfiguration ();
+			Configuration.SetEnabled (dbTransaction, id, true, ainfo.AddinInfo.EnabledByDefault, true);
+			SaveConfiguration (dbTransaction);
 
 			if (addinEngine != null && addinEngine.IsInitialized) {
 				using var transaction = addinEngine.BeginTransaction ();
 				addinEngine.ActivateAddin (transaction, id);
 			}
 		}
-		
+
 		public void DisableAddin (string domain, string id, bool exactVersionMatch = false, bool onlyForCurrentSession = false)
+		{
+			using var transaction = BeginTransaction ();
+			DisableAddin (transaction, domain, id, exactVersionMatch, onlyForCurrentSession);
+		}
+
+		void DisableAddin (AddinDatabaseTransaction dbTransaction, string domain, string id, bool exactVersionMatch = false, bool onlyForCurrentSession = false)
 		{
 			Addin ai = GetInstalledAddin (domain, id, true);
 			if (ai == null)
@@ -508,8 +532,8 @@ namespace Mono.Addins.Database
 			if (!IsAddinEnabled (domain, id, exactVersionMatch))
 				return;
 
-			Configuration.SetEnabled (id, false, ai.AddinInfo.EnabledByDefault, exactVersionMatch, onlyForCurrentSession);
-			SaveConfiguration ();
+			Configuration.SetEnabled (dbTransaction, id, false, ai.AddinInfo.EnabledByDefault, exactVersionMatch, onlyForCurrentSession);
+			SaveConfiguration (dbTransaction);
 			
 			// Disable all add-ins which depend on it
 			
@@ -533,7 +557,7 @@ namespace Mono.Addins.Database
 						Addin adepinfo = GetInstalledAddin (domain, adepid, false, true);
 						
 						if (adepinfo == null) {
-							DisableAddin (domain, ainfo.Id, onlyForCurrentSession: onlyForCurrentSession);
+							DisableAddin (dbTransaction, domain, ainfo.Id, onlyForCurrentSession: onlyForCurrentSession);
 							break;
 						}
 					}
@@ -541,8 +565,8 @@ namespace Mono.Addins.Database
 			}
 			catch {
 				// If something goes wrong, enable the add-in again
-				Configuration.SetEnabled (id, true, ai.AddinInfo.EnabledByDefault, false, onlyForCurrentSession);
-				SaveConfiguration ();
+				Configuration.SetEnabled (dbTransaction, id, true, ai.AddinInfo.EnabledByDefault, false, onlyForCurrentSession);
+				SaveConfiguration (dbTransaction);
 				throw;
 			}
 
@@ -552,16 +576,16 @@ namespace Mono.Addins.Database
 			}
 		}
 
-		public void UpdateEnabledStatus ()
+		void UpdateEnabledStatus (AddinDatabaseTransaction transaction)
 		{
 			// Ensure that all enabled addins that have dependencies also have their dependencies enabled.
 			HashSet<Addin> updatedAddins = new HashSet<Addin> ();
 			var allAddins = GetInstalledAddins (registry.CurrentDomain, AddinSearchFlagsInternal.IncludeAddins | AddinSearchFlagsInternal.LatestVersionsOnly).ToList ();
 			foreach (Addin addin in allAddins)
-				UpdateEnabledStatus (registry.CurrentDomain, addin, allAddins, updatedAddins);
+				UpdateEnabledStatus (transaction, registry.CurrentDomain, addin, allAddins, updatedAddins);
 		}
 
-		void UpdateEnabledStatus (string domain, Addin addin, List<Addin> allAddins, HashSet<Addin> updatedAddins)
+		void UpdateEnabledStatus (AddinDatabaseTransaction transaction, string domain, Addin addin, List<Addin> allAddins, HashSet<Addin> updatedAddins)
 		{
 			if (!updatedAddins.Add (addin))
 				return;
@@ -579,12 +603,12 @@ namespace Mono.Addins.Database
 				string adepid = Addin.GetFullId (addin.AddinInfo.Namespace, adep.AddinId, null);
 				var dependency = allAddins.FirstOrDefault (a => Addin.GetFullId (a.Namespace, a.LocalId, null) == adepid);
 				if (dependency != null) {
-					UpdateEnabledStatus (domain, dependency, allAddins, updatedAddins);
+					UpdateEnabledStatus (transaction, domain, dependency, allAddins, updatedAddins);
 					if (!dependency.Enabled) {
 						// One of the dependencies is disabled, so this add-in also needs to be disabled.
 						// However, we disabled only for the current configuration, we don't want to change
 						// what the user configured.
-						DisableAddin (domain, addin.Id, onlyForCurrentSession: true);
+						DisableAddin (transaction, domain, addin.Id, onlyForCurrentSession: true);
 						return;
 					}
 				}
@@ -593,9 +617,10 @@ namespace Mono.Addins.Database
 
 		public void RegisterForUninstall (string domain, string id, IEnumerable<string> files)
 		{
-			DisableAddin (domain, id, true);
-			Configuration.RegisterForUninstall (id, files);
-			SaveConfiguration ();
+			using var transaction = BeginTransaction ();
+			DisableAddin (transaction, domain, id, true);
+			Configuration.RegisterForUninstall (transaction, id, files);
+			SaveConfiguration (transaction);
 		}
 
 		public bool IsRegisteredForUninstall (string domain, string addinId)
@@ -634,7 +659,8 @@ namespace Mono.Addins.Database
 			AddinUpdateData updateData = new AddinUpdateData (this, monitor);
 			
 			// Clear cached data
-			cachedAddinSetupInfos.Clear ();
+			lock(cachedAddinSetupInfos)
+				cachedAddinSetupInfos.Clear ();
 			
 			// Collect all information
 			
@@ -707,7 +733,7 @@ namespace Mono.Addins.Database
 				}
 
 				// If the original file does not exist, the description can be deleted
-				if (!fs.FileExists (conf.AddinFile)) {
+				if (!fileSystemExtension.FileExists (conf.AddinFile)) {
 					SafeDelete (monitor, file);
 					continue;
 				}
@@ -1016,16 +1042,16 @@ namespace Mono.Addins.Database
 
 		internal void ResetBasicCachedData ()
 		{
-			allSetupInfos = null;
-			addinSetupInfos = null;
-			rootSetupInfos = null;
+			lock(localLock)
+				allSetupInfosLoaded = false;
 		}
 
 		internal void ResetCachedData ()
 		{
 			ResetBasicCachedData ();
 			hostIndex = null;
-			cachedAddinSetupInfos.Clear ();
+			lock(cachedAddinSetupInfos)
+				cachedAddinSetupInfos.Clear ();
 			dependsOnCache.Clear ();
 			if (addinEngine != null)
 				addinEngine.ResetCachedData ();
@@ -1104,8 +1130,10 @@ namespace Mono.Addins.Database
 			fatalDatabseError = false;
 			
 			DateTime tim = DateTime.Now;
-			
-			RunPendingUninstalls (monitor);
+
+			using (var dbTransaction = BeginTransaction ()) {
+				RunPendingUninstalls (dbTransaction, monitor);
+			}
 			
 			Hashtable installed = new Hashtable ();
 			bool changesFound = CheckFolders (monitor, domain);
@@ -1163,10 +1191,11 @@ namespace Mono.Addins.Database
 					}
 				}
 			}
-			UpdateEnabledStatus ();
+			using var dbTransation = BeginTransaction ();
+			UpdateEnabledStatus (dbTransation);
 		}
 
-		void RunPendingUninstalls (IProgressStatus monitor)
+		void RunPendingUninstalls (AddinDatabaseTransaction dbTransaction, IProgressStatus monitor)
 		{
 			bool changesDone = false;
 			
@@ -1204,12 +1233,12 @@ namespace Mono.Addins.Database
 				}
 				
 				if (canUninstall) {
-					Configuration.UnregisterForUninstall (adn.AddinId);
+					Configuration.UnregisterForUninstall (dbTransaction, adn.AddinId);
 					changesDone = true;
 				}
 			}
 			if (changesDone)
-				SaveConfiguration ();
+				SaveConfiguration (dbTransaction);
 		}
 		
 		void RunScannerProcess (IProgressStatus monitor, ScanOptions context)
@@ -1220,8 +1249,8 @@ namespace Mono.Addins.Database
 			IProgressStatus scanMonitor = monitor;
 			context = context ?? new ScanOptions ();
 
-			if (fs.GetType () != typeof (AddinFileSystemExtension))
-				context.FileSystemExtension = fs;
+			if (fileSystemExtension.GetType () != typeof (AddinFileSystemExtension))
+				context.FileSystemExtension = fileSystemExtension;
 
 			bool retry = false;
 			do {
@@ -1356,10 +1385,10 @@ namespace Mono.Addins.Database
 		void InternalScanFolders (IProgressStatus monitor, AddinScanResult scanResult)
 		{
 			try {
-				fs.ScanStarted ();
+				fileSystemExtension.ScanStarted ();
 				InternalScanFolders2 (monitor, scanResult);
 			} finally {
-				fs.ScanFinished ();
+				fileSystemExtension.ScanFinished ();
 			}
 		}
 		
@@ -1372,7 +1401,7 @@ namespace Mono.Addins.Database
 				return;
 			
 			try {
-				scanResult.HostIndex = GetAddinHostIndex ();
+				scanResult.HostIndex = new AddinHostIndex(GetAddinHostIndex ());
 			}
 			catch (Exception ex) {
 				if (scanResult.CheckOnly) {
@@ -1391,7 +1420,7 @@ namespace Mono.Addins.Database
 				AddinScanFolderInfo folderInfo;
 				bool res = ReadFolderInfo (monitor, file, out folderInfo);
 				bool validForDomain = scanResult.Domain == null || folderInfo.Domain == GlobalDomain || folderInfo.Domain == scanResult.Domain;
-				if (!res || (validForDomain && !fs.DirectoryExists (folderInfo.Folder))) {
+				if (!res || (validForDomain && !fileSystemExtension.DirectoryExists (folderInfo.Folder))) {
 					if (res) {
 						// Folder has been deleted. Remove the add-ins it had.
 						updater.UpdateDeletedAddins (monitor, folderInfo);
@@ -1450,7 +1479,7 @@ namespace Mono.Addins.Database
 			if (monitor.LogLevel > 1)
 				monitor.Log ("Folders scan completed (" + (int) (DateTime.Now - tim).TotalMilliseconds + " ms)");
 
-			SaveAddinHostIndex ();
+			SaveAddinHostIndex (scanResult);
 			ResetCachedData ();
 			
 			if (!scanResult.ChangesFound) {
@@ -1478,7 +1507,9 @@ namespace Mono.Addins.Database
 			if (monitor.LogLevel > 1)
 				monitor.Log ("Add-in relations analyzed (" + (int) (DateTime.Now - tim).TotalMilliseconds + " ms)");
 			
-			SaveAddinHostIndex ();
+			SaveAddinHostIndex (scanResult);
+
+			hostIndex = scanResult.HostIndex.ToImmutableAddinHostIndex ();
 		}
 		
 		public void ParseAddin (IProgressStatus progressStatus, string domain, string file, string outFile, bool inProcess)
@@ -1774,25 +1805,25 @@ namespace Mono.Addins.Database
 				return false;
 			}
 		}
-		
-		AddinHostIndex GetAddinHostIndex ()
+
+		ImmutableAddinHostIndex GetAddinHostIndex ()
 		{
 			if (hostIndex != null)
 				return hostIndex;
 			
 			using (fileDatabase.LockRead ()) {
 				if (fileDatabase.Exists (HostIndexFile))
-					hostIndex = AddinHostIndex.Read (fileDatabase, HostIndexFile);
+					hostIndex = AddinHostIndex.ReadAsImmutable (fileDatabase, HostIndexFile);
 				else
-					hostIndex = new AddinHostIndex ();
+					hostIndex = new ImmutableAddinHostIndex ();
 			}
 			return hostIndex;
 		}
 		
-		void SaveAddinHostIndex ()
+		void SaveAddinHostIndex (AddinScanResult scanResult)
 		{
-			if (hostIndex != null)
-				hostIndex.Write (fileDatabase, HostIndexFile);
+			if (scanResult.HostIndex != null)
+				scanResult.HostIndex.Write (fileDatabase, HostIndexFile);
 		}
 
 		internal string GetUniqueAddinId (string file, string oldId, string ns, string version)
@@ -1850,18 +1881,20 @@ namespace Mono.Addins.Database
 		DatabaseConfiguration Configuration {
 			get {
 				if (config == null) {
-					using (fileDatabase.LockRead ()) {
-						if (fileDatabase.Exists (ConfigFile))
-							config = DatabaseConfiguration.Read (ConfigFile);
-						else
-							config = DatabaseConfiguration.ReadAppConfig ();
+					lock (localLock) {
+						using (fileDatabase.LockRead ()) {
+							if (fileDatabase.Exists (ConfigFile))
+								config = DatabaseConfiguration.Read (ConfigFile);
+							else
+								config = DatabaseConfiguration.ReadAppConfig ();
+						}
 					}
 				}
 				return config;
 			}
 		}
 		
-		void SaveConfiguration ()
+		void SaveConfiguration (AddinDatabaseTransaction dbTransaction)
 		{
 			if (config != null) {
 				using (fileDatabase.LockWrite ()) {
@@ -2002,9 +2035,16 @@ namespace Mono.Addins.Database
 			list.Add (desc);
 		}
 	}
-	
-	// Keep in sync with AddinSearchFlags
-	[Flags]
+
+    class AddinDatabaseTransaction : IDisposable
+    {
+        public void Dispose ()
+        {
+        }
+    }
+
+    // Keep in sync with AddinSearchFlags
+    [Flags]
 	enum AddinSearchFlagsInternal
 	{
 		IncludeAddins = 1,
