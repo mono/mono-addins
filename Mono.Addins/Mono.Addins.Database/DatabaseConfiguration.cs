@@ -49,7 +49,10 @@ namespace Mono.Addins.Database
 				ConfigEnabled = configEnabled;
 				SessionEnabled = sessionEnabled;
 				Uninstalled = uninstalled;
-				Files = files;
+				if (files.IsDefault)
+					Files = ImmutableArray<string>.Empty;
+				else
+					Files = files;
 			}
 
 			AddinStatus Copy ()
@@ -66,9 +69,9 @@ namespace Mono.Addins.Database
 			{
 				var copy = Copy ();
 				if (sessionOnly)
-					copy.SessionEnabled = true;
+					copy.SessionEnabled = enabled;
 				else {
-					copy.ConfigEnabled = true;
+					copy.ConfigEnabled = enabled;
 					copy.SessionEnabled = null;
 				}
 				return copy;

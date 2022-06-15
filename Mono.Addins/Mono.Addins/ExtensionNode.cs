@@ -463,7 +463,7 @@ namespace Mono.Addins
 			var nodeChildren = treeNode.Children;
 
 			try {
-				if (nodeChildren.Length == 0) {
+				if (nodeChildren.Count == 0) {
 					return ExtensionNodeList.Empty;
 				}
 			} catch (Exception ex) {
@@ -471,14 +471,14 @@ namespace Mono.Addins
 				return ExtensionNodeList.Empty;
 			}
 
-			List<ExtensionNode> list = new List<ExtensionNode> (nodeChildren.Length);
+			List<ExtensionNode> list = new List<ExtensionNode> (nodeChildren.Count);
 			foreach (TreeNode cn in nodeChildren) {
 
 				// For each node check if it is visible for the current context.
 				// If something fails while evaluating the condition, just ignore the node.
 
 				try {
-					if (cn.IsEnabled && cn.ExtensionNode != null)
+					if (cn.IsEnabled && cn.HasExtensionNode)
 						list.Add (cn.ExtensionNode);
 				} catch (Exception ex) {
 					addinEngine.ReportError (null, null, ex, false);

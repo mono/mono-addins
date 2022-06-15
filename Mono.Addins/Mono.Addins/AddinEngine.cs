@@ -632,7 +632,7 @@ namespace Mono.Addins
 
 		internal void BulkRegisterAssemblyResolvePaths (IEnumerable<KeyValuePair<string,RuntimeAddin>> registrations)
 		{
-			assemblyResolvePaths.SetItems (registrations);
+			assemblyResolvePaths = assemblyResolvePaths.SetItems (registrations);
 		}
 
 		internal void InsertExtensionPoint (ExtensionContextTransaction transaction, RuntimeAddin addin, ExtensionPoint ep)

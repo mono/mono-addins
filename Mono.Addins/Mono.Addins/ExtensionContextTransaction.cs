@@ -46,6 +46,7 @@ namespace Mono.Addins
 		List<string> unregisteredAssemblyResolvePaths;
 		List<RuntimeAddin> addinLoadEvents;
 		List<string> addinUnloadEvents;
+		List<TreeNode> treeNodeTransactions;
 
 		public ExtensionContextTransaction (ExtensionContext context)
 		{
@@ -67,6 +68,13 @@ namespace Mono.Addins
 				if (nodeConditionUnregistrations != null) {
 					Context.BulkUnregisterNodeConditions (this, nodeConditionUnregistrations);
 				}
+
+				// Commit tree node transactions
+				if (treeNodeTransactions != null) {
+					foreach (var node in treeNodeTransactions)
+						node.CommitChildrenUpdateTransaction ();
+				}
+
 			} finally {
 				Monitor.Exit (Context.LocalLock);
 			}
@@ -152,6 +160,8 @@ namespace Mono.Addins
 			if (nodeConditionUnregistrations == null)
 				nodeConditionUnregistrations = new List<(TreeNode Node, BaseCondition Condition)> ();
 			nodeConditionUnregistrations.Add ((node, cond));
+			if (nodeConditions != null)
+				nodeConditions.Remove ((node, cond));
 		}
 
 		public void RegisterAutoTypeExtensionPoint (string typeName, string path)
@@ -194,6 +204,13 @@ namespace Mono.Addins
 			if (addinUnloadEvents == null)
 				addinUnloadEvents = new List<string> ();
 			addinUnloadEvents.Add (id);
+		}
+
+		public void RegisterChildrenUpdateTransaction (TreeNode node)
+		{
+			if (treeNodeTransactions == null)
+				treeNodeTransactions = new List<TreeNode> ();
+			treeNodeTransactions.Add (node);
 		}
 	}
 }
