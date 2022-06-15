@@ -40,7 +40,7 @@ namespace UnitTests
 		public static string TestsRootDir {
 			get {
 				if (rootDir == null)
-					rootDir = Path.GetFullPath (Path.Combine (Path.GetDirectoryName (typeof(Util).Assembly.Location), "..", "..", ".."));
+					rootDir = Path.GetFullPath (Path.Combine (Path.GetDirectoryName (typeof(Util).Assembly.Location), "..", "..", "..", ".."));
 				return rootDir;
 			}
 		}

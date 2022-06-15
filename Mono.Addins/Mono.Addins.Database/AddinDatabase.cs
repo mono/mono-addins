@@ -195,61 +195,30 @@ namespace Mono.Addins.Database
 			// Get the cached list if the add-in list has already been loaded.
 			// The domain doesn't have to be checked again, since it is always the same
 			
-			IEnumerable<Addin> result = null;
-			
-			if ((flags & AddinSearchFlagsInternal.IncludeAll) == AddinSearchFlagsInternal.IncludeAll) {
-				if (allSetupInfos != null)
-					result = allSetupInfos;
-			}
-			else if ((flags & AddinSearchFlagsInternal.IncludeAddins) == AddinSearchFlagsInternal.IncludeAddins) {
-				if (addinSetupInfos != null)
-					result = addinSetupInfos;
-			}
-			else {
-				if (rootSetupInfos != null)
-					result = rootSetupInfos;
-			}
-			
-			if (result == null) {
-				InternalCheck (domain);
-				using (fileDatabase.LockRead ()) {
-					result = InternalGetInstalledAddins (domain, null, flags & ~AddinSearchFlagsInternal.LatestVersionsOnly);
-				}
-			}
-			
-			if ((flags & AddinSearchFlagsInternal.LatestVersionsOnly) == AddinSearchFlagsInternal.LatestVersionsOnly)
-				result = result.Where (a => a.IsLatestVersion);
-			
-			if ((flags & AddinSearchFlagsInternal.ExcludePendingUninstall) == AddinSearchFlagsInternal.ExcludePendingUninstall)
-				result = result.Where (a => !IsRegisteredForUninstall (a.Description.Domain, a.Id));
-			
-			return result;
+			return InternalGetInstalledAddins (domain, null, flags & ~AddinSearchFlagsInternal.LatestVersionsOnly, false);
 		}
 		
-		IEnumerable<Addin> InternalGetInstalledAddins (string domain, AddinSearchFlagsInternal type)
+		IEnumerable<Addin> InternalGetInstalledAddins (string domain, AddinSearchFlagsInternal type, bool dbIsLockedForRead)
 		{
-			return InternalGetInstalledAddins (domain, null, type);
+			return InternalGetInstalledAddins (domain, null, type, dbIsLockedForRead);
 		}
 		
-		IEnumerable<Addin> InternalGetInstalledAddins (string domain, string idFilter, AddinSearchFlagsInternal type)
+		IEnumerable<Addin> InternalGetInstalledAddins (string domain, string idFilter, AddinSearchFlagsInternal type, bool dbIsLockedForRead)
 		{
-			if ((type & AddinSearchFlagsInternal.LatestVersionsOnly) != 0)
-				throw new InvalidOperationException ("LatestVersionsOnly flag not supported here");
-			
 			if (!allSetupInfosLoaded) {
 				lock (localLock) {
 					if (!allSetupInfosLoaded) {
 						Dictionary<string, Addin> adict = new Dictionary<string, Addin> ();
 
-						// Global add-ins are valid for any private domain
-						if (domain != AddinDatabase.GlobalDomain)
-							FindInstalledAddins (adict, AddinDatabase.GlobalDomain, idFilter);
+						using (!dbIsLockedForRead ? fileDatabase.LockRead() : null) {
+							// Global add-ins are valid for any private domain
+							if (domain != AddinDatabase.GlobalDomain)
+								FindInstalledAddins (adict, AddinDatabase.GlobalDomain);
 
-						FindInstalledAddins (adict, domain, idFilter);
+							FindInstalledAddins (adict, domain);
+						}
 						List<Addin> alist = new List<Addin> (adict.Values);
 						UpdateLastVersionFlags (alist);
-						if (idFilter != null)
-							return alist;
 						allSetupInfos = alist.ToImmutableArray ();
 						addinSetupInfos = alist.Where (addin => !addin.Description.IsRoot).ToImmutableArray ();
 						rootSetupInfos = alist.Where (addin => addin.Description.IsRoot).ToImmutableArray ();
@@ -257,17 +226,26 @@ namespace Mono.Addins.Database
 					}
 				}
 			}
-			if ((type & AddinSearchFlagsInternal.IncludeAll) == AddinSearchFlagsInternal.IncludeAll)
-				return FilterById (allSetupInfos, idFilter);
-			
-			if ((type & AddinSearchFlagsInternal.IncludeAddins) == AddinSearchFlagsInternal.IncludeAddins) {
-				return FilterById (addinSetupInfos, idFilter);
+			IEnumerable<Addin> result;
+
+			if ((type & AddinSearchFlagsInternal.IncludeAll) == AddinSearchFlagsInternal.IncludeAll) {
+				result = allSetupInfos;
+			} else if ((type & AddinSearchFlagsInternal.IncludeAddins) == AddinSearchFlagsInternal.IncludeAddins) {
+				result = addinSetupInfos;
+			} else {
+				result = rootSetupInfos;
 			}
-			else {
-				return FilterById (rootSetupInfos, idFilter);
-			}
+
+			result = FilterById (result, idFilter);
+
+			if ((type & AddinSearchFlagsInternal.LatestVersionsOnly) == AddinSearchFlagsInternal.LatestVersionsOnly)
+				result = result.Where (a => a.IsLatestVersion);
+
+			if ((type & AddinSearchFlagsInternal.ExcludePendingUninstall) == AddinSearchFlagsInternal.ExcludePendingUninstall)
+				result = result.Where (a => !IsRegisteredForUninstall (a.Description.Domain, a.Id));
+			return result;
 		}
-		
+
 		IEnumerable<Addin> FilterById (IEnumerable<Addin> addins, string id)
 		{
 			if (id == null)
@@ -275,13 +253,11 @@ namespace Mono.Addins.Database
 			return addins.Where (a => Addin.GetIdName (a.Id) == id);
 		}
 
-		void FindInstalledAddins (Dictionary<string,Addin> result, string domain, string idFilter)
+		void FindInstalledAddins (Dictionary<string,Addin> result, string domain)
 		{
-			if (idFilter == null) 
-				idFilter = "*";
 			string dir = Path.Combine (AddinCachePath, domain);
 			if (Directory.Exists (dir)) {
-				foreach (string file in fileDatabase.GetDirectoryFiles (dir, idFilter + ",*.maddin")) {
+				foreach (string file in fileDatabase.GetDirectoryFiles (dir, "*,*.maddin")) {
 					string id = Path.GetFileNameWithoutExtension (file);
 					if (!result.ContainsKey (id)) {
 						var adesc = GetInstalledDomainAddin (domain, id, true, false, false);
@@ -398,7 +374,7 @@ namespace Mono.Addins.Database
 					string bestVersion = null;
 					Addin.GetIdParts (id, out name, out version);
 					
-					foreach (Addin ia in InternalGetInstalledAddins (domain, name, AddinSearchFlagsInternal.IncludeAll)) 
+					foreach (Addin ia in InternalGetInstalledAddins (domain, name, AddinSearchFlagsInternal.IncludeAll, true)) 
 					{
 						if ((!enabledOnly || ia.Enabled) &&
 						    (version.Length == 0 || ia.SupportsVersion (version)) && 
@@ -1149,10 +1125,8 @@ namespace Mono.Addins.Database
 				// to be done in an external process
 				
 				if (domain != null) {
-					using (fileDatabase.LockRead ()) {
-						foreach (Addin ainfo in InternalGetInstalledAddins (domain, AddinSearchFlagsInternal.IncludeAddins)) {
-							installed [ainfo.Id] = ainfo.Id;
-						}
+					foreach (Addin ainfo in InternalGetInstalledAddins (domain, AddinSearchFlagsInternal.IncludeAddins, false)) {
+						installed [ainfo.Id] = ainfo.Id;
 					}
 				}
 				

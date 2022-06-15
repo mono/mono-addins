@@ -64,7 +64,7 @@ namespace Mono.Addins
 			LoadExtensionElement (transaction, tnode, addin, extension.ExtensionNodes, (ModuleDescription) extension.Parent, ref curPos, tnode.Condition, false, addedNodes);
 		}
 
-		void LoadExtensionElement (ExtensionContextTransaction transaction, TreeNodeBuilder tnode, string addin, ExtensionNodeDescriptionCollection extension, ModuleDescription module, ref int curPos, BaseCondition parentCondition, bool inComplextCondition, List<TreeNode> addedNodes)
+		void LoadExtensionElement (ExtensionContextTransaction transaction, TreeNodeBuilder parentNode, string addin, ExtensionNodeDescriptionCollection extension, ModuleDescription module, ref int curPos, BaseCondition parentCondition, bool inComplextCondition, List<TreeNode> addedNodes)
 		{
 			foreach (ExtensionNodeDescription elem in extension) {
 					
@@ -75,23 +75,23 @@ namespace Mono.Addins
 				}
 
 				if (elem.NodeName == "ComplexCondition") {
-					LoadExtensionElement (transaction, tnode, addin, elem.ChildNodes, module, ref curPos, parentCondition, true, addedNodes);
+					LoadExtensionElement (transaction, parentNode, addin, elem.ChildNodes, module, ref curPos, parentCondition, true, addedNodes);
 					continue;
 				}
 					
 				if (elem.NodeName == "Condition") {
 					Condition cond = new Condition (AddinEngine, elem, parentCondition);
-					LoadExtensionElement (transaction, tnode, addin, elem.ChildNodes, module, ref curPos, cond, false, addedNodes);
+					LoadExtensionElement (transaction, parentNode, addin, elem.ChildNodes, module, ref curPos, cond, false, addedNodes);
 					continue;
 				}
 
-				ExtensionPoint extensionPoint = tnode.GetExtensionPoint ();
+				ExtensionPoint extensionPoint = parentNode.GetExtensionPoint ();
 					
 				string after = elem.GetAttribute ("insertafter");
 				if (after.Length == 0 && extensionPoint != null && curPos == -1)
 					after = extensionPoint.DefaultInsertAfter;
 				if (after.Length > 0) {
-					int i = tnode.IndexOfChild (after);
+					int i = parentNode.IndexOfChild (after);
 					if (i != -1)
 						curPos = i+1;
 				}
@@ -99,20 +99,20 @@ namespace Mono.Addins
 				if (before.Length == 0 && extensionPoint != null && curPos == -1)
 					before = extensionPoint.DefaultInsertBefore;
 				if (before.Length > 0) {
-					int i = tnode.IndexOfChild (before);
+					int i = parentNode.IndexOfChild (before);
 					if (i != -1)
 						curPos = i;
 				}
 
 				// If node position is not explicitly set, add the node at the end
 				if (curPos == -1)
-					curPos = tnode.Children.Count;
+					curPos = parentNode.ChildrenCount;
 				
 				// Find the type of the node in this extension
-				ExtensionNodeType ntype = addinEngine.FindType (tnode.ExtensionNodeSet, elem.NodeName, addin);
+				ExtensionNodeType ntype = addinEngine.FindType (parentNode.ExtensionNodeSet, elem.NodeName, addin);
 				
 				if (ntype == null) {
-					addinEngine.ReportError ("Node '" + elem.NodeName + "' not allowed in extension: " + tnode.GetPath (), addin, null, false);
+					addinEngine.ReportError ("Node '" + elem.NodeName + "' not allowed in extension: " + parentNode.GetPath (), addin, null, false);
 					continue;
 				}
 				
@@ -120,20 +120,20 @@ namespace Mono.Addins
 				if (id.Length == 0)
 					id = AutoIdPrefix + (++internalId);
 
-				TreeNodeBuilder cnode = new TreeNodeBuilder (addinEngine, id);
+				TreeNodeBuilder childNode = TreeNodeBuilder.CreateNew (addinEngine, id, parentNode);
 				
-				ExtensionNode enode = ReadNode (cnode, addin, ntype, elem, module);
+				ExtensionNode enode = ReadNode (childNode, addin, ntype, elem, module);
 				if (enode == null)
 					continue;
 
-				cnode.Condition = parentCondition;
-				cnode.ExtensionNodeSet = ntype;
-				tnode.InsertChild (curPos, cnode);
-				
+				childNode.Condition = parentCondition;
+				childNode.ExtensionNodeSet = ntype;
+				parentNode.InsertChild (curPos, childNode);
+
 				// Load children
 				if (elem.ChildNodes.Count > 0) {
 					int cp = 0;
-					LoadExtensionElement (transaction, cnode, addin, elem.ChildNodes, module, ref cp, parentCondition, false, addedNodes);
+					LoadExtensionElement (transaction, childNode, addin, elem.ChildNodes, module, ref cp, parentCondition, false, addedNodes);
 				}
 				
 				curPos++;

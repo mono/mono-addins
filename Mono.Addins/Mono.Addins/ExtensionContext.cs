@@ -939,7 +939,7 @@ namespace Mono.Addins
 						TreeNode node = GetNode (ext.Path);
 						if (node != null && node.ExtensionNodeSet != null) {
 							if (node.ChildrenLoaded) {
-								var builder = new TreeNodeBuilder (node);
+								var builder = TreeNodeBuilder.FromNode (node);
 								LoadModuleExtensionNodes (transaction, builder, ext, data.AddinId);
 								builder.Build (transaction);
 							}

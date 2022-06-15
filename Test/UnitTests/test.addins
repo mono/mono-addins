@@ -1,5 +1,5 @@
 <Addins>
-	<Directory>../../../lib</Directory>
-	<Directory>../../../lib/extras</Directory>
+	<Directory>../../../../lib</Directory>
+	<Directory>../../../../lib/extras</Directory>
 	<Directory>SampleAddins</Directory>
 </Addins>

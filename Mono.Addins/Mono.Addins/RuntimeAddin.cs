@@ -355,7 +355,7 @@ namespace Mono.Addins
 
 			foreach (var kvp in loadedAssemblies) {
 				var assembly = kvp.Value;
-				if (string.IsNullOrEmpty (assemblyName) || assembly.FullName == assemblyName) {
+				if (string.IsNullOrEmpty (assemblyName) || assembly.GetName().Name == assemblyName) {
 					Type type = assembly.GetType (typeName, false);
 					if (type != null)
 						return type;

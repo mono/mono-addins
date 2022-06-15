@@ -37,7 +37,7 @@ using System.Linq;
 
 namespace Mono.Addins
 {
-    class TreeNode
+	class TreeNode
 	{
 		ImmutableArray<TreeNode> children;
 		ExtensionNode extensionNode;
@@ -49,10 +49,11 @@ namespace Mono.Addins
 		BaseCondition condition;
 		protected readonly AddinEngine addinEngine;
 
-		public TreeNode (AddinEngine addinEngine, string id)
+		public TreeNode (AddinEngine addinEngine, string id, TreeNode parent = null)
 		{
 			this.id = id;
 			this.addinEngine = addinEngine;
+			this.parent = parent;
 
 			children = ImmutableArray<TreeNode>.Empty;
 
@@ -60,22 +61,22 @@ namespace Mono.Addins
 			if (id.Length == 0)
 				childrenLoaded = true;
 		}
-		
+
 		public AddinEngine AddinEngine {
 			get { return addinEngine; }
 		}
-		
+
 		internal void AttachExtensionNode (ExtensionNode enode)
 		{
 			this.extensionNode = enode;
 			if (extensionNode != null)
 				extensionNode.SetTreeNode (this);
 		}
-		
+
 		public string Id {
 			get { return id; }
 		}
-		
+
 		public ExtensionNode ExtensionNode {
 			get {
 				if (extensionNode == null && extensionPoint != null) {
@@ -113,23 +114,23 @@ namespace Mono.Addins
 			get { return extensionPoint; }
 			set { extensionPoint = value; }
 		}
-		
+
 		public ExtensionNodeSet ExtensionNodeSet {
 			get { return nodeTypes; }
 			set { nodeTypes = value; }
 		}
-		
+
 		public TreeNode Parent {
 			get { return parent; }
 		}
-		
+
 		public BaseCondition Condition {
 			get { return condition; }
 			set {
 				condition = value;
 			}
 		}
-		
+
 		public virtual ExtensionContext Context {
 			get {
 				if (parent != null)
@@ -138,7 +139,7 @@ namespace Mono.Addins
 					return null;
 			}
 		}
-		
+
 		public bool IsEnabled {
 			get {
 				if (condition == null)
@@ -150,21 +151,28 @@ namespace Mono.Addins
 					return condition.Evaluate (ctx);
 			}
 		}
-		
+
 		public bool ChildrenLoaded {
 			get { return childrenLoaded; }
 		}
-		
+
 		public void AddChildNode (ExtensionContextTransaction transaction, TreeNode node)
 		{
 			node.parent = this;
 			children = children.Add (node);
 			transaction.ReportChildrenChanged (this);
 		}
-		
+
 		internal void SetChildren (ExtensionContextTransaction transaction, ImmutableArray<TreeNode> children)
 		{
+			foreach (var node in children) {
+				node.parent = this;
+				if (node == this)
+					throw new InvalidOperationException ();
+			}
+
 			this.children = children;
+
 
 			if (childrenLoaded) {
 				// If children were already loaded, we need to notify that they have changed
@@ -181,13 +189,13 @@ namespace Mono.Addins
 			TreeNode node = GetNode (path, childId);
 			return node != null ? node.ExtensionNode : null;
 		}
-		
+
 		public ExtensionNode GetExtensionNode (string path)
 		{
 			TreeNode node = GetNode (path);
 			return node != null ? node.ExtensionNode : null;
 		}
-		
+
 		public TreeNode GetNode (string path, string childId)
 		{
 			if (childId == null || childId.Length == 0)
@@ -195,28 +203,28 @@ namespace Mono.Addins
 			else
 				return GetNode (path + "/" + childId);
 		}
-		
+
 		public TreeNode GetNode (string path)
 		{
 			return GetNode (path, false);
 		}
-		
+
 		public TreeNode GetNode (string path, bool buildPath)
 		{
 			if (path.StartsWith ("/"))
 				path = path.Substring (1);
 
-			string[] parts = path.Split ('/');
+			string [] parts = path.Split ('/');
 			TreeNode curNode = this;
 
-			for(int n=0; n<parts.Length; n++) {
+			for (int n = 0; n < parts.Length; n++) {
 				var part = parts [n];
 				var node = curNode.GetChildNode (part);
 				if (node != null) {
 					curNode = node;
 					continue;
 				}
-				
+
 				if (buildPath) {
 					// A new branch has to be created. Begin a transaction
 					using var transaction = Context.BeginTransaction ();
@@ -224,36 +232,42 @@ namespace Mono.Addins
 					// Don't rise events since we are just building the tree, not modifying it
 					transaction.DisableEvents = true;
 
-					// Build the branch
-					var nodeBuilder = new TreeNodeBuilder(addinEngine, part);
-					BuildNodePath (nodeBuilder, parts, n);
+					// Check again inside the lock, just in case
+					node = curNode.GetChildNode (part);
+					if (node != null) {
+						curNode = node;
+						continue;
+					}
 
-					// Add the new node
-					var newNode = nodeBuilder.Build (transaction);
-					curNode.AddChildNode (transaction, newNode);
+					// Build the branch
+					var parentNode = TreeNodeBuilder.FromNode (curNode);
+					BuildNodeBranch (parentNode, parts, n);
+
+					// Commit the changes
+					parentNode.Build (transaction);
 
 					// Keep iterating to find the leaf
-					curNode = newNode;
+					curNode = curNode.GetChildNode (part);
 				} else
 					return null;
 			}
 			return curNode;
 		}
 
-		void BuildNodePath (TreeNodeBuilder nodeBuilder, string[] parts, int partIndex)
+		void BuildNodeBranch (TreeNodeBuilder parent, string [] parts, int partIndex)
 		{
-			for (int n=partIndex; n<parts.Length; n++) {
+			for (int n = partIndex; n < parts.Length; n++) {
 				var id = parts [n];
-				var newNode = new TreeNodeBuilder (addinEngine, id);
-				nodeBuilder.AddChild (newNode);
-				nodeBuilder = newNode;
+				var newNode = TreeNodeBuilder.CreateNew (addinEngine, id, parent);
+				parent.AddChild (newNode);
+				parent = newNode;
 			}
 		}
 
 		public TreeNode GetChildNode (string id)
 		{
 			var childrenList = Children;
-			foreach (var node in Children) {
+			foreach (var node in childrenList) {
 				if (node.Id == id)
 					return node;
 			}
@@ -268,7 +282,7 @@ namespace Mono.Addins
 					// Check again after taking the lock
 					if (!childrenLoaded) {
 						if (extensionPoint != null) {
-							var builder = new TreeNodeBuilder (this);
+							var builder = TreeNodeBuilder.FromNode (this);
 							Context.LoadExtensions (transaction, extensionPoint, builder);
 							builder.Build (transaction);
 						}
@@ -278,6 +292,17 @@ namespace Mono.Addins
 					}
 				}
 				return children;
+			}
+		}
+
+		internal void LoadChildrenIntoBuilder (TreeNodeBuilder builder)
+		{
+			if (childrenLoaded) {
+				foreach (var child in children)
+					builder.AddChild (TreeNodeBuilder.FromNode (child));
+			} else if (extensionPoint != null) {
+				using var transaction = Context.BeginTransaction ();
+				Context.LoadExtensions (transaction, extensionPoint, builder);
 			}
 		}
 
@@ -428,7 +453,8 @@ namespace Mono.Addins
 
 		public void ResetCachedData (ExtensionContextTransaction transaction)
 		{
-			if (extensionPoint != null) {
+			// Check IsInitialized since ResetCachedData is called while shutting down
+			if (extensionPoint != null && addinEngine.IsInitialized) {
 				string aid = Addin.GetIdName (extensionPoint.ParentAddinDescription.AddinId);
 				RuntimeAddin ad = addinEngine.GetAddin (aid);
 				if (ad != null)

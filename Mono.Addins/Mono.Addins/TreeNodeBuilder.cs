@@ -43,18 +43,35 @@ namespace Mono.Addins
 		ExtensionNode extensionNode;
 		string path;
 		TreeNode existingNode;
+		TreeNode builtNode;
+		TreeNodeBuilder parentNode;
+		bool built;
 
-		public TreeNodeBuilder (TreeNode existingNode)
+		private TreeNodeBuilder ()
 		{
-			this.existingNode = existingNode;
-			this.id = existingNode.Id;
 		}
 
-        public TreeNodeBuilder (AddinEngine addinEngine, string id)
-        {
-            this.addinEngine = addinEngine;
-            this.id = id;
-        }
+		private TreeNodeBuilder (TreeNode existingNode)
+		{
+			this.existingNode = builtNode = existingNode;
+			this.id = existingNode.Id;
+			ExtensionNodeSet = existingNode.ExtensionNodeSet;
+		}
+
+		public static TreeNodeBuilder FromNode (TreeNode existingNode)
+		{
+			return new TreeNodeBuilder (existingNode);
+		}
+
+		public static TreeNodeBuilder CreateNew (AddinEngine addinEngine, string id, TreeNodeBuilder parentNode)
+		{
+			return new TreeNodeBuilder {
+				addinEngine = addinEngine,
+				id = id,
+				Parent = parentNode,
+				builtNode = new TreeNode (addinEngine, id, parentNode.builtNode)
+			};
+		}
 
 		public string Id => id;
 
@@ -67,33 +84,45 @@ namespace Mono.Addins
 			return null;
 		}
 
-		public TreeNodeBuilder Parent { get; set; }
-
-		public IReadOnlyList<TreeNodeBuilder> Children => children;
+		public TreeNodeBuilder Parent { get; private set; }
 
 		public BaseCondition Condition { get; set; }
 
-        public ExtensionNodeType ExtensionNodeSet { get; set; }
-        public ExtensionPoint ExtensionPoint { get; internal set; }
+        public ExtensionNodeSet ExtensionNodeSet { get; set; }
+
+		void LoadChildren ()
+		{
+			if (children == null) {
+				children = new List<TreeNodeBuilder> ();
+				builtNode.LoadChildrenIntoBuilder (this);
+			}
+		}
 
         public void AddChild (TreeNodeBuilder childBuilder)
 		{
-			childBuilder.Parent = this;
-			if (children == null)
-				children = new List<TreeNodeBuilder>();
+			LoadChildren ();
+
+			// The parent is specified in CreateNew
+			if (childBuilder.existingNode == null && childBuilder.Parent != this)
+				throw new InvalidOperationException ();
+
 			children.Add (childBuilder);
 		}
 
 		public void InsertChild (int curPos, TreeNodeBuilder childBuilder)
 		{
-			childBuilder.Parent = this;
-			if (children == null)
-				children = new List<TreeNodeBuilder>();
+			LoadChildren ();
+
+			// The parent is specified in CreateNew
+			if (childBuilder.Parent != this)
+				throw new InvalidOperationException ();
+
 			children.Insert (curPos, childBuilder);
 		}
 
 		public int IndexOfChild (string id)
 		{
+			LoadChildren ();
 			for (int n = 0; n < children.Count; n++) {
 				if (children[n].Id == id)
 					return n;
@@ -101,27 +130,42 @@ namespace Mono.Addins
 			return -1;
 		}
 
+		public int ChildrenCount {
+			get {
+				LoadChildren ();
+				return children.Count;
+			}
+		}
+
 		public TreeNode Build (ExtensionContextTransaction transaction)
 		{
-			var childNodes = ImmutableArray.CreateRange (children.Select (builder => builder.Build (transaction)));
+			if (built)
+				return builtNode;
+
+			built = true;
+
+			var childNodes = children != null ? ImmutableArray.CreateRange (children.Select (builder => builder.Build (transaction))) : ImmutableArray<TreeNode>.Empty;
+
 			if (existingNode != null) {
-				existingNode.SetChildren (transaction, childNodes);
+				if (children != null)
+					existingNode.SetChildren (transaction, childNodes);
 				return existingNode;
 			} else {
-				TreeNode cnode = new TreeNode (addinEngine, id);
 				if (Condition != null)
-					cnode.Condition = Condition;
+					builtNode.Condition = Condition;
 				if (ExtensionNodeSet != null)
-					cnode.ExtensionNodeSet = ExtensionNodeSet;
+					builtNode.ExtensionNodeSet = ExtensionNodeSet;
 				if (extensionNode != null)
-					cnode.AttachExtensionNode (extensionNode);
-				cnode.SetChildren (transaction, childNodes);
+					builtNode.AttachExtensionNode (extensionNode);
 
-				if (cnode.Condition != null)
-					transaction.RegisterNodeCondition (cnode, cnode.Condition);
+				if (children != null)
+					builtNode.SetChildren (transaction, childNodes);
 
-				transaction.ReportLoadedNode (cnode);
-				return cnode;
+				if (builtNode.Condition != null)
+					transaction.RegisterNodeCondition (builtNode, builtNode.Condition);
+
+				transaction.ReportLoadedNode (builtNode);
+				return builtNode;
 			}
 		}
 
@@ -163,13 +207,13 @@ namespace Mono.Addins
 			foreach (var part in parts) {
 				if (string.IsNullOrEmpty (part))
 					continue;
-				int i = IndexOfChild (part);
+				int i = node.IndexOfChild (part);
 				if (i == -1) {
-					var child = new TreeNodeBuilder (addinEngine, part);
+					var child = TreeNodeBuilder.CreateNew (addinEngine, part, node);
 					node.AddChild (child);
 					node = child;
 				} else
-					node = children [i];
+					node = node.children [i];
 			}
 			return node;
 		}

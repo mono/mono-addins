@@ -131,7 +131,7 @@ namespace Mono.Addins
 		internal void SetData (AddinEngine addinEngine, string plugid, ExtensionNodeType nodeType, ModuleDescription module)
 		{
 			// SetData can only be called once (it's set during the node initialization)
-			if (addinEngine != null)
+			if (this.addinEngine != null)
 				throw new InvalidOperationException ();
 
 			this.addinEngine = addinEngine;
