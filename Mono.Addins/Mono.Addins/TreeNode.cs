@@ -61,22 +61,22 @@ namespace Mono.Addins
 			if (id.Length == 0)
 				childrenLoaded = true;
 		}
-
+		
 		public AddinEngine AddinEngine {
 			get { return addinEngine; }
 		}
-
+		
 		internal void AttachExtensionNode (ExtensionNode enode)
 		{
 			this.extensionNode = enode;
 			if (extensionNode != null)
 				extensionNode.SetTreeNode (this);
 		}
-
+		
 		public string Id {
 			get { return id; }
 		}
-
+		
 		public ExtensionNode ExtensionNode {
 			get {
 				if (extensionNode == null && extensionPoint != null) {
@@ -114,23 +114,23 @@ namespace Mono.Addins
 			get { return extensionPoint; }
 			set { extensionPoint = value; }
 		}
-
+		
 		public ExtensionNodeSet ExtensionNodeSet {
 			get { return nodeTypes; }
 			set { nodeTypes = value; }
 		}
-
+		
 		public TreeNode Parent {
 			get { return parent; }
 		}
-
+		
 		public BaseCondition Condition {
 			get { return condition; }
 			set {
 				condition = value;
 			}
 		}
-
+		
 		public virtual ExtensionContext Context {
 			get {
 				if (parent != null)
@@ -139,7 +139,7 @@ namespace Mono.Addins
 					return null;
 			}
 		}
-
+		
 		public bool IsEnabled {
 			get {
 				if (condition == null)
@@ -151,7 +151,7 @@ namespace Mono.Addins
 					return condition.Evaluate (ctx);
 			}
 		}
-
+		
 		public bool ChildrenLoaded {
 			get { return childrenLoaded; }
 		}
@@ -189,13 +189,13 @@ namespace Mono.Addins
 			TreeNode node = GetNode (path, childId);
 			return node != null ? node.ExtensionNode : null;
 		}
-
+		
 		public ExtensionNode GetExtensionNode (string path)
 		{
 			TreeNode node = GetNode (path);
 			return node != null ? node.ExtensionNode : null;
 		}
-
+		
 		public TreeNode GetNode (string path, string childId)
 		{
 			if (childId == null || childId.Length == 0)
@@ -203,109 +203,51 @@ namespace Mono.Addins
 			else
 				return GetNode (path + "/" + childId);
 		}
-
+		
 		public TreeNode GetNode (string path)
 		{
 			return GetNode (path, false);
 		}
-
+		
 		public TreeNode GetNode (string path, bool buildPath)
 		{
 			if (path.StartsWith ("/"))
 				path = path.Substring (1);
 
-			string [] parts = path.Split ('/');
+			string[] parts = path.Split ('/');
 			TreeNode curNode = this;
 
-			for (int n = 0; n < parts.Length; n++) {
-				var part = parts [n];
-				var node = curNode.GetChildNode (part);
-				if (node != null) {
-					curNode = node;
+			foreach (string part in parts) {
+				int i = curNode.Children.IndexOfNode (part);
+				if (i != -1) {
+					curNode = curNode.Children [i];
 					continue;
 				}
-
+				
 				if (buildPath) {
-					// A new branch has to be created. Begin a transaction
-					using var transaction = Context.BeginTransaction ();
-
-					// Don't rise events since we are just building the tree, not modifying it
-					transaction.DisableEvents = true;
-
-					// Check again inside the lock, just in case
-					node = curNode.GetChildNode (part);
-					if (node != null) {
-						curNode = node;
-						continue;
-					}
-
-					// Build the branch
-					var parentNode = TreeNodeBuilder.FromNode (curNode);
-					BuildNodeBranch (parentNode, parts, n);
-
-					// Commit the changes
-					parentNode.Build (transaction);
-
-					// Keep iterating to find the leaf
-					curNode = curNode.GetChildNode (part);
+					TreeNode newNode = new TreeNode (addinEngine, part);
+					curNode.AddChildNode (newNode);
+					curNode = newNode;
 				} else
 					return null;
 			}
 			return curNode;
 		}
-
-		void BuildNodeBranch (TreeNodeBuilder parent, string [] parts, int partIndex)
-		{
-			for (int n = partIndex; n < parts.Length; n++) {
-				var id = parts [n];
-				var newNode = TreeNodeBuilder.CreateNew (addinEngine, id, parent);
-				parent.AddChild (newNode);
-				parent = newNode;
-			}
-		}
-
-		public TreeNode GetChildNode (string id)
-		{
-			var childrenList = Children;
-			foreach (var node in childrenList) {
-				if (node.Id == id)
-					return node;
-			}
-			return null;
-		}
-
 		public ImmutableArray<TreeNode> Children {
 			get {
 				if (!childrenLoaded) {
-					using var transaction = Context.BeginTransaction ();
-
-					// Check again after taking the lock
-					if (!childrenLoaded) {
-						if (extensionPoint != null) {
-							var builder = TreeNodeBuilder.FromNode (this);
-							Context.LoadExtensions (transaction, extensionPoint, builder);
-							builder.Build (transaction);
-						}
-						// We have to keep the relation info, since add-ins may be loaded/unloaded
-
-						childrenLoaded = true;
-					}
+					childrenLoaded = true;
+					if (extensionPoint != null)
+						Context.LoadExtensions (GetPath ());
+					// We have to keep the relation info, since add-ins may be loaded/unloaded
 				}
+				if (childrenList == null)
+					return TreeNodeCollection.Empty;
+				if (children == null)
+					children = new TreeNodeCollection (childrenList);
 				return children;
 			}
 		}
-
-		internal void LoadChildrenIntoBuilder (TreeNodeBuilder builder)
-		{
-			if (childrenLoaded) {
-				foreach (var child in children)
-					builder.AddChild (TreeNodeBuilder.FromNode (child));
-			} else if (extensionPoint != null) {
-				using var transaction = Context.BeginTransaction ();
-				Context.LoadExtensions (transaction, extensionPoint, builder);
-			}
-		}
-
 		public TreeNode Clone (AddinEngine engine)
 		{
 			return Clone (engine, extensionPoint != null);
@@ -371,9 +313,9 @@ namespace Mono.Addins
 			TreeNode curNode = this;
 
 			foreach (string part in parts) {
-				var node = curNode.GetChildNode (part);
-				if (node != null) {
-					curNode = node;
+				int i = curNode.Children.IndexOfNode (part);
+				if (i != -1) {
+					curNode = curNode.Children [i];
 					if (!curNode.ChildrenLoaded)
 						return null;
 					if (curNode.ExtensionPoint != null)
@@ -465,5 +407,5 @@ namespace Mono.Addins
 					cn.ResetCachedData (transaction);
 			}
 		}
-    }
+	}
 }
