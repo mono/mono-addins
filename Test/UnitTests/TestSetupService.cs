@@ -51,7 +51,7 @@ namespace UnitTests
 		{
 			setup = new SetupService ();
 			baseDir = Path.GetDirectoryName (new Uri (typeof(TestBase).Assembly.CodeBase).LocalPath);
-			addinsDir = new DirectoryInfo (baseDir).Parent.Parent.Parent.FullName;
+			addinsDir = new DirectoryInfo (baseDir).Parent.Parent.Parent.Parent.FullName;
 			addinsDir = Path.Combine (addinsDir, "lib");
 			
 			repoDir = Path.Combine (TempDir, "repo");
