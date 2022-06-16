@@ -33,6 +33,7 @@ using System.Collections;
 using Mono.Addins.Description;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Threading;
 
 namespace Mono.Addins
 {
@@ -70,7 +71,11 @@ namespace Mono.Addins
 		
 		internal void AttachExtensionNode (ExtensionNode enode)
 		{
-			this.extensionNode = enode;
+			if (Interlocked.CompareExchange (ref extensionNode, enode, null) != null) {
+				// Another thread already assigned the node
+				return;
+			}
+
 			if (extensionNode != null)
 				extensionNode.SetTreeNode (this);
 		}
@@ -82,9 +87,9 @@ namespace Mono.Addins
 		public ExtensionNode ExtensionNode {
 			get {
 				if (extensionNode == null && extensionPoint != null) {
-					extensionNode = new ExtensionNode ();
-					extensionNode.SetData (addinEngine, extensionPoint.RootAddin, null, null);
-					AttachExtensionNode (extensionNode);
+					var newNode = new ExtensionNode ();
+					newNode.SetData (addinEngine, extensionPoint.RootAddin, null, null);
+					AttachExtensionNode (newNode);
 				}
 				return extensionNode;
 			}
