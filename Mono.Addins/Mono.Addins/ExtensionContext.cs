@@ -277,6 +277,7 @@ namespace Mono.Addins
 		{
 			// We are going to do many changes, to create a builder for the dictionary
 			var dictBuilder = conditionsToNodes.ToBuilder ();
+			List<(string ConditionId, BaseCondition BoundCondition)> bindings = new ();
 
 			// Group nodes by the conditions, so that all nodes for a conditions can be processed together
 
@@ -292,20 +293,21 @@ namespace Mono.Addins
 					condition.GetConditionTypes (conditionTypeIds);
 
 					foreach (string cid in conditionTypeIds) {
-
 						// For each condition on which 'condition' depends, register the dependency
 						// so that it if the condition changes, the dependencies are notified
-						ConditionInfo info = GetOrCreateConditionInfo (transaction, cid, null);
-						if (info.BoundConditions == null)
-							info.BoundConditions = new List<BaseCondition> ();
-
-						info.BoundConditions.Add (condition);
+						bindings.Add ((cid, condition));
 					}
 					list = ImmutableArray<TreeNode>.Empty;
 				}
 
 				dictBuilder [condition] = list.AddRange (group.Select (item => item.Node));
 			}
+
+			foreach (var binding in bindings.GroupBy(b => b.ConditionId, b => b.BoundCondition)) {
+				ConditionInfo info = GetOrCreateConditionInfo (transaction, binding.Key, null);
+				info.BoundConditions = info.BoundConditions.AddRange (binding);
+			}
+
 			conditionsToNodes = dictBuilder.ToImmutable ();
 		}
 
@@ -340,8 +342,8 @@ namespace Mono.Addins
 					condition.GetConditionTypes (conditionTypeIds);
 					foreach (string cid in conditionTypeIds) {
 						var info = conditionTypes [cid];
-						if (info != null && info.BoundConditions != null)
-							info.BoundConditions.Remove (condition);
+						if (info != null)
+							info.BoundConditions = info.BoundConditions.Remove (condition);
 					}
 				} else
 					dictBuilder [condition] = newList;
@@ -1259,7 +1261,7 @@ namespace Mono.Addins
 	class ConditionInfo
 	{
 		public object CondType;
-		public List<BaseCondition> BoundConditions;
+		public ImmutableArray<BaseCondition> BoundConditions = ImmutableArray<BaseCondition>.Empty;
 	}
 
 	
