@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Mono.Addins.Description;
 
 namespace Mono.Addins.Database
@@ -76,7 +77,7 @@ namespace Mono.Addins.Database
 
 		public AddinDatabaseTransaction BeginTransaction ()
 		{
-			return new AddinDatabaseTransaction ();
+			return new AddinDatabaseTransaction (this, localLock);
 		}
 		
 		string AddinDbDir {
@@ -2010,15 +2011,26 @@ namespace Mono.Addins.Database
 		}
 	}
 
-    class AddinDatabaseTransaction : IDisposable
-    {
-        public void Dispose ()
-        {
-        }
-    }
+	class AddinDatabaseTransaction : IDisposable
+	{
+		readonly AddinDatabase addinDatabase;
+		readonly object localLock;
 
-    // Keep in sync with AddinSearchFlags
-    [Flags]
+		public AddinDatabaseTransaction (AddinDatabase addinDatabase, object localLock)
+		{
+			this.addinDatabase = addinDatabase;
+			this.localLock = localLock;
+			Monitor.Enter (localLock);
+		}
+
+		public void Dispose ()
+		{
+			Monitor.Exit (localLock);
+		}
+	}
+
+	// Keep in sync with AddinSearchFlags
+	[Flags]
 	enum AddinSearchFlagsInternal
 	{
 		IncludeAddins = 1,
