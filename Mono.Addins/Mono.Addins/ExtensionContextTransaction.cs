@@ -33,8 +33,20 @@ using System.Threading;
 
 namespace Mono.Addins
 {
-    class ExtensionContextTransaction : IDisposable
-    {
+	/// <summary>
+	/// Represents a mutation action of an extension context. It is necessary to acquire a transaction object
+	/// when doing changes in a context (methods that modify a context take a transaction as parameter).
+	/// Getting a transaction is a blocking operation: if a thread has started a transaction, other threads trying
+	/// to get one will be blocked until the current transaction is finished.
+	/// The transaction objects collects two kind of information:
+	/// 1) changes to be done in the context. For example, it collects conditions to be registered, and then all conditions
+	///    are added to the context at once when the transaction is completed (so the immutable collection that holds
+	///    the condition list can be updated with a single allocation).
+	/// 2) events to be fired once the transaction is completed. This is to avoid firing events while the context
+	///    lock is taken.
+	/// </summary>
+	class ExtensionContextTransaction : IDisposable
+	{
 		List<TreeNode> loadedNodes;
 		HashSet<TreeNode> childrenChanged;
 		HashSet<string> extensionsChanged;
@@ -59,8 +71,10 @@ namespace Mono.Addins
 		public bool DisableEvents { get; set; }
 
 		public void Dispose ()
-        {
+		{
 			try {
+				// Update the context
+
 				if (nodeConditions != null) {
 					Context.BulkRegisterNodeConditions (this, nodeConditions);
 				}
@@ -93,7 +107,7 @@ namespace Mono.Addins
 			}
 			if (extensionsChanged != null) {
 				foreach (var path in extensionsChanged)
-					Context.NotifyExtensionsChanged(new ExtensionEventArgs(path));
+					Context.NotifyExtensionsChanged (new ExtensionEventArgs (path));
 			}
 			if (registeredAutoExtensionPoints != null) {
 				var engine = (AddinEngine)Context;
@@ -113,7 +127,7 @@ namespace Mono.Addins
 			}
 			if (addinLoadEvents != null) {
 				var engine = (AddinEngine)Context;
-				foreach(var addin in addinLoadEvents)
+				foreach (var addin in addinLoadEvents)
 					engine.ReportAddinLoad (addin);
 			}
 			if (addinUnloadEvents != null) {

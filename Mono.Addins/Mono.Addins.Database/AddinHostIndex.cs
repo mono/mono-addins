@@ -137,7 +137,7 @@ namespace Mono.Addins.Database
 	{
 		Dictionary<string, string> index;
 
-		public ImmutableAddinHostIndex (): this(new Dictionary<string, string>())
+		public ImmutableAddinHostIndex () : this (new Dictionary<string, string> ())
 		{
 		}
 
@@ -151,9 +151,9 @@ namespace Mono.Addins.Database
 			return AddinHostIndex.LookupAddinForAssembly (index, assemblyLocation, out addinId, out addinLocation, out domain);
 		}
 
-        public Dictionary<string, string> ToDictionary ()
-        {
+		public Dictionary<string, string> ToDictionary ()
+		{
 			return new Dictionary<string, string> (index);
 		}
-    }
+	}
 }

@@ -103,8 +103,8 @@ namespace Mono.Addins
 			list.CopyTo (array, index);
 		}
 
-        IEnumerator<ExtensionNode> IEnumerable<ExtensionNode>.GetEnumerator ()
-        {
+		IEnumerator<ExtensionNode> IEnumerable<ExtensionNode>.GetEnumerator ()
+		{
 			return list.GetEnumerator ();
 		}
 	}

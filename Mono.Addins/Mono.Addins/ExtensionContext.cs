@@ -31,24 +31,23 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
 using Mono.Addins.Description;
 
 namespace Mono.Addins
 {
-    /// <summary>
-    /// An extension context.
-    /// </summary>
-    /// <remarks>
-    /// Extension contexts can be used to query the extension tree
-    /// using particular condition values. Extension points which
-    /// declare the availability of a condition type can only be
-    /// queryed using an extension context which provides an
-    /// evaluator for that condition.
-    /// </remarks>
-    public class ExtensionContext
+	/// <summary>
+	/// An extension context.
+	/// </summary>
+	/// <remarks>
+	/// Extension contexts can be used to query the extension tree
+	/// using particular condition values. Extension points which
+	/// declare the availability of a condition type can only be
+	/// queryed using an extension context which provides an
+	/// evaluator for that condition.
+	/// </remarks>
+	public class ExtensionContext
 	{
 		internal object LocalLock = new object ();
 
