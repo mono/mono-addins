@@ -97,12 +97,12 @@ namespace Mono.Addins
 
 		public void NotifyAddinUnloaded ()
 		{
-			extensionNode?.OnAddinUnloaded ();
+			extensionNode?.NotifyAddinUnloaded ();
 		}
 
 		public void NotifyAddinLoaded ()
 		{
-			extensionNode?.OnAddinLoaded ();
+			extensionNode?.NotifyAddinLoaded ();
 		}
 
 		public bool HasExtensionNode {
@@ -344,10 +344,10 @@ namespace Mono.Addins
 							}
 						}
 					} finally {
+						childrenFromExtensionsLoaded = true;
 						if (disposeTransaction)
 							transaction.Dispose ();
 					}
-					childrenFromExtensionsLoaded = true;
 				}
 				return (IReadOnlyList<TreeNode>)childrenBuilder ?? (IReadOnlyList<TreeNode>)children;
 			}
@@ -427,7 +427,7 @@ namespace Mono.Addins
 		public void NotifyAddinLoaded (RuntimeAddin ad, bool recursive)
 		{
 			if (extensionNode != null && extensionNode.AddinId == ad.Addin.Id)
-				extensionNode.OnAddinLoaded ();
+				extensionNode.NotifyAddinLoaded ();
 			if (recursive && childrenFromExtensionsLoaded) {
 				foreach (TreeNode node in Children)
 					node.NotifyAddinLoaded (ad, true);
@@ -475,36 +475,6 @@ namespace Mono.Addins
 				nodes.Add (this);
 		}
 		
-		public bool FindExtensionPathByType (IProgressStatus monitor, Type type, string nodeName, out string path, out string pathNodeName)
-		{
-			if (extensionPoint != null) {
-				foreach (ExtensionNodeType nt in extensionPoint.NodeSet.NodeTypes) {
-					if (nt.ObjectTypeName.Length > 0 && (nodeName.Length == 0 || nodeName == nt.Id)) {
-						RuntimeAddin addin = addinEngine.GetAddin (extensionPoint.RootAddin);
-						Type ot = addin.GetType (nt.ObjectTypeName, true);
-						if (ot != null) {
-							if (ot.IsAssignableFrom (type)) {
-								path = extensionPoint.Path;
-								pathNodeName = nt.Id;
-								return true;
-							}
-						}
-						else
-							monitor.ReportError ("Type '" + nt.ObjectTypeName + "' not found in add-in '" + Id + "'", null);
-					}
-				}
-			}
-			else {
-				foreach (TreeNode node in Children) {
-					if (node.FindExtensionPathByType (monitor, type, nodeName, out path, out pathNodeName))
-						return true;
-				}
-			}
-			path = null;
-			pathNodeName = null;
-			return false;
-		}
-		
 		public bool NotifyChildrenChanged ()
 		{
 			if (extensionNode != null)
@@ -517,7 +487,7 @@ namespace Mono.Addins
 		{
 			if (extensionPoint != null) {
 				string aid = Addin.GetIdName (extensionPoint.ParentAddinDescription.AddinId);
-				RuntimeAddin ad = addinEngine.GetAddin (aid);
+				RuntimeAddin ad = addinEngine.GetAddin (transaction, aid);
 				if (ad != null)
 					extensionPoint = ad.Addin.Description.ExtensionPoints [GetPath ()];
 			}

@@ -75,11 +75,13 @@ namespace Mono.Addins.Database
 			fileDatabase = new FileDatabase (AddinDbDir);
 		}
 
-		public AddinDatabaseTransaction BeginTransaction ()
+		public AddinDatabaseTransaction BeginTransaction (ExtensionContextTransaction addinEngineTransaction = null)
 		{
-			return new AddinDatabaseTransaction (this, localLock);
+			return new AddinDatabaseTransaction (this, localLock, addinEngineTransaction);
 		}
-		
+
+		internal AddinEngine AddinEngine => addinEngine;
+
 		string AddinDbDir {
 			get { return addinDbDir; }
 		}
@@ -489,8 +491,7 @@ namespace Mono.Addins.Database
 			SaveConfiguration (dbTransaction);
 
 			if (addinEngine != null && addinEngine.IsInitialized) {
-				using var transaction = addinEngine.BeginTransaction ();
-				addinEngine.ActivateAddin (transaction, id);
+				addinEngine.ActivateAddin (dbTransaction.GetAddinEngineTransaction(), id);
 			}
 		}
 
@@ -548,8 +549,7 @@ namespace Mono.Addins.Database
 			}
 
 			if (addinEngine != null && addinEngine.IsInitialized) {
-				using var transaction = addinEngine.BeginTransaction ();
-				addinEngine.UnloadAddin (transaction, id);
+				addinEngine.UnloadAddin (dbTransaction.GetAddinEngineTransaction(), id);
 			}
 		}
 
@@ -1023,7 +1023,7 @@ namespace Mono.Addins.Database
 				allSetupInfosLoaded = false;
 		}
 
-		internal void ResetCachedData ()
+		internal void ResetCachedData (AddinDatabaseTransaction dbTransaction = null)
 		{
 			ResetBasicCachedData ();
 			hostIndex = null;
@@ -1031,7 +1031,7 @@ namespace Mono.Addins.Database
 				cachedAddinSetupInfos.Clear ();
 			dependsOnCache.Clear ();
 			if (addinEngine != null)
-				addinEngine.ResetCachedData ();
+				addinEngine.ResetCachedData (dbTransaction?.GetAddinEngineTransaction());
 		}
 
 		Dictionary<string, HashSet<string>> dependsOnCache = new Dictionary<string, HashSet<string>> ();
@@ -1095,79 +1095,84 @@ namespace Mono.Addins.Database
 			
 			Update (monitor, domain, context);
 		}
-		
-		public void Update (IProgressStatus monitor, string domain, ScanOptions context = null)
+
+		public void Update(IProgressStatus monitor, string domain, ScanOptions context = null, ExtensionContextTransaction addinEngineTransaction = null)
 		{
 			if (monitor == null)
-				monitor = new ConsoleProgressStatus (false);
+				monitor = new ConsoleProgressStatus(false);
 
 			if (RunningSetupProcess)
 				return;
-			
+
 			fatalDatabseError = false;
-			
+
 			DateTime tim = DateTime.Now;
 
-			using (var dbTransaction = BeginTransaction ()) {
-				RunPendingUninstalls (dbTransaction, monitor);
-			}
-			
-			Hashtable installed = new Hashtable ();
-			bool changesFound = CheckFolders (monitor, domain);
-			
+			var dbTransaction = BeginTransaction(addinEngineTransaction);
+
+			RunPendingUninstalls(dbTransaction, monitor);
+
+			Hashtable installed = new Hashtable();
+			bool changesFound = CheckFolders(monitor, domain);
+
 			if (monitor.IsCanceled)
 				return;
-			
+
 			if (monitor.LogLevel > 1)
-				monitor.Log ("Folders checked (" + (int) (DateTime.Now - tim).TotalMilliseconds + " ms)");
-			
-			if (changesFound) {
+				monitor.Log("Folders checked (" + (int)(DateTime.Now - tim).TotalMilliseconds + " ms)");
+
+			if (changesFound)
+			{
 				// Something has changed, the add-ins need to be re-scanned, but it has
 				// to be done in an external process
-				
-				if (domain != null) {
-					foreach (Addin ainfo in InternalGetInstalledAddins (domain, AddinSearchFlagsInternal.IncludeAddins, false)) {
-						installed [ainfo.Id] = ainfo.Id;
+
+				if (domain != null)
+				{
+					foreach (Addin ainfo in InternalGetInstalledAddins(domain, AddinSearchFlagsInternal.IncludeAddins, false))
+					{
+						installed[ainfo.Id] = ainfo.Id;
 					}
 				}
-				
-				RunScannerProcess (monitor, context);
-			
-				ResetCachedData ();
-				
-				registry.NotifyDatabaseUpdated ();
+
+				RunScannerProcess(monitor, context);
+
+				ResetCachedData(dbTransaction);
+
+				registry.NotifyDatabaseUpdated();
 			}
-			
+
 			if (fatalDatabseError)
-				monitor.ReportError ("The add-in database could not be updated. It may be due to file corruption. Try running the setup repair utility", null);
-			
+				monitor.ReportError("The add-in database could not be updated. It may be due to file corruption. Try running the setup repair utility", null);
+
 			// Update the currently loaded add-ins
-			if (changesFound && domain != null && addinEngine != null && addinEngine.IsInitialized) {
-				Hashtable newInstalled = new Hashtable ();
-				foreach (Addin ainfo in GetInstalledAddins (domain, AddinSearchFlagsInternal.IncludeAddins)) {
-					newInstalled [ainfo.Id] = ainfo.Id;
+			if (changesFound && domain != null && addinEngine != null && addinEngine.IsInitialized)
+			{
+				Hashtable newInstalled = new Hashtable();
+				foreach (Addin ainfo in GetInstalledAddins(domain, AddinSearchFlagsInternal.IncludeAddins))
+				{
+					newInstalled[ainfo.Id] = ainfo.Id;
 				}
 
-				using (var transaction = addinEngine.BeginTransaction ()) {
-					foreach (string aid in installed.Keys) {
-						// Always try to unload, event if the add-in was not currently loaded.
-						// Required since the add-ins has to be marked as 'disabled', to avoid
-						// extensions from this add-in to be loaded
-						if (!newInstalled.Contains (aid))
-							addinEngine.UnloadAddin (transaction, aid);
-					}
+				foreach (string aid in installed.Keys)
+				{
+					// Always try to unload, event if the add-in was not currently loaded.
+					// Required since the add-ins has to be marked as 'disabled', to avoid
+					// extensions from this add-in to be loaded
+					if (!newInstalled.Contains(aid))
+						addinEngine.UnloadAddin(dbTransaction.GetAddinEngineTransaction(), aid);
+				}
 
-					foreach (string aid in newInstalled.Keys) {
-						if (!installed.Contains (aid)) {
-							Addin addin = addinEngine.Registry.GetAddin (aid);
-							if (addin != null)
-								addinEngine.ActivateAddin (transaction, aid);
-						}
+				foreach (string aid in newInstalled.Keys)
+				{
+					if (!installed.Contains(aid))
+					{
+						Addin addin = addinEngine.Registry.GetAddin(aid);
+						if (addin != null)
+							addinEngine.ActivateAddin(dbTransaction.GetAddinEngineTransaction(), aid);
 					}
 				}
 			}
-			using var dbTransation = BeginTransaction ();
-			UpdateEnabledStatus (dbTransation);
+			UpdateEnabledStatus(dbTransaction);
 		}
 
 		void RunPendingUninstalls (AddinDatabaseTransaction dbTransaction, IProgressStatus monitor)
@@ -2015,16 +2020,29 @@ namespace Mono.Addins.Database
 	{
 		readonly AddinDatabase addinDatabase;
 		readonly object localLock;
+		ExtensionContextTransaction addinEngineTransaction;
+		bool addinEngineTransactionStarted;
 
-		public AddinDatabaseTransaction (AddinDatabase addinDatabase, object localLock)
+		public AddinDatabaseTransaction (AddinDatabase addinDatabase, object localLock, ExtensionContextTransaction addinEngineTransaction)
 		{
 			this.addinDatabase = addinDatabase;
 			this.localLock = localLock;
+			this.addinEngineTransaction = addinEngineTransaction;
 			Monitor.Enter (localLock);
+		}
+
+		public ExtensionContextTransaction GetAddinEngineTransaction()
+		{
+			if (addinEngineTransaction != null)
+				return addinEngineTransaction;
+			addinEngineTransactionStarted = true;
+			return addinEngineTransaction = addinDatabase.AddinEngine.BeginTransaction();
 		}
 
 		public void Dispose ()
 		{
+			if (addinEngineTransactionStarted)
+				addinEngineTransaction.Dispose();
 			Monitor.Exit (localLock);
 		}
 	}

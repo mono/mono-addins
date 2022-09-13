@@ -29,7 +29,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
+using static Mono.Addins.ExtensionContext;
 
 namespace Mono.Addins
 {
@@ -59,35 +62,75 @@ namespace Mono.Addins
 		List<RuntimeAddin> addinLoadEvents;
 		List<string> addinUnloadEvents;
 		List<TreeNode> treeNodeTransactions;
+		ExtensionContextSnapshot snapshot;
+		bool snaphotChanged;
 
 		public ExtensionContextTransaction (ExtensionContext context)
 		{
 			Context = context;
 			Monitor.Enter (Context.LocalLock);
+			snapshot = context.CurrentSnapshot;
 		}
 
 		public ExtensionContext Context { get; }
 
 		public bool DisableEvents { get; set; }
 
+		public AddinEngine.AddinEngineSnapshot AddinEngineSnapshot => (AddinEngine.AddinEngineSnapshot)Snapshot;
+
+		public ExtensionContextSnapshot Snapshot => snapshot;
+
+		void EnsureNewSnapshot()
+		{
+			if (!snaphotChanged)
+			{
+				snaphotChanged = true;
+				var newSnapshot = Context.CreateSnapshot();
+				newSnapshot.CopyFrom(snapshot);
+				snapshot = newSnapshot;
+			}
+		}
+
 		public void Dispose ()
 		{
-			try {
+			var engine = Context as AddinEngine;
+
+			try
+			{
 				// Update the context
 
 				if (nodeConditions != null) {
-					Context.BulkRegisterNodeConditions (this, nodeConditions);
+					BulkRegisterNodeConditions (nodeConditions);
 				}
 
 				if (nodeConditionUnregistrations != null) {
-					Context.BulkUnregisterNodeConditions (this, nodeConditionUnregistrations);
+					BulkUnregisterNodeConditions (nodeConditionUnregistrations);
+				}
+
+				if (engine != null)
+				{
+					if (registeredAutoExtensionPoints != null)
+						AddinEngineSnapshot.AutoExtensionTypes = AddinEngineSnapshot.AutoExtensionTypes.SetItems(registeredAutoExtensionPoints);
+
+					if (unregisteredAutoExtensionPoints != null)
+						AddinEngineSnapshot.AutoExtensionTypes = AddinEngineSnapshot.AutoExtensionTypes.RemoveRange(unregisteredAutoExtensionPoints);
+
+					if (registeredAssemblyResolvePaths != null)
+						AddinEngineSnapshot.AssemblyResolvePaths = AddinEngineSnapshot.AssemblyResolvePaths.SetItems(registeredAssemblyResolvePaths);
+
+					if (unregisteredAssemblyResolvePaths != null)
+						AddinEngineSnapshot.AssemblyResolvePaths = AddinEngineSnapshot.AssemblyResolvePaths.RemoveRange(unregisteredAssemblyResolvePaths);
 				}
 
 				// Commit tree node transactions
-				if (treeNodeTransactions != null) {
+				if (treeNodeTransactions != null)
+				{
 					foreach (var node in treeNodeTransactions)
-						node.CommitChildrenUpdateTransaction ();
+						node.CommitChildrenUpdateTransaction();
 				}
+
+				if (snaphotChanged)
+					Context.SetSnapshot(snapshot);
 
 			} finally {
 				Monitor.Exit (Context.LocalLock);
@@ -109,32 +152,101 @@ namespace Mono.Addins
 				foreach (var path in extensionsChanged)
 					Context.NotifyExtensionsChanged (new ExtensionEventArgs (path));
 			}
-			if (registeredAutoExtensionPoints != null) {
-				var engine = (AddinEngine)Context;
-				engine.BulkRegisterAutoTypeExtensionPoint (registeredAutoExtensionPoints);
+
+			if (engine != null) {
+				if (addinLoadEvents != null) {
+					foreach (var addin in addinLoadEvents)
+						engine.ReportAddinLoad (addin);
+				}
+				if (addinUnloadEvents != null) {
+					foreach (var id in addinUnloadEvents)
+						engine.ReportAddinUnload (id);
+				}
 			}
-			if (unregisteredAutoExtensionPoints != null) {
-				var engine = (AddinEngine)Context;
-				engine.BulkUnregisterAutoTypeExtensionPoint (unregisteredAutoExtensionPoints);
+		}
+
+		void BulkRegisterNodeConditions(IEnumerable<(TreeNode Node, BaseCondition Condition)> nodeConditions)
+		{
+			// We are going to do many changes, so create a builder for the dictionary
+			var dictBuilder = Snapshot.ConditionsToNodes.ToBuilder();
+			List<(string ConditionId, BaseCondition BoundCondition)> bindings = new();
+
+			// Group nodes by the conditions, so that all nodes for a conditions can be processed together
+
+			foreach (var group in nodeConditions.GroupBy(c => c.Condition))
+			{
+				var condition = group.Key;
+
+				if (!dictBuilder.TryGetValue(condition, out var list))
+				{
+
+					// Condition not yet registered, register it now
+
+					// Get a list of conditions on which this one depends
+					var conditionTypeIds = new List<string>();
+					condition.GetConditionTypes(conditionTypeIds);
+
+					foreach (string cid in conditionTypeIds)
+					{
+						// For each condition on which 'condition' depends, register the dependency
+						// so that it if the condition changes, the dependencies are notified
+						bindings.Add((cid, condition));
+					}
+					list = ImmutableArray<TreeNode>.Empty;
+				}
+
+				dictBuilder[condition] = list.AddRange(group.Select(item => item.Node));
 			}
-			if (registeredAssemblyResolvePaths != null) {
-				var engine = (AddinEngine)Context;
-				engine.BulkRegisterAssemblyResolvePaths (registeredAssemblyResolvePaths);
+
+			foreach (var binding in bindings.GroupBy(b => b.ConditionId, b => b.BoundCondition))
+			{
+				ConditionInfo info = Context.GetOrCreateConditionInfo(this, binding.Key, null);
+				info.BoundConditions = info.BoundConditions.AddRange(binding);
 			}
-			if (unregisteredAssemblyResolvePaths != null) {
-				var engine = (AddinEngine)Context;
-				engine.BulkUnregisterAssemblyResolvePaths (unregisteredAssemblyResolvePaths);
+
+			Snapshot.ConditionsToNodes = dictBuilder.ToImmutable();
+		}
+
+		void BulkUnregisterNodeConditions(IEnumerable<(TreeNode Node, BaseCondition Condition)> nodeConditions)
+		{
+			ImmutableDictionary<BaseCondition, ImmutableArray<TreeNode>>.Builder dictBuilder = null;
+
+			foreach (var group in nodeConditions.GroupBy(c => c.Condition))
+			{
+				var condition = group.Key;
+				if (!Snapshot.ConditionsToNodes.TryGetValue(condition, out var list))
+					continue;
+
+				var newList = list.RemoveRange(group.Select(item => item.Node));
+
+				// If there are no changes, continue, no need to create the dictionary builder
+				if (newList == list)
+					continue;
+
+				if (dictBuilder == null)
+					dictBuilder = Snapshot.ConditionsToNodes.ToBuilder();
+
+				if (newList.Length == 0)
+				{
+
+					// The condition is not used anymore. Remove it from the dictionary
+					// and unregister it from any condition it was bound to
+
+					dictBuilder.Remove(condition);
+					var conditionTypeIds = new List<string>();
+					condition.GetConditionTypes(conditionTypeIds);
+					foreach (string cid in conditionTypeIds)
+					{
+						var info = Snapshot.ConditionTypes[cid];
+						if (info != null)
+							info.BoundConditions = info.BoundConditions.Remove(condition);
+					}
+				}
+				else
+					dictBuilder[condition] = newList;
 			}
-			if (addinLoadEvents != null) {
-				var engine = (AddinEngine)Context;
-				foreach (var addin in addinLoadEvents)
-					engine.ReportAddinLoad (addin);
-			}
-			if (addinUnloadEvents != null) {
-				var engine = (AddinEngine)Context;
-				foreach (var id in addinUnloadEvents)
-					engine.ReportAddinUnload (id);
-			}
+			if (dictBuilder != null)
+				Snapshot.ConditionsToNodes = dictBuilder.ToImmutable();
 		}
 
 		public void ReportLoadedNode (TreeNode node)
@@ -164,6 +276,7 @@ namespace Mono.Addins
 
 		public void RegisterNodeCondition (TreeNode node, BaseCondition cond)
 		{
+			EnsureNewSnapshot();
 			if (nodeConditions == null)
 				nodeConditions = new List<(TreeNode Node, BaseCondition Condition)> ();
 			nodeConditions.Add ((node, cond));
@@ -171,6 +284,7 @@ namespace Mono.Addins
 
 		public void UnregisterNodeCondition (TreeNode node, BaseCondition cond)
 		{
+			EnsureNewSnapshot();
 			if (nodeConditionUnregistrations == null)
 				nodeConditionUnregistrations = new List<(TreeNode Node, BaseCondition Condition)> ();
 			nodeConditionUnregistrations.Add ((node, cond));
@@ -180,6 +294,7 @@ namespace Mono.Addins
 
 		public void RegisterAutoTypeExtensionPoint (string typeName, string path)
 		{
+			EnsureNewSnapshot();
 			if (registeredAutoExtensionPoints == null)
 				registeredAutoExtensionPoints = new List<KeyValuePair<string, string>> ();
 			registeredAutoExtensionPoints.Add (new KeyValuePair<string, string> (typeName, path));
@@ -187,6 +302,7 @@ namespace Mono.Addins
 
 		public void UnregisterAutoTypeExtensionPoint (string typeName)
 		{
+			EnsureNewSnapshot();
 			if (unregisteredAutoExtensionPoints == null)
 				unregisteredAutoExtensionPoints = new List<string> ();
 			unregisteredAutoExtensionPoints.Add (typeName);
@@ -194,6 +310,7 @@ namespace Mono.Addins
 
 		public void RegisterAssemblyResolvePaths (string assembly, RuntimeAddin addin)
 		{
+			EnsureNewSnapshot();
 			if (registeredAssemblyResolvePaths == null)
 				registeredAssemblyResolvePaths = new List<KeyValuePair<string, RuntimeAddin>> ();
 			registeredAssemblyResolvePaths.Add (new KeyValuePair<string, RuntimeAddin> (assembly, addin));
@@ -201,6 +318,7 @@ namespace Mono.Addins
 
 		public void UnregisterAssemblyResolvePaths (string assembly)
 		{
+			EnsureNewSnapshot();
 			if (unregisteredAssemblyResolvePaths == null)
 				unregisteredAssemblyResolvePaths = new List<string> ();
 			unregisteredAssemblyResolvePaths.Add (assembly);
@@ -226,5 +344,6 @@ namespace Mono.Addins
 				treeNodeTransactions = new List<TreeNode> ();
 			treeNodeTransactions.Add (node);
 		}
+
 	}
 }

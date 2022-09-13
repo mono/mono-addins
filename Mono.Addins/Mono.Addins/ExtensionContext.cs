@@ -37,29 +37,51 @@ using Mono.Addins.Description;
 
 namespace Mono.Addins
 {
-	/// <summary>
-	/// An extension context.
-	/// </summary>
-	/// <remarks>
-	/// Extension contexts can be used to query the extension tree
-	/// using particular condition values. Extension points which
-	/// declare the availability of a condition type can only be
-	/// queryed using an extension context which provides an
-	/// evaluator for that condition.
-	/// </remarks>
-	public class ExtensionContext
+    /// <summary>
+    /// An extension context.
+    /// </summary>
+    /// <remarks>
+    /// Extension contexts can be used to query the extension tree
+    /// using particular condition values. Extension points which
+    /// declare the availability of a condition type can only be
+    /// queryed using an extension context which provides an
+    /// evaluator for that condition.
+    /// </remarks>
+    public class ExtensionContext
 	{
 		internal object LocalLock = new object ();
 
-		ImmutableDictionary<string, ConditionInfo> conditionTypes = ImmutableDictionary<string, ConditionInfo>.Empty;
-		ImmutableDictionary<BaseCondition, ImmutableArray<TreeNode>> conditionsToNodes = ImmutableDictionary<BaseCondition, ImmutableArray<TreeNode>>.Empty;
 		ImmutableArray<WeakReference> childContexts = ImmutableArray<WeakReference>.Empty;
 		ExtensionContext parentContext;
 		ExtensionTree tree;
 
-		ImmutableArray<string> runTimeEnabledAddins = ImmutableArray<string>.Empty;
-		ImmutableArray<string> runTimeDisabledAddins = ImmutableArray<string>.Empty;
-		
+		NotificationQueue notificationQueue;
+
+		// runTimeEnabledAddins and runTimeDisabledAddins are modified only within a transaction,
+		// so they don't need to be immutable and don't need to be in the snapshot
+		HashSet<string> runTimeEnabledAddins = new HashSet<string>();
+		HashSet<string> runTimeDisabledAddins = new HashSet<string>();
+
+		ExtensionContextSnapshot currentSnapshot = new ExtensionContextSnapshot();
+
+		internal class ExtensionContextSnapshot
+		{
+			public ImmutableDictionary<string, ConditionInfo> ConditionTypes;
+			public ImmutableDictionary<BaseCondition, ImmutableArray<TreeNode>> ConditionsToNodes;
+
+			public ExtensionContextSnapshot()
+			{
+				ConditionTypes = ImmutableDictionary<string, ConditionInfo>.Empty;
+				ConditionsToNodes = ImmutableDictionary<BaseCondition, ImmutableArray<TreeNode>>.Empty;
+			}
+
+			public virtual void CopyFrom(ExtensionContextSnapshot other)
+			{
+				ConditionTypes = other.ConditionTypes;
+				ConditionsToNodes = other.ConditionsToNodes;
+			}
+		}
+
 		/// <summary>
 		/// Extension change event.
 		/// </summary>
@@ -69,13 +91,30 @@ namespace Mono.Addins
 		/// it does not provide information about what changed. Hosts subscribing to
 		/// this event should get the new list of nodes using a query method such as
 		/// AddinManager.GetExtensionNodes() and then update whatever needs to be updated.
+		/// 
+		/// Threading information: the thread on which the event is raised is undefined. Events are
+		/// guaranteed to be raised sequentially for a given extension context.
 		/// </remarks>
 		public event ExtensionEventHandler ExtensionChanged;
 		
 		internal void Initialize (AddinEngine addinEngine)
 		{
+			notificationQueue = new NotificationQueue(addinEngine);
+			SetSnapshot(CreateSnapshot());
 			tree = new ExtensionTree (addinEngine, this);
 		}
+
+		internal virtual ExtensionContextSnapshot CreateSnapshot()
+		{
+			return new ExtensionContextSnapshot();
+		}
+
+		internal virtual void SetSnapshot(ExtensionContextSnapshot newSnapshot)
+		{
+			currentSnapshot = newSnapshot;
+		}
+
+		internal ExtensionContextSnapshot CurrentSnapshot => currentSnapshot;
 
 #pragma warning disable 1591
 		[ObsoleteAttribute]
@@ -84,18 +123,19 @@ namespace Mono.Addins
 		}
 #pragma warning restore 1591
 
+		internal void InvokeCallback(Action action, object source)
+		{
+			notificationQueue.Invoke(action, source);
+		}
 		
 		internal void ClearContext ()
 		{
-			conditionTypes = conditionTypes.Clear ();
-			conditionsToNodes.Clear ();
+			SetSnapshot(CreateSnapshot());
 			childContexts = ImmutableArray<WeakReference>.Empty;
 			parentContext = null;
 			tree = null;
-			runTimeEnabledAddins = ImmutableArray<string>.Empty;
-			runTimeDisabledAddins = ImmutableArray<string>.Empty;
 		}
-		
+
 		internal AddinEngine AddinEngine {
 			get { return tree.AddinEngine; }
 		}
@@ -125,11 +165,16 @@ namespace Mono.Addins
 				}
 			}
 		}
-		
-		internal virtual void ResetCachedData ()
+
+		internal void ResetCachedData()
 		{
-			using (var transaction = BeginTransaction ())
-				tree.ResetCachedData (transaction);
+			using (var transaction = BeginTransaction())
+				ResetCachedData(transaction);
+		}
+
+		internal virtual void ResetCachedData (ExtensionContextTransaction transaction)
+		{
+			tree.ResetCachedData (transaction);
 
 			foreach (var ctx in GetActiveChildContexes())
 				ctx.ResetCachedData ();
@@ -191,12 +236,6 @@ namespace Mono.Addins
 			GetOrCreateConditionInfo (transaction, id, type);
 		}
 
-		void RegisterCondition (ExtensionContextTransaction transaction, string id, Type type)
-		{
-			// Allows delayed creation of condition types
-			GetOrCreateConditionInfo (transaction, id, type);
-		}
-
 		internal void RegisterCondition (ExtensionContextTransaction transaction, string id, RuntimeAddin addin, string typeName)
 		{
 			// Allows delayed creation of condition types
@@ -206,12 +245,12 @@ namespace Mono.Addins
 			});
 		}
 
-		ConditionInfo GetOrCreateConditionInfo (ExtensionContextTransaction transaction, string id, object conditionTypeObject)
+		internal ConditionInfo GetOrCreateConditionInfo (ExtensionContextTransaction transaction, string id, object conditionTypeObject)
 		{
-			if (!conditionTypes.TryGetValue (id, out var info)) {
+			if (!transaction.Snapshot.ConditionTypes.TryGetValue (id, out var info)) {
 				info = new ConditionInfo ();
 				info.CondType = conditionTypeObject;
-				conditionTypes = conditionTypes.Add (id, info);
+				transaction.Snapshot.ConditionTypes = transaction.Snapshot.ConditionTypes.Add (id, info);
 			} else {
 				// If CondType is not changing, nothing else to do
 				if (conditionTypeObject == null)
@@ -230,7 +269,7 @@ namespace Mono.Addins
 		
 		internal ConditionType GetCondition (string id)
 		{
-			if (conditionTypes.TryGetValue(id, out var info)) {
+			if (currentSnapshot.ConditionTypes.TryGetValue(id, out var info)) {
 				if (info.CondType is ConditionType condition) {
 					return condition;
 				}
@@ -269,87 +308,6 @@ namespace Mono.Addins
 				return null;
 		}
 
-		/// <summary>
-		/// Registers a set of node conditions
-		/// </summary>
-		internal void BulkRegisterNodeConditions (ExtensionContextTransaction transaction, IEnumerable<(TreeNode Node, BaseCondition Condition)> nodeConditions)
-		{
-			// We are going to do many changes, to create a builder for the dictionary
-			var dictBuilder = conditionsToNodes.ToBuilder ();
-			List<(string ConditionId, BaseCondition BoundCondition)> bindings = new ();
-
-			// Group nodes by the conditions, so that all nodes for a conditions can be processed together
-
-			foreach (var group in nodeConditions.GroupBy (c => c.Condition)) {
-				var condition = group.Key;
-
-				if (!dictBuilder.TryGetValue (condition, out var list)) {
-
-					// Condition not yet registered, register it now
-
-					// Get a list of conditions on which this one depends
-					var conditionTypeIds = new List<string> ();
-					condition.GetConditionTypes (conditionTypeIds);
-
-					foreach (string cid in conditionTypeIds) {
-						// For each condition on which 'condition' depends, register the dependency
-						// so that it if the condition changes, the dependencies are notified
-						bindings.Add ((cid, condition));
-					}
-					list = ImmutableArray<TreeNode>.Empty;
-				}
-
-				dictBuilder [condition] = list.AddRange (group.Select (item => item.Node));
-			}
-
-			foreach (var binding in bindings.GroupBy(b => b.ConditionId, b => b.BoundCondition)) {
-				ConditionInfo info = GetOrCreateConditionInfo (transaction, binding.Key, null);
-				info.BoundConditions = info.BoundConditions.AddRange (binding);
-			}
-
-			conditionsToNodes = dictBuilder.ToImmutable ();
-		}
-
-		/// <summary>
-		/// Unregisters a set of node conditions
-		/// </summary>
-		internal void BulkUnregisterNodeConditions (ExtensionContextTransaction transaction, IEnumerable<(TreeNode Node, BaseCondition Condition)> nodeConditions)
-		{
-			ImmutableDictionary<BaseCondition, ImmutableArray<TreeNode>>.Builder dictBuilder = null;
-
-			foreach (var group in nodeConditions.GroupBy (c => c.Condition)) {
-				var condition = group.Key;
-				if (!conditionsToNodes.TryGetValue (condition, out var list))
-					continue;
-
-				var newList = list.RemoveRange (group.Select (item => item.Node));
-
-				// If there are no changes, continue, no need to create the dictionary builder
-				if (newList == list)
-					continue;
-
-				if (dictBuilder == null)
-					dictBuilder = conditionsToNodes.ToBuilder ();
-
-				if (newList.Length == 0) {
-
-					// The condition is not used anymore. Remove it from the dictionary
-                    // and unregister it from any condition it was bound to
-
-					dictBuilder.Remove (condition);
-					var conditionTypeIds = new List<string> ();
-					condition.GetConditionTypes (conditionTypeIds);
-					foreach (string cid in conditionTypeIds) {
-						var info = conditionTypes [cid];
-						if (info != null)
-							info.BoundConditions = info.BoundConditions.Remove (condition);
-					}
-				} else
-					dictBuilder [condition] = newList;
-			}
-			if (dictBuilder != null)
-				conditionsToNodes = dictBuilder.ToImmutable ();
-		}
 
 		/// <summary>
 		/// Returns the extension node in a path
@@ -507,7 +465,7 @@ namespace Mono.Addins
 			if (node == null || !node.HasExtensionNode)
 				return ExtensionNodeList.Empty;
 			
-			ExtensionNodeList list = node.ExtensionNode.ChildNodes;
+			ExtensionNodeList list = node.ExtensionNode.GetChildNodes();
 			
 			if (expectedNodeType != null) {
 				bool foundError = false;
@@ -856,14 +814,16 @@ namespace Mono.Addins
 			NotifyConditionChanged (cond);
 		}
 
-		internal void NotifyConditionChanged (ConditionType cond)
+		void NotifyConditionChanged (ConditionType cond)
 		{
 			HashSet<TreeNode> parentsToNotify = null;
 
-			if (conditionTypes.TryGetValue (cond.Id, out var info) && info.BoundConditions != null) {
+			var snapshot = currentSnapshot;
+
+			if (snapshot.ConditionTypes.TryGetValue (cond.Id, out var info) && info.BoundConditions != null) {
 				parentsToNotify = new HashSet<TreeNode> ();
 				foreach (BaseCondition c in info.BoundConditions) {
-					if (conditionsToNodes.TryGetValue(c, out var nodeList)) {
+					if (snapshot.ConditionsToNodes.TryGetValue(c, out var nodeList)) {
 						parentsToNotify.UnionWith (nodeList.Select (node => node.Parent));
 					}
 				}
@@ -894,7 +854,12 @@ namespace Mono.Addins
 		internal void NotifyExtensionsChanged (ExtensionEventArgs args)
 		{
 			if (ExtensionChanged != null)
-				ExtensionChanged (this, args);
+			{
+				notificationQueue.Invoke(() =>
+				{
+					ExtensionChanged?.Invoke(this, args);
+				}, null);
+			}
 		}
 		
 		internal void NotifyAddinLoaded (RuntimeAddin ad)
@@ -941,7 +906,7 @@ namespace Mono.Addins
 				
 			// Add the new nodes
 			foreach (ExtensionPoint ep in eps.Keys) {
-				ExtensionLoadData data = GetAddinExtensions (id, ep);
+				ExtensionLoadData data = GetAddinExtensions (transaction, id, ep);
 				if (data != null) {
 					foreach (Extension ext in data.Extensions) {
 						TreeNode node = GetNode (ext.Path);
@@ -984,7 +949,7 @@ namespace Mono.Addins
 			// event without first getting the list of nodes that may change).
 
 			// We get the runtime add-in because the add-in may already have been deleted from the registry
-			RuntimeAddin addin = AddinEngine.GetAddin (id);
+			RuntimeAddin addin = AddinEngine.GetAddin (transaction, id);
 			if (addin != null) {
 				var paths = new List<string> ();
 				// Using addin.Module.ParentAddinDescription here because addin.Addin.Description may not
@@ -1002,21 +967,17 @@ namespace Mono.Addins
 		
 		void RegisterRuntimeDisabledAddin (ExtensionContextTransaction transaction, string addinId)
 		{
-			if (!runTimeDisabledAddins.Contains (addinId))
-				runTimeDisabledAddins = runTimeDisabledAddins.Add (addinId);
-			
-			runTimeEnabledAddins = runTimeEnabledAddins.Remove (addinId);
+			runTimeDisabledAddins.Add (addinId);
+			runTimeEnabledAddins.Remove (addinId);
 		}
 		
 		void RegisterRuntimeEnabledAddin (ExtensionContextTransaction transaction, string addinId)
 		{
-			if (!runTimeEnabledAddins.Contains (addinId))
-				runTimeEnabledAddins = runTimeEnabledAddins.Add (addinId);
-
-			runTimeDisabledAddins = runTimeDisabledAddins.Remove (addinId);
+			runTimeEnabledAddins.Add (addinId);
+			runTimeDisabledAddins.Remove (addinId);
 		}
 		
-		internal List<string> GetAddinsForPath (List<string> col)
+		List<string> GetAddinsForPath (ExtensionContextTransaction transaction, List<string> col)
 		{
 			List<string> newlist = null;
 
@@ -1024,23 +985,20 @@ namespace Mono.Addins
 			// they may contain extension for this path.
 			// Ignore addins disabled at run-time.
 
-			var enabledAddins = runTimeEnabledAddins;
-
-			if (enabledAddins != null && enabledAddins.Length > 0) {
+			if (runTimeEnabledAddins.Count > 0) {
 				newlist = new List<string> ();
 				newlist.AddRange (col);
-				foreach (string s in enabledAddins)
+				foreach (string s in runTimeEnabledAddins)
 					if (!newlist.Contains (s))
 						newlist.Add (s);
 			}
 
-			var disabledAddins = runTimeDisabledAddins;
-			if (disabledAddins != null && disabledAddins.Length > 0) {
+			if (runTimeDisabledAddins.Count > 0) {
 				if (newlist == null) {
 					newlist = new List<string> ();
 					newlist.AddRange (col);
 				}
-				foreach (string s in disabledAddins)
+				foreach (string s in runTimeDisabledAddins)
 					newlist.Remove (s);
 			}
 			
@@ -1063,11 +1021,11 @@ namespace Mono.Addins
 				// Collect extensions to be loaded from add-ins. Before loading the extensions,
 				// they must be sorted, that's why loading is split in two steps (collecting + loading).
 
-				var addins = GetAddinsForPath (ep.Addins);
+				var addins = GetAddinsForPath (transaction, ep.Addins);
 				var loadData = new List<ExtensionLoadData> (addins.Count);
 
 				foreach (string addin in addins) {
-					ExtensionLoadData ed = GetAddinExtensions (addin, ep);
+					ExtensionLoadData ed = GetAddinExtensions (transaction, addin, ep);
 					if (ed != null) {
 						// Insert the addin data taking into account dependencies.
 						// An add-in must be processed after all its dependencies.
@@ -1099,18 +1057,18 @@ namespace Mono.Addins
 				}
 				// Call the OnAddinLoaded method on nodes, if the add-in is already loaded
 				foreach (TreeNode nod in loadedNodes)
-					nod.ExtensionNode.OnAddinLoaded ();
+					nod.ExtensionNode.NotifyAddinLoaded();
 
-				NotifyExtensionsChanged (new ExtensionEventArgs (requestedExtensionPath));
-			}
-		}
+				transaction.NotifyExtensionsChangedEvent(requestedExtensionPath);
+            }
+        }
 
-		ExtensionLoadData GetAddinExtensions (string id, ExtensionPoint ep)
+		ExtensionLoadData GetAddinExtensions (ExtensionContextTransaction transaction, string id, ExtensionPoint ep)
 		{
 			Addin pinfo = null;
 
 			// Root add-ins are not returned by GetInstalledAddin.
-			RuntimeAddin addin = AddinEngine.GetAddin (id);
+			RuntimeAddin addin = AddinEngine.GetAddin (transaction, id);
 			if (addin != null)
 				pinfo = addin.Addin;
 			else
@@ -1162,7 +1120,7 @@ namespace Mono.Addins
 			var addedNodes = new List<TreeNode> ();
 			tree.LoadExtension (transaction, node, addinId, extension, addedNodes);
 			
-			RuntimeAddin ad = AddinEngine.GetAddin (addinId);
+			RuntimeAddin ad = AddinEngine.GetAddin (transaction, addinId);
 			if (ad != null) {
 				foreach (TreeNode nod in addedNodes) {
 					// Don't call OnAddinLoaded here. Do it when the entire extension point has been loaded.
@@ -1249,11 +1207,6 @@ namespace Mono.Addins
 			}
 			
 			return dstNode;
-		}
-		
-		internal bool FindExtensionPathByType (IProgressStatus monitor, Type type, string nodeName, out string path, out string pathNodeName)
-		{
-			return tree.FindExtensionPathByType (monitor, type, nodeName, out path, out pathNodeName);
 		}
 	}
 	
@@ -1409,5 +1362,83 @@ namespace Mono.Addins
 	{
 		public string TypeName { get; set; }
 		public RuntimeAddin Addin { get; set; }
+	}
+
+	/// <summary>
+	/// A queue that can be used to dispatch callbacks sequentially
+	/// </summary>
+	class NotificationQueue
+	{
+        readonly AddinEngine addinEngine;
+        readonly Queue<(Action Action,object Source)> notificationQueue = new Queue<(Action,object)>();
+
+		bool sending;
+
+		public NotificationQueue(AddinEngine addinEngine)
+		{
+            this.addinEngine = addinEngine;
+        }
+
+		internal void Invoke(Action action, object source)
+		{
+			lock (notificationQueue)
+			{
+				if (sending)
+				{
+					// Already sending, enqueue the action so whoever is sending will take it
+					notificationQueue.Enqueue((action,source));
+					return;
+				}
+				else
+				{
+					// Nobody is sending, do it now
+					sending = true;
+				}
+			}
+
+			SafeInvoke(action, source);
+
+			do
+			{
+				lock (notificationQueue)
+				{
+					if (notificationQueue.Count == 0)
+					{
+						sending = false;
+						return;
+					}
+					(action,source) = notificationQueue.Dequeue();
+				}
+				SafeInvoke(action, source);
+			}
+			while (true);
+		}
+
+		void SafeInvoke(Action action, object source)
+		{
+			try
+			{
+				action();
+			}
+			catch (Exception ex)
+			{
+				RuntimeAddin addin = null;
+
+				if (source is ExtensionNode node)
+				{
+					try
+					{
+						addin = node.Addin;
+					}
+					catch (Exception addinException)
+					{
+						addinEngine.ReportError(null, null, addinException, false);
+						addin = null;
+					}
+				}
+
+				addinEngine.ReportError("Callback invocation failed", addin?.Id, ex, false);
+			}
+		}
 	}
 }

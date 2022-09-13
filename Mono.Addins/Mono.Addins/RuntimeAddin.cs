@@ -731,10 +731,11 @@ namespace Mono.Addins
 				AddinDependency pdep = dep as AddinDependency;
 				if (pdep == null)
 					continue;
-				if (!addinEngine.IsAddinLoaded (pdep.FullAddinId))
+				var addin = addinEngine.GetAddin(pdep.FullAddinId);
+				if (addin == null)
 					return false;
 				if (forceLoadAssemblies)
-					addinEngine.GetAddin (pdep.FullAddinId).EnsureAssembliesLoaded ();
+					addin.EnsureAssembliesLoaded ();
 			}
 			return true;
 		}

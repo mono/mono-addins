@@ -639,6 +639,11 @@ namespace Mono.Addins
 			database.Update (monitor, currentDomain);
 		}
 
+		internal void Update(IProgressStatus monitor, ExtensionContextTransaction addinEngineTransaction)
+		{
+			database.Update(monitor, currentDomain, addinEngineTransaction:addinEngineTransaction);
+		}
+
 		/// <summary>
 		/// Regenerates the cached data of the add-in registry.
 		/// </summary>

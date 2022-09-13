@@ -112,7 +112,7 @@ namespace Mono.Addins
 					curPos = parentNode.Children.Count;
 
 				// Find the type of the node in this extension
-				ExtensionNodeType ntype = addinEngine.FindType (parentNode.ExtensionNodeSet, elem.NodeName, addin);
+				ExtensionNodeType ntype = addinEngine.FindType (transaction, parentNode.ExtensionNodeSet, elem.NodeName, addin);
 
 				if (ntype == null) {
 					addinEngine.ReportError ("Node '" + elem.NodeName + "' not allowed in extension: " + parentNode.GetPath (), addin, null, false);
@@ -125,7 +125,7 @@ namespace Mono.Addins
 
 				TreeNode childNode = new TreeNode (addinEngine, id);
 
-				ExtensionNode enode = ReadNode (childNode, addin, ntype, elem, module);
+				ExtensionNode enode = ReadNode (childNode, addin, ntype, elem, module, transaction);
 				if (enode == null)
 					continue;
 
@@ -173,11 +173,11 @@ namespace Mono.Addins
 			return new NullCondition ();
 		}
 		
-		public ExtensionNode ReadNode (TreeNode tnode, string addin, ExtensionNodeType ntype, ExtensionNodeDescription elem, ModuleDescription module)
+		public ExtensionNode ReadNode (TreeNode tnode, string addin, ExtensionNodeType ntype, ExtensionNodeDescription elem, ModuleDescription module, ExtensionContextTransaction transaction)
 		{
 			try {
 				if (ntype.Type == null) {
-					if (!InitializeNodeType (ntype))
+					if (!InitializeNodeType (ntype, transaction))
 						return null;
 				}
 
@@ -199,19 +199,17 @@ namespace Mono.Addins
 			}
 		}
 		
-		bool InitializeNodeType (ExtensionNodeType ntype)
+		bool InitializeNodeType (ExtensionNodeType ntype, ExtensionContextTransaction transaction)
 		{
-			RuntimeAddin p = addinEngine.GetAddin (ntype.AddinId);
-			if (p == null) {
-				if (!addinEngine.IsAddinLoaded (ntype.AddinId)) {
-					if (!addinEngine.LoadAddin (null, ntype.AddinId, false))
-						return false;
-					p = addinEngine.GetAddin (ntype.AddinId);
-					if (p == null) {
-						addinEngine.ReportError ("Add-in not found", ntype.AddinId, null, false);
-						return false;
-					}
+			RuntimeAddin p = addinEngine.GetAddin(transaction, ntype.AddinId);
+			if (p == null)
+			{
+				if (!addinEngine.LoadAddin(transaction, null, ntype.AddinId, false))
+				{
+					addinEngine.ReportError("Add-in not found", ntype.AddinId, null, false);
+					return false;
 				}
+				p = addinEngine.GetAddin(transaction, ntype.AddinId);
 			}
 			
 			// If no type name is provided, use TypeExtensionNode by default
