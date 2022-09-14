@@ -52,20 +52,11 @@ steps:
     nobuild: true
     workingDirectory: $(Build.SourcesDirectory)
 
-#- task: MSBuild@1
-#  displayName: 'Test Assemblies Test\UnitTests\bin\Debug\UnitTests.dll'
-#  inputs:
-#    solution: 'Test/UnitTests/UnitTests.csproj'
-#    platform: '$(BuildPlatform)'
-#    configuration: '$(BuildConfiguration)'
-#    msbuildArguments: '/t:Test'
-#
-#- task: PublishTestResults@2
-#  displayName: 'Publish Test Results Test\UnitTests\TestResult.xml'
-#  inputs:
-#    testResultsFormat: 'NUnit'
-#    testResultsFiles: 'Test/UnitTests/TestResult.xml'
-#    failTaskOnFailedTests: true
+- task: DotNetCoreCLI@2
+  displayName: Test
+  inputs:
+    command: 'test'
+    workingDirectory: '$(Build.SourcesDirectory)/Test/UnitTests'
 
 - task: Bash@3
   displayName: 'Generate package file list'
