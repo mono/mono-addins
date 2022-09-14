@@ -38,7 +38,7 @@ namespace UnitTests
 
 				GlobalInfoCondition.Value = "foo";
 
-				testData.CheckCounters (1, 1000);
+				testData.CheckCounters (1, 10000);
 
 				GlobalInfoCondition.Value = "";
 			}
@@ -75,12 +75,12 @@ namespace UnitTests
 				var ainfo1 = AddinManager.Registry.GetAddin ("SimpleApp.HelloWorldExtension");
 				ainfo1.Enabled = false;
 
-				testData.CheckCounters (3, 1000);
+				testData.CheckCounters (3, 10000);
 
 				var ainfo2 = AddinManager.Registry.GetAddin ("SimpleApp.FileContentExtension");
 				ainfo2.Enabled = false;
 
-				testData.CheckCounters (2, 1000);
+				testData.CheckCounters (2, 10000);
 
 				ainfo1.Enabled = true;
 				ainfo2.Enabled = true;
@@ -152,7 +152,7 @@ namespace UnitTests
 			});
 
 			// Wait for the threads to do the work. 5 seconds should be enough
-			enablers.CheckCounters(1, 5000);
+			enablers.CheckCounters(1, 20000);
 
 			// Go back to the initial status
 
@@ -184,7 +184,7 @@ namespace UnitTests
 
 				GlobalInfoCondition.Value = "foo";
 
-				testData.CheckCounters (1, 1000);
+				testData.CheckCounters (1, 10000);
 
 				GlobalInfoCondition.Value = "";
 			}
