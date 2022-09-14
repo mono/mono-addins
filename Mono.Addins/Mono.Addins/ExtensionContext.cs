@@ -166,13 +166,21 @@ namespace Mono.Addins
 			}
 		}
 
-		internal void ResetCachedData()
+		internal void ResetCachedData(ExtensionContextTransaction transaction = null)
 		{
-			using (var transaction = BeginTransaction())
-				ResetCachedData(transaction);
+			var currentTransaction = transaction ?? BeginTransaction();
+			try
+			{
+				OnResetCachedData(currentTransaction);
+			}
+			finally
+			{
+				if (currentTransaction != transaction)
+					currentTransaction.Dispose();
+			}
 		}
 
-		internal virtual void ResetCachedData (ExtensionContextTransaction transaction)
+		internal virtual void OnResetCachedData (ExtensionContextTransaction transaction)
 		{
 			tree.ResetCachedData (transaction);
 
@@ -870,9 +878,9 @@ namespace Mono.Addins
 				ctx.NotifyAddinLoaded (ad);
 		}
 		
-		internal void CreateExtensionPoint (ExtensionPoint ep)
+		internal void CreateExtensionPoint (ExtensionContextTransaction transaction, ExtensionPoint ep)
 		{
-			TreeNode node = tree.GetNode (ep.Path, true);
+			TreeNode node = tree.GetNode (ep.Path, true, transaction);
 			if (node.ExtensionPoint == null) {
 				node.ExtensionPoint = ep;
 				node.ExtensionNodeSet = ep.NodeSet;

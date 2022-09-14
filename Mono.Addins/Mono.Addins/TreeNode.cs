@@ -268,8 +268,13 @@ namespace Mono.Addins
 		{
 			return GetNode (path, false);
 		}
-		
-		public TreeNode GetNode (string path, bool buildPath)
+
+		public TreeNode GetNode(string path, bool buildPath)
+		{
+			return GetNode(path, buildPath, null);
+		}
+
+		public TreeNode GetNode (string path, bool buildPath, ExtensionContextTransaction transaction)
 		{
 			if (path.StartsWith ("/"))
 				path = path.Substring (1);
@@ -278,6 +283,7 @@ namespace Mono.Addins
 			TreeNode curNode = this;
 
 			foreach (string part in parts) {
+				curNode.EnsureChildrenLoaded(transaction);
 				var node = curNode.GetChildNode (part);
 				if (node != null) {
 					curNode = node;
@@ -285,9 +291,10 @@ namespace Mono.Addins
 				}
 				
 				if (buildPath) {
-					var transaction = BeginContextTransaction (out var dispose);
+					transaction = BeginContextTransaction (transaction, out var dispose);
 					try {
 						// Check again inside the lock, just in case
+						curNode.EnsureChildrenLoaded(transaction);
 						node = curNode.GetChildNode (part);
 						if (node != null) {
 							curNode = node;
@@ -332,24 +339,37 @@ namespace Mono.Addins
 				if (IsInChildrenUpdateTransaction) {
 					return childrenBuilder;
 				}
+				EnsureChildrenLoaded(null);
+				return (IReadOnlyList<TreeNode>)childrenBuilder ?? (IReadOnlyList<TreeNode>)children;
+			}
+		}
 
-				if (!childrenFromExtensionsLoaded) {
-					var transaction = BeginContextTransaction (out var disposeTransaction);
-					try {
-						if (!childrenFromExtensionsLoaded) {
-							if (extensionPoint != null) {
-								BeginChildrenUpdateTransaction (transaction);
-								Context.LoadExtensions (transaction, GetPath (), this);
-								// We have to keep the reference to the extension point, since add-ins may be loaded/unloaded
-							}
+		void EnsureChildrenLoaded(ExtensionContextTransaction transaction)
+		{
+			if (IsInChildrenUpdateTransaction)
+				return;
+
+			if (!childrenFromExtensionsLoaded)
+			{
+				transaction = BeginContextTransaction(transaction, out var disposeTransaction);
+				try
+				{
+					if (!childrenFromExtensionsLoaded)
+					{
+						if (extensionPoint != null)
+						{
+							BeginChildrenUpdateTransaction(transaction);
+							Context.LoadExtensions(transaction, GetPath(), this);
+							// We have to keep the reference to the extension point, since add-ins may be loaded/unloaded
 						}
-					} finally {
-						childrenFromExtensionsLoaded = true;
-						if (disposeTransaction)
-							transaction.Dispose ();
 					}
 				}
-				return (IReadOnlyList<TreeNode>)childrenBuilder ?? (IReadOnlyList<TreeNode>)children;
+				finally
+				{
+					childrenFromExtensionsLoaded = true;
+					if (disposeTransaction)
+						transaction.Dispose();
+				}
 			}
 		}
 
@@ -367,9 +387,14 @@ namespace Mono.Addins
 		/// </summary>
 		bool IsInChildrenUpdateTransaction => childrenBuilder != null && Context.IsCurrentThreadInTransaction;
 
-		ExtensionContextTransaction BeginContextTransaction (out bool dispose)
+		ExtensionContextTransaction BeginContextTransaction (ExtensionContextTransaction currentTransaction, out bool dispose)
 		{
-			if (IsInChildrenUpdateTransaction) {
+			if (currentTransaction != null)
+			{
+				dispose = false;
+				return currentTransaction;
+			}
+			else if (IsInChildrenUpdateTransaction) {
 				dispose = false;
 				return buildTransaction;
 			} else {

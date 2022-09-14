@@ -155,7 +155,8 @@ namespace Mono.Addins
 		/// </summary>
 		public static void Shutdown ()
 		{
-			AddinEngine.Shutdown ();
+			sessionService?.Shutdown ();
+			sessionService = null;
 		}
 		
 		/// <summary>

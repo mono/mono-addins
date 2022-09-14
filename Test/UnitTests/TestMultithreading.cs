@@ -27,6 +27,9 @@ namespace UnitTests
 
 			GlobalInfoCondition.Value = "";
 
+			// Threads check the number of nodes in /SimpleApp/ConditionedWriters, which changes
+			// from 0 to 1 as the GlobalInfoCondition condition changes
+
 			testData.StartThreads (RunChildConditionAttributeTest);
 
 			for (int n = 0; n < 20; n++) {
@@ -84,41 +87,94 @@ namespace UnitTests
 			}
 		}
 
+		int EnableDisableStress_totalAdd;
+		int EnableDisableStress_totalRemove;
+		int EnableDisableStress_nodesCount;
+		int EnableDisableStress_minCount;
+		int EnableDisableStress_maxCount;
+
 		[Test]
-		public void EventsMultithread ()
+		public void EventsMultithread()
 		{
 			int threads = 50;
-			int steps = 20;
 
-			var testData = new TestData (threads);
+			int addinsLoaded = 0;
+			int addinsUnloaded = 0;
 
-			GlobalInfoCondition.Value = "";
+			var node = AddinManager.GetExtensionNode("/SimpleApp/Writers");
 
-			testData.StartThreads (RunEventsMultithread);
+			try
+			{
+				EnableDisableStress_nodesCount = 0;
 
-			for (int n = 0; n < steps; n++) {
-				Console.WriteLine ("Step " + n);
-				testData.CheckCounters (0, 10000);
+				node.ExtensionNodeChanged += Node_ExtensionNodeChanged;
 
-				GlobalInfoCondition.Value = "foo";
+				Assert.AreEqual(4, EnableDisableStress_nodesCount);
 
-				testData.CheckCounters (1, 1000);
+				EnableDisableStress_minCount = 4;
+				EnableDisableStress_maxCount = 4;
+				EnableDisableStress_totalAdd = 0;
+				EnableDisableStress_totalRemove = 0;
 
-				GlobalInfoCondition.Value = "";
+				var ainfo1 = AddinManager.Registry.GetAddin("SimpleApp.HelloWorldExtension");
+				var ainfo2 = AddinManager.Registry.GetAddin("SimpleApp.FileContentExtension");
+
+				AddinManager.AddinLoaded += (s,a) => addinsLoaded++;
+				AddinManager.AddinUnloaded += (s,a) => addinsUnloaded++;
+
+				using var enablers = new TestData(threads);
+
+				enablers.StartThreads((index, data) =>
+				{
+					var random = new Random(10000 + index);
+					while (!data.Stopped)
+					{
+						var action = random.Next(4);
+						switch (action)
+						{
+							case 0: ainfo1.Enabled = false; break;
+							case 1: ainfo1.Enabled = true; break;
+							case 2: ainfo2.Enabled = false; break;
+							case 3: ainfo2.Enabled = true; break;
+						}
+					}
+				});
+				Thread.Sleep(3000);
 			}
+			finally
+			{
+				node.ExtensionNodeChanged -= Node_ExtensionNodeChanged;
+			}
+
+			// If all events have been sent correctly, the node count should have never gone below 2 and over 4.
+
+			Assert.That(EnableDisableStress_minCount, Is.AtLeast(2));
+			Assert.That(EnableDisableStress_maxCount, Is.AtMost(4));
+
+			// Every time one of these add-ins is enabled, a new node is added (likewise when removed), so
+			// the total count of nodes added must match the number of times the addins were enabled.
+
+			Assert.AreEqual(EnableDisableStress_totalAdd, addinsLoaded);
+			Assert.AreEqual(EnableDisableStress_totalRemove, addinsUnloaded);
 		}
 
-		void RunEventsMultithread (int index, TestData data)
-		{
-			while (!data.Stopped) {
-				int count = 0;
-				ExtensionNodeEventHandler handler = (s, args) => {
-					count++;
-				};
-				AddinManager.AddExtensionNodeHandler("/SimpleApp/ConditionedWriters", handler);
-				data.Counters [index] = count;
-				AddinManager.RemoveExtensionNodeHandler ("/SimpleApp/ConditionedWriters", handler);
+        private void Node_ExtensionNodeChanged (object sender, ExtensionNodeEventArgs args)
+        {
+			if (args.Change == ExtensionChange.Add)
+			{
+				EnableDisableStress_nodesCount++;
+				EnableDisableStress_totalAdd++;
 			}
+			else
+			{
+				EnableDisableStress_nodesCount--;
+				EnableDisableStress_totalRemove++;
+			}
+
+			if (EnableDisableStress_nodesCount < EnableDisableStress_minCount)
+				EnableDisableStress_minCount = EnableDisableStress_nodesCount;
+			if (EnableDisableStress_nodesCount > EnableDisableStress_maxCount)
+				EnableDisableStress_maxCount = EnableDisableStress_nodesCount;
 		}
 
 		[Test]
@@ -148,9 +204,10 @@ namespace UnitTests
 			var ctx = AddinManager.CreateExtensionContext ();
 			var writers = ctx.GetExtensionNode ("/SimpleApp/ConditionedWriters");
 			while (!data.Stopped) {
-				data.Counters [index] = writers.ChildNodes.Count;
+				data.Counters [index] = writers.GetChildNodes().Count;
 			}
 		}
+
 		class TestData: IDisposable
 		{
 			int numThreads;
@@ -173,7 +230,7 @@ namespace UnitTests
 					Thread.Sleep (10);
 				} while (sw.ElapsedMilliseconds < timeout);
 
-				Assert.Fail ();
+				Assert.Fail ("Expected " + expectedResult);
 			}
 
 			public void Dispose ()
