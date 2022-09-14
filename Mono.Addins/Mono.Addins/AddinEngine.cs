@@ -130,6 +130,16 @@ namespace Mono.Addins
 			base.SetSnapshot(newSnapshot);
 		}
 
+		internal override ExtensionContextTransaction BeginTransaction()
+		{
+			return new AddinEngineTransaction(this);
+		}
+
+		internal AddinEngineTransaction BeginEngineTransaction()
+		{
+			return (AddinEngineTransaction)BeginTransaction();
+		}
+
 		/// <summary>
 		/// Initializes the add-in engine
 		/// </summary>
@@ -284,7 +294,7 @@ namespace Mono.Addins
 				else
 					registry = new AddinRegistry (this, configDir, startupDirectory, addinsDir, databaseDir, null);
 
-				using var transaction = BeginTransaction();
+				using var transaction = BeginEngineTransaction();
 
 				if ((asmFile != null && registry.CreateHostAddinsFile (asmFile)) || registry.UnknownDomain)
 					registry.Update (new ConsoleProgressStatus (false), transaction);
@@ -495,14 +505,17 @@ namespace Mono.Addins
 		/// </returns>
 		public bool IsAddinLoaded (string id)
 		{
-			return IsAddinLoaded(currentSnapshot, id);
+			return IsAddinLoaded(null, id);
 		}
 
-		bool IsAddinLoaded(AddinEngineSnapshot snapshot, string id)
+		bool IsAddinLoaded(AddinEngineTransaction transaction, string id)
 		{
 			CheckInitialized();
 			ValidateAddinRoots();
-			return snapshot.LoadedAddins.ContainsKey(Addin.GetIdName(id));
+			if (transaction?.Context == this)
+				return transaction.AddinEngineSnapshot.LoadedAddins.ContainsKey(Addin.GetIdName(id));
+			else
+				return currentSnapshot.LoadedAddins.ContainsKey(Addin.GetIdName(id));
 		}
 
 		internal RuntimeAddin GetAddin (string id)
@@ -513,7 +526,7 @@ namespace Mono.Addins
 			return a;
 		}
 
-		internal RuntimeAddin GetAddin(ExtensionContextTransaction transaction, string id)
+		internal RuntimeAddin GetAddin(AddinEngineTransaction transaction, string id)
 		{
 			ValidateAddinRoots();
 			RuntimeAddin a;
@@ -521,7 +534,7 @@ namespace Mono.Addins
 			// If a transaction is provided, try using the snapshot from that transaction,
 			// but this is only possible if the transaction was created for this context
 
-			if (transaction.Context == this)
+			if (transaction?.Context == this)
 				transaction.AddinEngineSnapshot.LoadedAddins.TryGetValue(Addin.GetIdName(id), out a);
 			else
 				currentSnapshot.LoadedAddins.TryGetValue(Addin.GetIdName(id), out a);
@@ -535,7 +548,7 @@ namespace Mono.Addins
 			currentSnapshot.LoadedAddins.TryGetValue(Addin.GetIdName(id), out a);
 			if (a == null)
 			{
-				using var tr = BeginTransaction();
+				using var tr = BeginEngineTransaction();
 				LoadAddin(tr, null, id, throwExceptions);
 				tr.AddinEngineSnapshot.LoadedAddins.TryGetValue(Addin.GetIdName(id), out a);
 			}
@@ -547,7 +560,7 @@ namespace Mono.Addins
 			ActivateAddinExtensions (transaction, id);
 		}
 
-		internal void UnloadAddin (ExtensionContextTransaction transaction, string id)
+		internal void UnloadAddin (AddinEngineTransaction transaction, string id)
 		{
 			RemoveAddinExtensions (transaction, id);
 			
@@ -580,17 +593,17 @@ namespace Mono.Addins
 		public void LoadAddin (IProgressStatus statusMonitor, string id)
 		{
 			CheckInitialized ();
-			using var transaction = BeginTransaction();
+			using var transaction = BeginEngineTransaction();
 			if (LoadAddin (transaction, statusMonitor, id, true)) {
 				var adn = GetAddin (transaction, id);
 				adn.EnsureAssembliesLoaded ();
 			}
 		}
 		
-		internal bool LoadAddin (ExtensionContextTransaction transaction, IProgressStatus statusMonitor, string id, bool throwExceptions)
+		internal bool LoadAddin (AddinEngineTransaction transaction, IProgressStatus statusMonitor, string id, bool throwExceptions)
 		{
 			try {
-				if (IsAddinLoaded (transaction.AddinEngineSnapshot, id))
+				if (IsAddinLoaded (transaction, id))
 					return true;
 
 				if (!Registry.IsAddinEnabled (id)) {
@@ -616,7 +629,7 @@ namespace Mono.Addins
 							statusMonitor.SetProgress ((double)n / (double)addins.Count);
 
 						Addin iad = addins [n];
-						if (IsAddinLoaded (transaction.AddinEngineSnapshot, iad.Id))
+						if (IsAddinLoaded (transaction, iad.Id))
 							continue;
 
 						if (statusMonitor != null)
@@ -645,7 +658,7 @@ namespace Mono.Addins
 			base.OnResetCachedData (transaction);
 		}
 			
-		bool InsertAddin (ExtensionContextTransaction transaction, IProgressStatus statusMonitor, Addin iad)
+		bool InsertAddin (AddinEngineTransaction transaction, IProgressStatus statusMonitor, Addin iad)
 		{
 			try {
 				RuntimeAddin runtimeAddin = new RuntimeAddin (this, iad);
@@ -680,7 +693,7 @@ namespace Mono.Addins
 			}
 		}
 
-		void RegisterAssemblyResolvePaths (ExtensionContextTransaction transaction, RuntimeAddin addin, ModuleDescription description)
+		void RegisterAssemblyResolvePaths (AddinEngineTransaction transaction, RuntimeAddin addin, ModuleDescription description)
 		{
 			foreach (var asm in description.AssemblyNames) {
 				//Debug.Assert(assemblyResolvePaths[asm] == addin); This does not look right. Not called in old project since DEBUG symbol is not defined.
@@ -688,7 +701,7 @@ namespace Mono.Addins
 			}
 		}
 
-		internal void InsertExtensionPoint (ExtensionContextTransaction transaction, RuntimeAddin addin, ExtensionPoint ep)
+		internal void InsertExtensionPoint (AddinEngineTransaction transaction, RuntimeAddin addin, ExtensionPoint ep)
         {
 			CreateExtensionPoint (transaction, ep);
 			foreach (ExtensionNodeType nt in ep.NodeSet.NodeTypes) {
@@ -698,9 +711,9 @@ namespace Mono.Addins
 			}
 		}
 		
-		bool ResolveLoadDependencies (ExtensionContextTransaction transaction, List<Addin> addins, Stack depCheck, string id, bool optional)
+		bool ResolveLoadDependencies (AddinEngineTransaction transaction, List<Addin> addins, Stack depCheck, string id, bool optional)
 		{
-			if (IsAddinLoaded (transaction.AddinEngineSnapshot, id))
+			if (IsAddinLoaded (transaction, id))
 				return true;
 				
 			if (depCheck.Contains (id))
@@ -798,14 +811,14 @@ namespace Mono.Addins
 			return null;
 		}
 		
-		internal void RegisterAutoTypeExtensionPoint (ExtensionContextTransaction transaction, string typeName, string path)
+		internal void RegisterAutoTypeExtensionPoint (AddinEngineTransaction transaction, string typeName, string path)
 		{
 			if (Util.TryParseTypeName (typeName, out var t, out var _))
 				typeName = t;
 			transaction.RegisterAutoTypeExtensionPoint (typeName, path);
 		}
 
-		internal void UnregisterAutoTypeExtensionPoint (ExtensionContextTransaction transaction, string typeName, string path)
+		internal void UnregisterAutoTypeExtensionPoint (AddinEngineTransaction transaction, string typeName, string path)
 		{
 			if (Util.TryParseTypeName (typeName, out var t, out var _))
 				typeName = t;
@@ -842,13 +855,13 @@ namespace Mono.Addins
 				}
 			}
 			if (copy != null) {
-				using var tr = BeginTransaction();
+				using var tr = BeginEngineTransaction();
 				foreach (Assembly asm in copy)
 					CheckHostAssembly (tr, asm);
 			}
 		}
 
-		internal void ActivateRoots (ExtensionContextTransaction transaction)
+		internal void ActivateRoots (AddinEngineTransaction transaction)
 		{
 			lock (pendingRootChecks)
 				pendingRootChecks.Clear ();
@@ -857,7 +870,7 @@ namespace Mono.Addins
 				CheckHostAssembly (transaction, asm);
 		}
 		
-		void CheckHostAssembly (ExtensionContextTransaction transaction, Assembly asm)
+		void CheckHostAssembly (AddinEngineTransaction transaction, Assembly asm)
 		{
 			if (AddinDatabase.RunningSetupProcess || asm is System.Reflection.Emit.AssemblyBuilder || asm.IsDynamic)
 				return;
@@ -884,7 +897,7 @@ namespace Mono.Addins
 				ainfo = Registry.GetAddinForHostAssembly (asmFile);
 			}
 
-			if (ainfo != null && !IsAddinLoaded (transaction.AddinEngineSnapshot, ainfo.Id)) {
+			if (ainfo != null && !IsAddinLoaded (transaction, ainfo.Id)) {
 				AddinDescription adesc = null;
 				try {
 					adesc = ainfo.Description;

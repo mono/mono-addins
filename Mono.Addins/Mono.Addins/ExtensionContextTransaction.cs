@@ -55,15 +55,10 @@ namespace Mono.Addins
 		HashSet<string> extensionsChanged;
 		List<(TreeNode Node, BaseCondition Condition)> nodeConditions;
 		List<(TreeNode Node, BaseCondition Condition)> nodeConditionUnregistrations;
-		List<KeyValuePair<string, string>> registeredAutoExtensionPoints;
-		List<string> unregisteredAutoExtensionPoints;
-		List<KeyValuePair<string, RuntimeAddin>> registeredAssemblyResolvePaths;
-		List<string> unregisteredAssemblyResolvePaths;
-		List<RuntimeAddin> addinLoadEvents;
-		List<string> addinUnloadEvents;
 		List<TreeNode> treeNodeTransactions;
 		ExtensionContextSnapshot snapshot;
 		bool snaphotChanged;
+		AddinEngineTransaction nestedAddinEngineTransaction;
 
 		public ExtensionContextTransaction (ExtensionContext context)
 		{
@@ -80,7 +75,32 @@ namespace Mono.Addins
 
 		public ExtensionContextSnapshot Snapshot => snapshot;
 
-		void EnsureNewSnapshot()
+		/// <summary>
+		/// Gets an add-in engine transaction, if there is one in progress. Returns null if there isn't one.
+		/// </summary>
+		public AddinEngineTransaction GetAddinEngineTransaction()
+		{
+			if (this is AddinEngineTransaction et)
+				return et;
+			if (nestedAddinEngineTransaction != null)
+				return nestedAddinEngineTransaction;
+			return null;
+		}
+
+		/// <summary>
+		/// Gets or creates an add-in engine transaction, which will be committed together with this transaction
+		/// </summary>
+		public AddinEngineTransaction GetOrCreateAddinEngineTransaction()
+		{
+			if (this is AddinEngineTransaction et)
+				return et;
+			if (nestedAddinEngineTransaction != null)
+				return nestedAddinEngineTransaction;
+
+			return nestedAddinEngineTransaction = Context.AddinEngine.BeginEngineTransaction();
+		}
+
+		protected void EnsureNewSnapshot()
 		{
 			if (!snaphotChanged)
 			{
@@ -93,41 +113,11 @@ namespace Mono.Addins
 
 		public void Dispose ()
 		{
-			var engine = Context as AddinEngine;
-
 			try
 			{
 				// Update the context
 
-				if (nodeConditions != null) {
-					BulkRegisterNodeConditions (nodeConditions);
-				}
-
-				if (nodeConditionUnregistrations != null) {
-					BulkUnregisterNodeConditions (nodeConditionUnregistrations);
-				}
-
-				if (engine != null)
-				{
-					if (registeredAutoExtensionPoints != null)
-						AddinEngineSnapshot.AutoExtensionTypes = AddinEngineSnapshot.AutoExtensionTypes.SetItems(registeredAutoExtensionPoints);
-
-					if (unregisteredAutoExtensionPoints != null)
-						AddinEngineSnapshot.AutoExtensionTypes = AddinEngineSnapshot.AutoExtensionTypes.RemoveRange(unregisteredAutoExtensionPoints);
-
-					if (registeredAssemblyResolvePaths != null)
-						AddinEngineSnapshot.AssemblyResolvePaths = AddinEngineSnapshot.AssemblyResolvePaths.SetItems(registeredAssemblyResolvePaths);
-
-					if (unregisteredAssemblyResolvePaths != null)
-						AddinEngineSnapshot.AssemblyResolvePaths = AddinEngineSnapshot.AssemblyResolvePaths.RemoveRange(unregisteredAssemblyResolvePaths);
-				}
-
-				// Commit tree node transactions
-				if (treeNodeTransactions != null)
-				{
-					foreach (var node in treeNodeTransactions)
-						node.CommitChildrenUpdateTransaction();
-				}
+				UpdateSnapshot();
 
 				if (snaphotChanged)
 					Context.SetSnapshot(snapshot);
@@ -136,32 +126,53 @@ namespace Mono.Addins
 				Monitor.Exit (Context.LocalLock);
 			}
 
+			// If there is a nested engine transaction, make sure it is disposed
+			using var _ = nestedAddinEngineTransaction;
+
 			// Do notifications outside the lock
 
-			if (loadedNodes != null) {
-				foreach (var node in loadedNodes)
-					node.NotifyAddinLoaded ();
-			}
-			if (childrenChanged != null) {
-				foreach (var node in childrenChanged) {
-					if (node.NotifyChildrenChanged ())
-						NotifyExtensionsChangedEvent (node.GetPath ());
-				}
-			}
-			if (extensionsChanged != null) {
-				foreach (var path in extensionsChanged)
-					Context.NotifyExtensionsChanged (new ExtensionEventArgs (path));
+			DispatchNotifications();
+		}
+
+		protected virtual void UpdateSnapshot()
+		{
+			if (nodeConditions != null)
+			{
+				BulkRegisterNodeConditions(nodeConditions);
 			}
 
-			if (engine != null) {
-				if (addinLoadEvents != null) {
-					foreach (var addin in addinLoadEvents)
-						engine.ReportAddinLoad (addin);
+			if (nodeConditionUnregistrations != null)
+			{
+				BulkUnregisterNodeConditions(nodeConditionUnregistrations);
+			}
+
+			// Commit tree node transactions
+			if (treeNodeTransactions != null)
+			{
+				foreach (var node in treeNodeTransactions)
+					node.CommitChildrenUpdateTransaction();
+			}
+		}
+
+		protected virtual void DispatchNotifications()
+		{
+			if (loadedNodes != null)
+			{
+				foreach (var node in loadedNodes)
+					node.NotifyAddinLoaded();
+			}
+			if (childrenChanged != null)
+			{
+				foreach (var node in childrenChanged)
+				{
+					if (node.NotifyChildrenChanged())
+						NotifyExtensionsChangedEvent(node.GetPath());
 				}
-				if (addinUnloadEvents != null) {
-					foreach (var id in addinUnloadEvents)
-						engine.ReportAddinUnload (id);
-				}
+			}
+			if (extensionsChanged != null)
+			{
+				foreach (var path in extensionsChanged)
+					Context.NotifyExtensionsChanged(new ExtensionEventArgs(path));
 			}
 		}
 
@@ -292,52 +303,6 @@ namespace Mono.Addins
 				nodeConditions.Remove ((node, cond));
 		}
 
-		public void RegisterAutoTypeExtensionPoint (string typeName, string path)
-		{
-			EnsureNewSnapshot();
-			if (registeredAutoExtensionPoints == null)
-				registeredAutoExtensionPoints = new List<KeyValuePair<string, string>> ();
-			registeredAutoExtensionPoints.Add (new KeyValuePair<string, string> (typeName, path));
-		}
-
-		public void UnregisterAutoTypeExtensionPoint (string typeName)
-		{
-			EnsureNewSnapshot();
-			if (unregisteredAutoExtensionPoints == null)
-				unregisteredAutoExtensionPoints = new List<string> ();
-			unregisteredAutoExtensionPoints.Add (typeName);
-		}
-
-		public void RegisterAssemblyResolvePaths (string assembly, RuntimeAddin addin)
-		{
-			EnsureNewSnapshot();
-			if (registeredAssemblyResolvePaths == null)
-				registeredAssemblyResolvePaths = new List<KeyValuePair<string, RuntimeAddin>> ();
-			registeredAssemblyResolvePaths.Add (new KeyValuePair<string, RuntimeAddin> (assembly, addin));
-		}
-
-		public void UnregisterAssemblyResolvePaths (string assembly)
-		{
-			EnsureNewSnapshot();
-			if (unregisteredAssemblyResolvePaths == null)
-				unregisteredAssemblyResolvePaths = new List<string> ();
-			unregisteredAssemblyResolvePaths.Add (assembly);
-		}
-
-		public void ReportAddinLoad (RuntimeAddin addin)
-		{
-			if (addinLoadEvents == null)
-				addinLoadEvents = new List<RuntimeAddin> ();
-			addinLoadEvents.Add (addin);
-		}
-
-		public void ReportAddinUnload (string id)
-		{
-			if (addinUnloadEvents == null)
-				addinUnloadEvents = new List<string> ();
-			addinUnloadEvents.Add (id);
-		}
-
 		public void RegisterChildrenUpdateTransaction (TreeNode node)
 		{
 			if (treeNodeTransactions == null)
@@ -345,5 +310,100 @@ namespace Mono.Addins
 			treeNodeTransactions.Add (node);
 		}
 
+	}
+
+    class AddinEngineTransaction : ExtensionContextTransaction
+    {
+		List<KeyValuePair<string, string>> registeredAutoExtensionPoints;
+		List<string> unregisteredAutoExtensionPoints;
+		List<KeyValuePair<string, RuntimeAddin>> registeredAssemblyResolvePaths;
+		List<string> unregisteredAssemblyResolvePaths;
+		List<RuntimeAddin> addinLoadEvents;
+		List<string> addinUnloadEvents;
+
+		public AddinEngineTransaction (AddinEngine engine) : base (engine)
+        {
+        }
+
+		public void RegisterAssemblyResolvePaths(string assembly, RuntimeAddin addin)
+		{
+			EnsureNewSnapshot();
+			if (registeredAssemblyResolvePaths == null)
+				registeredAssemblyResolvePaths = new List<KeyValuePair<string, RuntimeAddin>>();
+			registeredAssemblyResolvePaths.Add(new KeyValuePair<string, RuntimeAddin>(assembly, addin));
+		}
+
+		public void UnregisterAssemblyResolvePaths(string assembly)
+		{
+			EnsureNewSnapshot();
+			if (unregisteredAssemblyResolvePaths == null)
+				unregisteredAssemblyResolvePaths = new List<string>();
+			unregisteredAssemblyResolvePaths.Add(assembly);
+		}
+
+		public void ReportAddinLoad(RuntimeAddin addin)
+		{
+			if (addinLoadEvents == null)
+				addinLoadEvents = new List<RuntimeAddin>();
+			addinLoadEvents.Add(addin);
+		}
+
+		public void ReportAddinUnload(string id)
+		{
+			if (addinUnloadEvents == null)
+				addinUnloadEvents = new List<string>();
+			addinUnloadEvents.Add(id);
+		}
+
+		public void RegisterAutoTypeExtensionPoint(string typeName, string path)
+		{
+			EnsureNewSnapshot();
+			if (registeredAutoExtensionPoints == null)
+				registeredAutoExtensionPoints = new List<KeyValuePair<string, string>>();
+			registeredAutoExtensionPoints.Add(new KeyValuePair<string, string>(typeName, path));
+		}
+
+		public void UnregisterAutoTypeExtensionPoint(string typeName)
+		{
+			EnsureNewSnapshot();
+			if (unregisteredAutoExtensionPoints == null)
+				unregisteredAutoExtensionPoints = new List<string>();
+			unregisteredAutoExtensionPoints.Add(typeName);
+		}
+
+		protected override void UpdateSnapshot()
+		{
+			base.UpdateSnapshot();
+
+			if (registeredAutoExtensionPoints != null)
+				AddinEngineSnapshot.AutoExtensionTypes = AddinEngineSnapshot.AutoExtensionTypes.SetItems(registeredAutoExtensionPoints);
+
+			if (unregisteredAutoExtensionPoints != null)
+				AddinEngineSnapshot.AutoExtensionTypes = AddinEngineSnapshot.AutoExtensionTypes.RemoveRange(unregisteredAutoExtensionPoints);
+
+			if (registeredAssemblyResolvePaths != null)
+				AddinEngineSnapshot.AssemblyResolvePaths = AddinEngineSnapshot.AssemblyResolvePaths.SetItems(registeredAssemblyResolvePaths);
+
+			if (unregisteredAssemblyResolvePaths != null)
+				AddinEngineSnapshot.AssemblyResolvePaths = AddinEngineSnapshot.AssemblyResolvePaths.RemoveRange(unregisteredAssemblyResolvePaths);
+		}
+
+		protected override void DispatchNotifications()
+		{
+			base.DispatchNotifications();
+
+			var engine = (AddinEngine)Context;
+
+			if (addinLoadEvents != null)
+			{
+				foreach (var addin in addinLoadEvents)
+					engine.ReportAddinLoad(addin);
+			}
+			if (addinUnloadEvents != null)
+			{
+				foreach (var id in addinUnloadEvents)
+					engine.ReportAddinUnload(id);
+			}
+		}
 	}
 }

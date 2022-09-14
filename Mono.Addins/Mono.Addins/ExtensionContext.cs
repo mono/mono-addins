@@ -809,7 +809,7 @@ namespace Mono.Addins
 			RemoveExtensionNodeHandler (path, handler);
 		}
 
-		internal ExtensionContextTransaction BeginTransaction ()
+		internal virtual ExtensionContextTransaction BeginTransaction ()
 		{
 			return new ExtensionContextTransaction (this);
 		}
@@ -957,7 +957,7 @@ namespace Mono.Addins
 			// event without first getting the list of nodes that may change).
 
 			// We get the runtime add-in because the add-in may already have been deleted from the registry
-			RuntimeAddin addin = AddinEngine.GetAddin (transaction, id);
+			RuntimeAddin addin = AddinEngine.GetAddin (transaction.GetAddinEngineTransaction(), id);
 			if (addin != null) {
 				var paths = new List<string> ();
 				// Using addin.Module.ParentAddinDescription here because addin.Addin.Description may not
@@ -1076,7 +1076,7 @@ namespace Mono.Addins
 			Addin pinfo = null;
 
 			// Root add-ins are not returned by GetInstalledAddin.
-			RuntimeAddin addin = AddinEngine.GetAddin (transaction, id);
+			RuntimeAddin addin = AddinEngine.GetAddin (transaction.GetAddinEngineTransaction(), id);
 			if (addin != null)
 				pinfo = addin.Addin;
 			else
@@ -1128,7 +1128,7 @@ namespace Mono.Addins
 			var addedNodes = new List<TreeNode> ();
 			tree.LoadExtension (transaction, node, addinId, extension, addedNodes);
 			
-			RuntimeAddin ad = AddinEngine.GetAddin (transaction, addinId);
+			RuntimeAddin ad = AddinEngine.GetAddin (transaction.GetAddinEngineTransaction(), addinId);
 			if (ad != null) {
 				foreach (TreeNode nod in addedNodes) {
 					// Don't call OnAddinLoaded here. Do it when the entire extension point has been loaded.

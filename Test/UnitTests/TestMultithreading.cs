@@ -87,94 +87,85 @@ namespace UnitTests
 			}
 		}
 
-		int EnableDisableStress_totalAdd;
-		int EnableDisableStress_totalRemove;
-		int EnableDisableStress_nodesCount;
-		int EnableDisableStress_minCount;
-		int EnableDisableStress_maxCount;
-
 		[Test]
 		public void EventsMultithread()
 		{
 			int threads = 50;
 
-			int addinsLoaded = 0;
-			int addinsUnloaded = 0;
+			int totalAdded = 0;
+			int totalRemoved = 0;
+			int nodesCount = 0;
+			int minCount = 0;
+			int maxCount = 0;
 
 			var node = AddinManager.GetExtensionNode("/SimpleApp/Writers");
 
-			try
+			nodesCount = 0;
+
+			node.ExtensionNodeChanged += (s, args) =>
 			{
-				EnableDisableStress_nodesCount = 0;
-
-				node.ExtensionNodeChanged += Node_ExtensionNodeChanged;
-
-				Assert.AreEqual(4, EnableDisableStress_nodesCount);
-
-				EnableDisableStress_minCount = 4;
-				EnableDisableStress_maxCount = 4;
-				EnableDisableStress_totalAdd = 0;
-				EnableDisableStress_totalRemove = 0;
-
-				var ainfo1 = AddinManager.Registry.GetAddin("SimpleApp.HelloWorldExtension");
-				var ainfo2 = AddinManager.Registry.GetAddin("SimpleApp.FileContentExtension");
-
-				AddinManager.AddinLoaded += (s,a) => addinsLoaded++;
-				AddinManager.AddinUnloaded += (s,a) => addinsUnloaded++;
-
-				using var enablers = new TestData(threads);
-
-				enablers.StartThreads((index, data) =>
+				if (args.Change == ExtensionChange.Add)
 				{
-					var random = new Random(10000 + index);
-					while (!data.Stopped)
-					{
-						var action = random.Next(4);
-						switch (action)
-						{
-							case 0: ainfo1.Enabled = false; break;
-							case 1: ainfo1.Enabled = true; break;
-							case 2: ainfo2.Enabled = false; break;
-							case 3: ainfo2.Enabled = true; break;
-						}
-					}
-				});
-				Thread.Sleep(3000);
-			}
-			finally
+					nodesCount++;
+					totalAdded++;
+				}
+				else
+				{
+					nodesCount--;
+					totalRemoved++;
+				}
+
+				if (nodesCount < minCount)
+					minCount = nodesCount;
+				if (nodesCount > maxCount)
+					maxCount = nodesCount;
+			};
+
+			Assert.AreEqual(4, nodesCount);
+
+			minCount = 4;
+			maxCount = 4;
+			totalAdded = 0;
+			totalRemoved = 0;
+
+			var ainfo1 = AddinManager.Registry.GetAddin("SimpleApp.HelloWorldExtension");
+			var ainfo2 = AddinManager.Registry.GetAddin("SimpleApp.FileContentExtension");
+
+			using var enablers = new TestData(threads);
+
+			enablers.StartThreads((index, data) =>
 			{
-				node.ExtensionNodeChanged -= Node_ExtensionNodeChanged;
-			}
+				var random = new Random(10000 + index);
+				int iterations = 100;
+				while (--iterations > 0)
+				{
+					var action = random.Next(4);
+					switch (action)
+					{
+						case 0: ainfo1.Enabled = false; break;
+						case 1: ainfo1.Enabled = true; break;
+						case 2: ainfo2.Enabled = false; break;
+						case 3: ainfo2.Enabled = true; break;
+					}
+				}
+				data.Counters[index] = 1;
+			});
+
+			// Wait for the threads to do the work. 5 seconds should be enough
+			enablers.CheckCounters(1, 5000);
+
+			// Go back to the initial status
+
+			ainfo1.Enabled = true;
+			ainfo2.Enabled = true;
 
 			// If all events have been sent correctly, the node count should have never gone below 2 and over 4.
 
-			Assert.That(EnableDisableStress_minCount, Is.AtLeast(2));
-			Assert.That(EnableDisableStress_maxCount, Is.AtMost(4));
-
-			// Every time one of these add-ins is enabled, a new node is added (likewise when removed), so
-			// the total count of nodes added must match the number of times the addins were enabled.
-
-			Assert.AreEqual(EnableDisableStress_totalAdd, addinsLoaded);
-			Assert.AreEqual(EnableDisableStress_totalRemove, addinsUnloaded);
-		}
-
-        private void Node_ExtensionNodeChanged (object sender, ExtensionNodeEventArgs args)
-        {
-			if (args.Change == ExtensionChange.Add)
-			{
-				EnableDisableStress_nodesCount++;
-				EnableDisableStress_totalAdd++;
-			}
-			else
-			{
-				EnableDisableStress_nodesCount--;
-				EnableDisableStress_totalRemove++;
-			}
-
-			if (EnableDisableStress_nodesCount < EnableDisableStress_minCount)
-				EnableDisableStress_minCount = EnableDisableStress_nodesCount;
-			if (EnableDisableStress_nodesCount > EnableDisableStress_maxCount)
-				EnableDisableStress_maxCount = EnableDisableStress_nodesCount;
+			Assert.That(nodesCount, Is.EqualTo(4));
+			Assert.That(totalAdded, Is.AtLeast(100));
+			Assert.That(totalAdded, Is.EqualTo(totalRemoved));
+			Assert.That(minCount, Is.AtLeast(2));
+			Assert.That(maxCount, Is.AtMost(4));
 		}
 
 		[Test]

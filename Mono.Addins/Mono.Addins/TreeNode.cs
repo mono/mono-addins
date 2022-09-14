@@ -512,7 +512,7 @@ namespace Mono.Addins
 		{
 			if (extensionPoint != null) {
 				string aid = Addin.GetIdName (extensionPoint.ParentAddinDescription.AddinId);
-				RuntimeAddin ad = addinEngine.GetAddin (transaction, aid);
+				RuntimeAddin ad = addinEngine.GetAddin (transaction.GetAddinEngineTransaction(), aid);
 				if (ad != null)
 					extensionPoint = ad.Addin.Description.ExtensionPoints [GetPath ()];
 			}

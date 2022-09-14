@@ -210,7 +210,7 @@ namespace Mono.Addins
 
 			if (!string.IsNullOrEmpty (addin)) {
 				// Make sure the add-in that implements the condition is loaded
-				using var tr = addinEngine.BeginTransaction();
+				using var tr = addinEngine.BeginEngineTransaction();
 				addinEngine.LoadAddin (tr, null, addin, true);
 				addin = null; // Don't try again
 			}

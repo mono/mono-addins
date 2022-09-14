@@ -75,7 +75,7 @@ namespace Mono.Addins.Database
 			fileDatabase = new FileDatabase (AddinDbDir);
 		}
 
-		public AddinDatabaseTransaction BeginTransaction (ExtensionContextTransaction addinEngineTransaction = null)
+		public AddinDatabaseTransaction BeginTransaction (AddinEngineTransaction addinEngineTransaction = null)
 		{
 			return new AddinDatabaseTransaction (this, localLock, addinEngineTransaction);
 		}
@@ -1096,7 +1096,7 @@ namespace Mono.Addins.Database
 			Update (monitor, domain, context);
 		}
 
-		public void Update(IProgressStatus monitor, string domain, ScanOptions context = null, ExtensionContextTransaction addinEngineTransaction = null)
+		public void Update(IProgressStatus monitor, string domain, ScanOptions context = null, AddinEngineTransaction addinEngineTransaction = null)
 		{
 			if (monitor == null)
 				monitor = new ConsoleProgressStatus(false);
@@ -1108,7 +1108,7 @@ namespace Mono.Addins.Database
 
 			DateTime tim = DateTime.Now;
 
-			var dbTransaction = BeginTransaction(addinEngineTransaction);
+			using var dbTransaction = BeginTransaction(addinEngineTransaction);
 
 			RunPendingUninstalls(dbTransaction, monitor);
 
@@ -2020,10 +2020,10 @@ namespace Mono.Addins.Database
 	{
 		readonly AddinDatabase addinDatabase;
 		readonly object localLock;
-		ExtensionContextTransaction addinEngineTransaction;
+		AddinEngineTransaction addinEngineTransaction;
 		bool addinEngineTransactionStarted;
 
-		public AddinDatabaseTransaction (AddinDatabase addinDatabase, object localLock, ExtensionContextTransaction addinEngineTransaction)
+		public AddinDatabaseTransaction (AddinDatabase addinDatabase, object localLock, AddinEngineTransaction addinEngineTransaction)
 		{
 			this.addinDatabase = addinDatabase;
 			this.localLock = localLock;
@@ -2031,19 +2031,19 @@ namespace Mono.Addins.Database
 			Monitor.Enter (localLock);
 		}
 
-		public ExtensionContextTransaction GetAddinEngineTransaction()
+		public AddinEngineTransaction GetAddinEngineTransaction()
 		{
 			if (addinEngineTransaction != null)
 				return addinEngineTransaction;
 			addinEngineTransactionStarted = true;
-			return addinEngineTransaction = addinDatabase.AddinEngine.BeginTransaction();
+			return addinEngineTransaction = addinDatabase.AddinEngine.BeginEngineTransaction();
 		}
 
 		public void Dispose ()
 		{
+			Monitor.Exit(localLock);
 			if (addinEngineTransactionStarted)
 				addinEngineTransaction.Dispose();
-			Monitor.Exit (localLock);
 		}
 	}
 

@@ -639,7 +639,7 @@ namespace Mono.Addins
 			database.Update (monitor, currentDomain);
 		}
 
-		internal void Update(IProgressStatus monitor, ExtensionContextTransaction addinEngineTransaction)
+		internal void Update(IProgressStatus monitor, AddinEngineTransaction addinEngineTransaction)
 		{
 			database.Update(monitor, currentDomain, addinEngineTransaction:addinEngineTransaction);
 		}

@@ -201,15 +201,16 @@ namespace Mono.Addins
 		
 		bool InitializeNodeType (ExtensionNodeType ntype, ExtensionContextTransaction transaction)
 		{
-			RuntimeAddin p = addinEngine.GetAddin(transaction, ntype.AddinId);
+			RuntimeAddin p = addinEngine.GetAddin(transaction.GetAddinEngineTransaction(), ntype.AddinId);
 			if (p == null)
 			{
-				if (!addinEngine.LoadAddin(transaction, null, ntype.AddinId, false))
+				var engineTransaction = transaction.GetOrCreateAddinEngineTransaction();
+				if (!addinEngine.LoadAddin(engineTransaction, null, ntype.AddinId, false))
 				{
 					addinEngine.ReportError("Add-in not found", ntype.AddinId, null, false);
 					return false;
 				}
-				p = addinEngine.GetAddin(transaction, ntype.AddinId);
+				p = addinEngine.GetAddin(engineTransaction, ntype.AddinId);
 			}
 			
 			// If no type name is provided, use TypeExtensionNode by default
