@@ -103,8 +103,6 @@ namespace UnitTests
 			Assert.Contains ("SimpleApp.Ext2,0.1.0", addins);
 			Assert.Contains ("SimpleApp.Ext3,0.1.0", addins);
 			Assert.Contains ("SimpleApp.Ext4,0.1.0", addins);
-
-			AddinEngine engine = new AddinEngine ();
 		}
 
 		[Test]
@@ -232,6 +230,81 @@ namespace UnitTests
 			registry.Update (new ConsoleProgressStatus (false));
 
 			engine.Shutdown ();
+		}
+
+		[Test]
+		[TestCase (true, true, TestName = "DowngradeAddins - with scan data")]
+		[TestCase (true, false, TestName = "DowngradeAddins - from scan to no scan data")]
+		[TestCase (false, true, TestName = "DowngradeAddins - from no scan to scan data")]
+		[TestCase (false, false, TestName = "DowngradeAddins - with no scan data")]
+		public void DowngradeAddins (bool hasScaIndexBefore, bool hasScanIndexAfter)
+		{
+			// Tests that the database is properly updated when add-ins are downgraded.
+
+			var dir = Util.GetSampleDirectory ("ScanDataFilesTest");
+
+			AddinRegistry registry;
+
+			if (hasScaIndexBefore) {
+				// Generate the scan data files before initializing the engine
+				registry = GetRegistry (dir);
+				registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (true), recursive: true);
+				registry.Dispose ();
+			}
+
+			AddinEngine engine = new AddinEngine ();
+			engine.Initialize (Path.Combine (dir, "Config"), Path.Combine (dir, "UserAddins"), null, Path.Combine (dir, "App"));
+			registry = engine.Registry;
+
+			var addins = registry.GetAddins ().Select (a => a.Id).ToArray ();
+			Assert.AreEqual (4, addins.Length);
+			Assert.Contains ("SimpleApp.Ext1,0.1.0", addins);
+			Assert.Contains ("SimpleApp.Ext2,0.1.0", addins);
+			Assert.Contains ("SimpleApp.Ext3,0.1.0", addins);
+			Assert.Contains ("SimpleApp.Ext4,0.1.0", addins);
+			engine.Shutdown ();
+
+			// Downgrade add-ins
+
+			SetAddinVersions (dir, "0.1.0", "0.0.1");
+
+			if (hasScanIndexAfter) {
+				// Regenerate the data files
+				registry = GetRegistry (dir);
+				registry.GenerateAddinScanDataFiles (new ConsoleProgressStatus (true), recursive: true);
+				registry.Dispose ();
+			} else {
+				CleanAddinData (dir);
+			}
+
+			engine = new AddinEngine ();
+			engine.Initialize (Path.Combine (dir, "Config"), Path.Combine (dir, "UserAddins"), null, Path.Combine (dir, "App"));
+			registry = engine.Registry;
+			registry.Update ();
+
+			addins = registry.GetAddins ().Select (a => a.Id).ToArray ();
+			Assert.AreEqual (4, addins.Length);
+			Assert.Contains ("SimpleApp.Ext1,0.0.1", addins);
+			Assert.Contains ("SimpleApp.Ext2,0.0.1", addins);
+			Assert.Contains ("SimpleApp.Ext3,0.0.1", addins);
+			Assert.Contains ("SimpleApp.Ext4,0.0.1", addins);
+			engine.Shutdown ();
+		}
+
+		void SetAddinVersions (string path, string oldVersion, string newVersion)
+		{
+			foreach (var file in Directory.GetFiles (path, "*.xml"))
+				File.WriteAllText (file, File.ReadAllText (file).Replace (oldVersion, newVersion));
+			foreach (var dir in Directory.GetDirectories (path))
+				SetAddinVersions (dir, oldVersion, newVersion);
+		}
+
+		void CleanAddinData (string path)
+		{
+			foreach (var file in Directory.GetFiles (path, "*.addindata"))
+				File.Delete (file);
+			foreach (var dir in Directory.GetDirectories (path))
+				CleanAddinData (dir);
 		}
 	}
 

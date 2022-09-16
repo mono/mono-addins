@@ -86,11 +86,12 @@ namespace Mono.Addins.Database
 				RemovedAddins.Add (addinId);
 		}
 		
-		public void AddFileToScan (string file, AddinScanFolderInfo folderInfo, AddinScanData scanData)
+		public void AddFileToScan (string file, AddinScanFolderInfo folderInfo, AddinFileInfo oldFileInfo, AddinScanData scanData)
 		{
 			FileToScan di = new FileToScan ();
 			di.File = file;
 			di.AddinScanFolderInfo = folderInfo;
+			di.OldFileInfo = oldFileInfo;
 			di.ScanDataMD5 = scanData?.MD5;
 			FilesToScan.Add (di);
 			RegisterModifiedFolderInfo (folderInfo);
@@ -119,6 +120,7 @@ namespace Mono.Addins.Database
 	{
 		public string File;
 		public AddinScanFolderInfo AddinScanFolderInfo;
+		public AddinFileInfo OldFileInfo;
 		public string ScanDataMD5;
 	}
 

@@ -188,7 +188,7 @@ namespace Mono.Addins.Database
 					
 					if (config.LocalId.Length == 0) {
 						// Generate an internal id for this add-in
-						config.LocalId = database.GetUniqueAddinId (file, (fi != null ? fi.AddinId : null), config.Namespace, config.Version);
+						config.LocalId = database.GetUniqueAddinId (file, fi?.AddinId, config.Namespace, config.Version);
 						config.HasUserId = false;
 					}
 					
@@ -232,11 +232,11 @@ namespace Mono.Addins.Database
 					
 					// If the scanned file results in an add-in version different from the one obtained from
 					// previous scans, the old add-in needs to be uninstalled.
-					if (fi != null && fi.IsAddin && fi.AddinId != config.AddinId) {
-						database.UninstallAddin (monitor, folderInfo.Domain, fi.AddinId, fi.File, scanResult);
+					if (fileToScan.OldFileInfo != null && fileToScan.OldFileInfo.IsAddin && fileToScan.OldFileInfo.AddinId != config.AddinId) {
+						database.UninstallAddin (monitor, folderInfo.Domain, fileToScan.OldFileInfo.AddinId, fileToScan.OldFileInfo.File, scanResult);
 						
 						// If the add-in version has changed, regenerate everything again since old data can't be reused
-						if (Addin.GetIdName (fi.AddinId) == Addin.GetIdName (config.AddinId))
+						if (Addin.GetIdName (fileToScan.OldFileInfo.AddinId) == Addin.GetIdName (config.AddinId))
 							scanResult.RegenerateRelationData = true;
 					}
 					

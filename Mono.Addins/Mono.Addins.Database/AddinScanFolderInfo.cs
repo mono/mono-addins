@@ -58,6 +58,16 @@ namespace Mono.Addins.Database
 			this.folder = folder;
 		}
 		
+		public AddinScanFolderInfo (AddinScanFolderInfo other)
+		{
+			files = new Hashtable (other.files);
+			folder = other.folder;
+			fileName = other.fileName;
+			domain = other.domain;
+			sharedFolder = other.sharedFolder;
+			FolderHasScanDataIndex = other.FolderHasScanDataIndex;
+		}
+		
 		public string FileName {
 			get { return fileName; }
 		}
@@ -269,8 +279,13 @@ namespace Mono.Addins.Database
 
 		public bool HasChanged (AddinFileSystemExtension fs, string md5)
 		{
-			if (md5 != null && ScanDataMD5 != null)
+			// Special case: if an md5 is stored, this method can only return a valid result
+			// if compared with another md5. If no md5 is provided for comparison, then always consider
+			// the file to be changed.
+
+			if (ScanDataMD5 != null)
 				return md5 != ScanDataMD5;
+
 			return fs.GetLastWriteTime (File) != LastScan;
 		}
 		
