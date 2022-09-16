@@ -9,8 +9,6 @@ namespace UnitTests
 {
 	public class TestBase
 	{
-		static bool firstRun = true;
-		
 		public static string TempDir {
 			get {
 				string dir = new Uri (typeof(TestBase).Assembly.CodeBase).LocalPath;
@@ -25,23 +23,19 @@ namespace UnitTests
 			AddinManager.AddinLoaded += OnLoad;
 			AddinManager.AddinUnloaded += OnUnload;
 			
-			if (firstRun) {
-				if (Directory.Exists (TempDir))
-					Directory.Delete (TempDir, true);
-				Directory.CreateDirectory (TempDir);
-			}
+			if (Directory.Exists (TempDir))
+				Directory.Delete (TempDir, true);
+			Directory.CreateDirectory (TempDir);
+
+			var configDir = Path.Combine(TempDir, "config");
+			Directory.CreateDirectory(configDir);
 
 			// Provide the current assembly as startup assembly, otherwise it will pick the
 			// unit test runner as startup assembly
 
-			AddinManager.AddinEngine.Initialize (GetType().Assembly, null, TempDir, null, null);
+			AddinManager.AddinEngine.Initialize (GetType().Assembly, null, configDir, null, null);
 			
-			if (firstRun)
-				AddinManager.Registry.Update (new ConsoleProgressStatus (true));
-			else
-				AddinManager.Registry.ResetConfiguration ();
-			
-			firstRun = false;
+			AddinManager.Registry.Update (new ConsoleProgressStatus (true));
 		}
 		
 		[OneTimeTearDown]
