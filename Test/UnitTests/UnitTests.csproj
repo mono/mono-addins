@@ -2,27 +2,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\TargetFrameworks.props" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <ProjectGuid>{1CD51E61-1985-4D22-9BFA-D14C8FC61B46}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>UnitTests</AssemblyName>
-    <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>UnitTests</RootNamespace>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\mono-addins.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworks>net472;net6.0</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
