@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.IO;
+using System.Linq;
 
 namespace Mono.Addins.Database
 {
@@ -33,6 +34,10 @@ namespace Mono.Addins.Database
 		AddinDatabase database;
 		AddinScanFolderInfo currentFolderInfo;
 		AddinScanResult scanResult;
+
+		// Folder info object that already existed. It is usually the same as currentFolderInfo, since
+		// folder info objects are reused, but not always.
+		AddinScanFolderInfo oldFolderInfo;
 
 		public AddinRegistryUpdater (AddinDatabase database, AddinScanResult scanResult): base (database)
 		{
@@ -44,6 +49,12 @@ namespace Mono.Addins.Database
 		protected override void OnVisitFolder (IProgressStatus monitor, string path, string domain, bool recursive)
 		{
 			AddinScanFolderInfo folderInfo;
+
+			AddinScanFolderInfo previousOldFolderInfo = oldFolderInfo;
+
+			// Don't reset oldFolderInfo here. When scanning a folder that had scan index and now it doesn't,
+			// we need to keep the old folder data since the root folder info had the info for all folders
+			// in the domain.
 
 			if (!database.GetFolderInfoForPath (monitor, path, out folderInfo)) {
 				// folderInfo file was corrupt.
@@ -81,6 +92,11 @@ namespace Mono.Addins.Database
 			} else if (folderInfo.FolderHasScanDataIndex != folderHasIndex) {
 				// A scan data index appeared or disappeared. The information in folderInfo is not reliable.
 				// Update the folder info and regenerate everything.
+
+				// Keep a copy of the old folder info, to be used to retrieve the old status of the add-ins.
+				oldFolderInfo = folderInfo;
+				folderInfo = new AddinScanFolderInfo (oldFolderInfo);
+
 				scanResult.RegenerateRelationData = true;
 				folderInfo.Reset ();
 				scanResult.RegisterModifiedFolderInfo (folderInfo);
@@ -119,14 +135,44 @@ namespace Mono.Addins.Database
 			if (monitor.LogLevel > 1)
 				monitor.Log ("Checking: " + path);
 
+			currentFolderInfo = folderInfo;
+
 			if (dirScanDataIndex != null) {
 				// Instead of scanning the folder, just register the files in the index
-				foreach (var file in dirScanDataIndex.Files)
-					RegisterFileToScan (monitor, file.FileName, folderInfo, file);
+				if (oldFolderInfo != null && !oldFolderInfo.FolderHasScanDataIndex)
+				{
+					// There was no scan index in the previous scan but there is one in this scan.
+					// The old folder info doesn't contain the info for all files, just for the files in this folder.
+					// Since the new scan has an index, it can contain references to files not directly in this folder,
+					// so for those files we need to find their corresponding old folder info.
+
+					// We group by folder so that we only need to query for folderInfo once per folder
+					foreach (var folder in dirScanDataIndex.Files.GroupBy(f => Path.GetDirectoryName(f.FileName)))
+					{
+						AddinScanFolderInfo oldFolderInfoForIncludedFolder;
+						if (folder.Key != path)
+						{
+							// The file does not belong to this folder, so we need to get the folderInfo from
+							// the right folder
+							database.GetFolderInfoForPath(monitor, folder.Key, out oldFolderInfoForIncludedFolder);
+						}
+						else
+						{
+							// The file belongs to the folder being visited, so oldFolderInfo is correct
+							oldFolderInfoForIncludedFolder = oldFolderInfo;
+						}
+						foreach(var file in folder)
+							RegisterFileToScan(monitor, file.FileName, file, oldFolderInfoForIncludedFolder);
+					}
+				}
+				else
+				{
+					foreach (var file in dirScanDataIndex.Files)
+						RegisterFileToScan(monitor, file.FileName, file, oldFolderInfo);
+				}
 				foreach (var file in dirScanDataIndex.Assemblies)
 					scanResult.AssemblyIndex.AddAssemblyLocation (file);
 			} else {
-				currentFolderInfo = folderInfo;
 
 				base.OnVisitFolder (monitor, path, domain, recursive);
 
@@ -136,23 +182,25 @@ namespace Mono.Addins.Database
 					scanResult.ChangesFound = true;
 					if (scanResult.CheckOnly)
 						return;
-					database.DeleteFolderInfo (monitor, folderInfo);
+					database.DeleteFolderInfo (monitor, oldFolderInfo ?? currentFolderInfo);
 				}
 			}
 
 			// Look for deleted add-ins.
 
-			UpdateDeletedAddins (monitor, folderInfo);
+			UpdateDeletedAddins (monitor, oldFolderInfo ?? currentFolderInfo);
+
+			oldFolderInfo = previousOldFolderInfo;
 		}
 
 		protected override void OnVisitAddinManifestFile (IProgressStatus monitor, string file)
 		{
-			RegisterFileToScan (monitor, file, currentFolderInfo, null);
+			RegisterFileToScan (monitor, file, null, oldFolderInfo);
 		}
 
 		protected override void OnVisitAssemblyFile (IProgressStatus monitor, string file)
 		{
-			RegisterFileToScan (monitor, file, currentFolderInfo, null);
+			RegisterFileToScan (monitor, file, null, oldFolderInfo);
 			scanResult.AssemblyIndex.AddAssemblyLocation (file);
 		}
 
@@ -172,17 +220,17 @@ namespace Mono.Addins.Database
 			}
 		}
 
-		void RegisterFileToScan (IProgressStatus monitor, string file, AddinScanFolderInfo folderInfo, AddinScanData scanData)
+		void RegisterFileToScan (IProgressStatus monitor, string file, AddinScanData scanData, AddinScanFolderInfo oldFolderInfo)
 		{
-			AddinFileInfo finfo = folderInfo.GetAddinFileInfo (file);
+			AddinFileInfo finfo = (oldFolderInfo ?? currentFolderInfo).GetAddinFileInfo (file);
 			bool added = false;
 
-			if (finfo != null && (!finfo.IsAddin || finfo.Domain == folderInfo.GetDomain (finfo.IsRoot)) && !finfo.HasChanged (FileSystem, scanData?.MD5) && !scanResult.RegenerateAllData) {
+			if (finfo != null && (!finfo.IsAddin || finfo.Domain == currentFolderInfo.GetDomain (finfo.IsRoot)) && !finfo.HasChanged (FileSystem, scanData?.MD5) && !scanResult.RegenerateAllData) {
 				if (finfo.ScanError) {
 					// Always schedule the file for scan if there was an error in a previous scan.
 					// However, don't set ChangesFound=true, in this way if there isn't any other
 					// change in the registry, the file won't be scanned again.
-					scanResult.AddFileToScan (file, folderInfo, scanData);
+					scanResult.AddFileToScan (file, currentFolderInfo, finfo, scanData);
 					added = true;
 				}
 
@@ -201,7 +249,7 @@ namespace Mono.Addins.Database
 			scanResult.ChangesFound = true;
 
 			if (!scanResult.CheckOnly && !added)
-				scanResult.AddFileToScan (file, folderInfo, scanData);
+				scanResult.AddFileToScan (file, currentFolderInfo, finfo, scanData);
 		}
 	}
 }

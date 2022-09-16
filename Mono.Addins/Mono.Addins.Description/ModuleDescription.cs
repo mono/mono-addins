@@ -391,7 +391,7 @@ namespace Mono.Addins.Description
 			writer.WriteValue ("DataFiles", NormalizePaths (DataFiles));
 			writer.WriteValue ("Dependencies", Dependencies);
 			writer.WriteValue ("Extensions", Extensions);
-			writer.WriteValue ("IgnorePaths", NormalizePaths (ignorePaths));
+			writer.WriteValue ("IgnorePaths", NormalizePaths (IgnorePaths));
 		}
 		
 		internal override void Read (BinaryXmlReader reader)
