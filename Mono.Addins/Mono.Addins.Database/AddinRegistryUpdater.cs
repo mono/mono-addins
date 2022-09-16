@@ -50,6 +50,12 @@ namespace Mono.Addins.Database
 		{
 			AddinScanFolderInfo folderInfo;
 
+			AddinScanFolderInfo previousOldFolderInfo = oldFolderInfo;
+
+			// Don't reset oldFolderInfo here. When scanning a folder that had scan index and now it doesn't,
+			// we need to keep the old folder data since the root folder info had the info for all folders
+			// in the domain.
+
 			if (!database.GetFolderInfoForPath (monitor, path, out folderInfo)) {
 				// folderInfo file was corrupt.
 				// Just in case, we are going to regenerate all relation data.
@@ -76,7 +82,6 @@ namespace Mono.Addins.Database
 			bool sharedFolder = domain == AddinDatabase.GlobalDomain;
 			bool isNewFolder = folderInfo == null;
 			bool folderHasIndex = dirScanDataIndex != null;
-			bool oldFolderInfoWasSet = false;
 
 			if (isNewFolder) {
 				// No folder info. It is the first time this folder is scanned.
@@ -90,11 +95,10 @@ namespace Mono.Addins.Database
 
 				// Keep a copy of the old folder info, to be used to retrieve the old status of the add-ins.
 				oldFolderInfo = folderInfo;
-				oldFolderInfoWasSet = true;
 				folderInfo = new AddinScanFolderInfo (oldFolderInfo);
+
 				scanResult.RegenerateRelationData = true;
 				folderInfo.Reset ();
-
 				scanResult.RegisterModifiedFolderInfo (folderInfo);
 				folderInfo.FolderHasScanDataIndex = folderHasIndex;
 			}
@@ -186,8 +190,7 @@ namespace Mono.Addins.Database
 
 			UpdateDeletedAddins (monitor, oldFolderInfo ?? currentFolderInfo);
 
-			if (oldFolderInfoWasSet)
-				oldFolderInfo = null;
+			oldFolderInfo = previousOldFolderInfo;
 		}
 
 		protected override void OnVisitAddinManifestFile (IProgressStatus monitor, string file)

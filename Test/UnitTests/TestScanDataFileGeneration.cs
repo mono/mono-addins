@@ -233,10 +233,10 @@ namespace UnitTests
 		}
 
 		[Test]
-		[TestCase (true, true, TestName = "DowngradeAddins - with scan data")]
-		[TestCase (true, false, TestName = "DowngradeAddins - from scan to no scan data")]
-		[TestCase (false, true, TestName = "DowngradeAddins - from no scan to scan data")]
-		[TestCase (false, false, TestName = "DowngradeAddins - with no scan data")]
+		[TestCase (true, true, TestName = "DowngradeAddins - with scan index")]
+		[TestCase (true, false, TestName = "DowngradeAddins - from scan to no scan index")]
+		[TestCase (false, true, TestName = "DowngradeAddins - from no scan to scan index")]
+		[TestCase (false, false, TestName = "DowngradeAddins - with no scan index")]
 		public void DowngradeAddins (bool hasScaIndexBefore, bool hasScanIndexAfter)
 		{
 			// Tests that the database is properly updated when add-ins are downgraded.
