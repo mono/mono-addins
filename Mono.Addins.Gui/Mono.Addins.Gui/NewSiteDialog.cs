@@ -95,7 +95,7 @@ namespace Mono.Addins.Gui
 				dlg.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
 				dlg.AddButton (Gtk.Stock.Open, Gtk.ResponseType.Ok);
 				
-				dlg.SetFilename (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
+				dlg.SetFilename (Environment.GetFolderPath (Environment.SpecialFolder.UserProfile));
 				if (dlg.Run () == (int) ResponseType.Ok) {
 					pathEntry.Text = dlg.Filename;
 				}
