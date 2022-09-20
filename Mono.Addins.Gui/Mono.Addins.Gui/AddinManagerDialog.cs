@@ -531,7 +531,7 @@ namespace Mono.Addins.Gui
 				if (lastFolder != null)
 					dlg.SetCurrentFolder (lastFolder);
 				else
-					dlg.SetCurrentFolder (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
+					dlg.SetCurrentFolder (Environment.GetFolderPath (Environment.SpecialFolder.UserProfile));
 				dlg.SelectMultiple = true;
 				
 				Gtk.FileFilter f = new Gtk.FileFilter ();
