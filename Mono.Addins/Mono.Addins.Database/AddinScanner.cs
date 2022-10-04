@@ -327,7 +327,7 @@ namespace Mono.Addins.Database
 				}
 			}
 			catch (Exception ex) {
-				monitor.ReportError ("Unexpected error while scanning file: " + file, ex);
+				monitor.ReportError ("Unexpected error while scanning file: " + file, ex);  
 			} finally {
 				opMonitor?.LogOperationStatus ("endscan");
 			}
