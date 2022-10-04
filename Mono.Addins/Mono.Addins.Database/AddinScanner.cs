@@ -334,7 +334,7 @@ namespace Mono.Addins.Database
 			return config;
 		}
 
-		public bool ScanConfigAssemblies (IProgressStatus monitor, string filePath, ScanContext scanContext, out AddinDescription config)
+		public bool ScanConfigAssemblies (IProgressStatus monitor, string filePath, ScanContext scanContext, out AddinDescription config) 
 		{
 			config = null;
 
