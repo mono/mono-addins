@@ -31,26 +31,46 @@ using System;
 using System.Collections;
 using Mono.Addins.Serialization;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Mono.Addins.Database
 {
 	class AddinHostIndex: IBinaryXmlElement
 	{
 		static BinaryXmlTypeMap typeMap = new BinaryXmlTypeMap (typeof(AddinHostIndex));
-		
-		Hashtable index = new Hashtable ();
-		
+
+		Dictionary<string, string> index;
+
+		public AddinHostIndex ()
+		{
+			index = new Dictionary<string, string> ();
+		}
+
+		public AddinHostIndex (ImmutableAddinHostIndex immutableIndex)
+		{
+			this.index = immutableIndex.ToDictionary();
+		}
+
+		public ImmutableAddinHostIndex ToImmutableAddinHostIndex ()
+		{
+			return new ImmutableAddinHostIndex (new Dictionary<string, string> (index));
+		}
+
 		public void RegisterAssembly (string assemblyLocation, string addinId, string addinLocation, string domain)
 		{
 			assemblyLocation = NormalizeFileName (assemblyLocation);
 			index [Path.GetFullPath (assemblyLocation)] = addinId + " " + addinLocation + " " + domain;
 		}
-		
+
 		public bool GetAddinForAssembly (string assemblyLocation, out string addinId, out string addinLocation, out string domain)
 		{
+			return LookupAddinForAssembly (index, assemblyLocation, out addinId, out addinLocation, out domain);
+		}
+
+		internal static bool LookupAddinForAssembly (Dictionary<string, string> index, string assemblyLocation, out string addinId, out string addinLocation, out string domain)
+		{
 			assemblyLocation = NormalizeFileName (assemblyLocation);
-			string s = index [Path.GetFullPath (assemblyLocation)] as string;
-			if (s == null) {
+			if (!index.TryGetValue(Path.GetFullPath (assemblyLocation), out var s)) {
 				addinId = null;
 				addinLocation = null;
 				domain = null;
@@ -70,7 +90,7 @@ namespace Mono.Addins.Database
 		{
 			string loc = addinId + " " + Path.GetFullPath (addinLocation) + " ";
 			ArrayList todelete = new ArrayList ();
-			foreach (DictionaryEntry e in index) {
+			foreach (var e in index) {
 				if (((string)e.Value).StartsWith (loc))
 					todelete.Add (e.Key);
 			}
@@ -82,7 +102,13 @@ namespace Mono.Addins.Database
 		{
 			return (AddinHostIndex) fileDatabase.ReadObject (file, typeMap);
 		}
-		
+
+		public static ImmutableAddinHostIndex ReadAsImmutable (FileDatabase fileDatabase, string file)
+		{
+			var hostIndex = (AddinHostIndex)fileDatabase.ReadObject (file, typeMap);
+			return new ImmutableAddinHostIndex (hostIndex.index);
+		}
+
 		public void Write (FileDatabase fileDatabase, string file)
 		{
 			fileDatabase.WriteObject (file, this, typeMap);
@@ -98,12 +124,36 @@ namespace Mono.Addins.Database
 			reader.ReadValue ("index", index);
 		}
 		
-		string NormalizeFileName (string name)
+		internal static string NormalizeFileName (string name)
 		{
 			if (Util.IsWindows)
 				return name.ToLower ();
 			else
 				return name;
+		}
+	}
+
+	class ImmutableAddinHostIndex
+	{
+		Dictionary<string, string> index;
+
+		public ImmutableAddinHostIndex () : this (new Dictionary<string, string> ())
+		{
+		}
+
+		public ImmutableAddinHostIndex (Dictionary<string, string> index)
+		{
+			this.index = index;
+		}
+
+		public bool GetAddinForAssembly (string assemblyLocation, out string addinId, out string addinLocation, out string domain)
+		{
+			return AddinHostIndex.LookupAddinForAssembly (index, assemblyLocation, out addinId, out addinLocation, out domain);
+		}
+
+		public Dictionary<string, string> ToDictionary ()
+		{
+			return new Dictionary<string, string> (index);
 		}
 	}
 }

@@ -49,27 +49,37 @@ namespace Mono.Addins
 	/// </summary>
 	public class RuntimeAddin
 	{
-		string id;
-		string baseDirectory;
+		readonly string id;
+		readonly string baseDirectory;
+		readonly Addin ainfo;
+		readonly RuntimeAddin parentAddin;
+		readonly AddinEngine addinEngine;
+		readonly ModuleDescription module;
+
 		string privatePath;
-		Addin ainfo;
-		RuntimeAddin parentAddin;
 
 		Dictionary<string, Assembly> loadedAssemblies = new Dictionary<string, Assembly>();
 		bool fullyLoadedAssemblies;
-		
-		RuntimeAddin[] depAddins;
-		ResourceManager[] resourceManagers;
+
+		RuntimeAddin [] depAddins;
+		ResourceManager [] resourceManagers;
 		AddinLocalizer localizer;
-		ModuleDescription module;
-		AddinEngine addinEngine;
 		ExtensionNodeDescription localizerDescription;
 		
-		internal RuntimeAddin (AddinEngine addinEngine)
+		internal RuntimeAddin (AddinEngine addinEngine, Addin iad)
 		{
 			this.addinEngine = addinEngine;
+
+			ainfo = iad;
+
+			AddinDescription description = iad.Description;
+			id = description.AddinId;
+			baseDirectory = description.BasePath;
+			module = description.MainModule;
+			module.RuntimeAddin = this;
+			localizerDescription = description.Localizer;
 		}
-		
+
 		internal RuntimeAddin (AddinEngine addinEngine, RuntimeAddin parentAddin, ModuleDescription module)
 		{
 			this.addinEngine = addinEngine;
@@ -345,7 +355,7 @@ namespace Mono.Addins
 
 			foreach (var kvp in loadedAssemblies) {
 				var assembly = kvp.Value;
-				if (string.IsNullOrEmpty (assemblyName) || assembly.FullName == assemblyName) {
+				if (string.IsNullOrEmpty (assemblyName) || assembly.GetName().Name == assemblyName) {
 					Type type = assembly.GetType (typeName, false);
 					if (type != null)
 						return type;
@@ -619,19 +629,6 @@ namespace Mono.Addins
 			return addin;
 		}
 		
-		internal AddinDescription Load (Addin iad)
-		{
-			ainfo = iad;
-			
-			AddinDescription description = iad.Description;
-			id = description.AddinId;
-			baseDirectory = description.BasePath;
-			module = description.MainModule;
-			module.RuntimeAddin = this;
-			localizerDescription = description.Localizer;
-			return description;
-		}
-
 		AddinLocalizer LoadLocalizer ()
 		{
 			if (localizerDescription != null) {
@@ -723,9 +720,9 @@ namespace Mono.Addins
 			}
 		}
 		
-		internal void UnloadExtensions ()
+		internal void UnloadExtensions (ExtensionContextTransaction transaction)
 		{
-			addinEngine.UnregisterAddinNodeSets (id);
+			addinEngine.UnregisterAddinNodeSets (transaction, id);
 		}
 		
 		bool CheckAddinDependencies (ModuleDescription module, bool forceLoadAssemblies)
@@ -734,10 +731,11 @@ namespace Mono.Addins
 				AddinDependency pdep = dep as AddinDependency;
 				if (pdep == null)
 					continue;
-				if (!addinEngine.IsAddinLoaded (pdep.FullAddinId))
+				var addin = addinEngine.GetAddin(pdep.FullAddinId);
+				if (addin == null)
 					return false;
 				if (forceLoadAssemblies)
-					addinEngine.GetAddin (pdep.FullAddinId).EnsureAssembliesLoaded ();
+					addin.EnsureAssembliesLoaded ();
 			}
 			return true;
 		}

@@ -69,8 +69,13 @@ namespace Mono.Addins
 		/// </remarks>
 		public object GetInstance ()
 		{
-			if (cachedInstance == null)
-				cachedInstance = CreateInstance ();
+			if (cachedInstance == null) {
+				lock (localLock) {
+					// Use locking here to avoid creating more than one instance per ExtensionNode
+					if (cachedInstance == null)
+						cachedInstance = CreateInstance ();
+				}
+			}
 			return cachedInstance;
 		}
 

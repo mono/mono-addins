@@ -30,35 +30,58 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
 using Mono.Addins.Description;
 
 namespace Mono.Addins
 {
-	/// <summary>
-	/// An extension context.
-	/// </summary>
-	/// <remarks>
-	/// Extension contexts can be used to query the extension tree
-	/// using particular condition values. Extension points which
-	/// declare the availability of a condition type can only be
-	/// queryed using an extension context which provides an
-	/// evaluator for that condition.
-	/// </remarks>
-	public class ExtensionContext
+    /// <summary>
+    /// An extension context.
+    /// </summary>
+    /// <remarks>
+    /// Extension contexts can be used to query the extension tree
+    /// using particular condition values. Extension points which
+    /// declare the availability of a condition type can only be
+    /// queryed using an extension context which provides an
+    /// evaluator for that condition.
+    /// </remarks>
+    public class ExtensionContext
 	{
 		internal object LocalLock = new object ();
 
-		Hashtable conditionTypes = new Hashtable ();
-		Hashtable conditionsToNodes = new Hashtable ();
-		List<WeakReference> childContexts;
+		ImmutableArray<WeakReference> childContexts = ImmutableArray<WeakReference>.Empty;
 		ExtensionContext parentContext;
 		ExtensionTree tree;
-		bool fireEvents = false;
-		
-		List<string> runTimeEnabledAddins;
-		List<string> runTimeDisabledAddins;
-		
+
+		NotificationQueue notificationQueue;
+
+		// runTimeEnabledAddins and runTimeDisabledAddins are modified only within a transaction,
+		// so they don't need to be immutable and don't need to be in the snapshot
+		HashSet<string> runTimeEnabledAddins = new HashSet<string>();
+		HashSet<string> runTimeDisabledAddins = new HashSet<string>();
+
+		ExtensionContextSnapshot currentSnapshot = new ExtensionContextSnapshot();
+
+		internal class ExtensionContextSnapshot
+		{
+			public ImmutableDictionary<string, ConditionInfo> ConditionTypes;
+			public ImmutableDictionary<BaseCondition, ImmutableArray<TreeNode>> ConditionsToNodes;
+
+			public ExtensionContextSnapshot()
+			{
+				ConditionTypes = ImmutableDictionary<string, ConditionInfo>.Empty;
+				ConditionsToNodes = ImmutableDictionary<BaseCondition, ImmutableArray<TreeNode>>.Empty;
+			}
+
+			public virtual void CopyFrom(ExtensionContextSnapshot other)
+			{
+				ConditionTypes = other.ConditionTypes;
+				ConditionsToNodes = other.ConditionsToNodes;
+			}
+		}
+
 		/// <summary>
 		/// Extension change event.
 		/// </summary>
@@ -68,14 +91,30 @@ namespace Mono.Addins
 		/// it does not provide information about what changed. Hosts subscribing to
 		/// this event should get the new list of nodes using a query method such as
 		/// AddinManager.GetExtensionNodes() and then update whatever needs to be updated.
+		/// 
+		/// Threading information: the thread on which the event is raised is undefined. Events are
+		/// guaranteed to be raised sequentially for a given extension context.
 		/// </remarks>
 		public event ExtensionEventHandler ExtensionChanged;
 		
 		internal void Initialize (AddinEngine addinEngine)
 		{
-			fireEvents = false;
+			notificationQueue = new NotificationQueue(addinEngine);
+			SetSnapshot(CreateSnapshot());
 			tree = new ExtensionTree (addinEngine, this);
 		}
+
+		internal virtual ExtensionContextSnapshot CreateSnapshot()
+		{
+			return new ExtensionContextSnapshot();
+		}
+
+		internal virtual void SetSnapshot(ExtensionContextSnapshot newSnapshot)
+		{
+			currentSnapshot = newSnapshot;
+		}
+
+		internal ExtensionContextSnapshot CurrentSnapshot => currentSnapshot;
 
 #pragma warning disable 1591
 		[ObsoleteAttribute]
@@ -84,52 +123,81 @@ namespace Mono.Addins
 		}
 #pragma warning restore 1591
 
+		internal void InvokeCallback(Action action, object source)
+		{
+			notificationQueue.Invoke(action, source);
+		}
 		
 		internal void ClearContext ()
 		{
-			conditionTypes.Clear ();
-			conditionsToNodes.Clear ();
-			childContexts = null;
+			SetSnapshot(CreateSnapshot());
+			childContexts = ImmutableArray<WeakReference>.Empty;
 			parentContext = null;
 			tree = null;
-			runTimeEnabledAddins = null;
-			runTimeDisabledAddins = null;
 		}
-		
+
 		internal AddinEngine AddinEngine {
 			get { return tree.AddinEngine; }
 		}
 
 		void CleanDisposedChildContexts ()
 		{
-			if (childContexts != null)
-				childContexts.RemoveAll (w => w.Target == null);
-		}
-		
-		internal virtual void ResetCachedData ()
-		{
-			tree.ResetCachedData ();
-			if (childContexts != null) {
-				foreach (WeakReference wref in childContexts) {
-					ExtensionContext ctx = wref.Target as ExtensionContext;
-					if (ctx != null)
-						ctx.ResetCachedData ();
+			var list = childContexts;
+			List<WeakReference> toRemove = null;
+
+			for (int n = 0; n < list.Length; n++) {
+				if (list [n].Target == null) {
+					// Create the list only if there is something to remove
+					if (toRemove == null)
+						toRemove = new List<WeakReference> ();
+					toRemove.Add (list [n]);
 				}
 			}
+			if (toRemove != null) {
+				// Removing the stale contexts is not urgent, so if the lock can't be acquired now
+				// it is ok to just skip the clean up and try later
+				if (Monitor.TryEnter(LocalLock)) {
+					try {
+						childContexts = childContexts.RemoveRange (toRemove);
+					} finally {
+						Monitor.Exit (LocalLock);
+					}
+				}
+			}
+		}
+
+		internal void ResetCachedData(ExtensionContextTransaction transaction = null)
+		{
+			var currentTransaction = transaction ?? BeginTransaction();
+			try
+			{
+				OnResetCachedData(currentTransaction);
+			}
+			finally
+			{
+				if (currentTransaction != transaction)
+					currentTransaction.Dispose();
+			}
+		}
+
+		internal virtual void OnResetCachedData (ExtensionContextTransaction transaction)
+		{
+			tree.ResetCachedData (transaction);
+
+			foreach (var ctx in GetActiveChildContexes())
+				ctx.ResetCachedData ();
 		}
 		
 		internal ExtensionContext CreateChildContext ()
 		{
-			lock (conditionTypes) {
-				if (childContexts == null)
-					childContexts = new List<WeakReference> ();
-				else
-					CleanDisposedChildContexts ();
-				ExtensionContext ctx = new ExtensionContext ();
-				ctx.Initialize (AddinEngine);
-				ctx.parentContext = this;
-				WeakReference wref = new WeakReference (ctx);
-				childContexts.Add (wref);
+			ExtensionContext ctx = new ExtensionContext ();
+			ctx.Initialize (AddinEngine);
+			ctx.parentContext = this;
+			WeakReference wref = new WeakReference (ctx);
+
+			lock (LocalLock) {
+				CleanDisposedChildContexts ();
+				childContexts = childContexts.Add (wref);
 				return ctx;
 			}
 		}
@@ -150,13 +218,9 @@ namespace Mono.Addins
 		/// </remarks>
 		public void RegisterCondition (string id, ConditionType type)
 		{
+			using var transaction = BeginTransaction ();
 			type.Id = id;
-			ConditionInfo info = CreateConditionInfo (id);
-			ConditionType ot = info.CondType as ConditionType;
-			if (ot != null)
-				ot.Changed -= new EventHandler (OnConditionChanged);
-			info.CondType = type;
-			type.Changed += new EventHandler (OnConditionChanged);
+			GetOrCreateConditionInfo (transaction, id, type);
 		}
 		
 		/// <summary>
@@ -174,63 +238,74 @@ namespace Mono.Addins
 		/// </remarks>
 		public void RegisterCondition (string id, Type type)
 		{
+			using var transaction = BeginTransaction ();
+
 			// Allows delayed creation of condition types
-			ConditionInfo info = CreateConditionInfo (id);
-			ConditionType ot = info.CondType as ConditionType;
-			if (ot != null)
-				ot.Changed -= new EventHandler (OnConditionChanged);
-			info.CondType = type;
+			GetOrCreateConditionInfo (transaction, id, type);
 		}
 
-		internal void RegisterCondition (string id, RuntimeAddin addin, string typeName)
+		internal void RegisterCondition (ExtensionContextTransaction transaction, string id, RuntimeAddin addin, string typeName)
 		{
 			// Allows delayed creation of condition types
-			ConditionInfo info = CreateConditionInfo (id);
-			ConditionType ot = info.CondType as ConditionType;
-			if (ot != null)
-				ot.Changed -= new EventHandler (OnConditionChanged);
-			info.CondType = new ConditionTypeData {
+			GetOrCreateConditionInfo (transaction, id, new ConditionTypeData {
 				TypeName = typeName,
 				Addin = addin
-			};
+			});
 		}
 
-		ConditionInfo CreateConditionInfo (string id)
+		internal ConditionInfo GetOrCreateConditionInfo (ExtensionContextTransaction transaction, string id, object conditionTypeObject)
 		{
-			ConditionInfo info = conditionTypes [id] as ConditionInfo;
-			if (info == null) {
+			if (!transaction.Snapshot.ConditionTypes.TryGetValue (id, out var info)) {
 				info = new ConditionInfo ();
-				conditionTypes [id] = info;
+				info.CondType = conditionTypeObject;
+				transaction.Snapshot.ConditionTypes = transaction.Snapshot.ConditionTypes.Add (id, info);
+			} else {
+				// If CondType is not changing, nothing else to do
+				if (conditionTypeObject == null)
+					return info;
+
+				// Replace the old CondType
+				var oldType = info.CondType as ConditionType;
+				info.CondType = conditionTypeObject;
+				if (oldType != null)
+					oldType.Changed -= new EventHandler (OnConditionChanged);
 			}
+			if (conditionTypeObject is ConditionType conditionType)
+				conditionType.Changed += new EventHandler (OnConditionChanged);
 			return info;
-		}
-		
-		internal bool FireEvents {
-			get { return fireEvents; }
 		}
 		
 		internal ConditionType GetCondition (string id)
 		{
-			ConditionInfo info = (ConditionInfo) conditionTypes [id];
-			
-			if (info != null) {
+			if (currentSnapshot.ConditionTypes.TryGetValue(id, out var info)) {
 				if (info.CondType is ConditionType condition) {
 					return condition;
 				}
 				else {
-					// The condition was registered as a type, create an instance now
-					Type type;
-					if (info.CondType is ConditionTypeData data) {
-						type = data.Addin.GetType (data.TypeName, true);
-					} else
-						type = info.CondType as Type;
+					// The condition needs to be instantiated in a lock, to avoid duplicate
+					// creation if two threads are trying to get it
 
-					if (type != null) {
-						var ct = (ConditionType)Activator.CreateInstance (type);
-						ct.Id = id;
-						ct.Changed += new EventHandler (OnConditionChanged);
-						info.CondType = ct;
-						return ct;
+					lock (LocalLock) {
+
+						// Check again from inside the lock (maybe another thread already created the condition)
+						if (info.CondType is ConditionType cond)
+							return cond;
+
+						// The condition was registered as a type, create an instance now
+
+						Type type;
+						if (info.CondType is ConditionTypeData data) {
+							type = data.Addin.GetType (data.TypeName, true);
+						} else
+							type = info.CondType as Type;
+
+						if (type != null) {
+							var ct = (ConditionType)Activator.CreateInstance (type);
+							ct.Id = id;
+							ct.Changed += new EventHandler (OnConditionChanged);
+							info.CondType = ct;
+							return ct;
+						}
 					}
 				}
 			}
@@ -240,47 +315,8 @@ namespace Mono.Addins
 			else
 				return null;
 		}
-		
-		internal void RegisterNodeCondition (TreeNode node, BaseCondition cond)
-		{
-			var list = (List<TreeNode>) conditionsToNodes [cond];
-			if (list == null) {
-				list = new List<TreeNode> ();
-				conditionsToNodes [cond] = list;
-				var conditionTypeIds = new List<string> ();
-				cond.GetConditionTypes (conditionTypeIds);
-				
-				foreach (string cid in conditionTypeIds) {
-				
-					ConditionInfo info = CreateConditionInfo (cid);
-					if (info.BoundConditions == null)
-						info.BoundConditions = new List<BaseCondition> ();
-						
-					info.BoundConditions.Add (cond);
-				}
-			}
-			list.Add (node);
-		}
-		
-		internal void UnregisterNodeCondition (TreeNode node, BaseCondition cond)
-		{
-			var list = (List<TreeNode>) conditionsToNodes [cond];
-			if (list == null)
-				return;
-			
-			list.Remove (node);
-			if (list.Count == 0) {
-				conditionsToNodes.Remove (cond);
-				var conditionTypeIds = new List<string> ();
-				cond.GetConditionTypes (conditionTypeIds);
-				foreach (string cid in conditionTypes.Keys) {
-					ConditionInfo info = conditionTypes [cid] as ConditionInfo;
-					if (info != null && info.BoundConditions != null)
-						info.BoundConditions.Remove (cond);
-				}
-			}
-		}
-		
+
+
 		/// <summary>
 		/// Returns the extension node in a path
 		/// </summary>
@@ -388,7 +424,7 @@ namespace Mono.Addins
 		{
 			string path = AddinEngine.GetAutoTypeExtensionPoint (instanceType);
 			if (path == null)
-				return new ExtensionNodeList (null);
+				return ExtensionNodeList.Empty;
 			return GetExtensionNodes (path, expectedNodeType);
 		}
 		
@@ -434,10 +470,10 @@ namespace Mono.Addins
 		public ExtensionNodeList GetExtensionNodes (string path, Type expectedNodeType)
 		{
 			TreeNode node = GetNode (path);
-			if (node == null || node.ExtensionNode == null)
+			if (node == null || !node.HasExtensionNode)
 				return ExtensionNodeList.Empty;
 			
-			ExtensionNodeList list = node.ExtensionNode.ChildNodes;
+			ExtensionNodeList list = node.ExtensionNode.GetChildNodes();
 			
 			if (expectedNodeType != null) {
 				bool foundError = false;
@@ -772,251 +808,200 @@ namespace Mono.Addins
 				throw new InvalidOperationException ("Type '" + instanceType + "' not bound to an extension point.");
 			RemoveExtensionNodeHandler (path, handler);
 		}
+
+		internal virtual ExtensionContextTransaction BeginTransaction ()
+		{
+			return new ExtensionContextTransaction (this);
+		}
+
+		internal bool IsCurrentThreadInTransaction => Monitor.IsEntered (LocalLock);
 		
 		void OnConditionChanged (object s, EventArgs a)
 		{
 			ConditionType cond = (ConditionType) s;
 			NotifyConditionChanged (cond);
 		}
-		
-		internal void NotifyConditionChanged (ConditionType cond)
+
+		void NotifyConditionChanged (ConditionType cond)
 		{
-			try {
-				fireEvents = true;
-				
-				ConditionInfo info = (ConditionInfo) conditionTypes [cond.Id];
-				if (info != null && info.BoundConditions != null) {
-					Hashtable parentsToNotify = new Hashtable ();
-					foreach (BaseCondition c in info.BoundConditions) {
-						var nodeList = (List<TreeNode>) conditionsToNodes [c];
-						if (nodeList != null) {
-							foreach (TreeNode node in nodeList)
-								parentsToNotify [node.Parent] = null;
-						}
-					}
-					foreach (TreeNode node in parentsToNotify.Keys) {
-						if (node.NotifyChildrenChanged ())
-							NotifyExtensionsChanged (new ExtensionEventArgs (node.GetPath ()));
+			HashSet<TreeNode> parentsToNotify = null;
+
+			var snapshot = currentSnapshot;
+
+			if (snapshot.ConditionTypes.TryGetValue (cond.Id, out var info) && info.BoundConditions != null) {
+				parentsToNotify = new HashSet<TreeNode> ();
+				foreach (BaseCondition c in info.BoundConditions) {
+					if (snapshot.ConditionsToNodes.TryGetValue(c, out var nodeList)) {
+						parentsToNotify.UnionWith (nodeList.Select (node => node.Parent));
 					}
 				}
-			}
-			finally {
-				fireEvents = false;
 			}
 
-			// Notify child contexts
-			lock (conditionTypes) {
-				if (childContexts != null) {
-					CleanDisposedChildContexts ();
-					foreach (WeakReference wref in childContexts) {
-						ExtensionContext ctx = wref.Target as ExtensionContext;
-						if (ctx != null)
-							ctx.NotifyConditionChanged (cond);
-					}
+			if (parentsToNotify != null) {
+				foreach (TreeNode node in parentsToNotify) {
+					if (node.NotifyChildrenChanged ())
+						NotifyExtensionsChanged (new ExtensionEventArgs (node.GetPath ()));
 				}
 			}
+
+			foreach (var ctx in GetActiveChildContexes ())
+				ctx.NotifyConditionChanged (cond);
 		}
-		
+
+		IEnumerable<ExtensionContext> GetActiveChildContexes ()
+		{
+			// Collect a list of child contexts that are still referenced
+			if (childContexts.Length > 0) {
+				CleanDisposedChildContexts ();
+				return childContexts.Select (t => (ExtensionContext)t.Target).Where (t => t != null);
+			} else
+				return Array.Empty<ExtensionContext> ();
+		}
+
 
 		internal void NotifyExtensionsChanged (ExtensionEventArgs args)
 		{
-			if (!fireEvents)
-				return;
-
 			if (ExtensionChanged != null)
-				ExtensionChanged (this, args);
+			{
+				notificationQueue.Invoke(() =>
+				{
+					ExtensionChanged?.Invoke(this, args);
+				}, null);
+			}
 		}
 		
 		internal void NotifyAddinLoaded (RuntimeAddin ad)
 		{
 			tree.NotifyAddinLoaded (ad, true);
 
-			lock (conditionTypes) {
-				if (childContexts != null) {
-					CleanDisposedChildContexts ();
-					foreach (WeakReference wref in childContexts) {
-						ExtensionContext ctx = wref.Target as ExtensionContext;
-						if (ctx != null)
-							ctx.NotifyAddinLoaded (ad);
-					}
-				}
-			}
+			foreach (var ctx in GetActiveChildContexes())
+				ctx.NotifyAddinLoaded (ad);
 		}
 		
-		internal void CreateExtensionPoint (ExtensionPoint ep)
+		internal void CreateExtensionPoint (ExtensionContextTransaction transaction, ExtensionPoint ep)
 		{
-			TreeNode node = tree.GetNode (ep.Path, true);
+			TreeNode node = tree.GetNode (ep.Path, true, transaction);
 			if (node.ExtensionPoint == null) {
 				node.ExtensionPoint = ep;
 				node.ExtensionNodeSet = ep.NodeSet;
 			}
 		}
 		
-		internal void ActivateAddinExtensions (string id)
+		internal void ActivateAddinExtensions (ExtensionContextTransaction transaction, string id)
 		{
 			// Looks for loaded extension points which are extended by the provided
 			// add-in, and adds the new nodes
 			
-			try {
-				fireEvents = true;
+			Addin addin = AddinEngine.Registry.GetAddin (id);
+			if (addin == null) {
+				AddinEngine.ReportError ("Required add-in not found", id, null, false);
+				return;
+			}
+			// Take note that this add-in has been enabled at run-time
+			// Needed because loaded add-in descriptions may not include this add-in. 
+			RegisterRuntimeEnabledAddin (transaction, id);
 				
-				Addin addin = AddinEngine.Registry.GetAddin (id);
-				if (addin == null) {
-					AddinEngine.ReportError ("Required add-in not found", id, null, false);
-					return;
+			// Look for loaded extension points
+			Hashtable eps = new Hashtable ();
+			foreach (ModuleDescription mod in addin.Description.AllModules) {
+				foreach (Extension ext in mod.Extensions) {
+					transaction.NotifyExtensionsChangedEvent (ext.Path);
+					ExtensionPoint ep = tree.FindLoadedExtensionPoint (ext.Path);
+					if (ep != null && !eps.Contains (ep))
+						eps.Add (ep, ep);
 				}
-				// Take note that this add-in has been enabled at run-time
-				// Needed because loaded add-in descriptions may not include this add-in. 
-				RegisterRuntimeEnabledAddin (id);
+			}
 				
-				// Look for loaded extension points
-				Hashtable eps = new Hashtable ();
-				var newExtensions = new List<string> ();
-				foreach (ModuleDescription mod in addin.Description.AllModules) {
-					foreach (Extension ext in mod.Extensions) {
-						if (!newExtensions.Contains (ext.Path))
-							newExtensions.Add (ext.Path);
-						ExtensionPoint ep = tree.FindLoadedExtensionPoint (ext.Path);
-						if (ep != null && !eps.Contains (ep))
-							eps.Add (ep, ep);
-					}
-				}
-				
-				// Add the new nodes
-				var loadedNodes = new List<TreeNode> ();
-				foreach (ExtensionPoint ep in eps.Keys) {
-					ExtensionLoadData data = GetAddinExtensions (id, ep);
-					if (data != null) {
-						foreach (Extension ext in data.Extensions) {
-							TreeNode node = GetNode (ext.Path);
-							if (node != null && node.ExtensionNodeSet != null) {
-								if (node.ChildrenLoaded)
-									LoadModuleExtensionNodes (ext, data.AddinId, node.ExtensionNodeSet, loadedNodes);
-							}
-							else
-								AddinEngine.ReportError ("Extension node not found or not extensible: " + ext.Path, id, null, false);
+			// Add the new nodes
+			foreach (ExtensionPoint ep in eps.Keys) {
+				ExtensionLoadData data = GetAddinExtensions (transaction, id, ep);
+				if (data != null) {
+					foreach (Extension ext in data.Extensions) {
+						TreeNode node = GetNode (ext.Path);
+						if (node != null && node.ExtensionNodeSet != null) {
+							if (node.ChildrenFromExtensionsLoaded)
+								LoadModuleExtensionNodes (transaction, node, ext, data.AddinId);
 						}
+						else
+							AddinEngine.ReportError ("Extension node not found or not extensible: " + ext.Path, id, null, false);
 					}
 				}
-				
-				// Call the OnAddinLoaded method on nodes, if the add-in is already loaded
-				foreach (TreeNode nod in loadedNodes)
-					nod.ExtensionNode.OnAddinLoaded ();
-				
-				// Global extension change event. Other events are fired by LoadModuleExtensionNodes.
-				// The event is called for all extensions, even for those not loaded. This is for coherence,
-				// although that something that it doesn't make much sense to do (subscribing the ExtensionChanged
-				// event without first getting the list of nodes that may change).
-				foreach (string newExt in newExtensions)
-					NotifyExtensionsChanged (new ExtensionEventArgs (newExt));
 			}
-			finally {
-				fireEvents = false;
-			}
+				
 			// Do the same in child contexts
-			
-			lock (conditionTypes) {
-				if (childContexts != null) {
-					CleanDisposedChildContexts ();
-					foreach (WeakReference wref in childContexts) {
-						ExtensionContext ctx = wref.Target as ExtensionContext;
-						if (ctx != null)
-							ctx.ActivateAddinExtensions (id);
-					}
-				}
-			}
-		}
-		
-		internal void RemoveAddinExtensions (string id)
-		{
-			try {
-				// Registers this add-in as disabled, so from now on extension from this
-				// add-in will be ignored
-				RegisterRuntimeDisabledAddin (id);
-				
-				fireEvents = true;
 
-				// This method removes all extension nodes added by the add-in
-				// Get all nodes created by the addin
-				List<TreeNode> list = new List<TreeNode> ();
-				tree.FindAddinNodes (id, list);
-				
-				// Remove each node and notify the change
-				foreach (TreeNode node in list) {
-					if (node.ExtensionNode == null) {
-						// It's an extension point. Just remove it, no notifications are needed
-						node.Remove ();
-					}
-					else {
-						node.ExtensionNode.OnAddinUnloaded ();
-						node.Remove ();
+			foreach (var ctx in GetActiveChildContexes ())
+				ctx.ActivateAddinExtensions (transaction, id);
+		}
+
+		internal void RemoveAddinExtensions (ExtensionContextTransaction transaction, string id)
+		{
+			// Registers this add-in as disabled, so from now on extension from this
+			// add-in will be ignored
+			RegisterRuntimeDisabledAddin (transaction, id);
+
+			// This method removes all extension nodes added by the add-in
+			// Get all nodes created by the addin
+			List<TreeNode> list = new List<TreeNode> ();
+			tree.FindAddinNodes (id, list);
+
+			// Remove each node and notify the change
+			foreach (TreeNode node in list) {
+				node.NotifyAddinUnloaded ();
+				node.Parent?.RemoveChild (transaction, node);
+			}
+
+			// Notify global extension point changes.
+			// The event is called for all extensions, even for those not loaded. This is for coherence,
+			// although that something that it doesn't make much sense to do (subscribing the ExtensionChanged
+			// event without first getting the list of nodes that may change).
+
+			// We get the runtime add-in because the add-in may already have been deleted from the registry
+			RuntimeAddin addin = AddinEngine.GetAddin (transaction.GetAddinEngineTransaction(), id);
+			if (addin != null) {
+				var paths = new List<string> ();
+				// Using addin.Module.ParentAddinDescription here because addin.Addin.Description may not
+				// have a valid reference (the description is lazy loaded and may already have been removed from the registry)
+				foreach (ModuleDescription mod in addin.Module.ParentAddinDescription.AllModules) {
+					foreach (Extension ext in mod.Extensions) {
+						if (!paths.Contains (ext.Path))
+							paths.Add (ext.Path);
 					}
 				}
-				
-				// Notify global extension point changes.
-				// The event is called for all extensions, even for those not loaded. This is for coherence,
-				// although that something that it doesn't make much sense to do (subscribing the ExtensionChanged
-				// event without first getting the list of nodes that may change).
-				
-				// We get the runtime add-in because the add-in may already have been deleted from the registry
-				RuntimeAddin addin = AddinEngine.GetAddin (id);
-				if (addin != null) {
-					var paths = new List<string> ();
-					// Using addin.Module.ParentAddinDescription here because addin.Addin.Description may not
-					// have a valid reference (the description is lazy loaded and may already have been removed from the registry)
-					foreach (ModuleDescription mod in addin.Module.ParentAddinDescription.AllModules) {
-						foreach (Extension ext in mod.Extensions) {
-							if (!paths.Contains (ext.Path))
-								paths.Add (ext.Path);
-						}
-					}
-					foreach (string path in paths)
-						NotifyExtensionsChanged (new ExtensionEventArgs (path));
-				}				
-			} finally {
-				fireEvents = false;
+				foreach (string path in paths)
+					transaction.NotifyExtensionsChangedEvent (path);
 			}
 		}
 		
-		void RegisterRuntimeDisabledAddin (string addinId)
+		void RegisterRuntimeDisabledAddin (ExtensionContextTransaction transaction, string addinId)
 		{
-			if (runTimeDisabledAddins == null)
-				runTimeDisabledAddins = new List<string> ();
-			if (!runTimeDisabledAddins.Contains (addinId))
-				runTimeDisabledAddins.Add (addinId);
-			
-			if (runTimeEnabledAddins != null)
-				runTimeEnabledAddins.Remove (addinId);
+			runTimeDisabledAddins.Add (addinId);
+			runTimeEnabledAddins.Remove (addinId);
 		}
 		
-		void RegisterRuntimeEnabledAddin (string addinId)
+		void RegisterRuntimeEnabledAddin (ExtensionContextTransaction transaction, string addinId)
 		{
-			if (runTimeEnabledAddins == null)
-				runTimeEnabledAddins = new List<string> ();
-			if (!runTimeEnabledAddins.Contains (addinId))
-				runTimeEnabledAddins.Add (addinId);
-			
-			if (runTimeDisabledAddins != null)
-				runTimeDisabledAddins.Remove (addinId);
+			runTimeEnabledAddins.Add (addinId);
+			runTimeDisabledAddins.Remove (addinId);
 		}
 		
-		internal List<string> GetAddinsForPath (List<string> col)
+		List<string> GetAddinsForPath (ExtensionContextTransaction transaction, List<string> col)
 		{
 			List<string> newlist = null;
-			
+
 			// Always consider add-ins which have been enabled at runtime since
 			// they may contain extension for this path.
 			// Ignore addins disabled at run-time.
-			
-			if (runTimeEnabledAddins != null && runTimeEnabledAddins.Count > 0) {
+
+			if (runTimeEnabledAddins.Count > 0) {
 				newlist = new List<string> ();
 				newlist.AddRange (col);
 				foreach (string s in runTimeEnabledAddins)
 					if (!newlist.Contains (s))
 						newlist.Add (s);
 			}
-			
-			if (runTimeDisabledAddins != null && runTimeDisabledAddins.Count > 0) {
+
+			if (runTimeDisabledAddins.Count > 0) {
 				if (newlist == null) {
 					newlist = new List<string> ();
 					newlist.AddRange (col);
@@ -1027,14 +1012,13 @@ namespace Mono.Addins
 			
 			return newlist != null ? newlist : col;
 		}
-		
+
 		// Load the extension nodes at the specified path. If the path
 		// contains extension nodes implemented in an add-in which is
 		// not loaded, the add-in will be automatically loaded
-		
-		internal void LoadExtensions (string requestedExtensionPath)
+
+		internal void LoadExtensions (ExtensionContextTransaction transaction, string requestedExtensionPath, TreeNode node)
 		{
-			TreeNode node = GetNode (requestedExtensionPath);
 			if (node == null)
 				throw new InvalidOperationException ("Extension point not defined: " + requestedExtensionPath);
 
@@ -1045,16 +1029,16 @@ namespace Mono.Addins
 				// Collect extensions to be loaded from add-ins. Before loading the extensions,
 				// they must be sorted, that's why loading is split in two steps (collecting + loading).
 
-				var addins = GetAddinsForPath (ep.Addins);
+				var addins = GetAddinsForPath (transaction, ep.Addins);
 				var loadData = new List<ExtensionLoadData> (addins.Count);
 
 				foreach (string addin in addins) {
-					ExtensionLoadData ed = GetAddinExtensions (addin, ep);
+					ExtensionLoadData ed = GetAddinExtensions (transaction, addin, ep);
 					if (ed != null) {
 						// Insert the addin data taking into account dependencies.
 						// An add-in must be processed after all its dependencies.
 						bool added = false;
-						for (int n=0; n<loadData.Count; n++) {
+						for (int n = 0; n < loadData.Count; n++) {
 							ExtensionLoadData other = loadData [n];
 							if (AddinEngine.Registry.AddinDependsOn (other.AddinName, ed.AddinName)) {
 								loadData.Insert (n, ed);
@@ -1066,33 +1050,33 @@ namespace Mono.Addins
 							loadData.Add (ed);
 					}
 				}
-				
+
 				// Now load the extensions
-				
+
 				var loadedNodes = new List<TreeNode> ();
 				foreach (ExtensionLoadData data in loadData) {
 					foreach (Extension ext in data.Extensions) {
 						TreeNode cnode = GetNode (ext.Path);
 						if (cnode != null && cnode.ExtensionNodeSet != null)
-							LoadModuleExtensionNodes (ext, data.AddinId, cnode.ExtensionNodeSet, loadedNodes);
+							LoadModuleExtensionNodes (transaction, cnode, ext, data.AddinId);
 						else
 							AddinEngine.ReportError ("Extension node not found or not extensible: " + ext.Path, data.AddinId, null, false);
 					}
 				}
 				// Call the OnAddinLoaded method on nodes, if the add-in is already loaded
 				foreach (TreeNode nod in loadedNodes)
-					nod.ExtensionNode.OnAddinLoaded ();
+					nod.ExtensionNode.NotifyAddinLoaded();
 
-				NotifyExtensionsChanged (new ExtensionEventArgs (requestedExtensionPath));
-			}
-		}
-		
-		ExtensionLoadData GetAddinExtensions (string id, ExtensionPoint ep)
+				transaction.NotifyExtensionsChangedEvent(requestedExtensionPath);
+            }
+        }
+
+		ExtensionLoadData GetAddinExtensions (ExtensionContextTransaction transaction, string id, ExtensionPoint ep)
 		{
 			Addin pinfo = null;
 
 			// Root add-ins are not returned by GetInstalledAddin.
-			RuntimeAddin addin = AddinEngine.GetAddin (id);
+			RuntimeAddin addin = AddinEngine.GetAddin (transaction.GetAddinEngineTransaction(), id);
 			if (addin != null)
 				pinfo = addin.Addin;
 			else
@@ -1138,18 +1122,18 @@ namespace Mono.Addins
 			}
 		}
 		
-		void LoadModuleExtensionNodes (Extension extension, string addinId, ExtensionNodeSet nset, List<TreeNode> loadedNodes)
+		void LoadModuleExtensionNodes (ExtensionContextTransaction transaction, TreeNode node, Extension extension, string addinId)
 		{
 			// Now load the extensions
 			var addedNodes = new List<TreeNode> ();
-			tree.LoadExtension (addinId, extension, addedNodes);
+			tree.LoadExtension (transaction, node, addinId, extension, addedNodes);
 			
-			RuntimeAddin ad = AddinEngine.GetAddin (addinId);
+			RuntimeAddin ad = AddinEngine.GetAddin (transaction.GetAddinEngineTransaction(), addinId);
 			if (ad != null) {
 				foreach (TreeNode nod in addedNodes) {
 					// Don't call OnAddinLoaded here. Do it when the entire extension point has been loaded.
-					if (nod.ExtensionNode != null)
-						loadedNodes.Add (nod);
+					if (nod.HasExtensionNode)
+						transaction.ReportLoadedNode (nod);
 				}
 			}
 		}
@@ -1173,11 +1157,13 @@ namespace Mono.Addins
 			TreeNode node = tree.GetNode (path);
 			if (node != null || parentContext == null)
 				return node;
-			
+
 			TreeNode supNode = parentContext.tree.GetNode (path);
 			if (supNode == null)
 				return null;
-			
+
+			// Node not found and the context has a parent context which has the node
+
 			if (path.StartsWith ("/"))
 				path = path.Substring (1);
 
@@ -1185,51 +1171,57 @@ namespace Mono.Addins
 			TreeNode srcNode = parentContext.tree;
 			TreeNode dstNode = tree;
 
-			foreach (string part in parts) {
-				
-				// Look for the node in the source tree
-				
-				int i = srcNode.Children.IndexOfNode (part);
-				if (i != -1)
-					srcNode = srcNode.Children [i];
-				else
-					return null;
+			ExtensionContextTransaction transaction = null;
 
-				// Now get the node in the target tree
-				
-				int j = dstNode.Children.IndexOfNode (part);
-				if (j != -1) {
-					dstNode = dstNode.Children [j];
+			try {
+				foreach (string part in parts) {
+
+					// Look for the node in the source tree (from parent context)
+
+					srcNode = srcNode.GetChildNode (part);
+					if (srcNode == null)
+						return null;
+
+					// Now get the node in the target tree
+
+					var dstNodeChild = dstNode.GetChildNode (part);
+					if (dstNodeChild != null) {
+						dstNode = dstNodeChild;
+					} else {
+						if (transaction == null)
+							transaction = BeginTransaction ();
+
+						// Check again just in case the node was created while taking the transaction
+						dstNodeChild = dstNode.GetChildNode (part);
+						if (dstNodeChild != null)
+							dstNode = dstNodeChild;
+						else {
+
+							// Create if not found
+							TreeNode newNode = new TreeNode (AddinEngine, part);
+
+							// Copy extension data
+							newNode.ExtensionNodeSet = srcNode.ExtensionNodeSet;
+							newNode.ExtensionPoint = srcNode.ExtensionPoint;
+							newNode.Condition = srcNode.Condition;
+
+							dstNode.AddChildNode (transaction, newNode);
+							dstNode = newNode;
+						}
+					}
 				}
-				else {
-					// Create if not found
-					TreeNode newNode = new TreeNode (AddinEngine, part);
-					dstNode.AddChildNode (newNode);
-					dstNode = newNode;
-					
-					// Copy extension data
-					dstNode.ExtensionNodeSet = srcNode.ExtensionNodeSet;
-					dstNode.ExtensionPoint = srcNode.ExtensionPoint;
-					dstNode.Condition = srcNode.Condition;
-					
-					if (dstNode.Condition != null)
-						RegisterNodeCondition (dstNode, dstNode.Condition);
-				}
+			} finally {
+				transaction?.Dispose ();
 			}
 			
 			return dstNode;
-		}
-		
-		internal bool FindExtensionPathByType (IProgressStatus monitor, Type type, string nodeName, out string path, out string pathNodeName)
-		{
-			return tree.FindExtensionPathByType (monitor, type, nodeName, out path, out pathNodeName);
 		}
 	}
 	
 	class ConditionInfo
 	{
 		public object CondType;
-		public List<BaseCondition> BoundConditions;
+		public ImmutableArray<BaseCondition> BoundConditions = ImmutableArray<BaseCondition>.Empty;
 	}
 
 	
@@ -1378,5 +1370,83 @@ namespace Mono.Addins
 	{
 		public string TypeName { get; set; }
 		public RuntimeAddin Addin { get; set; }
+	}
+
+	/// <summary>
+	/// A queue that can be used to dispatch callbacks sequentially
+	/// </summary>
+	class NotificationQueue
+	{
+        readonly AddinEngine addinEngine;
+        readonly Queue<(Action Action,object Source)> notificationQueue = new Queue<(Action,object)>();
+
+		bool sending;
+
+		public NotificationQueue(AddinEngine addinEngine)
+		{
+            this.addinEngine = addinEngine;
+        }
+
+		internal void Invoke(Action action, object source)
+		{
+			lock (notificationQueue)
+			{
+				if (sending)
+				{
+					// Already sending, enqueue the action so whoever is sending will take it
+					notificationQueue.Enqueue((action,source));
+					return;
+				}
+				else
+				{
+					// Nobody is sending, do it now
+					sending = true;
+				}
+			}
+
+			SafeInvoke(action, source);
+
+			do
+			{
+				lock (notificationQueue)
+				{
+					if (notificationQueue.Count == 0)
+					{
+						sending = false;
+						return;
+					}
+					(action,source) = notificationQueue.Dequeue();
+				}
+				SafeInvoke(action, source);
+			}
+			while (true);
+		}
+
+		void SafeInvoke(Action action, object source)
+		{
+			try
+			{
+				action();
+			}
+			catch (Exception ex)
+			{
+				RuntimeAddin addin = null;
+
+				if (source is ExtensionNode node)
+				{
+					try
+					{
+						addin = node.Addin;
+					}
+					catch (Exception addinException)
+					{
+						addinEngine.ReportError(null, null, addinException, false);
+						addin = null;
+					}
+				}
+
+				addinEngine.ReportError("Callback invocation failed", addin?.Id, ex, false);
+			}
+		}
 	}
 }

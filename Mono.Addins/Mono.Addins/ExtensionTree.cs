@@ -41,7 +41,7 @@ namespace Mono.Addins
 	{
 		int internalId;
 		internal const string AutoIdPrefix = "__nid_";
-		ExtensionContext context;
+		readonly ExtensionContext context;
 		
 		public ExtensionTree (AddinEngine addinEngine, ExtensionContext context): base (addinEngine, "")
 		{
@@ -53,22 +53,21 @@ namespace Mono.Addins
 		}
 
 		
-		public void LoadExtension (string addin, Extension extension, List<TreeNode> addedNodes)
+		public void LoadExtension (ExtensionContextTransaction transaction, TreeNode tnode, string addin, Extension extension, List<TreeNode> addedNodes)
 		{
-			TreeNode tnode = GetNode (extension.Path);
 			if (tnode == null) {
 				addinEngine.ReportError ("Can't load extensions for path '" + extension.Path + "'. Extension point not defined.", addin, null, false);
 				return;
 			}
 			
 			int curPos = -1;
-			LoadExtensionElement (tnode, addin, extension.ExtensionNodes, (ModuleDescription) extension.Parent, ref curPos, tnode.Condition, false, addedNodes);
+			LoadExtensionElement (transaction, tnode, addin, extension.ExtensionNodes, (ModuleDescription) extension.Parent, ref curPos, tnode.Condition, false, addedNodes);
 		}
 
-		void LoadExtensionElement (TreeNode tnode, string addin, ExtensionNodeDescriptionCollection extension, ModuleDescription module, ref int curPos, BaseCondition parentCondition, bool inComplextCondition, List<TreeNode> addedNodes)
+		void LoadExtensionElement (ExtensionContextTransaction transaction, TreeNode parentNode, string addin, ExtensionNodeDescriptionCollection extension, ModuleDescription module, ref int curPos, BaseCondition parentCondition, bool inComplextCondition, List<TreeNode> addedNodes)
 		{
 			foreach (ExtensionNodeDescription elem in extension) {
-					
+
 				if (inComplextCondition) {
 					parentCondition = ReadComplexCondition (elem, parentCondition);
 					inComplextCondition = false;
@@ -76,78 +75,76 @@ namespace Mono.Addins
 				}
 
 				if (elem.NodeName == "ComplexCondition") {
-					LoadExtensionElement (tnode, addin, elem.ChildNodes, module, ref curPos, parentCondition, true, addedNodes);
-					continue;
-				}
-					
-				if (elem.NodeName == "Condition") {
-					Condition cond = new Condition (AddinEngine, elem, parentCondition);
-					LoadExtensionElement (tnode, addin, elem.ChildNodes, module, ref curPos, cond, false, addedNodes);
+					LoadExtensionElement (transaction, parentNode, addin, elem.ChildNodes, module, ref curPos, parentCondition, true, addedNodes);
 					continue;
 				}
 
-				var pnode = tnode;
+				if (elem.NodeName == "Condition") {
+					Condition cond = new Condition (AddinEngine, elem, parentCondition);
+					LoadExtensionElement (transaction, parentNode, addin, elem.ChildNodes, module, ref curPos, cond, false, addedNodes);
+					continue;
+				}
+
+				var pnode = parentNode;
 				ExtensionPoint extensionPoint = null;
 				while (pnode != null && (extensionPoint = pnode.ExtensionPoint) == null)
 					pnode = pnode.Parent;
-					
+
 				string after = elem.GetAttribute ("insertafter");
 				if (after.Length == 0 && extensionPoint != null && curPos == -1)
 					after = extensionPoint.DefaultInsertAfter;
 				if (after.Length > 0) {
-					int i = tnode.Children.IndexOfNode (after);
+					int i = parentNode.IndexOfChild (after);
 					if (i != -1)
-						curPos = i+1;
+						curPos = i + 1;
 				}
 				string before = elem.GetAttribute ("insertbefore");
 				if (before.Length == 0 && extensionPoint != null && curPos == -1)
 					before = extensionPoint.DefaultInsertBefore;
 				if (before.Length > 0) {
-					int i = tnode.Children.IndexOfNode (before);
+					int i = parentNode.IndexOfChild (before);
 					if (i != -1)
 						curPos = i;
 				}
 
 				// If node position is not explicitly set, add the node at the end
 				if (curPos == -1)
-					curPos = tnode.Children.Count;
-				
+					curPos = parentNode.Children.Count;
+
 				// Find the type of the node in this extension
-				ExtensionNodeType ntype = addinEngine.FindType (tnode.ExtensionNodeSet, elem.NodeName, addin);
-				
+				ExtensionNodeType ntype = addinEngine.FindType (transaction, parentNode.ExtensionNodeSet, elem.NodeName, addin);
+
 				if (ntype == null) {
-					addinEngine.ReportError ("Node '" + elem.NodeName + "' not allowed in extension: " + tnode.GetPath (), addin, null, false);
+					addinEngine.ReportError ("Node '" + elem.NodeName + "' not allowed in extension: " + parentNode.GetPath (), addin, null, false);
 					continue;
 				}
-				
+
 				string id = elem.GetAttribute ("id");
 				if (id.Length == 0)
 					id = AutoIdPrefix + (++internalId);
 
-				TreeNode cnode = new TreeNode (addinEngine, id);
-				
-				ExtensionNode enode = ReadNode (cnode, addin, ntype, elem, module);
+				TreeNode childNode = new TreeNode (addinEngine, id);
+
+				ExtensionNode enode = ReadNode (childNode, addin, ntype, elem, module, transaction);
 				if (enode == null)
 					continue;
 
-				cnode.Condition = parentCondition;
-				cnode.ExtensionNodeSet = ntype;
-				tnode.InsertChildNode (curPos, cnode);
-				addedNodes.Add (cnode);
-				
-				if (cnode.Condition != null)
-					Context.RegisterNodeCondition (cnode, cnode.Condition);
+				// Enables bulk update of children
+				parentNode.BeginChildrenUpdateTransaction (transaction);
+
+				childNode.Condition = parentCondition;
+				childNode.ExtensionNodeSet = ntype;
+				parentNode.InsertChild (transaction, curPos, childNode);
+				addedNodes.Add (childNode);
 
 				// Load children
 				if (elem.ChildNodes.Count > 0) {
 					int cp = 0;
-					LoadExtensionElement (cnode, addin, elem.ChildNodes, module, ref cp, parentCondition, false, addedNodes);
+					LoadExtensionElement (transaction, childNode, addin, elem.ChildNodes, module, ref cp, parentCondition, false, addedNodes);
 				}
 				
 				curPos++;
 			}
-			if (Context.FireEvents)
-				tnode.NotifyChildrenChanged ();
 		}
 		
 		BaseCondition ReadComplexCondition (ExtensionNodeDescription elem, BaseCondition parentCondition)
@@ -176,11 +173,11 @@ namespace Mono.Addins
 			return new NullCondition ();
 		}
 		
-		public ExtensionNode ReadNode (TreeNode tnode, string addin, ExtensionNodeType ntype, ExtensionNodeDescription elem, ModuleDescription module)
+		public ExtensionNode ReadNode (TreeNode tnode, string addin, ExtensionNodeType ntype, ExtensionNodeDescription elem, ModuleDescription module, ExtensionContextTransaction transaction)
 		{
 			try {
 				if (ntype.Type == null) {
-					if (!InitializeNodeType (ntype))
+					if (!InitializeNodeType (ntype, transaction))
 						return null;
 				}
 
@@ -202,19 +199,18 @@ namespace Mono.Addins
 			}
 		}
 		
-		bool InitializeNodeType (ExtensionNodeType ntype)
+		bool InitializeNodeType (ExtensionNodeType ntype, ExtensionContextTransaction transaction)
 		{
-			RuntimeAddin p = addinEngine.GetAddin (ntype.AddinId);
-			if (p == null) {
-				if (!addinEngine.IsAddinLoaded (ntype.AddinId)) {
-					if (!addinEngine.LoadAddin (null, ntype.AddinId, false))
-						return false;
-					p = addinEngine.GetAddin (ntype.AddinId);
-					if (p == null) {
-						addinEngine.ReportError ("Add-in not found", ntype.AddinId, null, false);
-						return false;
-					}
+			RuntimeAddin p = addinEngine.GetAddin(transaction.GetAddinEngineTransaction(), ntype.AddinId);
+			if (p == null)
+			{
+				var engineTransaction = transaction.GetOrCreateAddinEngineTransaction();
+				if (!addinEngine.LoadAddin(engineTransaction, null, ntype.AddinId, false))
+				{
+					addinEngine.ReportError("Add-in not found", ntype.AddinId, null, false);
+					return false;
 				}
+				p = addinEngine.GetAddin(engineTransaction, ntype.AddinId);
 			}
 			
 			// If no type name is provided, use TypeExtensionNode by default

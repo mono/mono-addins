@@ -36,7 +36,7 @@ namespace Mono.Addins
 	/// <summary>
 	/// A list of extension nodes.
 	/// </summary>
-	public class ExtensionNodeList: IEnumerable
+	public class ExtensionNodeList: IEnumerable, IEnumerable<ExtensionNode>
 	{
 		internal List<ExtensionNode> list;
 		
@@ -55,10 +55,7 @@ namespace Mono.Addins
 		/// </param>
 		public ExtensionNode this [int n] {
 			get {
-				if (list == null)
-					throw new System.IndexOutOfRangeException ();
-				else
-					return (ExtensionNode) list [n];
+				return (ExtensionNode) list [n];
 			}
 		}
 		
@@ -70,14 +67,10 @@ namespace Mono.Addins
 		/// </param>
 		public ExtensionNode this [string id] {
 			get {
-				if (list == null)
-					return null;
-				else {
-					for (int n = list.Count - 1; n >= 0; n--)
-						if (((ExtensionNode) list [n]).Id == id)
-							return (ExtensionNode) list [n];
-					return null;
-				}
+				for (int n = list.Count - 1; n >= 0; n--)
+					if (list [n].Id == id)
+						return list [n];
+				return null;
 			}
 		}
 
@@ -86,8 +79,6 @@ namespace Mono.Addins
 		/// </summary>
 		public IEnumerator GetEnumerator () 
 		{
-			if (list == null)
-				return ((IList)Type.EmptyTypes).GetEnumerator ();
 			return list.GetEnumerator ();
 		}
 		
@@ -95,7 +86,7 @@ namespace Mono.Addins
 		/// Number of nodes of the collection.
 		/// </summary>
 		public int Count {
-			get { return list == null ? 0 : list.Count; }
+			get { return list.Count; }
 		}
 
 		/// <summary>
@@ -109,8 +100,12 @@ namespace Mono.Addins
 		/// </param>
 		public void CopyTo (ExtensionNode[] array, int index)
 		{
-			if (list != null)
-				list.CopyTo (array, index);
+			list.CopyTo (array, index);
+		}
+
+		IEnumerator<ExtensionNode> IEnumerable<ExtensionNode>.GetEnumerator ()
+		{
+			return list.GetEnumerator ();
 		}
 	}
 

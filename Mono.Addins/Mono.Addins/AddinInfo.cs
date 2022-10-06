@@ -32,6 +32,8 @@ using System.Collections;
 using System.Xml;
 using System.Xml.Serialization;
 using Mono.Addins.Description;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Mono.Addins
 {
@@ -49,14 +51,14 @@ namespace Mono.Addins
 		string category = "";
 		bool defaultEnabled = true;
 		bool isroot;
-		DependencyCollection dependencies;
-		DependencyCollection optionalDependencies;
+		ImmutableArray<Dependency> dependencies;
+		ImmutableArray<Dependency> optionalDependencies;
 		AddinPropertyCollection properties;
 		
 		private AddinInfo ()
 		{
-			dependencies = new DependencyCollection ();
-			optionalDependencies = new DependencyCollection ();
+			dependencies = ImmutableArray<Dependency>.Empty;
+			optionalDependencies = ImmutableArray<Dependency>.Empty;
 		}
 		
 		public string Id {
@@ -65,17 +67,14 @@ namespace Mono.Addins
 		
 		public string LocalId {
 			get { return id; }
-			set { id = value; }
 		}
 		
 		public string Namespace {
 			get { return namspace; }
-			set { namspace = value; }
 		}
 		
 		public bool IsRoot {
 			get { return isroot; }
-			set { isroot = value; }
 		}
 		
 		public string Name {
@@ -90,17 +89,14 @@ namespace Mono.Addins
 					sid = sid.Substring (2);
 				return Addin.GetFullId (namspace, sid, null); 
 			}
-			set { name = value; }
 		}
 		
 		public string Version {
 			get { return version; }
-			set { version = value; }
 		}
 		
 		public string BaseVersion {
 			get { return baseVersion; }
-			set { baseVersion = value; }
 		}
 		
 		public string Author {
@@ -110,7 +106,6 @@ namespace Mono.Addins
 					return s;
 				return author;
 			}
-			set { author = value; }
 		}
 		
 		public string Copyright {
@@ -120,7 +115,6 @@ namespace Mono.Addins
 					return s;
 				return copyright;
 			}
-			set { copyright = value; }
 		}
 		
 		public string Url {
@@ -130,7 +124,6 @@ namespace Mono.Addins
 					return s;
 				return url;
 			}
-			set { url = value; }
 		}
 		
 		public string Description {
@@ -140,7 +133,6 @@ namespace Mono.Addins
 					return s;
 				return description;
 			}
-			set { description = value; }
 		}
 		
 		public string Category {
@@ -150,19 +142,17 @@ namespace Mono.Addins
 					return s;
 				return category;
 			}
-			set { category = value; }
 		}
 		
 		public bool EnabledByDefault {
 			get { return defaultEnabled; }
-			set { defaultEnabled = value; }
 		}
 		
-		public DependencyCollection Dependencies {
+		public ImmutableArray<Dependency> Dependencies {
 			get { return dependencies; }
 		}
 		
-		public DependencyCollection OptionalDependencies {
+		public ImmutableArray<Dependency> OptionalDependencies {
 			get { return optionalDependencies; }
 		}
 		
@@ -185,14 +175,9 @@ namespace Mono.Addins
 			info.baseVersion = description.CompatVersion;
 			info.isroot = description.IsRoot;
 			info.defaultEnabled = description.EnabledByDefault;
-			
-			foreach (Dependency dep in description.MainModule.Dependencies)
-				info.Dependencies.Add (dep);
-				
-			foreach (ModuleDescription mod in description.OptionalModules) {
-				foreach (Dependency dep in mod.Dependencies)
-					info.OptionalDependencies.Add (dep);
-			}
+
+			info.dependencies = ImmutableArray<Dependency>.Empty.AddRange (description.MainModule.Dependencies);
+			info.optionalDependencies = ImmutableArray<Dependency>.Empty.AddRange (description.OptionalModules.SelectMany(module => module.Dependencies));
 			info.properties = description.Properties;
 			
 			return info;

@@ -155,7 +155,8 @@ namespace Mono.Addins
 		/// </summary>
 		public static void Shutdown ()
 		{
-			AddinEngine.Shutdown ();
+			sessionService?.Shutdown ();
+			sessionService = null;
 		}
 		
 		/// <summary>
@@ -688,7 +689,7 @@ namespace Mono.Addins
 			AddinEngine.CheckInitialized ();
 			return AddinEngine.GetExtensionObjects<T> (path, reuseCachedInstance);
 		}
-		
+
 		/// <summary>
 		/// Extension change event.
 		/// </summary>
@@ -698,6 +699,9 @@ namespace Mono.Addins
 		/// it does not provide information about what changed. Hosts subscribing to
 		/// this event should get the new list of nodes using a query method such as
 		/// AddinManager.GetExtensionNodes() and then update whatever needs to be updated.
+		/// 
+		/// Threading information: the thread on which the event is raised is undefined.
+		/// Events in this class are guaranteed to be raised sequentially, never concurrently.
 		/// </remarks>
 		public static event ExtensionEventHandler ExtensionChanged {
 			add { AddinEngine.CheckInitialized(); AddinEngine.ExtensionChanged += value; }
@@ -720,6 +724,9 @@ namespace Mono.Addins
 		/// (Add or Remove) and the extension node added or removed.
 		/// 
 		/// NOTE: The handler will be called for all nodes existing in the path at the moment of registration.
+		/// 
+		/// Threading information: the thread on which the handler is executed is undefined.
+		/// Handlers and events are guaranteed to be executed sequentially, never concurrently.
 		/// </remarks>
 		public static void AddExtensionNodeHandler (string path, ExtensionNodeEventHandler handler)
 		{
@@ -761,6 +768,9 @@ namespace Mono.Addins
 		/// (Add or Remove) and the extension node added or removed.
 		/// 
 		/// NOTE: The handler will be called for all nodes existing in the path at the moment of registration.
+		/// 
+		/// Threading information: the thread on which the handler is executed is undefined.
+		/// Handlers and events are guaranteed to be executed sequentially, never concurrently.
 		/// </remarks>
 		public static void AddExtensionNodeHandler (Type instanceType, ExtensionNodeEventHandler handler)
 		{
@@ -782,35 +792,44 @@ namespace Mono.Addins
 			AddinEngine.CheckInitialized ();
 			AddinEngine.RemoveExtensionNodeHandler (instanceType, handler);
 		}
-		
+
 		/// <summary>
 		/// Add-in loading error event.
 		/// </summary>
 		/// <remarks>
 		/// This event is fired when there is an error when loading the extension
 		/// of an add-in, or any other kind of error that may happen when querying extension points.
+		/// 
+		/// Threading information: the thread on which the event is raised is undefined.
+		/// Events in this class are guaranteed to be raised sequentially, never concurrently.
 		/// </remarks>
 		public static event AddinErrorEventHandler AddinLoadError {
 			add { AddinEngine.AddinLoadError += value; }
 			remove { AddinEngine.AddinLoadError -= value; }
 		}
-		
+
 		/// <summary>
 		/// Add-in loaded event.
 		/// </summary>
 		/// <remarks>
 		/// Fired after loading an add-in in memory.
+		/// 
+		/// Threading information: the thread on which the event is raised is undefined.
+		/// Events in this class are guaranteed to be raised sequentially, never concurrently.
 		/// </remarks>
 		public static event AddinEventHandler AddinLoaded {
 			add { AddinEngine.AddinLoaded += value; }
 			remove { AddinEngine.AddinLoaded -= value; }
 		}
-		
+
 		/// <summary>
 		/// Add-in unload event.
 		/// </summary>
 		/// <remarks>
 		/// Fired when an add-in is unloaded from memory. It may happen an add-in is disabled or uninstalled.
+		/// 
+		/// Threading information: the thread on which the event is raised is undefined.
+		/// Events in this class are guaranteed to be raised sequentially, never concurrently.
 		/// </remarks>
 		public static event AddinEventHandler AddinUnloaded {
 			add { AddinEngine.AddinUnloaded += value; }
@@ -822,6 +841,9 @@ namespace Mono.Addins
 		/// </summary>
 		/// <remarks>
 		/// Fired when the add-in assemblies are loaded.
+		/// 
+		/// Threading information: the thread on which the event is raised is undefined.
+		/// Events in this class are guaranteed to be raised sequentially, never concurrently.
 		/// </remarks>
 		public static event AddinEventHandler AddinAssembliesLoaded {
 			add { AddinEngine.AddinAssembliesLoaded += value; }
