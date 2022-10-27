@@ -65,6 +65,33 @@
 		<Node id="n4" type="test" />
 	</Extension>
 	
+	<Extension path="/SimpleApp/ItemTree">
+		<ItemSet label="i1">
+			<Item />
+			<ItemSet label="i2">
+				<Item />
+				<ItemSet label="i1">
+					<Item />
+					<ItemSet label="i2">
+						<Item />
+						<ItemSet label="i1">
+							<Item />
+							<ItemSet label="i2">
+								<Item />
+								<ItemSet label="i1">
+									<Item />
+									<ItemSet label="i2">
+										<Item />
+									</ItemSet>
+								</ItemSet>
+							</ItemSet>
+						</ItemSet>
+					</ItemSet>
+				</ItemSet>
+			</ItemSet>
+		</ItemSet>
+	</Extension>
+	
 	<Module>
 		<Dependencies>
 			<Addin id="SystemInfoExtension" version="0.1.0" />

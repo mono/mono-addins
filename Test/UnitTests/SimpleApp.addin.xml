@@ -48,6 +48,10 @@
 		<ExtensionNode type="UnitTests.ItemSetNode" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/SimpleApp/ItemTree">
+		<ExtensionNode type="UnitTests.ItemSetNode" />
+	</ExtensionPoint>
+
 	<ExtensionPoint path = "/SimpleApp/NodeWithChildren">
 		<ExtensionNode name="Node">
 			<ExtensionNode name="Child" />

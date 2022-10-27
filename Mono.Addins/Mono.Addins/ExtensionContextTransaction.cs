@@ -165,7 +165,9 @@ namespace Mono.Addins
 			{
 				foreach (var node in childrenChanged)
 				{
-					if (node.NotifyChildrenChanged())
+					// It may happen that a node is removed while updating its parent. In this case the parent
+					// will be set to null, and then there is no need to notify changes
+					if (node.Parent != null && node.NotifyChildrenChanged())
 						NotifyExtensionsChangedEvent(node.GetPath());
 				}
 			}

@@ -7,6 +7,7 @@ using SimpleApp;
 using System.Threading;
 using System.Diagnostics;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace UnitTests
 {
@@ -62,6 +63,7 @@ namespace UnitTests
 
 			testData.StartThreads ((index, data) => {
 				while (!data.Stopped) {
+					LoadAll(AddinManager.GetExtensionNodes<ItemSetNode>("/SimpleApp/ItemTree"));
 					var writers = AddinManager.GetExtensionObjects<IWriter> ("/SimpleApp/Writers");
 					testData.Counters [index] = writers.Length;
 				}
@@ -85,6 +87,12 @@ namespace UnitTests
 				ainfo1.Enabled = true;
 				ainfo2.Enabled = true;
 			}
+		}
+
+		void LoadAll(IEnumerable<ExtensionNode> nodes)
+		{
+			foreach (var n in nodes.OfType<ItemSetNode>())
+				LoadAll(n.GetChildNodes());
 		}
 
 		[Test]
