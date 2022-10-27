@@ -453,6 +453,7 @@ namespace UnitTests
 			}
 			finally
 			{
+				AddinManager.RemoveExtensionNodeHandler("/SimpleApp/Writers", OnExtensionChange2);
 				AddinManager.AddinLoadError -= AddinManager_AddinLoadError;
 				AddinManager.Registry.EnableAddin("SimpleApp.FileContentExtension,0.1.0");
 			}
