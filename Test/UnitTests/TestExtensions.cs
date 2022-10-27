@@ -247,5 +247,12 @@ namespace UnitTests
 			Assert.AreEqual ("n3", ids[6]);
 			Assert.AreEqual ("n4", ids[7]);
 		}
+
+		[Test]
+		public void TreeNodeHasAddin()
+		{
+			var node = AddinManager.GetExtensionNode("/SimpleApp/DefaultInsertBefore");
+			Assert.IsNotNull(node.Addin);
+		}
 	}
 }

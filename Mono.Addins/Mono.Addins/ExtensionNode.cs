@@ -158,7 +158,7 @@ namespace Mono.Addins
 			get {
 				if (addin == null && addinId != null) {
 					addin = addinEngine.GetOrLoadAddin(addinId, true);
-					if (addin != null)
+					if (addin != null && module != null)
 						addin = addin.GetModule (module);
 				}
 				if (addin == null)
@@ -179,7 +179,7 @@ namespace Mono.Addins
 		public event ExtensionNodeEventHandler ExtensionNodeChanged {
 			add
 			{
-				ExtensionContext.InvokeCallback(() =>
+				addinEngine.InvokeCallback(() =>
 				{
 					// The invocation here needs to be done right to make sure there are no duplicate or missing events.
 
@@ -208,7 +208,7 @@ namespace Mono.Addins
 				}, this);
 			}
 			remove {
-				ExtensionContext.InvokeCallback(() =>
+				addinEngine.InvokeCallback(() =>
 				{
 					// This is done inside a InvokeCallback call for simetry with the 'add' block. Since the 'add'
 					// block runs on a callback that can be queued, doing the same here ensures that the unsubscription
@@ -564,20 +564,20 @@ namespace Mono.Addins
 					var node = change.Node;
 					if (change.Added)
 					{
-						ExtensionContext.InvokeCallback(() =>
+						addinEngine.InvokeCallback(() =>
 						{
 							OnChildNodeAdded(node);
 						}, this);
 					}
 					else
 					{
-						ExtensionContext.InvokeCallback(() =>
+						addinEngine.InvokeCallback(() =>
 						{
 							OnChildNodeRemoved(node);
 						}, this);
 					}
 				}
-				ExtensionContext.InvokeCallback(OnChildrenChanged, this);
+				addinEngine.InvokeCallback(OnChildrenChanged, this);
 				return true;
 			} else
 				return false;
@@ -585,12 +585,12 @@ namespace Mono.Addins
 
 		internal void NotifyAddinLoaded()
 		{
-			ExtensionContext.InvokeCallback(OnAddinLoaded, this);
+			addinEngine.InvokeCallback(OnAddinLoaded, this);
 		}
 
 		internal void NotifyAddinUnloaded()
 		{
-			ExtensionContext.InvokeCallback(OnAddinUnloaded, this);
+			addinEngine.InvokeCallback(OnAddinUnloaded, this);
 		}
 
 		/// <summary>
