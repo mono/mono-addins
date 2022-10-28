@@ -58,7 +58,9 @@ namespace Mono.Addins
 		string startupDirectory;
 		AddinRegistry registry;
 		IAddinInstaller installer;
-		
+
+		NotificationQueue notificationQueue;
+
 		bool checkAssemblyLoadConflicts;
 
 		// This collection is only used during a transaction, so it doesn't need to be immutable
@@ -117,9 +119,10 @@ namespace Mono.Addins
 		/// </summary>
 		public AddinEngine ()
 		{
+			notificationQueue = new NotificationQueue(this);
 		}
 
-        internal override ExtensionContextSnapshot CreateSnapshot ()
+		internal override ExtensionContextSnapshot CreateSnapshot ()
         {
 			return new AddinEngineSnapshot();
 		}
@@ -979,6 +982,11 @@ namespace Mono.Addins
 					AddinAssembliesLoaded?.Invoke(this, new AddinEventArgs(id));
 				},null);
 			}
+		}
+
+		internal void InvokeCallback(Action action, object source)
+		{
+			notificationQueue.Invoke(action, source);
 		}
 	}
 }

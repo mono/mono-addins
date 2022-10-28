@@ -55,8 +55,6 @@ namespace Mono.Addins
 		ExtensionContext parentContext;
 		ExtensionTree tree;
 
-		NotificationQueue notificationQueue;
-
 		// runTimeEnabledAddins and runTimeDisabledAddins are modified only within a transaction,
 		// so they don't need to be immutable and don't need to be in the snapshot
 		HashSet<string> runTimeEnabledAddins = new HashSet<string>();
@@ -99,7 +97,6 @@ namespace Mono.Addins
 		
 		internal void Initialize (AddinEngine addinEngine)
 		{
-			notificationQueue = new NotificationQueue(addinEngine);
 			SetSnapshot(CreateSnapshot());
 			tree = new ExtensionTree (addinEngine, this);
 		}
@@ -123,11 +120,6 @@ namespace Mono.Addins
 		}
 #pragma warning restore 1591
 
-		internal void InvokeCallback(Action action, object source)
-		{
-			notificationQueue.Invoke(action, source);
-		}
-		
 		internal void ClearContext ()
 		{
 			SetSnapshot(CreateSnapshot());
@@ -863,7 +855,7 @@ namespace Mono.Addins
 		{
 			if (ExtensionChanged != null)
 			{
-				notificationQueue.Invoke(() =>
+				AddinEngine.InvokeCallback(() =>
 				{
 					ExtensionChanged?.Invoke(this, args);
 				}, null);

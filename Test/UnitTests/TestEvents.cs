@@ -439,5 +439,45 @@ namespace UnitTests
 		{
 			counters[0].Update (args);
 		}
-	}
+
+		[Test()]
+		public void TestUnloadedNode()
+		{
+			try
+			{
+                AddinManager.AddinLoadError += AddinManager_AddinLoadError;
+				Assert.AreEqual(4, AddinManager.GetExtensionNodes("/SimpleApp/Writers").Count, "count 1");
+				AddinManager.AddExtensionNodeHandler("/SimpleApp/Writers", OnExtensionChange2);
+				AddinManager.Registry.DisableAddin("SimpleApp.FileContentExtension,0.1.0");
+				Assert.AreEqual(3, AddinManager.GetExtensionNodes("/SimpleApp/Writers").Count, "count 2");
+			}
+			finally
+			{
+				AddinManager.RemoveExtensionNodeHandler("/SimpleApp/Writers", OnExtensionChange2);
+				AddinManager.AddinLoadError -= AddinManager_AddinLoadError;
+				AddinManager.Registry.EnableAddin("SimpleApp.FileContentExtension,0.1.0");
+			}
+		}
+
+        private void AddinManager_AddinLoadError (object sender, AddinErrorEventArgs args)
+        {
+			throw new Exception(args.Message);
+        }
+
+        void OnExtensionChange2(object s, ExtensionNodeEventArgs args)
+		{
+			if (args.Change == ExtensionChange.Add)
+			{
+				args.ExtensionNode.ExtensionNodeChanged += ExtensionNode_ExtensionNodeChanged;
+			}
+			else
+			{
+				args.ExtensionNode.ExtensionNodeChanged -= ExtensionNode_ExtensionNodeChanged;
+			}
+		}
+
+        private void ExtensionNode_ExtensionNodeChanged (object sender, ExtensionNodeEventArgs args)
+        {
+        }
+    }
 }
