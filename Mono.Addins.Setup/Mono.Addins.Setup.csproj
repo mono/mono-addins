@@ -11,32 +11,10 @@
     <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
     <PackageId>Mono.Addins.Setup</PackageId>
     <Description>Mono.Addins is a framework for creating extensible applications, and for creating add-ins which extend applications. Mono.Addins.Setup provides an API for managing add-ins, creating add-in packages and publishing add-ins in on-line repositories.</Description>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <DocumentationFile>..\bin\$(TargetFramework)\Mono.Addins.Setup.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\bin</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <ConsolePause>False</ConsolePause>
-    <NoWarn>1574;1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>True</Optimize>
-    <OutputPath>..\bin</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <ConsolePause>False</ConsolePause>
-    <DebugSymbols>true</DebugSymbols>
+    <DebugType>embedded</DebugType>
     <NoWarn>1574;1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
