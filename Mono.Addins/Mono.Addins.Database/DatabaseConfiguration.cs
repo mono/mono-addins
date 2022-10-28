@@ -77,11 +77,12 @@ namespace Mono.Addins.Database
 				return copy;
 			}
 
-			public AddinStatus AsUninstalled ()
+			public AddinStatus AsUninstalled (ImmutableArray<string> oldAddinFiles)
 			{
 				var copy = Copy ();
 				copy.ConfigEnabled = false;
 				copy.Uninstalled = true;
+				copy.Files = oldAddinFiles;
 				return copy;
 			}
 
@@ -140,7 +141,7 @@ namespace Mono.Addins.Database
 			if (!addinStatus.TryGetValue (addinId, out s))
 				s = new AddinStatus (addinId);
 			
-			s = s.AsUninstalled ();
+			s = s.AsUninstalled (ImmutableArray<string>.Empty.AddRange(files));
 			addinStatus = addinStatus.SetItem (addinId, s);
 		}
 
