@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\TargetFrameworks.props" />
   <Import Project="..\Version.props" />
   <PropertyGroup>
-    <ProjectGuid>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.Addins.Setup</AssemblyName>
     <RootNamespace>Mono.Addins.Setup</RootNamespace>
@@ -11,11 +9,13 @@
     <AssemblyOriginatorKeyFile>..\mono-addins.snk</AssemblyOriginatorKeyFile>
     <PackageId>Mono.Addins.Setup</PackageId>
     <Description>Mono.Addins is a framework for creating extensible applications, and for creating add-ins which extend applications. Mono.Addins.Setup provides an API for managing add-ins, creating add-in packages and publishing add-ins in on-line repositories.</Description>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <DocumentationFile>..\bin\$(TargetFramework)\Mono.Addins.Setup.xml</DocumentationFile>
     <DebugType>embedded</DebugType>
     <NoWarn>1574;1591</NoWarn>
+    <OutputPath>..\bin</OutputPath>
+    <LangVersion>9.0</LangVersion>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="SharpZipLib" Version="1.3.3" />
