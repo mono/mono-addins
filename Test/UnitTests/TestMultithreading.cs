@@ -67,6 +67,7 @@ namespace UnitTests
 					var writers = AddinManager.GetExtensionObjects<IWriter> ("/SimpleApp/Writers");
 					testData.Counters [index] = writers.Length;
 				}
+				testData.Counters[index] = 0;
 			});
 
 			for (int n = 0; n < steps; n++) {
@@ -87,6 +88,9 @@ namespace UnitTests
 				ainfo1.Enabled = true;
 				ainfo2.Enabled = true;
 			}
+
+			testData.Stopped = true;
+			testData.CheckCounters(0, 10000);
 		}
 
 		void LoadAll(IEnumerable<ExtensionNode> nodes)
