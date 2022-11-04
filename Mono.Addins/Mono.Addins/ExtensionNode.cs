@@ -179,21 +179,47 @@ namespace Mono.Addins
 		public event ExtensionNodeEventHandler ExtensionNodeChanged {
 			add
 			{
-				addinEngine.InvokeCallback(() =>
+				ExtensionNodeList children;
+				bool frozen = false;
+
+				try
 				{
-					// The invocation here needs to be done right to make sure there are no duplicate or missing events.
+					lock (localLock)
+					{
+						// The invocation here needs to be done right to make sure there are no duplicate or missing events.
 
-					// 1) Get the list of current nodes and store it in a variable. This is the list of nodes for which
-					// notifications will initially be sent.
+						// 1) Get the list of current nodes and store it in a variable. This is the list of nodes for which
+						// notifications will initially be sent. We hold the node lock to prevent node changes during
+						// the event subscription.
 
-					var children = GetChildNodes();
+						children = GetChildNodes();
 
-					// 2) Subscribe the real event. If nodes were added or removed since the above GetChildNodes
-					// call, callback invocations will now be queued (since we are inside InvokeCallback).
+						// 2) Subscribe the real event, but do it through the notification queue. Doing it through the queue
+						// is important since then the event will be subscribed once all currently queued events are dispatched.
+						//
+						// An example: let's say a new child is added to this node, but the event queue was frozen so the
+						// Child Added event is still in the queue. Then the ExtensionNodeChanged event is subscribed for
+						// the parent. In this case the GetChildNodes() call above will contain the new child (because it
+						// has already been added), so the handler will be invoked for that node. Child Added event that's
+						// in the queue should be ignored for this handler, since it has already been raised when subscribing.
+						//
+						// To solve this problem, we do the event subscription through the event queue. In this way,
+						// the actual subscription won't be done until the current queue is flushed, so the handler will
+						// only be called for any event that was queued just after the GetChildNodes() call.
 
-					extensionNodeChanged += value;
+						// Freeze the queue here since we don't want callbacks to be invoked while holding the node lock.
 
-					// 3) Send the notifications for the events. Again, any change done after the above GetChildNodes
+						addinEngine.NotificationQueue.Freeze();
+						frozen = true;
+
+						addinEngine.NotificationQueue.Invoke(() =>
+						{
+							extensionNodeChanged += value;
+						},
+						this);
+					}
+
+					// 3) Send the notifications for the event. Again, any change done after the above GetChildNodes
 					// call will have queued a notification.
 
 					foreach (ExtensionNode node in children)
@@ -201,11 +227,17 @@ namespace Mono.Addins
 						var theNode = node;
 						value(this, new ExtensionNodeEventArgs(ExtensionChange.Add, theNode));
 					}
-
+				}
+				finally
+				{
 					// 4) We are done notifying the pre-existing nodes. If there was any further change in the children
-					// list, the corresponding events will be raised after this callback ends.
+					// list, the corresponding events will be raised after unfreezing.
 
-				}, this);
+					if (frozen)
+					{
+						addinEngine.NotificationQueue.Unfreeze();
+					}
+				}
 			}
 			remove {
 				addinEngine.InvokeCallback(() =>

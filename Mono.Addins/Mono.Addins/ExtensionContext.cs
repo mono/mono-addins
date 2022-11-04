@@ -1365,25 +1365,26 @@ namespace Mono.Addins
 	}
 
 	/// <summary>
-	/// A queue that can be used to dispatch callbacks sequentially
+	/// A queue that can be used to dispatch callbacks sequentially.
 	/// </summary>
 	class NotificationQueue
 	{
         readonly AddinEngine addinEngine;
-        readonly Queue<(Action Action,object Source)> notificationQueue = new Queue<(Action,object)>();
+        readonly Queue<(Action Action, object Source)> notificationQueue = new Queue<(Action, object)>();
 
 		bool sending;
+		int frozenCount;
 
 		public NotificationQueue(AddinEngine addinEngine)
 		{
             this.addinEngine = addinEngine;
         }
 
-		internal void Invoke(Action action, object source)
+		public void Invoke(Action action, object source)
 		{
 			lock (notificationQueue)
 			{
-				if (sending)
+				if (sending || frozenCount > 0)
 				{
 					// Already sending, enqueue the action so whoever is sending will take it
 					notificationQueue.Enqueue((action,source));
@@ -1397,21 +1398,53 @@ namespace Mono.Addins
 			}
 
 			SafeInvoke(action, source);
+			DispatchPendingCallbacks();
+		}
 
+		void DispatchPendingCallbacks()
+		{
 			do
 			{
+				Action action;
+				object source;
+
 				lock (notificationQueue)
 				{
-					if (notificationQueue.Count == 0)
+					if (notificationQueue.Count == 0 || frozenCount > 0)
 					{
 						sending = false;
 						return;
 					}
-					(action,source) = notificationQueue.Dequeue();
+
+					(action, source) = notificationQueue.Dequeue();
 				}
 				SafeInvoke(action, source);
 			}
 			while (true);
+		}
+
+		public void Freeze()
+		{
+			lock (notificationQueue)
+			{
+				frozenCount++;
+			}
+		}
+
+		public void Unfreeze()
+		{
+			bool dispatch = false;
+
+			lock (notificationQueue)
+			{
+				if (--frozenCount == 0 && !sending)
+				{
+					dispatch = true;
+					sending = true;
+				}
+			}
+			if (dispatch)
+				DispatchPendingCallbacks();
 		}
 
 		void SafeInvoke(Action action, object source)

@@ -988,5 +988,7 @@ namespace Mono.Addins
 		{
 			notificationQueue.Invoke(action, source);
 		}
+
+		internal NotificationQueue NotificationQueue => notificationQueue;
 	}
 }
