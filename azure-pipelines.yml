@@ -6,6 +6,8 @@ variables:
   value: Debug
 - name: TeamName
   value: Mono.Addins
+- name: Codeql.Enabled
+  value: true
 
 steps:
 
