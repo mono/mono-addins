@@ -164,7 +164,7 @@ namespace UnitTests
 			});
 
 			// Wait for the threads to do the work. 5 seconds should be enough
-			enablers.CheckCounters(1, 20000);
+			enablers.CheckCounters(1, 100000);
 
 			// Go back to the initial status
 

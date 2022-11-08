@@ -2,9 +2,9 @@
     "instanceUrl": "https://devdiv.visualstudio.com/",
     "template": "TFSDEVDIV",
     "projectName": "DEVDIV",
-    "areaPath": "DevDiv\\mono",
+    "areaPath": "DevDiv\\VS for Mac\\IDE Platform\\Extensibility",
     "iterationPath": "DevDiv",
-    "notificationAliases": [ "runtimerepo-infra@microsoft.com" ],
+    "notificationAliases": [ "vsmac-prod@microsoft.com", "llsan@microsoft.com" ],
     "repositoryName": "mono-addins",
     "codebaseName": "mono-addins"
 }
