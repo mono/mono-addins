@@ -20,4 +20,4 @@ Open Mono.Addins.sln and build.
 
 ## Documentation
 
-Extensive documentation is available in this project's [wiki](https://github.com/mono/mono-addins/wiki).
+Extensive documentation is available in this project's [wiki](https://github.com/mono/mono-addins/wiki). 
