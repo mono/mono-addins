@@ -338,13 +338,13 @@ namespace Mono.Addins
 		public void Shutdown ()
 		{
 			lock (LocalLock) {
-				initialized = false;
 				AppDomain.CurrentDomain.AssemblyLoad -= new AssemblyLoadEventHandler (OnAssemblyLoaded);
 				AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainAssemblyResolve;
 				registry.Dispose ();
 				registry = null;
 				startupDirectory = null;
 				ClearContext ();
+				initialized = false;
 			}
 		}
 		
