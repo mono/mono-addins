@@ -13,6 +13,8 @@ jobs:
     value: true
   - name: Codeql.TSAEnabled
     value: true
+  - name: System.Debug
+    value: true
 
   steps:
 
@@ -27,6 +29,7 @@ jobs:
     displayName: 'Install Signing Plugin'
     inputs:
       signType: 'Real'
+      version: '1.1.744'
       azureSubscription: 'MicroBuild Signing Task (DevDiv)'
     env:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
