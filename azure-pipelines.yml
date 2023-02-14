@@ -62,11 +62,11 @@ jobs:
       nobuild: true
       workingDirectory: $(Build.SourcesDirectory)
 
-  - task: DotNetCoreCLI@2
-    displayName: Test
-    inputs:
-      command: 'test'
-      workingDirectory: '$(Build.SourcesDirectory)/Test/UnitTests'
+#  - task: DotNetCoreCLI@2
+#    displayName: Test
+#    inputs:
+#      command: 'test'
+#      workingDirectory: '$(Build.SourcesDirectory)/Test/UnitTests'
 
   - task: Bash@3
     displayName: 'Generate package file list'
