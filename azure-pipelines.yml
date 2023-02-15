@@ -19,12 +19,7 @@ jobs:
 
   steps:
 
-  #- task: Bash@3
-  #  displayName: Provision
-  #  inputs:
-  #    targetType: 'inline'
-  #    script: '$(Build.SourcesDirectory)/bot-provisioning/provisionator-bootstrap.sh $(Build.SourcesDirectory)/bot-provisioning/dependencies.csx'
-  #    workingDirectory: '$(Build.SourcesDirectory)'
+  - task: CodeQL3000Init@0
 
   - task: MicroBuildSigningPlugin@3
     displayName: 'Install Signing Plugin'
@@ -102,3 +97,4 @@ jobs:
       PathtoPublish: '$(build.artifactstagingdirectory)'
     condition: succeededOrFailed()
 
+  - task: CodeQL3000Finalize@0
