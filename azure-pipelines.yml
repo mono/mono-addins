@@ -19,13 +19,6 @@ jobs:
 
   steps:
 
-  #- task: Bash@3
-  #  displayName: Provision
-  #  inputs:
-  #    targetType: 'inline'
-  #    script: '$(Build.SourcesDirectory)/bot-provisioning/provisionator-bootstrap.sh $(Build.SourcesDirectory)/bot-provisioning/dependencies.csx'
-  #    workingDirectory: '$(Build.SourcesDirectory)'
-
   - task: MicroBuildSigningPlugin@3
     displayName: 'Install Signing Plugin'
     inputs:
@@ -80,13 +73,13 @@ jobs:
         echo "</filelist>" >> $(build.sourcesdirectory)/bin/files.xml
       workingDirectory: '$(build.sourcesdirectory)/bin'
 
-  - task: DotNetCoreCLI@2
-    displayName: 'Sign packages'
-    timeoutInMinutes: 360
+  - task: Bash@3
+    displayName: 'Sign Packages'
     inputs:
-      command: 'custom'
-      custom: '$(MBSIGN_APPFOLDER)/ddsignfiles.dll'
-      arguments: '/filelist:$(build.sourcesdirectory)/bin/files.xml'
+      targetType: 'inline'
+      script: |
+        dotnet $(MBSIGN_APPFOLDER)/ddsignfiles.dll /filelist:$(build.sourcesdirectory)/bin/files.xml
+      workingDirectory: '$(build.sourcesdirectory)/bin'
 
   - task: CopyFiles@1
     displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
