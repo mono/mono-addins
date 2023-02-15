@@ -13,6 +13,8 @@ jobs:
     value: true
   - name: Codeql.TSAEnabled
     value: true
+  - name: Codeql.Cadence
+    value: 0
   - name: System.Debug
     value: true
 
