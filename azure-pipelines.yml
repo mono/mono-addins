@@ -10,7 +10,7 @@ jobs:
   - name: TeamName
     value: Mono.Addins
   - name: Codeql.Enabled
-    value: true
+    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
   - name: Codeql.TSAEnabled
     value: true
   - name: Codeql.Cadence
