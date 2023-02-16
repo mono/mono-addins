@@ -13,10 +13,8 @@ jobs:
     value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
   - name: Codeql.TSAEnabled
     value: true
-  - name: Codeql.Cadence
-    value: 0
-  - name: Codeql.SkipTaskAutoInjection
-    value: true
+  - name: Codeql.SkipTaskAutoInjection  # Auto injection is disabled for now, since it causes the sign process to hang.
+    value: true                         # Instead, CodeQL tasks are explicitly inserted. The finalize task is inserted before the signing task to avoid the hang.
   - name: System.Debug
     value: true
 
