@@ -21,7 +21,7 @@ jobs:
 
   steps:
 
-  - task: CodeQL3000Init@0.1.134
+  - task: CodeQL3000Init@0.1.132
 
   - task: MicroBuildSigningPlugin@3
     displayName: 'Install Signing Plugin'
@@ -99,4 +99,4 @@ jobs:
       PathtoPublish: '$(build.artifactstagingdirectory)'
     condition: succeededOrFailed()
 
-  - task: CodeQL3000Finalize@0.1.134
+  - task: CodeQL3000Finalize@0.1.132
