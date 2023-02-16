@@ -10,16 +10,20 @@ jobs:
   - name: TeamName
     value: Mono.Addins
   - name: Codeql.Enabled
-    value: true
+    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
   - name: Codeql.TSAEnabled
     value: true
   - name: Codeql.Cadence
     value: 0
+  - name: Codeql.SkipTaskAutoInjection
+    value: true
   - name: System.Debug
     value: true
 
 
   steps:
+
+  - task: CodeQL3000Init@0
 
   - task: MicroBuildSigningPlugin@3
     displayName: 'Install Signing Plugin'
@@ -63,6 +67,8 @@ jobs:
       command: 'test'
       workingDirectory: '$(Build.SourcesDirectory)/Test/UnitTests'
 
+  - task: CodeQL3000Finalize@0
+
   - task: Bash@3
     displayName: 'Generate package file list'
     inputs:
@@ -96,4 +102,3 @@ jobs:
     inputs:
       PathtoPublish: '$(build.artifactstagingdirectory)'
     condition: succeededOrFailed()
-
