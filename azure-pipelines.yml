@@ -21,7 +21,7 @@ jobs:
 
   steps:
 
-  - task: CodeQL3000Init@0.1.101
+  - task: CodeQL3000Init@0.1.102
 
   - task: MicroBuildSigningPlugin@3
     displayName: 'Install Signing Plugin'
