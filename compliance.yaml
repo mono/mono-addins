@@ -1,0 +1,73 @@
+
+resources:
+  repositories:
+  - repository: self
+    checkoutOptions:
+      submodules: false
+
+variables:
+- name: DOTNET_ROOT
+  value: /root/.dotnet
+
+jobs:
+- job: Analysis_Job
+  displayName: Analysis
+  pool: VSEngStaticAnalysis-Test
+  timeoutInMinutes: 300
+
+  steps:
+
+  - task: NodeTool@0
+    displayName: 'Use Node 6.x'
+
+  - task: PowerShell@2
+    displayName: Checkout Submodules
+    inputs:
+      targetType: 'inline'
+      script: |
+        # Enlist into all of the submodules
+        git submodule update --init --recursive
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+  - task: CredScan@3
+    displayName: Run CredScan
+    continueOnError: false
+    inputs:
+      outputFormat: pre
+
+  - task: PoliCheck@2
+    inputs:
+      inputType: 'Basic'
+      targetType: 'F'
+      targetArgument: '$(Build.SourcesDirectory)'
+      result: 'PoliCheck.xml'
+
+  - task: SdtReport@2
+    displayName: 'Create security analysis report'
+    inputs:
+      GdnExportAllTools: false
+      GdnExportGdnToolCredScan: true
+      GdnExportGdnToolPoliCheck: true
+
+  - task: TSAUpload@2
+    displayName: Upload Results to TSA
+    inputs:
+      GdnPublishTsaOnboard: true
+      GdnPublishTsaConfigFile: '$(Build.SourcesDirectory)/.config/tsaoptions.json'
+
+  - task: PostAnalysis@2
+    displayName: Run Security Post Analysis
+    inputs:
+      GdnBreakAllTools: true
+    continueOnError: true
+    condition: succeededOrFailed()
+
+  - task: PublishSecurityAnalysisLogs@3
+    displayName: Publish Code Analysis Logs
+    inputs:
+      ArtifactName: CodeAnalysisLogs
+      ArtifactType: Container
+      PublishProcessedResults: true
+      AllTools: true
+      ToolLogsNotFoundAction: Standard
