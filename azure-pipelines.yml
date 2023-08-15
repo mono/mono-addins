@@ -15,6 +15,8 @@ jobs:
     value: true
   - name: Codeql.SkipTaskAutoInjection  # Auto injection is disabled for now, since it causes the sign process to hang.
     value: true                         # Instead, CodeQL tasks are explicitly inserted. The finalize task is inserted before the signing task to avoid the hang.
+  - name: BUILDSECMON_OPT_IN
+    value: true
   - name: System.Debug
     value: true
 
