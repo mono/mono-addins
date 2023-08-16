@@ -372,7 +372,7 @@ namespace Mono.Addins.CecilReflector
 
 		bool CheckHasMonoAddinsReference (AssemblyDefinition adef)
 		{
-			// Maybe the assembly is already in the blacklist
+			// Maybe the assembly is already in the disallowed list
 			if (assembliesNotReferencingMonoAddins.Contains (adef.FullName))
 				return false;
 
