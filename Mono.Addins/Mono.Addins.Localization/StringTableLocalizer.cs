@@ -76,7 +76,7 @@ namespace Mono.Addins.Localization
 			string msg = (string) loc [id];
 			if (msg == null) {
 				if (cname.Length > 2) {
-					// Try again without the country
+					// Try again without the country/region
 					cname = cname.Substring (0, 2);
 					loc = (Hashtable) locales [cname];
 					if (loc != null) {
