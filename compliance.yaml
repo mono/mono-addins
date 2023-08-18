@@ -1,0 +1,123 @@
+
+resources:
+  repositories:
+  - repository: self
+    checkoutOptions:
+      submodules: false
+
+pr: none
+trigger: none
+
+jobs:
+- job: Build
+  timeoutInMinutes: 360
+  pool:
+    vmImage: 'macos-latest'
+
+  variables:
+  - name: BuildConfiguration
+    value: Debug
+  - name: TeamName
+    value: Mono.Addins
+  - name: Codeql.Language
+    value: csharp
+  - name: Codeql.Enabled
+    value: true
+  - name: Codeql.TSAEnabled
+    value: true
+  - name: Codeql.TSAOptionsPath
+    value: '$(Build.SourcesDirectory)/.config/tsaoptions.json'
+  - name: Codeql.SkipTaskAutoInjection
+    value: true
+  - name: System.Debug
+    value: true
+
+  steps:
+
+  - task: UseDotNet@2
+    displayName: 'Install .NET 3.1'
+    inputs:
+      packageType: 'sdk'
+      version: '3.1.413'
+
+  - task: UseDotNet@2
+    displayName: 'Install .NET 6'
+    inputs:
+      packageType: 'sdk'
+      version: '6.0.100'
+
+  - task: CodeQL3000Init@0
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build solution Mono.Addins.sln'
+    inputs:
+      command: build
+      arguments: '/p:Configuration=$(BuildConfiguration)'
+
+  - task: CodeQL3000Finalize@0
+
+- job: Analysis_Job
+  displayName: Analysis
+  pool: VSEngStaticAnalysis-Test
+  timeoutInMinutes: 300
+
+  variables:
+  - name: DOTNET_ROOT
+    value: /root/.dotnet
+
+  steps:
+
+  - task: NodeTool@0
+    displayName: 'Use Node 6.x'
+
+  - task: PowerShell@2
+    displayName: Checkout Submodules
+    inputs:
+      targetType: 'inline'
+      script: |
+        # Enlist into all of the submodules
+        git submodule update --init --recursive
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+  - task: CredScan@3
+    displayName: Run CredScan
+    continueOnError: false
+    inputs:
+      outputFormat: pre
+
+  - task: PoliCheck@2
+    inputs:
+      inputType: 'Basic'
+      targetType: 'F'
+      targetArgument: '$(Build.SourcesDirectory)'
+      result: 'PoliCheck.xml'
+
+  - task: SdtReport@2
+    displayName: 'Create security analysis report'
+    inputs:
+      GdnExportAllTools: false
+      GdnExportGdnToolCredScan: true
+      GdnExportGdnToolPoliCheck: true
+
+  - task: TSAUpload@2
+    displayName: Upload Results to TSA
+    inputs:
+      GdnPublishTsaOnboard: true
+      GdnPublishTsaConfigFile: '$(Build.SourcesDirectory)/.config/tsaoptions.json'
+
+  - task: PostAnalysis@2
+    displayName: Run Security Post Analysis
+    inputs:
+      GdnBreakAllTools: true
+    continueOnError: true
+    condition: succeededOrFailed()
+
+  - task: PublishSecurityAnalysisLogs@3
+    displayName: Publish Code Analysis Logs
+    inputs:
+      ArtifactName: CodeAnalysisLogs
+      ArtifactType: Container
+      PublishProcessedResults: true
+      AllTools: true
+      ToolLogsNotFoundAction: Standard
