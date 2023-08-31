@@ -377,6 +377,7 @@ namespace Mono.Addins.Database
 
 		public static string GetMD5 (string file)
 		{
+			// CodeQL [SM02196] Want to continue using MD5 to not break backwards compatibility
 			using (var md5 = System.Security.Cryptography.MD5.Create ()) {
 				using (var stream = File.OpenRead (file)) {
 					var bytes = md5.ComputeHash (stream);
