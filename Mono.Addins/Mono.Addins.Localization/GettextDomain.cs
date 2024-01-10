@@ -39,15 +39,22 @@ namespace Mono.Addins.Localization
 {
 	class GettextDomain
 	{
-		[DllImport("intl", CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr bindtextdomain (IntPtr domainname, IntPtr dirname);
-		[DllImport("intl", CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr bind_textdomain_codeset (IntPtr domainname, IntPtr codeset);
-		[DllImport("intl", CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr dgettext (IntPtr domainname, IntPtr instring);
-		[DllImport("intl", CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr dngettext (IntPtr domainname, IntPtr instring, IntPtr plural, int n);
-		
+		[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
+		delegate IntPtr d_bindtextdomain (IntPtr domainname, IntPtr dirname);
+		static d_bindtextdomain bindtextdomain = FuncLoader.LoadFunction<d_bindtextdomain>(FuncLoader.GetProcAddress(GLibrary.Load(Library.Intl), "bindtextdomain"));
+
+		[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
+		delegate IntPtr d_bind_textdomain_codeset (IntPtr domainname, IntPtr codeset);
+		static d_bind_textdomain_codeset bind_textdomain_codeset = FuncLoader.LoadFunction<d_bind_textdomain_codeset>(FuncLoader.GetProcAddress(GLibrary.Load(Library.Intl), "bind_textdomain_codeset"));
+
+		[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
+		delegate IntPtr d_dgettext (IntPtr domainname, IntPtr instring);
+		static d_dgettext dgettext = FuncLoader.LoadFunction<d_dgettext>(FuncLoader.GetProcAddress(GLibrary.Load(Library.Intl), "dgettext"));
+
+		[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
+		delegate IntPtr d_dngettext (IntPtr domainname, IntPtr instring, IntPtr plural, int n);
+		static d_dngettext dngettext = FuncLoader.LoadFunction<d_dngettext>(FuncLoader.GetProcAddress(GLibrary.Load(Library.Intl), "dngettext"));
+
 		IntPtr ipackage;
 		
 		public void Init (String package, string localedir)
@@ -58,11 +65,11 @@ namespace Mono.Addins.Localization
 				string prefix = f.Directory.Parent.Parent.Parent.ToString ();
 				prefix = Path.Combine (Path.Combine (prefix, "share"), "locale");
 			}
-			
+
 			ipackage = StringToPtr (package);
 			IntPtr ilocaledir = StringToPtr (localedir);
 			IntPtr iutf8 = StringToPtr ("UTF-8");
-			
+
 			try {
 				if (bindtextdomain (ipackage, ilocaledir) == IntPtr.Zero)
 					throw new InvalidOperationException ("Gettext localizer: bindtextdomain failed");

@@ -50,6 +50,7 @@ namespace Mono.Addins
 	public class RuntimeAddin
 	{
 		readonly string id;
+		readonly string localeBaseDirectory;
 		readonly string baseDirectory;
 		readonly Addin ainfo;
 		readonly RuntimeAddin parentAddin;
@@ -75,6 +76,7 @@ namespace Mono.Addins
 			AddinDescription description = iad.Description;
 			id = description.AddinId;
 			baseDirectory = description.BasePath;
+			localeBaseDirectory = Environment.GetEnvironmentVariable ("MONO_ADDINS_BASE_LOCALE_DIR") ?? description.BasePath;
 			module = description.MainModule;
 			module.RuntimeAddin = this;
 			localizerDescription = description.Localizer;
@@ -87,6 +89,7 @@ namespace Mono.Addins
 			this.module = module;
 			id = parentAddin.id;
 			baseDirectory = parentAddin.baseDirectory;
+			localeBaseDirectory = Environment.GetEnvironmentVariable ("MONO_ADDINS_BASE_LOCALE_DIR") ?? parentAddin.baseDirectory;
 			privatePath = parentAddin.privatePath;
 			ainfo = parentAddin.ainfo;
 			module.RuntimeAddin = this;
@@ -478,6 +481,23 @@ namespace Mono.Addins
 		public string GetFilePath (string fileName)
 		{
 			return Path.Combine (baseDirectory, fileName);
+		}
+
+		/// <summary>
+		/// Gets the path of the locale directory for the add-in file.
+		/// </summary>
+		/// <param name="dirName">
+		/// The directory relative path of the file or if env MONO_ADDINS_BASE_LOCALE_DIR is set.
+		/// </param>
+		/// <returns>
+		/// Full path of the directory
+		/// </returns>
+		/// <remarks>
+		/// This method can be used to get the full path of the directory for the localization.
+		/// </remarks>
+		public string GetLocaleFilePath (string dirName)
+		{
+			return Path.Combine (localeBaseDirectory, dirName);
 		}
 
 		/// <summary>

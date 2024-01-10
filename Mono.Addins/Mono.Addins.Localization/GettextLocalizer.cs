@@ -42,7 +42,7 @@ namespace Mono.Addins.Localization
 			string dir = element.GetAttribute ("location");
 			if (dir.Length == 0)
 				dir = "locale";
-			dir = addin.GetFilePath (dir);
+			dir = addin.GetLocaleFilePath (dir);
 			domain = new GettextDomain ();
 			domain.Init (pkg, dir);
 			return this;
