@@ -50,7 +50,7 @@ namespace Mono.Addins
 	public class RuntimeAddin
 	{
 		readonly string id;
-		readonly string localeBaseDirectory;
+		readonly string baseLocaleDirectory;
 		readonly string baseDirectory;
 		readonly Addin ainfo;
 		readonly RuntimeAddin parentAddin;
@@ -76,7 +76,7 @@ namespace Mono.Addins
 			AddinDescription description = iad.Description;
 			id = description.AddinId;
 			baseDirectory = description.BasePath;
-			localeBaseDirectory = Environment.GetEnvironmentVariable ("MONO_ADDINS_BASE_LOCALE_DIR") ?? description.BasePath;
+			baseLocaleDirectory = Environment.GetEnvironmentVariable ("MONO_ADDINS_BASE_LOCALE_DIR") ?? description.BasePath;
 			module = description.MainModule;
 			module.RuntimeAddin = this;
 			localizerDescription = description.Localizer;
@@ -89,7 +89,7 @@ namespace Mono.Addins
 			this.module = module;
 			id = parentAddin.id;
 			baseDirectory = parentAddin.baseDirectory;
-			localeBaseDirectory = Environment.GetEnvironmentVariable ("MONO_ADDINS_BASE_LOCALE_DIR") ?? parentAddin.baseDirectory;
+			baseLocaleDirectory = Environment.GetEnvironmentVariable ("MONO_ADDINS_BASE_LOCALE_DIR") ?? parentAddin.baseDirectory;
 			privatePath = parentAddin.privatePath;
 			ainfo = parentAddin.ainfo;
 			module.RuntimeAddin = this;
@@ -497,7 +497,7 @@ namespace Mono.Addins
 		/// </remarks>
 		public string GetLocaleFilePath (string dirName)
 		{
-			return Path.Combine (localeBaseDirectory, dirName);
+			return Path.Combine (baseLocaleDirectory, dirName);
 		}
 
 		/// <summary>

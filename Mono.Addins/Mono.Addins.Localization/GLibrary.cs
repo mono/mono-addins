@@ -20,7 +20,7 @@ class GLibrary
 		_librariesNotFound = new HashSet<Library>();
 		_libraries = new Dictionary<Library, IntPtr>();
 		_libraryDefinitions = new Dictionary<Library, string[]>();
-		_libraryDefinitions[Library.Intl] = new[] {"libintl-8.dll", "libc.so.6", "libintl.8.dylib", "libintl-8.dll"};
+		_libraryDefinitions[Library.Intl] = new[] {"libintl-8.dll", "libc.so.6", "libintl.8.dylib", "intl"};
 	}
 
 	public static IntPtr Load(Library library)
