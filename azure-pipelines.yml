@@ -50,7 +50,12 @@ extends:
 
         - task: CodeQL3000Init@0
 
-        - task: MicroBuildSigningPlugin@3
+        # Python 3 is needed for the MicroBuild Signing Plugin
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '3.11'
+
+        - task: MicroBuildSigningPlugin@4
           displayName: 'Install Signing Plugin'
           inputs:
             signType: 'Real'
