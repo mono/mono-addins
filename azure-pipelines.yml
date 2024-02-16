@@ -1,130 +1,159 @@
-jobs:
-- job: Default
-  timeoutInMinutes: 360
-  pool:
-    vmImage: 'macos-latest'
 
-  variables:
-  - name: BuildConfiguration
-    value: Debug
-  - name: TeamName
-    value: Mono.Addins
-  - name: Codeql.Enabled
-    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
-  - name: Codeql.TSAEnabled
-    value: true
-  - name: Codeql.SkipTaskAutoInjection  # Auto injection is disabled for now, since it causes the sign process to hang.
-    value: true                         # Instead, CodeQL tasks are explicitly inserted. The finalize task is inserted before the signing task to avoid the hang.
-  - name: BUILDSECMON_OPT_IN
-    value: true
-  - name: Packaging.EnableSBOMSigning
-    value: true
-  - name: System.Debug
-    value: true
+resources:
+  repositories:
+  - repository: 1esPipelines
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
+
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1esPipelines
+  parameters:
+    sdl:
+      sourceAnalysisPool:
+        name: AzurePipelines-EO
+        image: AzurePipelinesWindows2022compliantGPT
+        os: windows
+      sbom:
+        enabled: false
+
+    stages:
+    - stage: Build
+      jobs:
+      - job: Default
+        timeoutInMinutes: 360
+        pool:
+          name: 'Azure Pipelines'
+          vmImage: 'macos-latest'
+          os: macOS
+
+        variables:
+        - name: BuildConfiguration
+          value: Debug
+        - name: TeamName
+          value: Mono.Addins
+        - name: Codeql.Enabled
+          value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+        - name: Codeql.TSAEnabled
+          value: true
+        - name: Codeql.SkipTaskAutoInjection  # Auto injection is disabled for now, since it causes the sign process to hang.
+          value: true                         # Instead, CodeQL tasks are explicitly inserted. The finalize task is inserted before the signing task to avoid the hang.
+        - name: BUILDSECMON_OPT_IN
+          value: true
+        - name: Packaging.EnableSBOMSigning
+          value: true
+        - name: System.Debug
+          value: true
 
 
-  steps:
+        steps:
 
-  - task: CodeQL3000Init@0
+        - task: CodeQL3000Init@0
 
-  - task: MicroBuildSigningPlugin@3
-    displayName: 'Install Signing Plugin'
-    inputs:
-      signType: 'Real'
-      azureSubscription: 'MicroBuild Signing Task (DevDiv)'
-    env:
-        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+        # Python 3 is needed for the MicroBuild Signing Plugin
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '3.11'
 
-  - task: UseDotNet@2
-    displayName: 'Install .NET 3.1'
-    inputs:
-      packageType: 'sdk'
-      version: '3.1.413'
+        - task: MicroBuildSigningPlugin@4
+          displayName: 'Install Signing Plugin'
+          inputs:
+            signType: 'Real'
+            azureSubscription: 'MicroBuild Signing Task (DevDiv)'
+          env:
+              SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
-  - task: UseDotNet@2
-    displayName: 'Install .NET 6'
-    inputs:
-      packageType: 'sdk'
-      version: '6.0.100'
+        - task: UseDotNet@2
+          displayName: 'Install .NET 3.1'
+          inputs:
+            packageType: 'sdk'
+            version: '3.1.413'
 
-  - task: DotNetCoreCLI@2
-    displayName: 'Build solution Mono.Addins.sln'
-    inputs:
-      command: build
-      arguments: '/p:Configuration=$(BuildConfiguration)'
+        - task: UseDotNet@2
+          displayName: 'Install .NET 6'
+          inputs:
+            packageType: 'sdk'
+            version: '6.0.100'
 
-  - task: DotNetCoreCLI@2
-    displayName: 'Generate packages'
-    inputs:
-      command: custom
-      custom: pack
-      projects: Mono.Addins.sln
-      arguments: '/p:Configuration=$(BuildConfiguration)'
-      nobuild: true
-      workingDirectory: $(Build.SourcesDirectory)
+        - task: DotNetCoreCLI@2
+          displayName: 'Build solution Mono.Addins.sln'
+          inputs:
+            command: build
+            arguments: '/p:Configuration=$(BuildConfiguration)'
 
-  - task: DotNetCoreCLI@2
-    displayName: Test
-    inputs:
-      command: 'test'
-      workingDirectory: '$(Build.SourcesDirectory)/Test/UnitTests'
+        - task: DotNetCoreCLI@2
+          displayName: 'Generate packages'
+          inputs:
+            command: custom
+            custom: pack
+            projects: Mono.Addins.sln
+            arguments: '/p:Configuration=$(BuildConfiguration)'
+            nobuild: true
+            workingDirectory: $(Build.SourcesDirectory)
 
-  - task: CodeQL3000Finalize@0
+        - task: DotNetCoreCLI@2
+          displayName: Test
+          inputs:
+            command: 'test'
+            workingDirectory: '$(Build.SourcesDirectory)/Test/UnitTests'
 
-  - task: Bash@3
-    displayName: 'Generate package file list'
-    inputs:
-      targetType: 'inline'
-      script: |
-        echo "<filelist>" > $(build.sourcesdirectory)/bin/files.xml
-        echo " <certificate certnumbers='401405'>" >> $(build.sourcesdirectory)/bin/files.xml
-        find $(build.sourcesdirectory)/bin -name "*.nupkg" -exec echo "  <file srcpath='{}' dstpath='{}'></file>" \; >> $(build.sourcesdirectory)/bin/files.xml
-        echo " </certificate>" >> $(build.sourcesdirectory)/bin/files.xml
-        echo "</filelist>" >> $(build.sourcesdirectory)/bin/files.xml
-      workingDirectory: '$(build.sourcesdirectory)/bin'
+        - task: CodeQL3000Finalize@0
 
-  - task: Bash@3
-    displayName: 'Sign Packages'
-    inputs:
-      targetType: 'inline'
-      script: |
-        dotnet $(MBSIGN_APPFOLDER)/ddsignfiles.dll /filelist:$(build.sourcesdirectory)/bin/files.xml
-      workingDirectory: '$(build.sourcesdirectory)/bin'
+        - task: Bash@3
+          displayName: 'Generate package file list'
+          inputs:
+            targetType: 'inline'
+            script: |
+              echo "<filelist>" > $(build.sourcesdirectory)/bin/files.xml
+              echo " <certificate certnumbers='401405'>" >> $(build.sourcesdirectory)/bin/files.xml
+              find $(build.sourcesdirectory)/bin -name "*.nupkg" -exec echo "  <file srcpath='{}' dstpath='{}'></file>" \; >> $(build.sourcesdirectory)/bin/files.xml
+              echo " </certificate>" >> $(build.sourcesdirectory)/bin/files.xml
+              echo "</filelist>" >> $(build.sourcesdirectory)/bin/files.xml
+            workingDirectory: '$(build.sourcesdirectory)/bin'
 
-  - task: CopyFiles@1
-    displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
-    inputs:
-      SourceFolder: '$(build.sourcesdirectory)/bin'
-      Contents: '*.nupkg'
-      TargetFolder: '$(build.artifactstagingdirectory)'
-    condition: succeededOrFailed()
+        - task: Bash@3
+          displayName: 'Sign Packages'
+          inputs:
+            targetType: 'inline'
+            script: |
+              dotnet $(MBSIGN_APPFOLDER)/ddsignfiles.dll /filelist:$(build.sourcesdirectory)/bin/files.xml
+            workingDirectory: '$(build.sourcesdirectory)/bin'
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: drop'
-    inputs:
-      PathtoPublish: '$(build.artifactstagingdirectory)'
-    condition: succeededOrFailed()
+        - task: CopyFiles@1
+          displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+          inputs:
+            SourceFolder: '$(build.sourcesdirectory)/bin'
+            Contents: '*.nupkg'
+            TargetFolder: '$(build.artifactstagingdirectory)'
+          condition: succeededOrFailed()
 
-  # Use separate directory when generating SBOM to avoid MicroBuild files being included
-  - task: Bash@3
-    displayName: 'Copy files for SBOM'
-    inputs:
-      targetType: 'inline'
-      script: |
-        mkdir sbom
-        cp *.nupkg sbom
-      workingDirectory: '$(build.artifactstagingdirectory)'
+        - task: 1ES.PublishPipelineArtifact@1
+          displayName: 'Publish Artifact: drop'
+          inputs:
+            targetPath: '$(build.artifactstagingdirectory)'
+            artifactName: drop
+          condition: succeededOrFailed()
 
-  - task: ManifestGeneratorTask@0
-    inputs:
-      PackageName: 'Mono.Addins'
-      BuildDropPath: '$(build.artifactstagingdirectory)/sbom'
-      ManifestDirPath: '$(build.sourcesdirectory)'
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList **/Test/**;**/Samples/**;**/mautil/**'
-    displayName: 'Generating SBOM'
+        # Use separate directory when generating SBOM to avoid MicroBuild files being included
+        - task: Bash@3
+          displayName: 'Copy files for SBOM'
+          inputs:
+            targetType: 'inline'
+            script: |
+              mkdir sbom
+              cp *.nupkg sbom
+            workingDirectory: '$(build.artifactstagingdirectory)'
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(build.sourcesdirectory)/_manifest'
-      artifactName: SBOM
-    displayName: Publish SBOM
+        - task: ManifestGeneratorTask@0
+          inputs:
+            PackageName: 'Mono.Addins'
+            BuildDropPath: '$(build.artifactstagingdirectory)/sbom'
+            ManifestDirPath: '$(build.sourcesdirectory)'
+            AdditionalComponentDetectorArgs: '--DirectoryExclusionList **/Test/**;**/Samples/**;**/mautil/**'
+          displayName: 'Generating SBOM'
+
+        - task: 1ES.PublishPipelineArtifact@1
+          inputs:
+            targetPath: '$(build.sourcesdirectory)/_manifest'
+            artifactName: SBOM
+          displayName: Publish SBOM
